@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { computed, ref, watch } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { login } from "../composables/useAuth";
 import { register as apiRegister } from "../api/auth";
@@ -7,6 +7,7 @@ import { user } from "../composables/useAuth";
 import AppInput from "../components/ui/AppInput.vue";
 import AppButton from "../components/ui/AppButton.vue";
 import AppTabs from "../components/ui/AppTabs.vue";
+import { safeNext, PENDING_NEXT_KEY } from "../utils/safeNext";
 
 const router = useRouter();
 const route = useRoute();
@@ -58,7 +59,18 @@ watch(
   { immediate: true },
 )
 
+// Destination apres connexion : `?next=` s'il est present et interne a l'app.
+const nextTarget = computed(() => safeNext(route.query.next));
+
 function loginWithGoogle() {
+  // Google nous ramene sur CLIENT_URL, sans nos parametres : on met la
+  // destination de cote ici, le garde de route la reprend au retour.
+  try {
+    if (nextTarget.value) sessionStorage.setItem(PENDING_NEXT_KEY, nextTarget.value)
+    else sessionStorage.removeItem(PENDING_NEXT_KEY)
+  } catch {
+    // navigation privee / stockage bloque : on perd juste la redirection
+  }
   window.location.href = '/api/auth/google'
 };
 
@@ -93,7 +105,7 @@ async function submit() {
   loading.value = true;
   try {
     await login(username.value.trim(), password.value);
-    router.push("/");
+    router.push(nextTarget.value ?? "/");
   } catch (err) {
     error.value = err instanceof Error ? err.message : "Erreur de connexion";
   } finally {
@@ -166,31 +178,8 @@ async function submit() {
 </template>
 
 <style scoped>
-.login-wrap {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 60vh;
-  padding: 2rem 1rem;
-}
-
-.login-card {
-  width: 100%;
-  max-width: 360px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-xl);
-  padding: 2rem 1.75rem;
-  box-shadow: var(--shadow-card);
-}
-
-.login-title {
-  font-family: var(--title-font);
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--brand-strong);
-  margin: 0 0 1.25rem;
-}
+/* .login-wrap / .login-card / .login-title vivent dans style.css : l'ecran de
+   consentement OAuth (/autoriser) reprend exactement le meme moule. */
 
 .mode-tabs {
   margin-bottom: 1.5rem;

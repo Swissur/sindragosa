@@ -16,7 +16,9 @@ import CampaignView from '../views/CampaignView.vue'
 import CampaignCharacterView from '../views/CampaignCharacterView.vue'
 import EncounterEditView from '../views/EncounterEditView.vue'
 import CombatView from '../views/CombatView.vue'
+import AuthorizeView from '../views/AuthorizeView.vue'
 import { authReady, user, initAuth } from '../composables/useAuth'
+import { safeNext, PENDING_NEXT_KEY } from '../utils/safeNext'
 
 export const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -39,6 +41,8 @@ export const router = createRouter({
     { path: '/campagnes/:id/rencontres/:eid', name: 'encounter-edit', component: EncounterEditView },
     { path: '/campagnes/:id/combat/:cid', name: 'combat', component: CombatView },
     { path: '/options', name: 'options', component: OptionsView },
+    // Consentement OAuth : « Claude veut parler a Isilwen en ton nom »
+    { path: '/autoriser', name: 'oauth-authorize', component: AuthorizeView, meta: { public: false } },
     // Mode table : la tablette au milieu de la table. Plein écran, sans barres.
     { path: '/table', name: 'viewer', component: () => import('../views/ViewerView.vue'), meta: { viewer: true } },
     // POC du champ de bataille 3D — pions en dur, rien n'est sauvegardé.
@@ -51,9 +55,28 @@ export const router = createRouter({
   ],
 })
 
+// Retour de Google : leur redirection ne garde pas notre `?next=`, on l'avait
+// mis de cote dans sessionStorage. On ne le reprend qu'une fois, au premier
+// aiguillage suivant le demarrage de l'app.
+let pendingNextRead = false
+
+function takePendingNext(): string | null {
+  if (pendingNextRead) return null
+  pendingNextRead = true
+  try {
+    const raw = sessionStorage.getItem(PENDING_NEXT_KEY)
+    sessionStorage.removeItem(PENDING_NEXT_KEY)
+    return safeNext(raw)
+  } catch {
+    return null
+  }
+}
+
 router.beforeEach(async (to) => {
   if (!authReady.value) await initAuth()
   if (to.meta.public) return true
-  if (!user.value) return { name: 'login' }
+  if (!user.value) return { name: 'login', query: { next: to.fullPath } }
+  const pending = takePendingNext()
+  if (pending && pending !== to.fullPath) return pending
   return true
 })

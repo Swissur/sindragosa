@@ -198,3 +198,31 @@ select:focus-visible {
 
 /* Le padding des pages est gere par AppPageLayout. Toutes les vues l'utilisent
    sauf LoginView, qui a son propre centrage. La regle de repli est supprimee. */
+
+/* Ecrans hors AppPageLayout, centres sur une carte : la connexion et l'ecran
+   de consentement OAuth (/autoriser). */
+.login-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  padding: 2rem 1rem;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 360px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: 2rem 1.75rem;
+  box-shadow: var(--shadow-card);
+}
+
+.login-title {
+  font-family: var(--title-font);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--brand-strong);
+  margin: 0 0 1.25rem;
+}

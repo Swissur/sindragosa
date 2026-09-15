@@ -29,6 +29,7 @@ import AppEmptyState from "../components/ui/AppEmptyState.vue";
 import AppIconBtn from "../components/ui/AppIconBtn.vue";
 import AppButton from "../components/ui/AppButton.vue";
 import DiceStyleCard from "../components/options/DiceStyleCard.vue";
+import IsilwenConnectionsCard from "../components/options/IsilwenConnectionsCard.vue";
 
 const router = useRouter();
 
@@ -401,6 +402,9 @@ onMounted(load);
         </AppButton>
       </div>
     </AppCard>
+
+    <!-- ── Isilwen dans Claude / ChatGPT ──────────────────────────────────── -->
+    <IsilwenConnectionsCard />
 
     <!-- ── Compte ─────────────────────────────────────────────────────────── -->
     <AppCard title="Compte">

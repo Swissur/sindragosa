@@ -352,3 +352,69 @@ export type CharacterRow = typeof characters.$inferSelect
 export type CharacterInsert = typeof characters.$inferInsert
 export type CampaignRow = typeof campaigns.$inferSelect
 export type CampaignMemberRow = typeof campaignMembers.$inferSelect
+
+// ————————————————————————————————————————————————————————————————
+// OAuth 2.1 : l'app est aussi serveur d'autorisation pour les connecteurs MCP
+// (claude.ai, ChatGPT, Claude Code). Voir plans/28-isilwen-mcp-plugin.md § 2.3.
+// Seuls des hashs sha256 sont stockés, jamais un code ou un jeton en clair.
+// ————————————————————————————————————————————————————————————————
+
+/** Client OAuth enregistré par DCR (RFC 7591). Redirect URIs sur liste blanche. */
+export const oauthClients = pgTable('oauth_client', {
+  clientId: text('client_id').primaryKey(),
+  clientName: text('client_name').notNull().default(''),
+  redirectUris: jsonb('redirect_uris').$type<string[]>().notNull().default([]),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+})
+
+/**
+ * Une demande d'autorisation, puis le code émis après consentement.
+ * `id` est le `request_id` passé à la SPA (`/autoriser?request=…`) ; `code_hash`
+ * reste NULL tant que le joueur n'a pas cliqué « Autoriser ».
+ */
+export const oauthCodes = pgTable('oauth_code', {
+  id: text('id').primaryKey(),
+  codeHash: text('code_hash'),
+  clientId: text('client_id')
+    .notNull()
+    .references(() => oauthClients.clientId, { onDelete: 'cascade' }),
+  /** NULL tant que le consentement n'a pas eu lieu. */
+  userId: integer('user_id').references(() => users.id, { onDelete: 'cascade' }),
+  codeChallenge: text('code_challenge').notNull(),
+  redirectUri: text('redirect_uri').notNull(),
+  /** RFC 8707 : l'audience demandée. */
+  resource: text('resource'),
+  scopes: jsonb('scopes').$type<string[]>().notNull().default([]),
+  state: text('state'),
+  expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(),
+  /** Usage unique : posé à l'échange du code (ou au refus). */
+  usedAt: timestamp('used_at', { withTimezone: true }),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+})
+
+/** Un couple access/refresh émis à un client pour un joueur. Rotation à chaque refresh. */
+export const oauthTokens = pgTable('oauth_token', {
+  id: serial('id').primaryKey(),
+  userId: integer('user_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  clientId: text('client_id')
+    .notNull()
+    .references(() => oauthClients.clientId, { onDelete: 'cascade' }),
+  /** Dénormalisé : reste affichable même si le client est supprimé. */
+  clientName: text('client_name').notNull().default(''),
+  accessHash: text('access_hash').notNull(),
+  refreshHash: text('refresh_hash').notNull(),
+  scopes: jsonb('scopes').$type<string[]>().notNull().default([]),
+  /** Audience du jeton (`aud`), toujours `<PUBLIC_URL>/mcp`. */
+  resource: text('resource').notNull().default(''),
+  accessExpiresAt: timestamp('access_expires_at', { withTimezone: true }).notNull(),
+  refreshExpiresAt: timestamp('refresh_expires_at', { withTimezone: true }).notNull(),
+  lastUsedAt: timestamp('last_used_at', { withTimezone: true }),
+  revokedAt: timestamp('revoked_at', { withTimezone: true }),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+})
+
+export type OAuthClientRow = typeof oauthClients.$inferSelect
+export type OAuthCodeRow = typeof oauthCodes.$inferSelect
+export type OAuthTokenRow = typeof oauthTokens.$inferSelect

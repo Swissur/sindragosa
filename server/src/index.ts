@@ -33,13 +33,26 @@ import {
 } from "./knowledge/loadKnowledge.js";
 import { CLIENT_DIST, REPO_ROOT } from "./paths.js";
 import { buildAnthropicTools, buildGeminiTool, TOPIC_NAMES } from "./knowledge/tools.js";
-import { and, desc, eq, inArray } from "drizzle-orm";
+import { and, eq, inArray } from "drizzle-orm";
 import { db } from "./db/index.js";
-import { campaigns, campaignMembers, characters, codexEntries, combatParticipants, combats, generatedImages, journalCompagnie, journalPages, notes, rollEvents, users } from "./db/schema.js";
-import { buildCampaignSection, type JournalContext, type PartyContext } from "./chat/campaignContext.js";
-import { buildCombatSection, type CombatRoll } from "./chat/combatContext.js";
-import { serializeCombat } from "./combats/serialize.js";
-import { enrichParticipantHp, enrichParticipantStates } from "./combats/sseStore.js";
+import { campaignMembers, characters, generatedImages, users } from "./db/schema.js";
+import { buildCampaignSection } from "./chat/campaignContext.js";
+// Tout ce qu'Isilwen « sait » vit dans isilwen/ : le chat de l'app et le serveur
+// MCP lisent les memes fonctions, pour que les deux ne divergent jamais.
+import { SYSTEM_PREAMBLE } from "./isilwen/persona.js";
+import {
+  buildCharacterSection,
+  buildPreviousCharacterSection,
+  loadCompanion,
+  EDITABLE_FIELDS,
+  type CharacterPayload,
+  type EditableField,
+} from "./isilwen/character.js";
+import { fetchPartyContext, type PartyContext } from "./isilwen/party.js";
+import { fetchJournalContext, readPage } from "./isilwen/journal.js";
+import { fetchCombatContext } from "./isilwen/combat.js";
+import { mountOAuth } from "./oauth/router.js";
+import { mountMcp } from "./mcp/router.js";
 
 const app = express();
 // En prod le client est servi par ce même serveur (same-origin) ; en dev le proxy
@@ -61,6 +74,11 @@ app.use((req, res, next) => {
   });
   next();
 });
+
+// Serveur d'autorisation OAuth + endpoint MCP. Après cookieParser (l'écran de
+// consentement lit le cookie de session) et avant le catch-all SPA de la prod.
+mountOAuth(app);
+mountMcp(app);
 
 app.use("/api/auth", authRouter);
 app.use("/api/characters", charactersRouter);
@@ -204,70 +222,6 @@ const geminiClient = process.env.GEMINI_API_KEY
   ? new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY })
   : null;
 
-const SYSTEM_PREAMBLE = `Tu incarnes Isilwen du Miroir Astral, une Elfe Bleue divinatrice et mystique du monde des Terres d'Arran, utilisant le moteur Chroniques Oubliées.
-Tu t'adresses aux joueurs et au meneur en français, toujours en restant en personnage.
-
-📖 Rigueur des règles — c'est ta mission principale :
-- L'intégralité des règles et du lore dont tu disposes est reproduite ci-dessous. Lis-la, cite-la, applique-la.
-- RÈGLE ABSOLUE : ne donne JAMAIS un chiffre (bonus, coût en PM, dégâts, difficulté, durée, portée, prix) qui ne figure pas dans les règles ci-dessous. Aucune exception, même si le chiffre te semble évident ou standard ailleurs.
-- Si une règle manque ou est ambiguë, dis-le en une phrase, propose de vérifier le livre officiel, puis donne une alternative prudente clairement annoncée comme telle.
-- Croise les sources : une réponse complète combine souvent une règle générale, une capacité de voie et la fiche du personnage. Vérifie les exceptions avant de conclure.
-- Applique les règles au personnage actif : calcule avec SES caractéristiques, SON niveau, SES voies, et montre le calcul.
-
-⚡ Concision avant tout :
-- Réponds de façon directe et concise. Va à l'essentiel sans tourner autour du pot.
-- Utilise les émojis quand ils ajoutent de la clarté ou de la lisibilité (listes, catégories, points importants).
-- Évite les longues introductions, les répétitions et les formules creuses. Une bonne réponse est courte et utile.
-- Structure : info utile d'abord, couleur narrative ensuite — jamais l'inverse.
-
-🎭 Style de roleplay (intégré et constant) :
-- Reste en personnage du début à la fin, sans rupture de ton ni "mode d'emploi".
-- Fonds naturellement le roleplay avec les règles : ton immersif, explications précises, transitions fluides.
-- Taquinerie bienvenue, toujours bienveillante — jamais agressive ni humiliante.
-- Si un personnage actif est fourni dans le contexte, adresse-toi à lui par son prénom et adapte tes conseils à sa race, son profil, son histoire (si fournie), ses armes et capacités, et son niveau.
-
-🐉 Bestiaire (règle stricte) :
-- L'index des créatures est ci-dessous ; leur fiche détaillée se lit avec l'outil get_monstre quand il t'est proposé.
-- Tu ne dois JAMAIS révéler de données chiffrées sur les monstres aux joueurs : pas de PV, DEF, NC, bonus d'attaque, DM, caractéristiques (FOR, DEX, etc.), initiative, ou réduction de dégâts.
-- Tu peux uniquement partager avec un joueur : le nom du monstre, sa taille, sa description narrative, et le nom de ses capacités (sans les détails mécaniques).
-- Si un joueur demande les stats d'un monstre, refuse poliment en restant en personnage : "Les mystères de cette créature ne se révèlent qu'au combat..."
-- Exception : quand le contexte indique que tu parles au meneur de jeu (section Combat en cours, ou outil get_monstre disponible), ces chiffres sont pour lui. Donne-les.
-
-✏️ Modification de fiche (edit_character) — SEUL outil nécessitant confirmation :
-- Tu peux modifier les statistiques du personnage (FOR, DEX, CON, INT, SAG, CHA, niveau, PV max, PM max, défense) avec l'outil edit_character.
-- Avant d'appeler edit_character, annonce EXACTEMENT ce que tu vas changer et attends la confirmation explicite du joueur ("oui", "ok", "vas-y", "d'accord"...).
-  Exemple : "Je peux passer ta FOR de 10 à 12 — veux-tu que je le fasse ?"
-- N'appelle JAMAIS edit_character si l'utilisateur n'a pas confirmé dans son dernier message.
-- Après modification, confirme brièvement en restant en personnage.
-- Cette règle de confirmation s'applique UNIQUEMENT à edit_character. Tous les autres outils s'utilisent IMMÉDIATEMENT, sans demander confirmation.
-
-↩️ Annulation (undo) :
-- Si un previousCharacter est présent dans le contexte du personnage, cela signifie qu'une modification a été faite lors de cette conversation.
-- Si l'utilisateur demande d'annuler ("annule", "undo", "remets comme avant"...), demande confirmation puis appelle edit_character avec les valeurs du previousCharacter.
-- Ne propose l'annulation que si previousCharacter est présent dans le contexte.
-
-📜 Campagne, journal, codex et notes (get_page) :
-- Le journal de bord, le Codex de la campagne (PNJ, lieux) et les notes privées du joueur sont reproduits ci-dessous, après la fiche du personnage. Tu n'as rien à demander : réponds directement depuis ces textes.
-- Dès qu'un joueur pose une question sur leurs aventures, sessions passées, PNJ rencontrés, lieux visités ou événements vécus → réponds depuis le journal ou le Codex, en citant la session ou l'entrée concernée.
-- Seuls les titres des pages partagées sont listés (avec leur id). Si un titre semble pertinent pour la question, appelle immédiatement get_page avec cet id pour en lire le contenu. Ne demande pas "veux-tu que je consulte la page ?".
-
-🗡️ Combat en cours :
-- S'il y a une section "Combat en cours" ci-dessous, utilise-la pour tout conseil tactique : à qui c'est le tour, qui est en danger, quelle action est possible d'après les règles de combat ci-dessus.
-- Pour un joueur : ce que contient cette section est exactement ce qu'il voit à l'écran, tu peux le lui dire. Rien de plus sur les monstres : la règle 🐉 s'applique toujours.
-- Pour le meneur : tu as tout (PV, DEF, attaques, capacités, réserve). Aide-le à faire jouer les monstres.
-- Pas de section "Combat en cours" = pas de combat en cours. Ne l'invente pas.
-
-👥 Compagnons de campagne (get_character) :
-- La liste de tes compagnons de campagne est dans la section Campagne, plus bas.
-- get_character te donne la fiche complète d'un compagnon (profil, stats, voies, compétences, portrait). Utilise-le de façon proactive, et pour connaître l'apparence physique d'un compagnon — ne demande jamais au joueur de décrire quelqu'un dont tu peux lire la fiche.
-
-🎨 Illustration (generate_image) :
-- Le prompt DOIT être en anglais, détaillé, style "medieval high fantasy, painterly, warm tones", et inclure le contexte du monde d'Arran (elfes, nains, cristaux, forêts anciennes...).
-- L'image doit TOUJOURS être une illustration plein cadre : ajoute "full frame illustration, no borders, no book page, no white margins" à chaque prompt.
-- Avant de générer une image représentant un ou plusieurs personnages joueurs, appelle TOUJOURS get_character sur chacun d'eux dans CE tour — le portrait n'est transmis au générateur que s'il est récupéré dans le même tour.
-- Quand le joueur demande une image impliquant des compagnons ("dessine-nous", "illustre la scène"), enchaîne get_character puis generate_image directement, sans demander les noms.
-- N'utilise PAS cet outil pour les questions de règles ou de statistiques. Maximum 1 image par réponse sauf demande explicite.`;
-
 // ── BLOC STATIQUE ────────────────────────────────────────────────────────────
 // Calcule UNE FOIS au demarrage : preambule + toutes les regles (sauf bestiaire)
 // + l'index des monstres. C'est la tete du prompt, donc la partie mise en cache
@@ -304,11 +258,6 @@ function writeSse(res: express.Response, event: SseEvent, data: unknown): void {
   res.write(`data: ${JSON.stringify(data)}\n\n`);
 }
 
-const EDITABLE_FIELDS = new Set([
-  "str", "dex", "con", "int", "wis", "cha", "level", "hpMax", "mpMax", "defense",
-]);
-type EditableField = "str" | "dex" | "con" | "int" | "wis" | "cha" | "level" | "hpMax" | "mpMax" | "defense";
-
 function sanitizeChanges(raw: Record<string, unknown>): Partial<Record<EditableField, number>> {
   const out: Partial<Record<EditableField, number>> = {};
   for (const [k, v] of Object.entries(raw)) {
@@ -335,144 +284,6 @@ function logTokens(
   if (usage.output != null) parts.push(`out=${usage.output}`);
   if (usage.total != null) parts.push(`total=${usage.total}`);
   console.log(`[tokens] ${label}: ${parts.join(" ")}`);
-}
-
-
-type CharacterPayload = Record<string, unknown>;
-
-function buildCharacterSection(c: CharacterPayload, isActive = false): string {
-  const name = c.name ?? "Inconnu";
-  const people = c.people ?? "";
-  const profile = c.profile ?? "";
-  const level = c.level ?? 1;
-  const hpMax = c.hpMax ?? "?";
-  const mpMax = c.mpMax ?? "?";
-  const hpCurrent = c.hpCurrent;
-  const mpCurrent = c.mpCurrent;
-  const defense = c.defense ?? "?";
-  const initiativeBonus = c.initiativeBonus;
-  const histoire = typeof c.histoire === "string" ? c.histoire.trim() : "";
-  const mysticTalent =
-    typeof c.mysticTalent === "string" && c.mysticTalent.trim() !== ""
-      ? c.mysticTalent.trim()
-      : "";
-
-  const abilities = (c.abilities as Record<string, number> | undefined) ?? {};
-  const mod = (score: number | string) =>
-    typeof score === "number" ? Math.floor((score - 10) / 2) : "?";
-  const fmtMod = (score: number | string) => {
-    const m = mod(score);
-    return typeof m === "number" ? (m >= 0 ? `+${m}` : `${m}`) : "?";
-  };
-  const str = abilities.strength ?? "?";
-  const dex = abilities.dexterity ?? "?";
-  const con = abilities.constitution ?? "?";
-  const int_ = abilities.intelligence ?? "?";
-  const wis = abilities.wisdom ?? "?";
-  const cha = abilities.charisma ?? "?";
-  const paths = (c.paths as Array<{ name: string; rank: number }> | undefined) ?? [];
-  const skills = (c.skills as Array<{ name: string; rank: number }> | undefined) ?? [];
-  const martialFormations = Array.isArray(c.martialFormations)
-    ? (c.martialFormations as string[])
-    : [];
-  const weapons =
-    (c.weapons as
-      | Array<{
-          name: string;
-          attackType?: string;
-          damageDice?: string;
-          damageAbility?: string | null;
-          martialFamily?: string;
-          rangeMeters?: number | null;
-          notes?: string;
-        }>
-      | undefined) ?? [];
-  const items =
-    (c.items as Array<{ name: string; description?: string; quantity: number }> | undefined) ?? [];
-  const goldCoins = typeof c.goldCoins === "number" ? c.goldCoins : 0;
-  const silverCoins = typeof c.silverCoins === "number" ? c.silverCoins : 0;
-  const copperCoins = typeof c.copperCoins === "number" ? c.copperCoins : 0;
-
-  const pathsStr = paths.length > 0
-    ? paths.map((p) => `${p.name} (rang ${p.rank})`).join(", ")
-    : "aucune";
-  const skillsStr = skills.length > 0
-    ? skills.map((s) => `${s.name} (rang ${s.rank})`).join(", ")
-    : "aucune";
-
-  const pvPmLine =
-    typeof hpCurrent === "number" && typeof mpCurrent === "number"
-      ? `PV ${hpCurrent}/${hpMax} | PM ${mpCurrent}/${mpMax}`
-      : `PV max ${hpMax} | PM max ${mpMax}`;
-
-  const initiativeLine =
-    typeof initiativeBonus === "number"
-      ? `Initiative (score) ${initiativeBonus}`
-      : "";
-
-  const martialLine =
-    martialFormations.length > 0
-      ? `Formations martiales (catégories d'armes) : ${martialFormations.join(", ")}`
-      : "";
-
-  const mysticLine = mysticTalent
-    ? `Talent mystique (identifiant) : ${mysticTalent}`
-    : "";
-
-  const weaponsStr =
-    weapons.length > 0
-      ? weapons
-          .map((w) => {
-            const parts = [w.name];
-            if (w.damageDice) parts.push(`dégâts ${w.damageDice}`);
-            if (w.attackType) parts.push(w.attackType);
-            if (w.damageAbility) parts.push(`Mod. ${w.damageAbility}`);
-            if (w.martialFamily) parts.push(`famille ${w.martialFamily}`);
-            if (w.rangeMeters != null) parts.push(`portée ${w.rangeMeters} m`);
-            if (w.notes?.trim()) parts.push(`note: ${w.notes.trim()}`);
-            return parts.join(" — ");
-          })
-          .join("\n")
-      : "";
-
-  const histoireBlock = histoire
-    ? `\n\n### Histoire et contexte (fiche joueur)\n\n${histoire}`
-    : "";
-
-  const moneyLine = (goldCoins > 0 || silverCoins > 0 || copperCoins > 0)
-    ? `Argent : ${goldCoins} po / ${silverCoins} pa / ${copperCoins} pc`
-    : "";
-
-  const itemsStr = items.length > 0
-    ? items.map((it) => {
-        const desc = it.description?.trim() ? ` (${it.description.trim()})` : "";
-        return `- ${it.name}${desc} ×${it.quantity}`;
-      }).join("\n")
-    : "";
-
-  const extraBlocks = [
-    initiativeLine,
-    martialLine,
-    mysticLine,
-    weaponsStr ? `Armes :\n${weaponsStr}` : "",
-    moneyLine,
-    itemsStr ? `Inventaire :\n${itemsStr}` : "",
-  ]
-    .filter(Boolean)
-    .join("\n");
-
-  const header = isActive ? "## Personnage actif" : `## Fiche de ${name}`;
-  const footer = isActive
-    ? "\n\n👤 Adresse-toi toujours à ce personnage par son prénom. Adapte tes réponses à sa race, son profil, son histoire (si fournie), ses armes et ses capacités."
-    : "";
-
-  return `${header}
-
-${isActive ? `Tu t'adresses à **${name}**` : `**${name}**`}${people ? `, ${people}` : ""}${profile ? `, profil ${profile}` : ""}, niveau ${level}.
-Stats : FOR ${str} (${fmtMod(str)}) / DEX ${dex} (${fmtMod(dex)}) / CON ${con} (${fmtMod(con)}) / INT ${int_} (${fmtMod(int_)}) / SAG ${wis} (${fmtMod(wis)}) / CHA ${cha} (${fmtMod(cha)})
-${pvPmLine} | Défense ${defense}${extraBlocks ? `\n${extraBlocks}` : ""}
-Voies : ${pathsStr}
-Compétences : ${skillsStr}${histoireBlock}${footer}`;
 }
 
 type GeminiPart = Record<string, unknown>;
@@ -511,137 +322,6 @@ function mergeGeminiParts(parts: GeminiPart[]): GeminiPart[] {
 app.get("/api/health", (_req, res) => {
   res.json({ ok: true, topics: TOPIC_NAMES });
 });
-
-function buildPreviousCharacterSection(prev: CharacterPayload): string {
-  const FIELD_LABELS: Record<string, string> = {
-    str: "FOR", dex: "DEX", con: "CON", int: "INT", wis: "SAG", cha: "CHA",
-    level: "Niveau", hpMax: "PV max", mpMax: "PM max", defense: "Défense",
-  };
-  const parts = Object.entries(prev)
-    .filter(([k, v]) => EDITABLE_FIELDS.has(k) && typeof v === "number")
-    .map(([k, v]) => `${FIELD_LABELS[k] ?? k}=${v}`);
-  if (parts.length === 0) return "";
-  return `\n\n⚠️ Modification récente (annulable) :\nValeurs avant modification — ${parts.join(", ")}`;
-}
-
-// ── Party context for campaign-aware chat ────────────────────────────────────
-
-async function fetchPartyContext(userId: number): Promise<PartyContext | null> {
-  const [user] = await db
-    .select({ activeCampaignId: users.activeCampaignId })
-    .from(users)
-    .where(eq(users.id, userId));
-  if (!user?.activeCampaignId) return null;
-
-  const [campaign] = await db
-    .select({ name: campaigns.name, gmUserId: campaigns.gmUserId })
-    .from(campaigns)
-    .where(eq(campaigns.id, user.activeCampaignId));
-  if (!campaign) return null;
-
-  const rows = await db
-    .select({
-      characterId: characters.id,
-      name: characters.name,
-      people: characters.people,
-      profile: characters.profile,
-      paths: characters.paths,
-      portraitImageId: characters.portraitImageId,
-    })
-    .from(campaignMembers)
-    .innerJoin(characters, eq(characters.id, campaignMembers.characterId))
-    .where(eq(campaignMembers.campaignId, user.activeCampaignId));
-
-  const codex = await db
-    .select({ type: codexEntries.type, name: codexEntries.name, description: codexEntries.description })
-    .from(codexEntries)
-    .where(eq(codexEntries.campaignId, user.activeCampaignId))
-    .orderBy(codexEntries.type, codexEntries.name);
-
-  return {
-    campaignId: user.activeCampaignId,
-    campaignName: campaign.name,
-    gmUserId: campaign.gmUserId,
-    members: rows.map((r) => {
-      const paths = (r.paths as Array<{ name: string; rank: number; kind?: string }>) ?? [];
-      const cultural = paths.find((p) => p.kind === "culturelle");
-      return {
-        characterId: r.characterId,
-        name: r.name,
-        people: r.people,
-        profile: r.profile,
-        culturalPath: cultural ? `${cultural.name} (rang ${cultural.rank})` : null,
-        portraitImageId: r.portraitImageId,
-      };
-    }),
-    codex,
-  };
-}
-
-// Combat actif de la campagne, vu avec les memes droits que l'ecran de combat
-// (serializeCombat masque les monstres pour un joueur). Null si aucun combat.
-const COMBAT_ROLLS_LIMIT = 20;
-async function fetchCombatContext(campaignId: number, userId: number, isGm: boolean): Promise<string | null> {
-  const [combat] = await db
-    .select()
-    .from(combats)
-    .where(and(eq(combats.campaignId, campaignId), eq(combats.status, "active")))
-    .orderBy(desc(combats.createdAt))
-    .limit(1);
-  if (!combat) return null;
-
-  let participants = await db.select().from(combatParticipants).where(eq(combatParticipants.combatId, combat.id));
-  participants = await enrichParticipantHp(campaignId, participants);
-  participants = await enrichParticipantStates(campaignId, participants);
-  const serialized = serializeCombat(combat, participants, isGm);
-
-  const rollFilter = isGm
-    ? eq(rollEvents.combatId, combat.id)
-    : and(eq(rollEvents.combatId, combat.id), eq(rollEvents.visibility, "public"));
-  const rows = await db
-    .select({ actorName: rollEvents.actorName, label: rollEvents.label, total: rollEvents.total, damage: rollEvents.damage })
-    .from(rollEvents)
-    .where(rollFilter)
-    .orderBy(desc(rollEvents.createdAt), desc(rollEvents.id))
-    .limit(COMBAT_ROLLS_LIMIT);
-  // Les plus recents d'abord en base, ordre chronologique dans le prompt.
-  const rolls: CombatRoll[] = rows.reverse().map((r) => ({
-    actorName: r.actorName,
-    label: r.label,
-    total: r.total,
-    damage: (r.damage as CombatRoll["damage"]) ?? null,
-  }));
-
-  return buildCombatSection(serialized, rolls, userId);
-}
-
-// Journal de bord entier, titres des pages partagees et notes texte du joueur.
-// Le journal et les pages ne sont pas scopes par campagne en base (voir plan 26, § 6).
-async function fetchJournalContext(userId: number): Promise<JournalContext> {
-  const [row] = await db.select().from(journalCompagnie).where(eq(journalCompagnie.id, 1));
-  const editedBy = await charNameByUserId(row?.updatedByUserId ?? null);
-  const pages = await db
-    .select({ id: journalPages.id, title: journalPages.title })
-    .from(journalPages)
-    .orderBy(journalPages.updatedAt);
-  const userNotes = await db
-    .select({ title: notes.title, content: notes.content })
-    .from(notes)
-    .where(and(eq(notes.ownerUserId, userId), eq(notes.type, "text")))
-    .orderBy(notes.updatedAt);
-
-  return { content: row?.content ?? "", editedBy, pages, notes: userNotes };
-}
-
-async function charNameByUserId(userId: number | null): Promise<string | null> {
-  if (userId == null) return null;
-  const [char] = await db
-    .select({ name: characters.name })
-    .from(characters)
-    .where(and(eq(characters.userId, userId), eq(characters.isActive, true)))
-    .limit(1);
-  return char?.name ?? null;
-}
 
 // ── EXÉCUTION DES OUTILS ─────────────────────────────────────────────────────
 // Une seule implémentation, partagée par Gemini et Anthropic. Les échecs sont
@@ -708,15 +388,10 @@ async function runTool(
   if (name === "get_page") {
     const pageId = Number(args.id);
     if (!Number.isFinite(pageId) || pageId <= 0) return { text: "Identifiant de page invalide." };
-    const [page] = await db.select().from(journalPages).where(eq(journalPages.id, pageId));
+    const page = await readPage(pageId);
     writeSse(res, "tool_use", { tool: "get_page", label: `Lecture de la page : ${page?.title ?? pageId}` });
     if (!page) return { text: `Aucune page trouvée avec l'id ${pageId}.` };
-    const editedBy = await charNameByUserId(page.updatedByUserId);
-    const content = page.content ?? "";
-    const truncated = content.length > 8000 ? content.slice(0, 8000) + "\n\n[…contenu tronqué]" : content;
-    const byLine = editedBy ? `\nDernière modification par : ${editedBy}\n` : "";
-    console.log(`[journal] Loaded page ${pageId}`);
-    return { text: `# ${page.title}${byLine}\n${truncated}` };
+    return { text: page.text };
   }
 
   if (name === "generate_image") {
@@ -803,39 +478,15 @@ async function runTool(
     const targetName = String(args.name ?? "");
     writeSse(res, "tool_use", { tool: "get_character", label: `Consultation de ${targetName}…` });
 
-    if (!party) return { text: "Aucune campagne active — impossible de consulter les compagnons." };
-    const match = party.members.find((m) => m.name.toLowerCase().includes(targetName.toLowerCase()));
-    if (!match) return { text: `Aucun compagnon nommé "${targetName}" dans la campagne.` };
+    const { text, name: charName, portraitImageId } = await loadCompanion(party, targetName);
 
-    const [char] = await db.select().from(characters).where(eq(characters.id, match.characterId));
-    if (!char) return { text: "Personnage introuvable en base de données." };
-
-    // Build character section without inventory
-    const charPayload: CharacterPayload = {
-      ...char,
-      items: [],
-      goldCoins: 0,
-      silverCoins: 0,
-      copperCoins: 0,
-      abilities: {
-        strength: char.str,
-        dexterity: char.dex,
-        constitution: char.con,
-        intelligence: char.int,
-        wisdom: char.wis,
-        charisma: char.cha,
-      },
-    };
-    const text = buildCharacterSection(charPayload);
-    console.log(`[get_character] Loaded character "${char.name}" (id=${char.id})`);
-
-    if (!char.portraitImageId) return { text };
+    if (!charName || !portraitImageId) return { text };
     // Cache portrait ID for generate_image
-    portraitIds.set(char.name, char.portraitImageId);
+    portraitIds.set(charName, portraitImageId);
     const [img] = await db
       .select({ data: generatedImages.data, mimeType: generatedImages.mimeType })
       .from(generatedImages)
-      .where(eq(generatedImages.id, char.portraitImageId));
+      .where(eq(generatedImages.id, portraitImageId));
     return img ? { text, portrait: { data: img.data, mimeType: img.mimeType } } : { text };
   }
 

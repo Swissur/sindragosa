@@ -8,7 +8,7 @@ const TOPICS_DIR = join(KNOWLEDGE_DIR, "topics");
 /** Le bestiaire est le seul topic hors contexte : 65k tokens, lu a la demande via get_monstre. */
 export const BESTIAIRE_TOPIC = "bestiaire";
 
-function readTopic(name: string): string {
+export function readTopic(name: string): string {
   return readFileSync(join(TOPICS_DIR, `${name}.md`), "utf8");
 }
 

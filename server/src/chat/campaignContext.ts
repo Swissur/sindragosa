@@ -85,12 +85,12 @@ function renderCompanions(party: PartyContext, activeCharId: number | null): str
   );
 }
 
-function renderCodex(codex: CodexEntry[]): string {
+export function renderCodex(codex: CodexEntry[]): string {
   if (codex.length === 0) return "Le codex est vide.";
   return codex.map((e) => `- [${e.type}] ${e.name} — ${e.description}`).join("\n");
 }
 
-function renderNote(note: { title: string; content: string }): string {
+export function renderNote(note: { title: string; content: string }): string {
   return `### ${note.title || "Sans titre"}\n${note.content}`;
 }
 

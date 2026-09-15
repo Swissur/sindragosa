@@ -28,7 +28,9 @@ export function mountMcp(app: express.Express): void {
   );
 
   const node = toNodeHandler(handler);
-  app.all("/mcp", requireMcpAuth, (req, res) => {
+  // `/mcp.` : l'URL collée depuis une phrase qui finit par un point. Vu en vrai
+  // le jour du lancement, le connecteur restait en 404. Même serveur, même jeton.
+  app.all(["/mcp", "/mcp."], requireMcpAuth, (req, res) => {
     void node(req, res, req.body);
   });
 }

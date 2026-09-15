@@ -8,6 +8,8 @@ L'adresse à donner à ton assistant, toujours la même :
 https://arran-dnd.fly.dev/mcp
 ```
 
+Copie-la depuis le cadre ci-dessus. Un espace ou un point en trop à la fin et ton assistant dira « aucun serveur MCP à cette adresse ».
+
 Au moment de l'ajouter, une page « Terres d'Arran » s'ouvre. Connecte-toi si besoin, puis clique **Autoriser**. C'est tout. Pour couper l'accès plus tard : dans l'app, **Options > Isilwen dans Claude / ChatGPT**, puis la corbeille.
 
 ## Claude (claude.ai, appli mobile ou bureau)

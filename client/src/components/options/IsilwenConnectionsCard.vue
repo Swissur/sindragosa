@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
-import { Bot, Trash2, BookOpen } from "lucide-vue-next";
+import { Bot, Trash2, BookOpen, Download } from "lucide-vue-next";
 import {
   fetchOAuthConnections,
   revokeOAuthConnection,
@@ -17,6 +17,9 @@ import AppModal from "../ui/AppModal.vue";
 /** Guide joueur : le repo est public, l'app ne sert pas docs/. */
 const GUIDE_URL =
   "https://github.com/tmouchart/arran-dnd/blob/main/docs/isilwen-connecteur.md";
+
+/** Zip du plugin (connecteur + skills), servi par l'API, pas par Vue Router. */
+const PLUGIN_URL = "/plugin";
 
 const connections = ref<OAuthConnection[]>([]);
 const loading = ref(true);
@@ -82,6 +85,15 @@ onMounted(load);
           <BookOpen :size="16" />
           Voir le guide
         </AppButton>
+        <AppButton
+          as="a"
+          :href="PLUGIN_URL"
+          download
+          data-testid="isilwen-plugin-download"
+        >
+          <Download :size="16" />
+          Télécharger le plugin
+        </AppButton>
       </template>
     </AppEmptyState>
 
@@ -108,9 +120,19 @@ onMounted(load);
         </li>
       </ul>
 
-      <a class="guide-link" :href="GUIDE_URL" target="_blank" rel="noopener">
-        Guide de connexion
-      </a>
+      <div class="links">
+        <a class="guide-link" :href="GUIDE_URL" target="_blank" rel="noopener">
+          Guide de connexion
+        </a>
+        <a
+          class="guide-link"
+          :href="PLUGIN_URL"
+          download
+          data-testid="isilwen-plugin-download"
+        >
+          Télécharger le plugin
+        </a>
+      </div>
     </template>
 
     <AppModal
@@ -179,9 +201,14 @@ onMounted(load);
   color: var(--muted);
 }
 
-.guide-link {
-  display: inline-block;
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-md);
   margin-top: var(--space-md);
+}
+
+.guide-link {
   font-size: 0.8rem;
   color: var(--accent-strong);
 }

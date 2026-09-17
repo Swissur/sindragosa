@@ -26,10 +26,6 @@ Au premier appel de chaque outil, Claude demande ton accord. Coche **Toujours au
 
 Pour que Claude joue Isilwen sans qu'on le lui rappelle, commence la conversation par « Tu es Isilwen » ou crée un Projet avec le texte de la section « Instructions à coller » plus bas.
 
-### Skills Arran (Pro et Max)
-
-Les skills donnent à Claude les règles complètes sans passer par le serveur, et la persona d'Isilwen en détail. Ils arrivent avec la phase 2 du projet : des fichiers ZIP à uploader dans **Paramètres > Capacités > Skills**.
-
 ## ChatGPT (Plus ou Pro, sur le web)
 
 Le compte gratuit ne permet pas d'ajouter de connecteur.
@@ -48,7 +44,57 @@ ChatGPT n'a pas de skills. Pour qu'il joue Isilwen d'office, crée un **Projet**
 claude mcp add --transport http isilwen https://arran-dnd.fly.dev/mcp
 ```
 
-Claude Code ouvre le navigateur pour l'autorisation. Le plugin `arran-dnd` (phase 2) fera la même chose et ajoutera les skills.
+Claude Code ouvre le navigateur pour l'autorisation. Le plugin Isilwen (section suivante) fait la même chose et ajoute le skill.
+
+## Le plugin Isilwen
+
+Le plugin, c'est le connecteur ci-dessus plus un skill Isilwen : sa persona, sa façon d'utiliser les outils, et les règles complètes. Avec lui, ton assistant joue Isilwen d'office et connaît les règles complètes sans passer par le serveur.
+
+Deux façons de l'obtenir :
+
+- **Le zip** : [https://arran-dnd.fly.dev/plugin](https://arran-dnd.fly.dev/plugin), ou le bouton **Télécharger le plugin** dans l'app (**Options > Isilwen dans Claude / ChatGPT**). Dézippe-le. Le dossier obtenu s'installe tel quel.
+- **Le dépôt GitHub** : `https://github.com/tmouchart/arran-dnd`.
+
+Dans tous les cas, ouvre une nouvelle conversation après l'installation. Une conversation déjà ouverte ne voit pas le plugin.
+
+### claude.ai (Pro et Max)
+
+1. **Personnaliser** > **Plugins** > **Ajouter un plugin**.
+2. Soit tu uploades le zip, soit tu choisis **Ajouter depuis un dépôt** et tu colles `https://github.com/tmouchart/arran-dnd`.
+3. Autorise sur la page Terres d'Arran, comme pour le connecteur.
+
+Un compte gratuit n'a pas de plugins : reste sur le connecteur seul, décrit plus haut.
+
+### Claude Code
+
+Depuis le dépôt :
+
+```
+claude plugin marketplace add tmouchart/arran-dnd
+/plugin install isilwen@arran-dnd
+```
+
+Ou depuis le zip dézippé (ici dans `~/isilwen-plugin`) :
+
+```
+claude plugin marketplace add ~/isilwen-plugin
+/plugin install isilwen@arran-dnd
+```
+
+Puis nouvelle session : `/isilwen` apparaît et le connecteur `isilwen` est listé dans `/mcp`.
+
+### Codex
+
+Sur le zip dézippé :
+
+```
+codex plugin marketplace add ~/isilwen-plugin
+codex plugin install isilwen
+```
+
+### ChatGPT (web)
+
+Le plugin y est en cours de vérification sur un compte Plus. En attendant, la méthode sûre reste le connecteur plus les instructions de Projet, décrits plus haut.
 
 ## Instructions à coller dans un Projet
 

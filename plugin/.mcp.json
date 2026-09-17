@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "isilwen": {
+      "type": "streamable-http",
+      "url": "https://arran-dnd.fly.dev/mcp"
+    }
+  }
+}

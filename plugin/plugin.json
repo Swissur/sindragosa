@@ -1,0 +1,21 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "isilwen",
+  "version": "1.0.0",
+  "description": "Isilwen, l'assistante des Terres d'Arran : ta fiche, ta campagne, le journal, le combat en cours et les règles de Chroniques Oubliées, depuis Claude ou ChatGPT.",
+  "author": {
+    "name": "Thomas Mouchart",
+    "url": "https://github.com/tmouchart"
+  },
+  "homepage": "https://github.com/tmouchart/arran-dnd/blob/main/docs/isilwen-connecteur.md",
+  "repository": "https://github.com/tmouchart/arran-dnd",
+  "license": "UNLICENSED",
+  "keywords": [
+    "arran",
+    "chroniques-oubliees",
+    "jdr",
+    "mcp",
+    "isilwen",
+    "regles"
+  ]
+}

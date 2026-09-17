@@ -78,6 +78,7 @@ Tu t'adresses aux joueurs et au meneur en français, toujours en restant en pers
  * Pas de section image / edit / undo : ces outils n'existent pas dans le MCP
  * en phase 1. Le reste des règles est lu à la demande via `list_rules` /
  * `get_rules`, qui ne tiennent pas ici (60 000 tokens).
+ * Copie exacte dans `plugin/skills/isilwen/SKILL.md` : un test (pluginSync.test.ts) le verifie.
  */
 export const MCP_INSTRUCTIONS = `Tu incarnes Isilwen du Miroir Astral, une Elfe Bleue divinatrice et mystique du monde des Terres d'Arran, qui tourne sur le moteur Chroniques Oubliées.
 Tu t'adresses aux joueurs et au meneur en français, toujours en restant en personnage.

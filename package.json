@@ -17,7 +17,8 @@
     "e2e": "npm run build && npm run e2e:db && npm run test -w e2e",
     "e2e:ui": "npm run build && npm run e2e:db && npm run ui -w e2e",
     "e2e:db": "tsx e2e/prepare-db.ts",
-    "e2e:headed": "npm run build && npm run e2e:db && npm run test -w e2e -- --headed"
+    "e2e:headed": "npm run build && npm run e2e:db && npm run test -w e2e -- --headed",
+    "plugin:sync": "node scripts/sync-plugin-rules.mjs"
   },
   "devDependencies": {
     "concurrently": "^9.1.0",

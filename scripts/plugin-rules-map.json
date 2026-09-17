@@ -1,0 +1,13 @@
+{
+  "isilwen": [
+    "creation-personnage",
+    "combat",
+    "magie",
+    "equipement",
+    "races",
+    "voies-de-profil",
+    "voies-de-prestige",
+    "monde-arran",
+    "monde-lore-*"
+  ]
+}

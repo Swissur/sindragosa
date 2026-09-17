@@ -1,0 +1,21 @@
+{
+  "name": "arran-dnd",
+  "interface": {
+    "displayName": "Terres d'Arran"
+  },
+  "plugins": [
+    {
+      "name": "isilwen",
+      "source": {
+        "source": "local",
+        "path": "./plugin"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Entertainment",
+      "description": "Isilwen, l'assistante des Terres d'Arran : ta fiche, ta campagne, le journal, le combat en cours et les règles de Chroniques Oubliées, depuis Claude ou ChatGPT."
+    }
+  ]
+}

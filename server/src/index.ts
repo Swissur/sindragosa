@@ -53,6 +53,7 @@ import { fetchJournalContext, readPage } from "./isilwen/journal.js";
 import { fetchCombatContext } from "./isilwen/combat.js";
 import { mountOAuth } from "./oauth/router.js";
 import { mountMcp } from "./mcp/router.js";
+import { mountPlugin } from "./plugin/router.js";
 
 const app = express();
 // En prod le client est servi par ce même serveur (same-origin) ; en dev le proxy
@@ -79,6 +80,8 @@ app.use((req, res, next) => {
 // consentement lit le cookie de session) et avant le catch-all SPA de la prod.
 mountOAuth(app);
 mountMcp(app);
+// Le zip du plugin Isilwen, public : avant le catch-all SPA.
+mountPlugin(app);
 
 app.use("/api/auth", authRouter);
 app.use("/api/characters", charactersRouter);

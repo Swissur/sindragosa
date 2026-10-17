@@ -189,5 +189,39 @@ Les prérequis du catalogue de compétences désignent un **domaine** (son ident
 
 ## 7. Questions encore ouvertes
 
-- Prérequis des domaines avancés : je les propose à l'étape 2, tu valides.
+### Prérequis des domaines avancés (proposition à valider)
+
+Déduits des compétences qui les citent : le domaine de base qui les accompagne le plus souvent, et le rang le plus bas où il apparaît.
+
+| Domaine avancé | Prérequis proposé | Pourquoi |
+|---|---|---|
+| Ivresse du Combat | Mêlée bourrine 2 + Volonté & Récupération 1 | guerrier fou furieux |
+| Tactique de Choc | Intimidation physique 2 + Tactique & Analyse 1 | |
+| Danse des Lames | Combat de précision 2 + Acrobatie & Furtivité 1 | toujours avec Combat de précision |
+| Poisons & Toxines | Escamotage & Crochetage 2 + Alchimie & Herboristerie 1 | |
+| Nécromancie & Peste | Mêlée bourrine 2 + Magie de l'Ombre & Fél 1 | 8 compétences sur 15 demandent Mêlée bourrine (Chevalier de la Mort) |
+| Maîtrise des Arcanes | Magie profane & Arcanes 2 | |
+| Magie du Givre & Altération | Magie profane & Arcanes 2 | |
+| Pyromancie | Magie profane & Arcanes 2 | aussi souvent avec Magie de l'Ombre & Fél (feu gangrené) |
+| Chronomancie | Magie profane & Arcanes 3 + Histoire & Géographie 1 | |
+| Runes Anciennes | Magie profane & Arcanes 2 + Histoire & Géographie 2 | « Runes anciennes » est une spécialité d'Histoire |
+| Maîtrise des Éléments | Communion naturelle & Chamanisme 3 | |
+| Astral & Céleste | Communion naturelle & Chamanisme 2 + Magie profane & Arcanes 2 | les 3 compétences demandent les deux |
+| Lumière Vengeuse | Magie divine & Sacrée 3 + Commandement & Inspiration 1 | |
+| Discipline & Absolution | Magie divine & Sacrée 2 + Volonté spirituelle 2 | |
+| Démonologie & Fél | Magie de l'Ombre & Fél 2 | |
+| Malédictions & Affliction | Magie de l'Ombre & Fél 2 | |
+| Magie du Vide | Magie de l'Ombre & Fél 2 + Volonté spirituelle 1 | |
+| Ingénierie Goblino-Gnome | Explosifs & Ingénierie 2 | |
+| Élixirs Arcaniques | Alchimie & Herboristerie 2 + Magie profane & Arcanes 1 | |
+| Toxines Sauvages | Alchimie & Herboristerie 2 + Survie en milieu hostile 1 | |
+| Dressage Sauvage | Communion naturelle & Chamanisme 2 + Survie en milieu hostile 1 | |
+| Magie Draconique | Magie profane & Arcanes 3 + Histoire & Géographie 2 | |
+
+### Autres questions
+
+- **Échec critique** : le § 1.A dit « gagne immédiatement 2 cases de pratique », alors que le § D dit « 1 coche automatique ». Le moteur applique pour l'instant **1 coche** (§ D, plus précis).
+- **Récompenses du MJ** (quête, donjon, entraînement) : le moteur les compte **hors** de la limite de 3 coches par séance. À confirmer.
+- **Niveaux de spécialité cumulatifs** : le moteur suppose qu'un Maître a aussi les bonus d'Apprenti (relance d'un 1) et d'Expert (+1d6). À confirmer.
+- **Gain de PV par point d'Endurance** (+8) : le moteur ne compte que les points gagnés **après** la création. À confirmer.
 - Points TODO de la roadmap (RP, AP de base, types d'action, déplacement, liste des états, dégâts des armes, titres).

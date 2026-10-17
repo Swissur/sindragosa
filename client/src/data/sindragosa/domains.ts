@@ -1,0 +1,103 @@
+/**
+ * Caractéristiques, domaines et domaines avancés de Sindragosa.
+ * Source : docs/regles/Sindragosa.pdf, décisions dans plans/31-refonte-regles-sindragosa.md § 6.
+ */
+
+export type StatId = 'str' | 'agi' | 'end' | 'int' | 'wis' | 'cha'
+
+export interface Stat {
+  id: StatId
+  label: string
+  abbr: string
+  description: string
+}
+
+export const STATS: Stat[] = [
+  { id: 'str', label: 'Force', abbr: 'FOR', description: 'Puissance physique, puissance musculaire et capacité à porter/imposer son poids.' },
+  { id: 'agi', label: 'Agilité', abbr: 'AGI', description: 'Coordination, réflexes, précision et vitesse de déplacement.' },
+  { id: 'end', label: 'Endurance', abbr: 'END', description: 'Résistance physique, métabolisme, santé et vigueur globale.' },
+  { id: 'int', label: 'Intelligence', abbr: 'INT', description: 'Érudition, raisonnement logique, analyse et magie profane.' },
+  { id: 'wis', label: 'Sagesse', abbr: 'SAG', description: 'Intuition, perception, connexion spirituelle, magie divine et naturelle.' },
+  { id: 'cha', label: 'Charisme', abbr: 'CHA', description: "Force de personnalité, leadership, illusion et magie de l'Ombre/Fél." },
+]
+
+export interface Domain {
+  id: string
+  stat: StatId
+  label: string
+  /** Spécialités d'exemple : les joueurs peuvent en proposer d'autres. */
+  specialties: string[]
+}
+
+export const DOMAINS: Domain[] = [
+  // Force
+  { id: 'athletisme', stat: 'str', label: 'Athlétisme', specialties: ['Escalade', 'Saut', 'Natation', 'Brutalité'] },
+  { id: 'melee-bourrine', stat: 'str', label: 'Mêlée bourrine', specialties: ['Masses à deux mains', 'Haches', 'Boucliers', 'Lutte à mains nues'] },
+  { id: 'armures-boucliers', stat: 'str', label: 'Armures & boucliers', specialties: ['Armures de plaques', 'Mailles', 'Maintien de posture'] },
+  { id: 'intimidation-physique', stat: 'str', label: 'Intimidation physique', specialties: ['Provocation (Taunt)', 'Posture imposante', 'Rugissement de guerre'] },
+  { id: 'artisanat-lourd', stat: 'str', label: 'Artisanat lourd', specialties: ['Forgerie', 'Extraction (Minage)', 'Port de charges lourdes'] },
+  // Agilité
+  { id: 'acrobatie-furtivite', stat: 'agi', label: 'Acrobatie & Furtivité', specialties: ["Discrétion dans l'ombre", 'Course sur les toits', 'Esquive'] },
+  { id: 'combat-precision', stat: 'agi', label: 'Combat de précision', specialties: ['Dagues', 'Épées à une main', 'Combat à deux armes'] },
+  { id: 'tir-lancer', stat: 'agi', label: 'Tir & Lancer', specialties: ['Arcs', 'Arbalètes', 'Armes à feu', 'Lancer de shurikens'] },
+  { id: 'escamotage-crochetage', stat: 'agi', label: 'Escamotage & Crochetage', specialties: ['Désamorçage de pièges', 'Vol à la tire', 'Crochetage de coffres'] },
+  { id: 'artisanat-delicat', stat: 'agi', label: 'Artisanat délicat', specialties: ['Ingénierie de précision', 'Travail du cuir', 'Dépeçage'] },
+  // Endurance
+  { id: 'resistance-physique', stat: 'end', label: 'Résistance physique', specialties: ['Résistance aux impacts', 'Endurcissement', 'Absorber les coups'] },
+  { id: 'volonte-recuperation', stat: 'end', label: 'Volonté & Récupération', specialties: ['Second souffle', 'Méditation', 'Détermination'] },
+  { id: 'survie-milieu-hostile', stat: 'end', label: 'Survie en milieu hostile', specialties: ['Orientation', 'Campement sauvage', 'Piste de chasse'] },
+  { id: 'tolerance-toxines', stat: 'end', label: 'Tolérance aux toxines', specialties: ['Résistance aux poisons', 'Tolérance à la Peste', 'Résistance aux maladies'] },
+  { id: 'energie-souffle', stat: 'end', label: 'Énergie & Souffle', specialties: ['Marche forcée', 'Apnée', 'Course de fond'] },
+  // Intelligence
+  { id: 'magie-profane-arcanes', stat: 'int', label: 'Magie profane & Arcanes', specialties: ["Sorts d'Arcane", 'Conjuration', 'Téléportation & Portails'] },
+  { id: 'explosifs-ingenierie', stat: 'int', label: 'Explosifs & Ingénierie', specialties: ['Bricolage Goblino-Gnome', 'Explosifs', 'Rétro-ingénierie'] },
+  { id: 'histoire-geographie', stat: 'int', label: "Histoire & Géographie d'Azeroth", specialties: ['Histoire des Titans', "Géographie d'Outreterre", 'Runes anciennes'] },
+  { id: 'tactique-analyse', stat: 'int', label: 'Tactique & Analyse', specialties: ['Analyse des points faibles', 'Stratégie de siège', 'Décryptage de langues'] },
+  { id: 'medecine-soins', stat: 'int', label: 'Médecine & Soins', specialties: ['Premiers secours', 'Traitement des malédictions', 'Sutures'] },
+  // Sagesse
+  { id: 'perception-sens', stat: 'wis', label: 'Perception & Sens', specialties: ['Vigilance', 'Détection du camouflage', 'Pistage', 'Sensibilité à la Mana'] },
+  { id: 'magie-divine-sacree', stat: 'wis', label: 'Magie divine & Sacrée', specialties: ['Lumière sacrée', 'Bénédictions', 'Exorcisme'] },
+  { id: 'communion-naturelle-chamanisme', stat: 'wis', label: 'Communion naturelle & Chamanisme', specialties: ['Esprits des éléments', 'Esprits des ancêtres', 'Formes animales druidiques'] },
+  { id: 'alchimie-herboristerie', stat: 'wis', label: 'Alchimie & Herboristerie', specialties: ['Découverte des plantes', 'Potions de soins', 'Fortifiants', 'Transmutation'] },
+  { id: 'volonte-spirituelle', stat: 'wis', label: 'Volonté spirituelle', specialties: [] },
+  // Charisme
+  { id: 'persuasion-diplomatie', stat: 'cha', label: 'Persuasion & Diplomatie', specialties: ['Négociation diplomatique', 'Séduction', 'Conviction'] },
+  { id: 'commandement-inspiration', stat: 'cha', label: 'Commandement & Inspiration', specialties: ['Cris de ralliement', "Aura d'inspiration", 'Charisme de chef de guerre'] },
+  { id: 'magie-ombre-fel', stat: 'cha', label: "Magie de l'Ombre & Fél", specialties: ['Démonologie', 'Magie du Vide', 'Malédictions', 'Manipulation mentale'] },
+  { id: 'negociation-commerce', stat: 'cha', label: 'Négociation & Commerce', specialties: ['Lois du marché', "Évaluation d'objets rares", "Troc d'Hôtel des Ventes"] },
+  { id: 'tromperie-comedie', stat: 'cha', label: 'Tromperie & Comédie', specialties: ['Déguisement', "Usurpation d'identité", 'Bobards & Bluff'] },
+]
+
+/** Domaines avancés : progressent comme un domaine, s'ouvrent par prérequis (à définir). */
+export interface AdvancedDomain {
+  id: string
+  label: string
+}
+
+export const ADVANCED_DOMAINS: AdvancedDomain[] = [
+  { id: 'ivresse-combat', label: 'Ivresse du Combat' },
+  { id: 'tactique-choc', label: 'Tactique de Choc' },
+  { id: 'danse-lames', label: 'Danse des Lames' },
+  { id: 'poisons-toxines', label: 'Poisons & Toxines' },
+  { id: 'necromancie-peste', label: 'Nécromancie & Peste' },
+  { id: 'maitrise-arcanes', label: 'Maîtrise des Arcanes' },
+  { id: 'magie-givre-alteration', label: 'Magie du Givre & Altération' },
+  { id: 'pyromancie', label: 'Pyromancie' },
+  { id: 'chronomancie', label: 'Chronomancie' },
+  { id: 'runes-anciennes', label: 'Runes Anciennes' },
+  { id: 'maitrise-elements', label: 'Maîtrise des Éléments' },
+  { id: 'astral-celeste', label: 'Astral & Céleste' },
+  { id: 'lumiere-vengeuse', label: 'Lumière Vengeuse' },
+  { id: 'discipline-absolution', label: 'Discipline & Absolution' },
+  { id: 'demonologie-fel', label: 'Démonologie & Fél' },
+  { id: 'maledictions-affliction', label: 'Malédictions & Affliction' },
+  { id: 'magie-vide', label: 'Magie du Vide' },
+  { id: 'ingenierie-goblino-gnome', label: 'Ingénierie Goblino-Gnome' },
+  { id: 'elixirs-arcaniques', label: 'Élixirs Arcaniques' },
+  { id: 'toxines-sauvages', label: 'Toxines Sauvages' },
+  { id: 'dressage-sauvage', label: 'Dressage Sauvage' },
+  { id: 'magie-draconique', label: 'Magie Draconique' },
+]
+
+export const domainById = (id: string): Domain | undefined => DOMAINS.find((d) => d.id === id)
+export const advancedDomainById = (id: string): AdvancedDomain | undefined => ADVANCED_DOMAINS.find((d) => d.id === id)

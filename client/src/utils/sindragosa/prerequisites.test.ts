@@ -1,0 +1,55 @@
+import { describe, it, expect } from 'vitest'
+import { meetsPrerequisite, unlockedAbilities, normalizeName, type ProgressState } from './prerequisites'
+import { ABILITIES } from '../../data/sindragosa/abilities'
+
+const empty: ProgressState = { domainRanks: {}, advancedRanks: {}, specialties: [], titles: [] }
+
+describe('meetsPrerequisite', () => {
+  it('domaine : rang atteint ou dépassé', () => {
+    const p = { kind: 'domain' as const, id: 'melee-bourrine', rank: 2 }
+    expect(meetsPrerequisite({ ...empty, domainRanks: { 'melee-bourrine': 2 } }, p)).toBe(true)
+    expect(meetsPrerequisite({ ...empty, domainRanks: { 'melee-bourrine': 1 } }, p)).toBe(false)
+  })
+
+  it('spécialité : nom tolérant (accents, casse) et niveau minimal', () => {
+    const p = { kind: 'specialty' as const, name: 'Épées à deux mains', level: 2 }
+    expect(meetsPrerequisite({ ...empty, specialties: [{ name: 'epees a deux mains', level: 2 }] }, p)).toBe(true)
+    expect(meetsPrerequisite({ ...empty, specialties: [{ name: 'Épées à deux mains', level: 1 }] }, p)).toBe(false)
+  })
+
+  it('spécialité à alternatives : « Dagues/Lutte » accepte l\'une ou l\'autre', () => {
+    const p = { kind: 'specialty' as const, name: 'Dagues/Lutte', level: 1 }
+    expect(meetsPrerequisite({ ...empty, specialties: [{ name: 'Lutte', level: 1 }] }, p)).toBe(true)
+    expect(meetsPrerequisite({ ...empty, specialties: [{ name: 'Arcs', level: 3 }] }, p)).toBe(false)
+  })
+
+  it('titre', () => {
+    const p = { kind: 'title' as const, name: 'Archimage' }
+    expect(meetsPrerequisite({ ...empty, titles: ['archimage'] }, p)).toBe(true)
+    expect(meetsPrerequisite(empty, p)).toBe(false)
+  })
+})
+
+describe('unlockedAbilities', () => {
+  it('un personnage vierge ne débloque rien', () => {
+    expect(unlockedAbilities(empty)).toEqual([])
+  })
+
+  it('Témérité (#12) se débloque avec Intimidation physique 1 + Commandement 1', () => {
+    const state = { ...empty, domainRanks: { 'intimidation-physique': 1, 'commandement-inspiration': 1 } }
+    expect(unlockedAbilities(state).map((a) => a.id)).toContain(12)
+  })
+
+  it('Distorsion temporelle (#159) exige aussi le titre Archimage', () => {
+    const ability = ABILITIES[158]
+    const state = { ...empty, domainRanks: { 'magie-profane-arcanes': 3 }, advancedRanks: { chronomancie: 2 } }
+    expect(unlockedAbilities(state, [ability])).toEqual([])
+    expect(unlockedAbilities({ ...state, titles: ['Archimage'] }, [ability])).toEqual([ability])
+  })
+})
+
+describe('normalizeName', () => {
+  it('ignore accents, casse et espaces multiples', () => {
+    expect(normalizeName('  Épées   à deux MAINS ')).toBe('epees a deux mains')
+  })
+})

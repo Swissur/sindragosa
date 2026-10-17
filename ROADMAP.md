@@ -43,6 +43,13 @@ Sindragosa n’est plus un outil pour les Terres d’Arran (Chroniques Oubliées
 - [ ] **Concentration des sorts** (Économe / Étendue / Puissante) : gardée, mais à adapter au système d6. Aujourd'hui, un sélecteur s'affiche sur les compétences de magie actives. « Puissante » monte les dés de l'effet. « Économe » n'a plus d'effet, faute de PM.
 - [x] **Fiche, Mes actions, jets en d6, outils du MJ** (plan 31, étapes 4 à 6 ; plan 32) : faits le 2026-10-17 sur la branche `refonte-sindragosa`.
 - [ ] **Combat** : le jet des monstres reste un d20 jusqu'à la conversion du bestiaire.
+
+### TODO — retours du 2026-10-17
+
+- [ ] **Favoris depuis la fiche** : pouvoir épingler un savoir (domaine, spécialité) comme favori directement depuis la fiche, et pas seulement depuis Mes actions.
+- [ ] **Pouvoirs cachés aux joueurs** : seul le MJ voit les pouvoirs (compétences). Les joueurs avancent à l'aveugle : ni catalogue, ni compétences verrouillées.
+- [ ] **Vérifier les prérequis des pouvoirs déblocables** : chacun doit reposer sur d'autres pouvoirs ou sur des domaines de base. Aucun prérequis ne doit renvoyer à une notion qui n'existe pas.
+- [ ] **Renommer les onglets de la fiche** : « Savoirs » devient « Domaines », « Pouvoirs » devient « Domaines avancés ». À préciser : aujourd'hui les domaines avancés sont affichés dans l'onglet Savoirs, et l'onglet Pouvoirs liste les compétences.
 - [ ] **Prérequis des domaines avancés** : à proposer (déduits des compétences), puis à valider.
 
 ### TODO — termes utilisés par les règles mais pas encore définis

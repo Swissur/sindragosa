@@ -1,5 +1,4 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import ChatView from '../views/ChatView.vue'
 import CharacterSheetView from '../views/CharacterSheetView.vue'
 import CharacterListView from '../views/CharacterListView.vue'
 import ActionsView from '../views/ActionsView.vue'
@@ -16,7 +15,6 @@ import CampaignView from '../views/CampaignView.vue'
 import CampaignCharacterView from '../views/CampaignCharacterView.vue'
 import EncounterEditView from '../views/EncounterEditView.vue'
 import CombatView from '../views/CombatView.vue'
-import AuthorizeView from '../views/AuthorizeView.vue'
 import { authReady, user, initAuth } from '../composables/useAuth'
 import { safeNext, PENDING_NEXT_KEY } from '../utils/safeNext'
 
@@ -25,7 +23,6 @@ export const router = createRouter({
   routes: [
     { path: '/login', name: 'login', component: LoginView, meta: { public: true } },
     { path: '/', redirect: '/personnage' },
-    { path: '/chat', name: 'chat', component: ChatView },
     { path: '/personnages', name: 'characters', component: CharacterListView },
     { path: '/personnage', name: 'character', component: CharacterSheetView },
     { path: '/actions', name: 'actions', component: ActionsView },
@@ -41,8 +38,6 @@ export const router = createRouter({
     { path: '/campagnes/:id/rencontres/:eid', name: 'encounter-edit', component: EncounterEditView },
     { path: '/campagnes/:id/combat/:cid', name: 'combat', component: CombatView },
     { path: '/options', name: 'options', component: OptionsView },
-    // Consentement OAuth : « Claude veut parler a Isilwen en ton nom »
-    { path: '/autoriser', name: 'oauth-authorize', component: AuthorizeView, meta: { public: false } },
     // Mode table : la tablette au milieu de la table. Plein écran, sans barres.
     { path: '/table', name: 'viewer', component: () => import('../views/ViewerView.vue'), meta: { viewer: true } },
     // POC du champ de bataille 3D — pions en dur, rien n'est sauvegardé.

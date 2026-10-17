@@ -18,14 +18,13 @@ import {
   EyeOff,
   Dices,
   Shield,
-  Sparkles,
   Trash2,
   FlaskConical,
   UserPlus,
 } from "lucide-vue-next";
 import { useCombat } from "../composables/useCombat";
 import { user } from "../composables/useAuth";
-import { generateLoot, setParticipantStates } from "../api/combats";
+import { setParticipantStates } from "../api/combats";
 import { postCampaignRoll, fetchCampaign, type CampaignMember } from "../api/campaigns";
 import { MONSTERS_CATALOG, type Monster } from "../data/monstersCatalog";
 import { filterCatalog, formatMod } from "../utils/monsterSession";
@@ -196,24 +195,6 @@ const confirmDeleteId = ref<number | null>(null);
 // Finish confirmation
 const showFinishConfirm = ref(false);
 
-// Loot generation
-const lootText = ref<string | null>(null);
-const lootLoading = ref(false);
-const lootError = ref<string | null>(null);
-
-async function handleGenerateLoot() {
-  lootLoading.value = true;
-  lootError.value = null;
-  lootText.value = null;
-  try {
-    const result = await generateLoot(campaignId, combatId);
-    lootText.value = result.loot;
-  } catch (e) {
-    lootError.value = e instanceof Error ? e.message : "Erreur inconnue";
-  } finally {
-    lootLoading.value = false;
-  }
-}
 
 // Release the SSE connection when the tab goes to the background (forgotten tab),
 // reconnect when the user comes back. Lets Fly auto-stop the machine when idle.
@@ -429,8 +410,6 @@ async function handleConfirmDelete() {
 }
 
 function openFinishConfirm() {
-  lootText.value = null;
-  lootError.value = null;
   showFinishConfirm.value = true;
 }
 
@@ -893,20 +872,6 @@ function goBack() {
 
     <!-- Finish confirmation -->
     <AppModal v-model="showFinishConfirm" title="Terminer ce combat ?">
-      <!-- Loot generation (GM only) -->
-      <div v-if="isGm" class="loot-section">
-        <AppButton
-          variant="ghost"
-          :disabled="lootLoading"
-          @click="handleGenerateLoot"
-        >
-          <Sparkles :size="16" />
-          {{ lootLoading ? "Génération…" : "Génère le loot" }}
-        </AppButton>
-        <p v-if="lootError" class="loot-error">{{ lootError }}</p>
-        <div v-if="lootText" class="loot-result">{{ lootText }}</div>
-      </div>
-
       <template #footer>
         <AppButton variant="ghost" @click="showFinishConfirm = false"
           >Annuler</AppButton
@@ -1399,33 +1364,6 @@ function goBack() {
   font-size: 0.75rem;
   color: var(--muted);
   white-space: nowrap;
-}
-
-.loot-section {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.loot-result {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-xl);
-  padding: var(--space-lg);
-  font-size: 0.85rem;
-  color: var(--text);
-  text-align: left;
-  white-space: pre-wrap;
-  max-height: 240px;
-  overflow-y: auto;
-  width: 100%;
-}
-
-.loot-error {
-  font-size: 0.82rem;
-  color: var(--danger, #c0392b);
-  margin: 0;
 }
 
 /* Trash button on monster cards */

@@ -1,19 +1,19 @@
-# Arran DnD — Rules for Claude
+# Sindragosa — Rules for Claude
 
 ## Project Structure
 
-Arran DnD is a monorepo with three workspaces. Run everything from the root with `npm run dev`.
+Sindragosa is a monorepo with three workspaces. Its game world stays the Terres d'Arran (Chroniques Oubliées): the app is Sindragosa, the setting is not. The app has **no AI feature** (see `plans/30-sindragosa-sans-ia.md`). Run everything from the root with `npm run dev`.
 
 ```
-arran-dnd/
+sindragosa/
 ├── client/          # Vue 3 SPA (Vite + TypeScript)
 ├── server/          # Express API (Node + TypeScript + Drizzle ORM)
-└── knowledge/       # Game rules & lore (Markdown, loaded at runtime by the AI)
+└── knowledge/       # Game rules & lore (Markdown reference)
 ```
 
 ### `knowledge/`
 
-Static Markdown files describing the game rules and world lore. The server reads these files at startup to populate the AI's context.
+Static Markdown files describing the game rules and world lore. Nothing reads them at runtime: they are the reference behind the static catalogs in `client/src/data/`.
 
 ```
 knowledge/
@@ -32,15 +32,14 @@ knowledge/
 
 - Never edit these files by hand unless correcting a factual error in the game rules.
 - Use `/add-knowledge` to ingest new rules from a `.txt` source file.
-- The server exposes topics as AI tool calls via `server/src/knowledge/tools.ts`.
 
 ### `server/`
 
-Express REST API + AI chat endpoint. Entry point: `server/src/index.ts`.
+Express REST API. Entry point: `server/src/index.ts`.
 
 ```
 server/src/
-├── index.ts              # App bootstrap, AI /api/chat endpoint
+├── index.ts              # App bootstrap, route mounting, images, health
 ├── routes/
 │   ├── auth.ts           # Login / logout / Google OAuth callback
 │   └── characters.ts     # CRUD for character sheets
@@ -51,12 +50,9 @@ server/src/
 │   ├── index.ts          # db client (postgres-js + drizzle)
 │   ├── migrations/       # SQL migration files — run with `npm run db:migrate`
 │   └── runMigrations.ts
-├── knowledge/
-│   ├── loadKnowledge.ts  # Reads topics/ at startup
-│   └── tools.ts          # Exposes knowledge as Anthropic/Gemini tool definitions
 ```
 
-Key env vars (`.env` at root): `DATABASE_URL`, `SESSION_SECRET`, `AI_PROVIDER` (`anthropic` | `gemini`), `ANTHROPIC_MODEL`, `GEMINI_MODEL`.
+Key env vars (`server/.env`, template in `server/.env.example`): `DATABASE_URL`, `JWT_SECRET`, `PORT`.
 
 ### `client/`
 
@@ -68,8 +64,7 @@ client/src/
 │   ├── LoginView.vue
 │   ├── CharacterListView.vue
 │   ├── CharacterSheetView.vue  # Main character sheet (tabs)
-│   ├── ActionsView.vue         # Combat actions reference
-│   └── ChatView.vue            # AI chat interface
+│   └── ActionsView.vue         # Combat actions reference
 ├── components/
 │   ├── ui/                     # Shared primitives (AppCard, AppBadge…) — see below
 │   └── character-sheet/        # Cards rendered inside CharacterSheetView
@@ -93,7 +88,6 @@ Routes (defined in `client/src/router/index.ts`):
 | `/personnage` | `CharacterSheetView` | Default redirect from `/` |
 | `/personnages` | `CharacterListView` | |
 | `/actions` | `ActionsView` | |
-| `/chat` | `ChatView` | |
 
 ---
 
@@ -309,7 +303,6 @@ joue les tests, coupe tout. Elle ne touche jamais à la base de dev ni au
 - Pour cibler un élément : **`data-testid`**, pas de sélecteur CSS ni de texte
   fragile. Sur les boutons icônes, le testid est obligatoire.
 - Jamais de `waitForTimeout` : on attend une assertion ou une réponse réseau.
-- Les appels IA et TTS sont coupés (`e2e/fixtures/test.ts`).
 
 ## Plans
 
@@ -325,6 +318,7 @@ These skills are available via `/skill-name`. They are **not** auto-injected int
 | `/commit-push` | After completing a feature or fix | Commit + push with a conventional commit message |
 | `/write-tests` | After writing non-trivial logic | Generate Vitest unit tests for the current feature |
 | `/quick-start` | New developer onboarding | Step-by-step guide to run the project locally |
+| `/lance-serveur` | "lance le serveur" | Rebuild the Docker image and run DB + app on `http://localhost:8080` |
 | `/db-prod` | Production database access | Connect and query the production PostgreSQL database |
 
 ## Subagents

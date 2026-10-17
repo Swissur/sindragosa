@@ -8,7 +8,6 @@ import { requireAuth, type AuthRequest } from '../auth/middleware.js'
 import { broadcastCombatState, broadcastParticipantMoved, enrichParticipantHp, enrichParticipantStates, getClientsForCombat, releaseClient, sendCombatStateTo, type SseClient } from '../combats/sseStore.js'
 import { serializeCombat } from '../combats/serialize.js'
 import { broadcastCampaignEvent, isViewerRequest } from '../campaigns/sseStore.js'
-import { generateText } from '../ai/client.js'
 import { turnOrder, firstActiveId, step } from '../combats/turnOrder.js'
 import { startingPosition, clampToBoard } from '../combats/placement.js'
 import { isEtatId } from '../combats/etats.js'
@@ -648,49 +647,6 @@ router.delete('/:id/combats/:cid/participants/:pid', async (req, res) => {
   await db.delete(combatParticipants).where(eq(combatParticipants.id, pid))
   await broadcastCombatState(combatId, check.gmUserId)
   res.json({ ok: true })
-})
-
-// POST /:id/combats/:cid/generate-loot — générer du loot via IA (MJ seulement)
-router.post('/:id/combats/:cid/generate-loot', async (req, res) => {
-  const userId = (req as unknown as AuthRequest).userId
-  const campaignId = Number(req.params.id)
-  const combatId = Number(req.params.cid)
-
-  const check = await verifyGm(campaignId, userId)
-  if (check.status === 'not_found') { res.status(404).json({ error: 'Campagne introuvable' }); return }
-  if (check.status === 'forbidden') { res.status(403).json({ error: 'Réservé au MJ' }); return }
-
-  const combat = await loadCombatInCampaign(combatId, campaignId)
-  if (!combat) { res.status(404).json({ error: 'Combat introuvable' }); return }
-
-  const participants = await db
-    .select({
-      name: combatParticipants.name,
-      nc: combatParticipants.nc,
-      monsterDescription: combatParticipants.monsterDescription,
-    })
-    .from(combatParticipants)
-    .where(and(eq(combatParticipants.combatId, combatId), eq(combatParticipants.kind, 'monster')))
-
-  if (participants.length === 0) {
-    res.status(400).json({ error: 'Aucun monstre dans ce combat' }); return
-  }
-
-  const monsterLines = participants.map((m) => {
-    const nc = m.nc != null ? ` (NC ${m.nc})` : ''
-    const desc = m.monsterDescription ? ` — ${m.monsterDescription}` : ''
-    return `- ${m.name}${nc}${desc}`
-  }).join('\n')
-
-  const prompt = `Tu es le maître du jeu d'un jeu de rôle médiéval-fantastique (Arran). Les joueurs viennent de vaincre les ennemis suivants :\n${monsterLines}\n\nGénère un loot cohérent et immersif pour récompenser les joueurs. Tiens compte de la nature des ennemis, leur niveau de dangerosité (NC), et leur description. Propose des objets, de l'argent (pièces d'or/argent/cuivre), et éventuellement un objet spécial ou magique si le NC le justifie. Sois concis, en français, et donne directement la liste du loot sans introduction ni explication.`
-
-  try {
-    const loot = await generateText(prompt)
-    res.json({ loot })
-  } catch (err) {
-    console.error('[generate-loot] AI error:', err)
-    res.status(500).json({ error: "Erreur lors de la génération du loot" })
-  }
 })
 
 // POST /:id/combats/:cid/finish — terminer le combat

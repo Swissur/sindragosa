@@ -4,7 +4,7 @@ description: Analyse un fichier .txt de contenu brut (règles, lore, PDF copié)
 allowed_tools: Read, Glob, Grep, Write, Edit, Bash, TodoWrite
 ---
 
-Tu es chargé d'intégrer du nouveau contenu dans la base de knowledge du projet Terres d'Arran.
+Tu es chargé d'intégrer du nouveau contenu dans la base de knowledge du projet Sindragosa (règles des Terres d'Arran).
 
 ## Étape 1 — Trouver le fichier source
 
@@ -84,11 +84,7 @@ Ajoute ou mets à jour l'entrée correspondante dans la liste des sujets.
 ### `knowledge/README.md`
 Ajoute ou mets à jour la ligne dans la table "Topic index".
 
-## Étape 7 — Synchroniser le plugin
-
-Lance `npm run plugin:sync` pour recopier les règles dans le plugin Isilwen (`plugin/skills/*/references/`). Les copies sont committées et un test (`server/src/knowledge/pluginSync.test.ts`, dans `npm test`) vérifie qu'elles sont à jour : sans le sync, la CI casse.
-
-## Étape 8 — Rapport final
+## Étape 7 — Rapport final
 
 Une fois terminé, affiche un résumé :
 

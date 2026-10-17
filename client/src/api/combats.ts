@@ -224,10 +224,3 @@ export async function fetchActiveCombat(): Promise<{ combatId: number; campaignI
   if (!res.ok) return null
   return res.json() as Promise<{ combatId: number; campaignId: number; name: string } | null>
 }
-
-export function generateLoot(campaignId: number, combatId: number): Promise<{ loot: string }> {
-  return request(`/${campaignId}/combats/${combatId}/generate-loot`, {
-    method: 'POST',
-    body: JSON.stringify({}),
-  })
-}

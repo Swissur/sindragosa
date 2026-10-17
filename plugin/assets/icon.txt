@@ -1,5 +1,0 @@
-STYLE: flat vector app icon, medieval fantasy, warm and playful, bold clean shapes, thick rounded outlines, rich saturated colors (deep indigo night sky, teal-blue skin tones, gold accents), no text, no gradient noise, centered composition filling the square, single solid dark-indigo background color (no transparency, no checkerboard).
-
-SUBJECT: portrait bust of Isilwen of the Astral Mirror, a blue-skinned elf seer with long silver-white hair and pointed ears, calm knowing smile, one hand raised beside a small glowing round mirror that reflects stars. Tarot-card feel, friendly not scary.
-
-Generate this image with your image generation tool (1024x1024 pixels) and save the PNG as icon.png in the current directory. Do nothing else, do not edit any other file. Do not ask questions.

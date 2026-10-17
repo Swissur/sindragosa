@@ -1,6 +1,6 @@
 # Deploys on push to main.
 # 1. Create app (once): fly apps create arran-dnd  # or change `app` in fly.toml
-# 2. Secrets (once): fly secrets set GEMINI_API_KEY=...  # see server/.env.example
+# 2. Secrets (once): fly secrets set JWT_SECRET=...  # see server/.env.example
 # 3. GitHub repo secret: FLY_API_TOKEN from `fly tokens create deploy`
 name: Deploy to Fly.io
 on:

@@ -117,7 +117,7 @@ async function submit() {
 <template>
   <div class="login-wrap">
     <div class="login-card">
-      <h1 class="login-title">Terres d'Arran</h1>
+      <h1 class="login-title">Sindragosa</h1>
 
       <AppTabs
         class="mode-tabs"
@@ -178,8 +178,7 @@ async function submit() {
 </template>
 
 <style scoped>
-/* .login-wrap / .login-card / .login-title vivent dans style.css : l'ecran de
-   consentement OAuth (/autoriser) reprend exactement le meme moule. */
+/* .login-wrap / .login-card / .login-title vivent dans style.css. */
 
 .mode-tabs {
   margin-bottom: 1.5rem;

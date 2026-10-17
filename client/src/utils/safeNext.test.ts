@@ -4,7 +4,7 @@ import { safeNext } from './safeNext'
 describe('safeNext', () => {
   it('accepte un chemin relatif', () => {
     expect(safeNext('/options')).toBe('/options')
-    expect(safeNext('/autoriser?request=abc')).toBe('/autoriser?request=abc')
+    expect(safeNext('/journal?page=abc')).toBe('/journal?page=abc')
   })
 
   it('refuse une URL absolue', () => {

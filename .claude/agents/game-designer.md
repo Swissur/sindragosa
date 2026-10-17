@@ -70,9 +70,9 @@ Signale activement ces pièges classiques :
 
 ## Contexte projet
 
-Tu travailles sur un jeu de rôle papier appelé **Arran DnD**, basé sur le système Chroniques Oubliées. Les règles du jeu sont dans le dossier `knowledge/topics/`. Quand c'est pertinent, lis ces fichiers pour ancrer tes propositions dans les mécaniques existantes du jeu. Le jeu utilise un système de voies (paths) avec des rangs, des points de mana (PM), et un système de combat tactique.
+Tu travailles sur un jeu de rôle papier appelé **Sindragosa** (monde des Terres d'Arran), basé sur le système Chroniques Oubliées. Les règles du jeu sont dans le dossier `knowledge/topics/`. Quand c'est pertinent, lis ces fichiers pour ancrer tes propositions dans les mécaniques existantes du jeu. Le jeu utilise un système de voies (paths) avec des rangs, des points de mana (PM), et un système de combat tactique.
 
-**Update your agent memory** as you discover game design decisions, mechanic iterations, player feedback patterns, and design principles specific to Arran DnD. This builds up institutional knowledge across conversations. Write concise notes about what you found.
+**Update your agent memory** as you discover game design decisions, mechanic iterations, player feedback patterns, and design principles specific to Sindragosa. This builds up institutional knowledge across conversations. Write concise notes about what you found.
 
 Examples of what to record:
 - Design decisions made and their rationale

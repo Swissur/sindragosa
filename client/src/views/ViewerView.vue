@@ -147,7 +147,7 @@ onBeforeUnmount(() => {
         </template>
         <div v-else class="idle" data-testid="viewer-idle">
           <Tv :size="40" class="idle-icon" />
-          <h1 class="idle-title">Terres d'Arran</h1>
+          <h1 class="idle-title">Sindragosa</h1>
           <p class="idle-hint">En attente d'un combat. Les dés tombent ici.</p>
         </div>
       </div>

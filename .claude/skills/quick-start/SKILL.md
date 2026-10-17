@@ -1,6 +1,6 @@
 ---
 name: quick-start
-description: Guide a new user (including non-developers) through installing and running arran-dnd locally on Windows
+description: Guide a new user (including non-developers) through installing and running Sindragosa locally on Windows
 triggers:
   - initialiser le projet
   - démarrer le projet
@@ -68,7 +68,7 @@ Dans Git Bash, navigue là où tu veux mettre le projet (par exemple ton bureau)
 ```bash
 cd ~/Desktop
 git clone <URL_DU_REPO>
-cd arran-dnd
+cd sindragosa
 ```
 
 Remplace `<URL_DU_REPO>` par le lien que tu as reçu.
@@ -77,7 +77,7 @@ Remplace `<URL_DU_REPO>` par le lien que tu as reçu.
 
 ## Étape 2 — Installer les dépendances
 
-Toujours dans Git Bash, depuis le dossier `arran-dnd` :
+Toujours dans Git Bash, depuis le dossier `sindragosa` :
 
 ```bash
 npm install
@@ -89,15 +89,15 @@ Cette commande télécharge tous les composants nécessaires au projet. Ça peut
 
 ## Étape 3 — Fichier de configuration (.env)
 
-Le projet a besoin d'un fichier `.env` qui contient des informations sensibles (clés API, mots de passe). Ce fichier n'est pas inclus dans le dépôt pour des raisons de sécurité.
+Le projet a besoin d'un fichier `server/.env` (adresse de la base, clé secrète de connexion). Il n'est pas inclus dans le dépôt pour des raisons de sécurité : crée-le à partir du modèle.
 
-**Demande une copie du fichier `.env` à Thomas**, puis place-le dans le dossier `server/` du projet :
+```bash
+cp server/.env.example server/.env
+```
 
-```
-arran-dnd/
-  server/
-    .env   ← colle le fichier ici
-```
+Puis ouvre `server/.env` et :
+- dans `DATABASE_URL`, remplace le port `5432` par `5440` (c'est le port publié par `docker-compose.yml`) ;
+- remplace `JWT_SECRET` par une longue chaîne aléatoire.
 
 ---
 
@@ -140,4 +140,3 @@ Une fois lancé, ouvre ton navigateur et va sur :
 | `docker` non reconnu | Assure-toi que Docker Desktop est lancé et redémarre Git Bash |
 | Erreur de connexion à la base de données | Lance `docker compose up -d` et attends quelques secondes |
 | Page blanche ou erreur réseau | Vérifie que `npm run dev` tourne toujours dans Git Bash |
-| Erreur d'API (AI) | Vérifie que le fichier `server/.env` est bien présent et complet |

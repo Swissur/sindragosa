@@ -198,9 +198,7 @@ select:focus-visible {
 
 /* Le padding des pages est gere par AppPageLayout. Toutes les vues l'utilisent
    sauf LoginView, qui a son propre centrage. La regle de repli est supprimee. */
-
-/* Ecrans hors AppPageLayout, centres sur une carte : la connexion et l'ecran
-   de consentement OAuth (/autoriser). */
+/* Ecran hors AppPageLayout, centre sur une carte : la connexion. */
 .login-wrap {
   display: flex;
   align-items: center;

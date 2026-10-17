@@ -3,7 +3,6 @@ import { RouterLink, RouterView } from "vue-router";
 import { computed, defineAsyncComponent, onBeforeUnmount, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 import { UserCircle, Loader2, ScrollText, Swords, Backpack, BookOpenText, Map, Palette, Dices, History, Users, Wrench, Tv } from "lucide-vue-next";
-import CrystalBall from "./components/icons/CrystalBall.vue";
 import AppToast from "./components/ui/AppToast.vue";
 import DiceBar from "./components/DiceBar.vue";
 import RollLogDrawer from "./components/roll-log/RollLogDrawer.vue";
@@ -106,7 +105,7 @@ if (savedStyle) {
   </div>
   <div v-else class="app-shell" :class="{ 'shell-docked': panelOpen }">
     <header class="top-nav">
-      <RouterLink to="/personnage" class="brand">Terres d'Arran</RouterLink>
+      <RouterLink to="/personnage" class="brand">Sindragosa</RouterLink>
         <nav class="nav-links">
         <RouterLink to="/personnage" class="nav-link" title="Personnage"
           ><ScrollText :size="20"
@@ -116,9 +115,6 @@ if (savedStyle) {
         /></RouterLink>
         <RouterLink to="/inventaire" class="nav-link" title="Inventaire"
           ><Backpack :size="20"
-        /></RouterLink>
-        <RouterLink to="/chat" class="nav-link" title="Isilwen"
-          ><CrystalBall :size="20"
         /></RouterLink>
         <RouterLink to="/journal" class="nav-link" title="Journal"
           ><BookOpenText :size="20"

@@ -19,9 +19,4 @@ COPY server/package.json server/package.json
 RUN npm ci --omit=dev
 COPY --from=builder /app/server/dist ./server/dist
 COPY --from=builder /app/client/dist ./client/dist
-COPY --from=builder /app/knowledge ./knowledge
-COPY --from=builder /app/plugin ./plugin
-# Les deux marketplaces que GET /plugin recopie dans le zip (server/src/plugin/archive.ts)
-COPY --from=builder /app/.claude-plugin ./.claude-plugin
-COPY --from=builder /app/.agents ./.agents
 CMD ["node", "server/dist/index.js"]

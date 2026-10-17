@@ -1,6 +1,6 @@
-# Terres d’Arran — assistant web
+# Sindragosa — compagnon de table
 
-Application web pour jouer à **Les Terres d’Arran**, jeu de rôle sur table français utilisant le moteur **Chroniques Oubliées**, dans l’univers des bandes dessinées *Elfes*, *Nains*, *Orcs & Gobelins*, *Mages*, etc.
+Application web pour jouer aux **Terres d’Arran**, jeu de rôle sur table français utilisant le moteur **Chroniques Oubliées**, dans l’univers des bandes dessinées *Elfes*, *Nains*, *Orcs & Gobelins*, *Mages*, etc.
 
 L’objectif est de réduire la paperasse (calculs, consultation des règles, suivi de personnage) pour que joueurs et meneurs passent plus de temps à la table.
 
@@ -8,9 +8,9 @@ L’objectif est de réduire la paperasse (calculs, consultation des règles, su
 
 ## Fonctionnalités
 
-- **Assistant Q&R** — pose des questions sur les règles : le serveur injecte une base de connaissances en Markdown (`knowledge/`) et appelle un modèle de langage (Gemini ou Anthropic selon la configuration).
-- **Fiche personnage** — caractéristiques, compétences, PV/PM, attaques, voies, stockée localement dans le navigateur (`localStorage`).
-- **Interface** — en français, pensée mobile d’abord, style fantasy léger (Vue 3 + Vite).
+- **Fiche personnage** — caractéristiques, compétences, PV/PM, attaques, voies, inventaire.
+- **Campagnes** — membres, journal de bord, codex, rencontres et combats en direct (initiative, plateau, jets de dés partagés).
+- **Interface** — en français, pensée mobile d’abord, style fantasy (Vue 3 + Vite).
 
 ---
 
@@ -18,42 +18,33 @@ L’objectif est de réduire la paperasse (calculs, consultation des règles, su
 
 | Partie | Technologie |
 |--------|-------------|
-| Client | Vue 3, Vite, TypeScript, Lucide |
-| API | Node.js, Express |
-| IA | Google Gemini (défaut) ou Anthropic Claude (`AI_PROVIDER`) |
-| Données de règles | Markdown statique dans `knowledge/` (pas d’extraction PDF automatisée dans le dépôt) |
+| Client | Vue 3, Vite, TypeScript, Tailwind, Lucide |
+| API | Node.js, Express, Drizzle ORM |
+| Base | PostgreSQL |
+| Données de règles | Markdown statique dans `knowledge/`, catalogues dans `client/src/data/` |
 
 ---
 
 ## Prérequis
 
-- **Node.js** 20 ou plus récent  
-- Une clé API pour le fournisseur choisi : **Gemini** (par défaut) ou **Anthropic** (voir ci‑dessous)
+- **Node.js** 20 ou plus récent
+- **Docker Desktop** (pour PostgreSQL)
 
 ---
 
 ## Démarrage rapide
 
 ```bash
-cp server/.env.example server/.env
-```
-
-Éditer `server/.env` :
-
-- Par défaut, le projet utilise **Gemini** : renseigner `GEMINI_API_KEY`.  
-- Pour utiliser **Claude** : `AI_PROVIDER=anthropic` et `ANTHROPIC_API_KEY`.
-
-Puis :
-
-```bash
+cp server/.env.example server/.env   # puis ajuster DATABASE_URL (port 5440, voir docker-compose.yml) et JWT_SECRET
 npm install
+docker compose up -d
 npm run dev
 ```
 
-- **API** : [http://localhost:3566](http://localhost:3566) — santé : `GET /api/health`  
+- **API** : [http://localhost:3566](http://localhost:3566) — santé : `GET /api/health`
 - **Interface** : [http://localhost:5173](http://localhost:5173)
 
-Les scripts racine (`npm run build`, `npm start`, migrations PostgreSQL si vous les utilisez) s’appuient sur les workspaces `client` et `server`.
+Les scripts racine (`npm run build`, `npm start`, `npm run db:migrate`) s’appuient sur les workspaces `client` et `server`.
 
 ---
 
@@ -61,11 +52,11 @@ Les scripts racine (`npm run build`, `npm start`, migrations PostgreSQL si vous 
 
 | Dossier | Rôle |
 |---------|------|
-| `knowledge/` | Règles et références rédigées à la main (Markdown) — base injectée dans les prompts |
-| `server/` | API Node, chargement de `knowledge/`, appels aux modèles |
-| `client/` | Interface utilisateur (chat + outils personnage) |
+| `knowledge/` | Règles et références rédigées à la main (Markdown) |
+| `server/` | API Node + PostgreSQL |
+| `client/` | Interface utilisateur |
 
-Pour la cartographie détaillée, la phase courante et les conventions (langue UI, intégrité des règles), voir **[AGENTS.md](AGENTS.md)**. Plan produit : **[docs/PLAN.md](docs/PLAN.md)**. Perspectives : **[ROADMAP.md](ROADMAP.md)**.
+Pour la cartographie détaillée et les conventions (langue UI, intégrité des règles), voir **[AGENTS.md](AGENTS.md)**. Plan produit : **[docs/PLAN.md](docs/PLAN.md)**. Perspectives : **[ROADMAP.md](ROADMAP.md)**.
 
 ---
 

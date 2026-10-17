@@ -1,5 +1,5 @@
 {
-  "name": "arran-dnd-server",
+  "name": "sindragosa-server",
   "private": true,
   "type": "module",
   "scripts": {
@@ -15,12 +15,6 @@
     "seed-dev": "tsx src/scripts/seed-dev.ts"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.117.1",
-    "@google/genai": "^1.46.0",
-    "@modelcontextprotocol/express": "^2.0.0",
-    "@modelcontextprotocol/node": "^2.0.0",
-    "@modelcontextprotocol/server": "^2.0.0",
-    "@modelcontextprotocol/server-legacy": "^2.0.0",
     "bcryptjs": "^3.0.3",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
@@ -30,12 +24,9 @@
     "express-async-errors": "^3.1.1",
     "google-auth-library": "^10.6.2",
     "jsonwebtoken": "^9.0.3",
-    "jszip": "^3.10.2",
-    "postgres": "^3.4.8",
-    "zod": "^4.6.5"
+    "postgres": "^3.4.8"
   },
   "devDependencies": {
-    "@modelcontextprotocol/client": "^2.0.0",
     "@types/bcryptjs": "^2.4.6",
     "@types/cookie-parser": "^1.4.10",
     "@types/cors": "^2.8.17",

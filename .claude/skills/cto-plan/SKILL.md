@@ -1,6 +1,6 @@
 ---
 name: cto-plan
-description: Plan review pour Arran DnD — architecture, data flow, edge cases, tests, performance. Review interactif avec recommandations tranchees.
+description: Plan review pour Sindragosa — architecture, data flow, edge cases, tests, performance. Review interactif avec recommandations tranchees.
 allowed_tools: Read, Grep, Glob, AskUserQuestion, Bash
 ---
 

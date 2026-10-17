@@ -20,9 +20,9 @@ export default defineConfig({
       // Le manifest reste genere pour l'installation sur l'ecran d'accueil.
       selfDestroying: true,
       manifest: {
-        name: "Terres d'Arran",
-        short_name: 'Arran',
-        description: 'Assistant de jeu de rôle — Terres d\'Arran',
+        name: 'Sindragosa',
+        short_name: 'Sindragosa',
+        description: 'Sindragosa — compagnon de table pour Chroniques Oubliées',
         theme_color: '#1a0a00',
         background_color: '#1a0a00',
         display: 'standalone',
@@ -40,10 +40,6 @@ export default defineConfig({
     port: 5173,
     proxy: {
       '/api': {
-        target: 'http://localhost:3566',
-        changeOrigin: true,
-      },
-      '/plugin': {
         target: 'http://localhost:3566',
         changeOrigin: true,
       },

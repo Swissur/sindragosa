@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { meetsPrerequisite, unlockedAbilities, normalizeName, type ProgressState } from './prerequisites'
+import { meetsPrerequisite, unlockedAbilities, normalizeName, type ProgressState, prerequisiteLabel } from './prerequisites'
 import { ABILITIES } from '../../data/sindragosa/abilities'
 
 const empty: ProgressState = { domainRanks: {}, advancedRanks: {}, specialties: [], titles: [] }
@@ -51,5 +51,14 @@ describe('unlockedAbilities', () => {
 describe('normalizeName', () => {
   it('ignore accents, casse et espaces multiples', () => {
     expect(normalizeName('  Épées   à deux MAINS ')).toBe('epees a deux mains')
+  })
+})
+
+describe('prerequisiteLabel', () => {
+  it('écrit chaque sorte de prérequis', () => {
+    expect(prerequisiteLabel({ kind: 'domain', id: 'combat-precision', rank: 2 })).toBe('Combat de précision 2')
+    expect(prerequisiteLabel({ kind: 'advanced', id: 'pyromancie', rank: 1 })).toBe('Pyromancie 1')
+    expect(prerequisiteLabel({ kind: 'specialty', name: 'Dagues', level: 2 })).toBe('Dagues (Expert)')
+    expect(prerequisiteLabel({ kind: 'title', name: 'Archimage' })).toBe('Titre : Archimage')
   })
 })

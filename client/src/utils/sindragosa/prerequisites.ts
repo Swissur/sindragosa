@@ -4,6 +4,7 @@
  */
 import { ABILITIES } from '../../data/sindragosa/abilities'
 import type { Ability, Prerequisite } from '../../data/sindragosa/types'
+import { advancedDomainById, domainById } from '../../data/sindragosa/domains'
 
 /** Ce qu'il faut savoir d'un personnage pour évaluer des prérequis. */
 export interface ProgressState {
@@ -47,4 +48,20 @@ export function meetsPrerequisites(state: ProgressState, ability: Ability): bool
 
 export function unlockedAbilities(state: ProgressState, catalog: Ability[] = ABILITIES): Ability[] {
   return catalog.filter((a) => meetsPrerequisites(state, a))
+}
+
+const LEVELS = ['', 'Apprenti', 'Expert', 'Maître']
+
+/** Libellé d'un prérequis pour la carte de compétence : « Combat de précision 2 », « Dagues (Expert) ». */
+export function prerequisiteLabel(p: Prerequisite): string {
+  switch (p.kind) {
+    case 'domain':
+      return `${domainById(p.id)?.label ?? p.id} ${p.rank}`
+    case 'advanced':
+      return `${advancedDomainById(p.id)?.label ?? p.id} ${p.rank}`
+    case 'specialty':
+      return `${p.name} (${LEVELS[p.level] ?? p.level})`
+    case 'title':
+      return `Titre : ${p.name}`
+  }
 }

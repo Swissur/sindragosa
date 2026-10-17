@@ -16,6 +16,9 @@ import AppEmptyState from '../components/ui/AppEmptyState.vue'
 import AppModal from '../components/ui/AppModal.vue'
 import AppBottomSheet from '../components/ui/AppBottomSheet.vue'
 import AppTooltip from '../components/ui/AppTooltip.vue'
+import AppStepper from '../components/ui/AppStepper.vue'
+import AppTickGauge from '../components/ui/AppTickGauge.vue'
+import AppAccordion from '../components/ui/AppAccordion.vue'
 import EtatBadge from '../components/etats/EtatBadge.vue'
 import EtatsRow from '../components/etats/EtatsRow.vue'
 import EtatsSheet from '../components/etats/EtatsSheet.vue'
@@ -41,6 +44,7 @@ const textareaValue = ref('Une note griffonnée dans la marge du grimoire…')
 const tabValue = ref('emoji')
 const lucideTab = ref('sword')
 const toggleValue = ref('')
+const stepperValue = ref(3)
 const demoEtats = ref<EtatId[]>(['renverse', 'affaibli'])
 const showEtatsSheet = ref(false)
 const modalOpen = ref(false)
@@ -198,6 +202,23 @@ function forceRoll(value: number) {
       </div>
     </AppCard>
 
+    <AppCard title="AppStepper / AppTickGauge">
+      <div class="demo-row">
+        <AppStepper v-model="stepperValue" :max="5" label="Démo" />
+        <AppTickGauge :rank="stepperValue" :ticks="Math.min(stepperValue, 2)" :total="stepperValue + 1" :maxed="stepperValue >= 5" />
+        <AppTickGauge rank="Exp." :ticks="1" :total="2" />
+      </div>
+    </AppCard>
+
+    <AppCard title="AppAccordion">
+      <AppAccordion title="Force 3" hint="2 / 5" default-open>
+        <p>Le contenu se replie sous l'en-tête.</p>
+      </AppAccordion>
+      <AppAccordion title="Agilité 2" hint="0 / 5">
+        <p>Fermé par défaut.</p>
+      </AppAccordion>
+    </AppCard>
+
     <AppCard title="AppModal / AppBottomSheet / Toast">
       <div class="demo-row">
         <AppButton @click="modalOpen = true">Modal</AppButton>
@@ -288,8 +309,9 @@ function forceRoll(value: number) {
         n'est touchée.
       </p>
       <div class="demo-row">
+        <AppButton @click="previewRest('court')">☕ Repos court</AppButton>
         <AppButton @click="previewRest('long')">🌙 Repos long</AppButton>
-        <AppButton @click="previewRest('complet')">🔥 Repos complet</AppButton>
+        <AppButton @click="previewRest('seance')">🔥 Fin de séance</AppButton>
       </div>
     </AppCard>
 

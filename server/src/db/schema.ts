@@ -277,6 +277,8 @@ export const rollEvents = pgTable('roll_event', {
   /** Les dés lancés puis écartés par un avantage ou une relance. */
   dropped: jsonb('dropped'),
   damage: jsonb('damage'),
+  /** Jet en réserve de d6 : { critFrom, reached, critFail }. NULL sinon. */
+  pool: jsonb('pool'),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 })
 

@@ -1,27 +1,7 @@
-/** Player character sheet — CO / Terres d’Arran shaped; refine fields as you extend the app. */
+/** Fiche de personnage Sindragosa (plans/31-refonte-regles-sindragosa.md § 3). */
 
-import type { MartialWeaponCategoryId } from '../data/martialWeaponCategories'
 import type { EtatId } from '../data/etats'
-
-export interface WeaponRow {
-  id: string
-  name: string
-  attackType: 'contact' | 'distance'
-  damageDice: string
-  /** Equipment table Mod.: FOR / DEX / — */
-  damageAbility: 'strength' | 'dexterity' | null
-  martialFamily: MartialWeaponCategoryId
-  rangeMeters: number | null
-  catalogId?: string
-  notes?: string
-  /** Rôle dans le combat à deux armes (voie-du-combat-a-deux-armes). */
-  handRole?: 'main' | 'offhand'
-}
-
-export interface SkillRow {
-  name: string
-  rank: number
-}
+import type { StatId } from '../data/sindragosa/domains'
 
 export interface ItemRow {
   id: string
@@ -30,84 +10,78 @@ export interface ItemRow {
   quantity: number
 }
 
-export interface PathRow {
-  id?: string
-  name: string
+/** Rang d'un domaine (ou domaine avancé) et coches accumulées vers le rang suivant. */
+export interface DomainProgress {
   rank: number
-  /** 'peuple' et 'culturelle' sont gérés automatiquement via les dropdowns de la fiche. */
-  kind?: 'peuple' | 'culturelle'
+  ticks: number
 }
 
-export interface CharacterAbilities {
-  strength: number
-  dexterity: number
-  constitution: number
-  intelligence: number
-  wisdom: number
-  charisma: number
+export interface SpecialtyRow {
+  id: string
+  domainId: string
+  name: string
+  /** 1 Apprenti, 2 Expert, 3 Maître. */
+  level: number
+  ticks: number
 }
 
-export interface CompetenceRow {
+/** Compteur libre (Mana, Rage, Énergie…), réglé à la main. */
+export interface ResourceRow {
   id: string
   name: string
-  /** Ability score used for the roll, or null for flat bonus only */
-  ability: keyof CharacterAbilities | null
-  bonus: number
+  current: number
+  max: number
 }
+
+export interface WeaponRow {
+  id: string
+  name: string
+  /** Dégâts fixes de l'arme (dégâts = arme + marge − armure). */
+  damage: number
+  /** Domaine utilisé pour attaquer. */
+  domainId: string
+}
+
+export type Stats = Record<StatId, number>
 
 export interface Character {
   id: string
   name: string
-  profile: string
   /** Background / backstory (UI: « Histoire »). */
   histoire: string
-  people: string
-  level: number
-  abilities: CharacterAbilities
+  /** Id de `data/sindragosa/races.ts`, '' tant qu'elle n'est pas choisie. */
+  race: string
+  portraitImageId: number | null
+
+  stats: Stats
   hpCurrent: number
+  /** PV max stockés (calculés par `maxHp`, renvoyés au serveur pour le combat et le repos). */
   hpMax: number
-  mpCurrent: number
-  mpMax: number
-  defense: number
-  /** Initiative score; persisted as `initiative_bonus` but always equals DEX (base rule). */
-  initiativeBonus: number
-  skills: SkillRow[]
-  /** Martial weapon categories trained (excludes `paysan`, which is always considered trained). */
-  martialFormations: MartialWeaponCategoryId[]
-  weapons: WeaponRow[]
-  paths: PathRow[]
-  /** Id from `mysticTalents.ts` when the profile family is mystiques; empty string if none */
-  mysticTalent: string
-  /** Id from `armorsCatalog.ts` of the equipped armor; empty string = aucune armure */
-  armorId: string
-  /** Id from `armorsCatalog.ts` (SHIELDS_CATALOG) of the equipped shield; empty string = aucun bouclier */
-  shieldId: string
-  /** Bonus de DEF divers (capacités, magie, situations…) saisi manuellement */
-  defenseBonus: number
-  /** Bonus divers d'attaque au contact */
-  attackContactBonus: number
-  /** Bonus divers d'attaque à distance */
-  attackDistanceBonus: number
-  /** Bonus divers d'attaque magique */
-  attackMagiqueBonus: number
-  /** Raw die rolls for HP gained at each level >= 2. Length = level - 1. CON mod is computed live. */
-  hpLevelGains: number[]
-  /** Bonus de PV max divers (passifs type Robustesse, Force de la nature…) saisi manuellement */
+  /** Bonus de PV max divers (objets, compétences passives). */
   hpBonus: number
-  /** Inventory items. */
+  /** Armure physique (AP). */
+  armor: number
+
+  domains: Record<string, DomainProgress>
+  specialties: SpecialtyRow[]
+  advancedDomains: Record<string, DomainProgress>
+  titles: string[]
+  /** Usages consommés par période : { [période]: { [abilityId]: nombre } }. */
+  abilityUses: Record<string, Record<string, number>>
+  sessionTicks: { success: number; critFail: number }
+  resources: ResourceRow[]
+  /** Métiers d'artisanat connus : { [craftId]: rang }. */
+  crafts: Record<string, number>
+  weapons: WeaponRow[]
+
   items: ItemRow[]
-  /** Currency. Conversion: 1 po = 10 pa = 100 pc. */
+  /** Monnaie : 1 or = 10 argent = 100 cuivre. */
   goldCoins: number
   silverCoins: number
   copperCoins: number
-  /** Points de Chance courants. Max = 2 + Mod. CHA (aventuriers +2). */
+
+  /** Points de chance : 2 par séance, chacun ajoute 1d6 à un jet. */
   pcCurrent: number
-  /** Points de Récupération courants (max = 5). */
-  prCurrent: number
   /** États préjudiciables en cours (voir `data/etats.ts`). */
   states: EtatId[]
-  /** Custom rollable competences (nom + carac + bonus). */
-  competences: CompetenceRow[]
-  /** ID of portrait image in generated_images table. */
-  portraitImageId: number | null
 }

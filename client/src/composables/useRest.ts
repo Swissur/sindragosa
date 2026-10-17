@@ -1,7 +1,7 @@
 import { computed, shallowRef } from 'vue'
 import type { RestDelta, RestEvent, RestKind } from '../api/campaigns'
 import { user } from './useAuth'
-import { applyServerRest, character, computedPcMax } from './useCharacter'
+import { applyServerRest } from './useCharacter'
 
 /**
  * Le repos partagé, côté joueur.
@@ -37,10 +37,6 @@ export function receiveRest(event: RestEvent): void {
 
   if (mine) {
     applyServerRest(mine.after)
-    // Les PC n'ont pas de maximum en base : il dépend de la famille de profil,
-    // que seul le client sait déduire. Le repos complet les remet à neuf ici,
-    // et l'autosave habituel l'écrit.
-    if (event.kind === 'complet') character.value.pcCurrent = computedPcMax.value
   }
 
   restRequest.value = {
@@ -60,9 +56,11 @@ export function previewRest(kind: RestKind): void {
     id: ++sequence,
     kind,
     delta:
-      kind === 'complet'
-        ? { hp: { before: 7, after: 24 }, mp: { before: 2, after: 12 }, pr: { before: 1, after: 5 } }
-        : { mp: { before: 2, after: 12 }, pr: { before: 3, after: 4 } },
+      kind === 'seance'
+        ? { hp: { before: 7, after: 24 }, pc: { before: 0, after: 2 } }
+        : kind === 'long'
+          ? { hp: { before: 7, after: 24 } }
+          : {},
     characterName: 'Théos',
   }
 }

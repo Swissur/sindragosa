@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { ArrowLeft, Crown, LogOut, User, Plus, Trash2, Swords, Play, Settings, Flame, Moon, Sunrise } from 'lucide-vue-next'
+import { ArrowLeft, Crown, LogOut, User, Plus, Trash2, Swords, Play, Settings, Flame, Moon, Sunrise, Coffee } from 'lucide-vue-next'
 import { fetchCampaign, leaveCampaign, fetchEncounters, createEncounter, deleteEncounter, postRest, type CampaignDetail, type EncounterSummary, type RestKind } from '../api/campaigns'
 import { fetchCombats, createCombat, type CombatSummary } from '../api/combats'
 import { user } from '../composables/useAuth'
@@ -303,22 +303,28 @@ async function handleLaunchCombat() {
     </template>
 
     <!-- Bottom sheet: Settings -->
-    <!-- Repos partagé (MJ). Le repos court reste sur la fiche : payer 1 PR est
-         une décision de joueur, pas du MJ. -->
+    <!-- Repos partagé (MJ) : chaque repos remet à zéro les usages de sa période. -->
     <AppBottomSheet v-model="showRest" title="Faire reposer le groupe">
       <div class="rest-choices">
-        <button type="button" class="rest-choice" :disabled="resting" @click="doRest('long')">
+        <button type="button" class="rest-choice" :disabled="resting" data-testid="rest-court" @click="doRest('court')">
+          <Coffee :size="20" class="rest-choice-icon" />
+          <span class="rest-choice-text">
+            <strong>Repos court</strong>
+            <small>Une pause — les usages « combat » et « repos court » reviennent.</small>
+          </span>
+        </button>
+        <button type="button" class="rest-choice" :disabled="resting" data-testid="rest-long" @click="doRest('long')">
           <Moon :size="20" class="rest-choice-icon" />
           <span class="rest-choice-text">
             <strong>Repos long</strong>
-            <small>Une nuit — tous les PM, +1 PR. Les PV ne remontent pas.</small>
+            <small>Une nuit — PV au max, états levés, usages du jour rendus.</small>
           </span>
         </button>
-        <button type="button" class="rest-choice" :disabled="resting" @click="doRest('complet')">
+        <button type="button" class="rest-choice" :disabled="resting" data-testid="rest-seance" @click="doRest('seance')">
           <Sunrise :size="20" class="rest-choice-icon" />
           <span class="rest-choice-text">
-            <strong>Repos complet</strong>
-            <small>Entre deux sessions — PV, PM et PR au maximum.</small>
+            <strong>Fin de séance</strong>
+            <small>Comme un repos long, plus 2 points de chance et les coches remises à zéro.</small>
           </span>
         </button>
       </div>

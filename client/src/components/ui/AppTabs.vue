@@ -29,7 +29,8 @@ const emit = defineEmits<{
 <template>
   <TabsRoot :model-value="modelValue" @update:model-value="emit('update:modelValue', String($event))">
     <TabsList class="tab-bar">
-      <TabsTrigger v-for="tab in tabs" :key="tab.value" :value="tab.value" class="tab-btn">
+      <!-- aria-label : le libellé peut être masqué sur téléphone, le nom accessible reste -->
+      <TabsTrigger v-for="tab in tabs" :key="tab.value" :value="tab.value" :aria-label="tab.label" class="tab-btn">
         <span v-if="typeof tab.icon === 'string'" class="tab-icon" aria-hidden="true">{{ tab.icon }}</span>
         <component :is="tab.icon" v-else-if="tab.icon" class="tab-icon" :size="16" aria-hidden="true" />
         <span class="tab-label" :class="{ 'tab-label--hide-mobile': iconOnlyMobile }">{{ tab.label }}</span>

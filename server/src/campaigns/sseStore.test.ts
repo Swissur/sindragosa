@@ -30,6 +30,12 @@ describe('criticalOutcome', () => {
     expect(criticalOutcome({ kind: 'weapon', die: 14, sides: 20 })).toBeNull()
   })
 
+  it('une réserve de d6 : exploit ou échec critique', () => {
+    expect(criticalOutcome({ kind: 'domaine', die: 0, sides: 6, pool: { reached: 'exploit', critFail: false } })).toBe('critical')
+    expect(criticalOutcome({ kind: 'domaine', die: 0, sides: 6, pool: { reached: 'echec', critFail: true } })).toBe('fumble')
+    expect(criticalOutcome({ kind: 'domaine', die: 6, sides: 6, pool: { reached: 'difficile', critFail: false } })).toBeNull()
+  })
+
   it('respecte le drapeau explicite des dégâts', () => {
     expect(criticalOutcome({ kind: 'weapon', die: 5, sides: 20, damage: { critical: true } })).toBe('critical')
   })

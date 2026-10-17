@@ -3,12 +3,12 @@ import { postCampaignRoll } from '../api/campaigns'
 import { user } from './useAuth'
 import { useCampaignRolls } from './useCampaignRolls'
 import { celebrate } from './useCriticalMoment'
-import { rollOutcome } from '../utils/rollOutcome'
+import { rollOutcome, type RollPool } from '../utils/rollOutcome'
 
 /** D'où vient un jet — contexte affiché dans le log partagé. */
 export type RollContext = 'actions' | 'combat' | 'fiche' | 'agonie' | 'sandbox'
 
-export type RollKind = 'weapon' | 'action' | 'ability' | 'manoeuvre' | 'competence' | 'libre'
+export type RollKind = 'weapon' | 'action' | 'ability' | 'domaine' | 'competence' | 'libre'
 
 export interface RollEntry {
   id: string
@@ -28,9 +28,11 @@ export interface RollEntry {
   dropped?: number[]
   /** Extra damage info (weapons only) */
   damage?: { total: number; critical: boolean; fumble: boolean }
+  /** Réserve de d6 : `rolls` = les dés, `total` = les succès. */
+  pool?: RollPool
 }
 
-const STORAGE_KEY = 'arran-roll-history'
+const STORAGE_KEY = 'sindragosa-roll-history'
 const MAX_ENTRIES = 200
 
 function load(): RollEntry[] {
@@ -88,6 +90,7 @@ export function useRollHistory() {
         rolls: entry.rolls,
         dropped: entry.dropped,
         damage: entry.damage,
+        pool: entry.pool,
       }).catch(() => { /* silencieux */ })
     }
   }

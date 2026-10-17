@@ -40,7 +40,9 @@ Sindragosa n’est plus un outil pour les Terres d’Arran (Chroniques Oubliées
   - points de chance : 2 par séance, et chacun ajoute +1d6 ;
   - avantage +1d6, désavantage −1d6 ;
   - personnages existants supprimés.
-- [ ] **Concentration des sorts** (Économe / Étendue / Puissante) : gardée, mais à adapter au système d6.
+- [ ] **Concentration des sorts** (Économe / Étendue / Puissante) : gardée, mais à adapter au système d6. Aujourd'hui, un sélecteur s'affiche sur les compétences de magie actives. « Puissante » monte les dés de l'effet. « Économe » n'a plus d'effet, faute de PM.
+- [x] **Fiche, Mes actions, jets en d6, outils du MJ** (plan 31, étapes 4 à 6 ; plan 32) : faits le 2026-10-17 sur la branche `refonte-sindragosa`.
+- [ ] **Combat** : le jet des monstres reste un d20 jusqu'à la conversion du bestiaire.
 - [ ] **Prérequis des domaines avancés** : à proposer (déduits des compétences), puis à valider.
 
 ### TODO — termes utilisés par les règles mais pas encore définis

@@ -8,8 +8,7 @@ import {
   createCharacter,
   type ServerCharacter,
 } from "../api/characters";
-import { MYSTIC_TALENTS_BY_ID, isMysticTalentId } from "../data/mysticTalents";
-import { inferProfileFamily } from "../utils/inferProfileFamily";
+import { raceById } from "../data/sindragosa/races";
 import AppPageLayout from "../components/ui/AppPageLayout.vue";
 import AppPageHead from "../components/ui/AppPageHead.vue";
 import AppBadge from "../components/ui/AppBadge.vue";
@@ -77,17 +76,8 @@ async function handleCreate() {
 
 onMounted(load);
 
-function mysticTalentLine(c: ServerCharacter): string | null {
-  const id = c.mysticTalent;
-  if (!id || !isMysticTalentId(id)) return null;
-  if (inferProfileFamily(c.paths ?? []) !== "mystiques") return null;
-  return MYSTIC_TALENTS_BY_ID[id].name;
-}
-
 function listMetaLine(c: ServerCharacter): string {
-  const base = `${c.profile || "Sans profil"} · Niv. ${c.level}`;
-  const talent = mysticTalentLine(c);
-  return talent ? `${base} · Talent : ${talent}` : base;
+  return raceById(c.race)?.label ?? "Race à choisir";
 }
 </script>
 

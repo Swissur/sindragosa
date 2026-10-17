@@ -160,6 +160,9 @@ Add a shadcn component with `npx shadcn-vue@latest add <name> -y -o` (writes int
 | `AppSelect` | All `<select>` fields. `v-model` + `<option>` in default slot. Stays a **native** `<select>` on purpose — the OS picker is better UX on phones. |
 | `AppTextarea` | All `<textarea>` fields. `v-model`, `rows`, `placeholder`. Same look as AppInput. |
 | `AppTooltip` | **Toute infobulle tapable** (detail d'un calcul, source d'un bonus). Props : `label` (nom accessible du declencheur), `side`. Slot `#trigger` = la marque cliquable, slot par defaut = le contenu. Built on reka-ui `Popover` (et pas `Tooltip`) : sur telephone il n'y a pas de survol, il faut un tap. Clic dehors, Echap et repositionnement inclus. |
+| `AppStepper` | **Tout compteur − valeur +** (PV, chance, réserves, caracs, monnaie). `v-model` number, props `min` (0 par défaut), `max` (absent = sans plafond), `label` (nom accessible), `testid` (donne `<testid>-minus/-value/-plus`), `disabled`. Slot par défaut pour remplacer l'affichage de la valeur (ex. `12/20`). |
+| `AppTickGauge` | Rang en pastille + jauge de coches. Props `rank?` (nombre ou texte, ex. `Exp.`), `ticks`, `total`, `maxed` (remplace la jauge par une étoile). |
+| `AppAccordion` | **Toute section repliable.** Props `title`, `hint?` (texte discret à droite), `defaultOpen`, `testid`; `v-model:open` optionnel. Slot `#icon`. Built on reka-ui `Collapsible`. |
 | `AppToast` | Global toasts — never instantiate; call `showToast(message, options?)` from `composables/useToast.ts`. |
 
 ### Rules

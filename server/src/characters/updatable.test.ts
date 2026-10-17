@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { pickUpdatable } from './updatable.js'
+import { pickGmEditable, pickUpdatable } from './updatable.js'
 
 describe('pickUpdatable', () => {
   it('garde la progression Sindragosa (domaines, spécialités, coches de séance)', () => {
@@ -27,5 +27,15 @@ describe('pickUpdatable', () => {
 
   it('ne fabrique pas de clé absente du corps', () => {
     expect(pickUpdatable({})).toEqual({})
+  })
+})
+
+describe('pickGmEditable', () => {
+  it('garde caracs, rangs, titres et PV max', () => {
+    expect(pickGmEditable({ end: 4, titles: ['Champion'], hpMax: 28 })).toEqual({ end: 4, titles: ['Champion'], hpMax: 28 })
+  })
+
+  it('ne touche ni aux PV courants, ni à la chance, ni à l’inventaire', () => {
+    expect(pickGmEditable({ hpCurrent: 1, pcCurrent: 9, items: [], name: 'X' })).toEqual({})
   })
 })

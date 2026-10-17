@@ -8,6 +8,8 @@ describe('rollDetailParts', () => {
       kept: [14],
       dropped: [],
       bonus: 3,
+      separator: '+',
+      tier: null,
     })
   })
 
@@ -21,6 +23,8 @@ describe('rollDetailParts', () => {
       kept: [4, 2, 5],
       dropped: [],
       bonus: 0,
+      separator: '+',
+      tier: null,
     })
   })
 
@@ -36,6 +40,8 @@ describe('rollDetailParts', () => {
       kept: [17],
       dropped: [4],
       bonus: 3,
+      separator: '+',
+      tier: null,
     })
   })
 
@@ -45,5 +51,10 @@ describe('rollDetailParts', () => {
     expect(rollDetailParts({ ...base, dropped: [] })).toEqual(absent)
     expect(rollDetailParts({ ...base, dropped: null })).toEqual(absent)
     expect(rollDetailParts({ ...base, rolls: null })).toEqual(absent)
+  })
+
+  it('une réserve de d6 : dés séparés par une espace et palier', () => {
+    const parts = rollDetailParts({ die: 0, sides: 6, bonus: 0, rolls: [5], pool: { critFrom: 6, reached: 'facile', critFail: false } })
+    expect(parts).toMatchObject({ label: '1d6', kept: [5], separator: ' ', tier: 'Facile' })
   })
 })

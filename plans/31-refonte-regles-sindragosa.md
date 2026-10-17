@@ -131,6 +131,15 @@ On reste sur le modèle actuel : un personnage est une ligne, avec ses listes en
 9. `knowledge/` purgé, puis règles et lore Sindragosa. Vérification : `git grep` sans Arran.
 10. Refonte UI des écrans à partir de `docs/ecrans.excalidraw`.
 
+### Avancement (2026-10-17, branche `refonte-sindragosa`)
+
+- Étapes 1 à 6 : faites. La fiche, Mes actions, la feuille de jet et les outils du MJ suivent `plans/32-fiche-sindragosa.md`.
+  - Jets en réserve de d6 de bout en bout : feuille de jet, journal de campagne, dés 3D. La colonne `roll_event.pool` (migration 048) garde le palier, l'échec critique et le seuil de critique.
+  - Route `PATCH /api/campaigns/:id/members/:userId/character` réservée au MJ. Le joueur reçoit le réglage par SSE (`character`), pour que sa sauvegarde auto ne l'écrase pas.
+  - Repos court, repos long et fin de séance lancés par le MJ depuis la page Campagne.
+- Étape 7 : en partie. L'initiative est calculée selon Sindragosa. Le jet des monstres reste un d20 en attendant le bestiaire converti (étape 8).
+- L'agonie garde le jet de mort d'Arran (d20 ≥ 11) tant que les règles ne la décrivent pas.
+
 ## 6. Décisions (tranchées le 2026-10-17)
 
 ### Domaines : 5 par caractéristique

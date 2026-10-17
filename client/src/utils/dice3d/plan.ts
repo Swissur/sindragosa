@@ -32,10 +32,15 @@ export interface DieRoll {
    * comme les autres mais ne compte pas : ni critique, ni échec.
    */
   dropped?: boolean
+  /**
+   * Réserve de d6 : face à partir de laquelle ce dé brille (6, ou 5 avec une
+   * spécialité Maître). Remplace la règle du d20 ; un 1 seul n'est pas un échec.
+   */
+  critFrom?: number
 }
 
-/** Au-delà, l'écran est illisible et le rendu commence à coûter. */
-const MAX_DICE = 10
+/** Au-delà, l'écran est illisible et le rendu commence à coûter. Une grosse réserve tient en 3 rangées. */
+const MAX_DICE = 15
 
 /** Emplacements pour les dés des autres joueurs, dans la bande du haut. */
 export const REMOTE_SLOTS = 4
@@ -60,7 +65,7 @@ export function isAnimatable(sides: number): boolean {
 export function planDice(rolls: DieRoll[]): DieInstance[] {
   const dice: DieInstance[] = []
 
-  for (const { sides, value, kind = 'weapon', dropped = false } of rolls) {
+  for (const { sides, value, kind = 'weapon', dropped = false, critFrom } of rolls) {
     if (!isAnimatable(sides)) continue
     if (sides === 100) {
       // Le d100 ne critique pas : ses deux dés ne portent aucune marque. Écarté,
@@ -74,7 +79,11 @@ export function planDice(rolls: DieRoll[]): DieInstance[] {
         faceIndex: value - 1,
         // Un dé écarté ne porte aucune marque : pas de fanfare sur un 1 jeté,
         // pas d'étincelles sur un 20 qu'on ne garde pas.
-        outcome: dropped ? null : rollOutcome({ kind, die: value, sides }),
+        outcome: dropped
+          ? null
+          : critFrom
+            ? (value >= critFrom ? 'critical' : null)
+            : rollOutcome({ kind, die: value, sides }),
         dropped,
       })
     }

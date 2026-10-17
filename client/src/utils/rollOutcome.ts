@@ -8,6 +8,14 @@
 
 export type RollOutcome = 'critical' | 'fumble' | null
 
+/** Ce qu'un jet en réserve de d6 garde en plus de ses dés (succès = `total`). */
+export interface RollPool {
+  /** Face à partir de laquelle un dé est critique : 6, ou 5 avec une spécialité Maître. */
+  critFrom: 5 | 6
+  reached: 'echec' | 'facile' | 'moyenne' | 'difficile' | 'exploit'
+  critFail: boolean
+}
+
 /**
  * Le minimum pour noter un jet. Satisfait aussi bien par les jets locaux
  * (`RollEntry`) que par ceux de la campagne (`RollEvent`), dont les types
@@ -19,6 +27,7 @@ export interface GradableRoll {
   die: number
   sides: number
   damage?: { critical: boolean; fumble: boolean } | null
+  pool?: RollPool | null
 }
 
 /**
@@ -39,6 +48,12 @@ export function rollOutcome(roll: GradableRoll): RollOutcome {
   // Un drapeau explicite l'emporte : une arme peut déclarer son critique
   if (roll.damage?.critical) return 'critical'
   if (roll.damage?.fumble) return 'fumble'
+
+  // Réserve de d6 : la table vibre sur un exploit (4 succès ou plus) ou un échec critique
+  if (roll.pool) {
+    if (roll.pool.critFail) return 'fumble'
+    return roll.pool.reached === 'exploit' ? 'critical' : null
+  }
 
   if (!isGradedDie(roll.sides, roll.kind)) return null
   if (roll.die === roll.sides) return 'critical'

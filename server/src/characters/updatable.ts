@@ -19,3 +19,18 @@ export function pickUpdatable(raw: Record<string, unknown>): Partial<Record<Upda
     UPDATABLE_FIELDS.filter((k) => k in raw).map((k) => [k, raw[k]]),
   ) as Partial<Record<UpdatableField, unknown>>
 }
+
+// Ce que le MJ règle sur la fiche d'un joueur (plans/32 « Outils du MJ ») :
+// caracs, rangs forcés, récompenses (coches), titres. `hpMax` suit l'Endurance.
+export const GM_EDITABLE_FIELDS = [
+  'str', 'agi', 'end', 'int', 'wis', 'cha',
+  'domains', 'specialties', 'advancedDomains', 'titles', 'hpMax',
+] as const
+
+export type GmEditableField = (typeof GM_EDITABLE_FIELDS)[number]
+
+export function pickGmEditable(raw: Record<string, unknown>): Partial<Record<GmEditableField, unknown>> {
+  return Object.fromEntries(
+    GM_EDITABLE_FIELDS.filter((k) => k in raw).map((k) => [k, raw[k]]),
+  ) as Partial<Record<GmEditableField, unknown>>
+}

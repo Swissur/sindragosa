@@ -1,5 +1,6 @@
 import type { ServerCharacter } from './characters'
 import type { EtatId } from '../data/etats'
+import type { RollPool } from '../utils/rollOutcome'
 
 const BASE = '/api/campaigns'
 
@@ -74,6 +75,25 @@ export function leaveCampaign(id: number): Promise<void> {
 
 export function fetchMemberCharacter(campaignId: number, userId: number): Promise<ServerCharacter> {
   return request<ServerCharacter>(`/${campaignId}/members/${userId}/character`)
+}
+
+/** Ce que le MJ règle sur la fiche d'un joueur : caracs, rangs, récompenses, titres. */
+export type GmCharacterPatch = Partial<Pick<ServerCharacter,
+  'str' | 'agi' | 'end' | 'int' | 'wis' | 'cha'
+  | 'domains' | 'specialties' | 'advancedDomains' | 'titles' | 'hpMax'>>
+
+export function patchMemberCharacter(campaignId: number, userId: number, patch: GmCharacterPatch): Promise<ServerCharacter> {
+  return request<ServerCharacter>(`/${campaignId}/members/${userId}/character`, {
+    method: 'PATCH',
+    body: JSON.stringify(patch),
+  })
+}
+
+/** Évènement SSE `character` : le MJ vient de régler la fiche d'un joueur. */
+export interface CharacterPatchEvent {
+  userId: number
+  characterId: number
+  patch: GmCharacterPatch
 }
 
 // ── Encounters ──────────────────────────────────────────────────────────────
@@ -203,6 +223,8 @@ export interface RollEvent {
   /** Les dés lancés puis écartés par un avantage ou une relance. */
   dropped: number[] | null
   damage: { total: number; critical: boolean; fumble: boolean } | null
+  /** Jet en réserve de d6 (`total` = succès). NULL pour un dé seul. */
+  pool: RollPool | null
   createdAt: string
   /** Style de dé du lanceur. Présent sur le flux SSE seulement, pas en base. */
   diceStyle?: unknown
@@ -220,6 +242,7 @@ export interface RollInput {
   /** Les dés lancés puis écartés par un avantage ou une relance. */
   dropped?: number[]
   damage?: { total: number; critical: boolean; fumble: boolean }
+  pool?: RollPool
   /** MJ uniquement : poste le jet au nom d'un monstre (visible MJ seulement) */
   asMonster?: string
 }
@@ -234,8 +257,8 @@ export function fetchCampaignRolls(campaignId: number, viewer = false): Promise<
 
 // ── Repos partagé ───────────────────────────────────────────────────────────
 
-/** Le repos court (1 PR contre des PV) reste une décision de joueur : il n'est pas ici. */
-export type RestKind = 'long' | 'complet'
+/** Repos court, repos long, fin de séance : tous lancés par le MJ pour le groupe. */
+export type RestKind = 'court' | 'long' | 'seance'
 
 export interface RestChange {
   before: number
@@ -244,17 +267,16 @@ export interface RestChange {
 
 export interface RestDelta {
   hp?: RestChange
-  mp?: RestChange
-  pr?: RestChange
+  pc?: RestChange
 }
 
 export interface RestState {
   hpCurrent: number
   hpMax: number
-  mpCurrent: number
-  mpMax: number
-  prCurrent: number
+  pcCurrent: number
   states: EtatId[]
+  abilityUses: Record<string, Record<string, number>>
+  sessionTicks: { success: number; critFail: number }
 }
 
 export interface RestEvent {

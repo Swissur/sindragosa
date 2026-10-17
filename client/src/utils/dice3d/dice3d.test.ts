@@ -139,7 +139,12 @@ describe('planDice', () => {
 
   it('plafonne le nombre de dés à l’écran', () => {
     const many = Array.from({ length: 30 }, () => ({ sides: 6, value: 3 }))
-    expect(planDice(many)).toHaveLength(10)
+    expect(planDice(many)).toHaveLength(15)
+  })
+
+  it('réserve de d6 : seuls les dés à partir de critFrom brillent, un 1 ne fait rien', () => {
+    const plan = planDice([4, 5, 6, 1].map((value) => ({ sides: 6, value, kind: 'domaine', critFrom: 5 })))
+    expect(plan.map((d) => d.outcome)).toEqual([null, 'critical', 'critical', null])
   })
 })
 

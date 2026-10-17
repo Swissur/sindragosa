@@ -22,6 +22,13 @@ describe('isGradedDie', () => {
 })
 
 describe('rollOutcome', () => {
+  it('réserve de d6 : exploit = critique, échec critique = fumble', () => {
+    const pool = (reached: 'exploit' | 'moyenne' | 'echec', critFail = false) => ({ critFrom: 6 as const, reached, critFail })
+    expect(rollOutcome({ kind: 'domaine', die: 0, sides: 6, pool: pool('exploit') })).toBe('critical')
+    expect(rollOutcome({ kind: 'domaine', die: 0, sides: 6, pool: pool('echec', true) })).toBe('fumble')
+    expect(rollOutcome({ kind: 'domaine', die: 0, sides: 6, pool: pool('moyenne') })).toBeNull()
+  })
+
   it('un 20 au bac à sable est un critique', () => {
     expect(rollOutcome({ kind: 'libre', die: 20, sides: 20 })).toBe('critical')
     expect(rollOutcome({ kind: 'libre', die: 1, sides: 20 })).toBe('fumble')

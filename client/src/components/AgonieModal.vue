@@ -4,7 +4,6 @@ import { Skull, Heart, RefreshCw } from 'lucide-vue-next'
 import AppModal from './ui/AppModal.vue'
 import AppButton from './ui/AppButton.vue'
 import { rollDie } from '../utils/dice'
-import { attackDieSides } from '../composables/useCharacter'
 import { dice, revealAfterDice } from '../composables/useDice3D'
 
 defineProps<{ characterName: string }>()
@@ -18,6 +17,10 @@ interface DeathRoll {
   die: number
   result: 'success' | 'failure' | 'critical-save' | 'critical-death'
 }
+
+// TODO (ROADMAP) : l'agonie n'est pas décrite par les règles Sindragosa,
+// le jet de mort d'Arran (d20 ≥ 11) est gardé tel quel en attendant.
+const attackDieSides = 20
 
 const rolls = ref<DeathRoll[]>([])
 
@@ -34,7 +37,7 @@ const verdict = computed<'none' | 'stabilise' | 'death'>(() => {
 
 function roll() {
   if (verdict.value !== 'none') return
-  const sides = attackDieSides.value
+  const sides = attackDieSides
   const die = rollDie(sides)
   let result: DeathRoll['result']
   if (die === sides) result = 'critical-save'

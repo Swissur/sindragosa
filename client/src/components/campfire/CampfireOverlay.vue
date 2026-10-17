@@ -27,10 +27,11 @@ import type { RestKind } from '../../api/campaigns'
 
 type Three = typeof import('three')
 
-/** Chaque repos a son feu. Le complet est plus long, plus large, plus sombre. */
+/** Chaque repos a son feu. Plus le repos est long, plus le feu est grand et la nuit sombre. */
 const SETTINGS: Record<RestKind, { duration: number; scale: number; veil: number; light: number }> = {
+  court: { duration: 3000, scale: 0.8, veil: 0.6, light: 0.8 },
   long: { duration: 4500, scale: 1, veil: 0.72, light: 1 },
-  complet: { duration: 6000, scale: 1.3, veil: 0.82, light: 1.35 },
+  seance: { duration: 6000, scale: 1.3, veil: 0.82, light: 1.35 },
 }
 
 /** Doit rester aligné sur la transition CSS du voile. */

@@ -15,7 +15,7 @@ const KIND_LABELS: Record<string, string> = {
   weapon: 'attaque',
   action: 'action',
   ability: 'capacité',
-  manoeuvre: 'manœuvre',
+  domaine: 'domaine',
   competence: 'compétence',
   libre: 'jet libre',
 }
@@ -132,14 +132,15 @@ function absoluteTime(r: RollEvent): string {
               </span>
             </div>
             <div class="log-detail">
-              {{ detail(r).label }} = {{ detail(r).kept.join('+') }}<span
+              {{ detail(r).label }} = {{ detail(r).kept.join(detail(r).separator) }}<span
                 v-for="(d, i) in detail(r).dropped"
                 :key="i"
                 class="log-dropped"
                 data-testid="roll-log-dropped"
                 >{{ ' ' + d }}</span
               ><template v-if="r.bonus !== 0">{{ ' ' + signedNum(r.bonus) }}</template
-              ><template v-if="r.damage">{{ ' · dégâts ' + r.damage.total }}</template>
+              ><template v-if="r.damage">{{ ' · dégâts ' + r.damage.total }}</template
+              ><template v-if="detail(r).tier">{{ ' · ' + detail(r).tier }}</template>
             </div>
           </div>
           <div class="log-total">

@@ -1,5 +1,6 @@
 import { ref } from 'vue'
-import { fetchCampaignRolls, type RestEvent, type RollEvent } from '../api/campaigns'
+import { fetchCampaignRolls, type CharacterPatchEvent, type RestEvent, type RollEvent } from '../api/campaigns'
+import { applyServerPatch } from './useCharacter'
 import { user } from './useAuth'
 import { receiveRest } from './useRest'
 import { celebrate } from './useCriticalMoment'
@@ -84,8 +85,9 @@ function appendRoll(roll: RollEvent): void {
  */
 export function remoteDiceFor(roll: RollEvent): DieRoll[] {
   const values = roll.rolls?.length ? roll.rolls : [roll.die]
+  const critFrom = roll.pool?.critFrom
   return [
-    ...values.map((value) => ({ sides: roll.sides, value, kind: roll.kind })),
+    ...values.map((value) => ({ sides: roll.sides, value, kind: roll.kind, critFrom })),
     ...(roll.dropped ?? []).map((value) => ({ sides: roll.sides, value, kind: roll.kind, dropped: true })),
   ]
 }
@@ -141,6 +143,15 @@ function connect(campaignId: number, options: { viewer?: boolean } = {}): void {
   // Jets que je n'ai pas le droit de voir (monstres du MJ) : le serveur n'envoie
   // que l'issue et le nom. La table vibre, personne n'apprend le chiffre.
   // Le MJ a fait dormir le groupe : feu de camp pour tout le monde.
+  // Le MJ a réglé une fiche (caracs, rangs, récompense) : si c'est la mienne, je la prends.
+  eventSource.addEventListener('character', (e: MessageEvent) => {
+    try {
+      const event = JSON.parse(e.data as string) as CharacterPatchEvent
+      if (event.userId === user.value?.id) applyServerPatch(event.characterId, event.patch)
+      resetIdleTimer()
+    } catch { /* ignore */ }
+  })
+
   eventSource.addEventListener('rest', (e: MessageEvent) => {
     try {
       receiveRest(JSON.parse(e.data as string) as RestEvent)

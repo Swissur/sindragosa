@@ -31,6 +31,14 @@ export function poolSize(input: PoolInput): number {
 
 export type Difficulty = 'echec' | 'facile' | 'moyenne' | 'difficile' | 'exploit'
 
+export const DIFFICULTY_LABELS: Record<Difficulty, string> = {
+  echec: 'Échec',
+  facile: 'Facile',
+  moyenne: 'Moyenne',
+  difficile: 'Difficile',
+  exploit: 'Exploit',
+}
+
 /** Seuil atteint par un nombre de succès : 1 facile, 2 moyenne, 3 difficile, 4+ exploit. */
 export function difficultyReached(successes: number): Difficulty {
   if (successes >= 4) return 'exploit'

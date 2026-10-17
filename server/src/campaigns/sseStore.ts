@@ -37,11 +37,21 @@ export function broadcastCampaignEvent(campaignId: number, name: string, payload
   }
 }
 
-/** Un 20 ou un 1 naturel sur un dé qui compte (d20 toujours, d12 hors jet libre). */
+/**
+ * Le moment qui fait vibrer la table. Réserve de d6 : un exploit (4 succès ou
+ * plus) ou un échec critique. Jet d'un seul dé : un 20 ou un 1 naturel sur un
+ * dé qui compte (d20 toujours, d12 hors jet libre).
+ */
 export function criticalOutcome(event: Record<string, unknown>): 'critical' | 'fumble' | null {
   const damage = event.damage as { critical?: boolean; fumble?: boolean } | null | undefined
   if (damage?.critical) return 'critical'
   if (damage?.fumble) return 'fumble'
+
+  const pool = event.pool as { reached?: string; critFail?: boolean } | null | undefined
+  if (pool) {
+    if (pool.critFail) return 'fumble'
+    return pool.reached === 'exploit' ? 'critical' : null
+  }
 
   const sides = Number(event.sides)
   const die = Number(event.die)

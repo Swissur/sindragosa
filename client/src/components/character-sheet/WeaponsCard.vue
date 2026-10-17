@@ -1,208 +1,130 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
-import AppCard from "../ui/AppCard.vue";
-import AppInput from "../ui/AppInput.vue";
-import AppButton from "../ui/AppButton.vue";
-import AppSelect from "../ui/AppSelect.vue";
-import { WEAPONS_CATALOG } from "../../data/weaponsCatalog";
-import { MARTIAL_WEAPON_CATEGORIES, type MartialWeaponCategoryId } from "../../data/martialWeaponCategories";
-import type { Character, WeaponRow } from "../../types/character";
+import { Plus, Trash2, Swords } from 'lucide-vue-next'
+import AppCard from '../ui/AppCard.vue'
+import AppInput from '../ui/AppInput.vue'
+import AppSelect from '../ui/AppSelect.vue'
+import AppIconBtn from '../ui/AppIconBtn.vue'
+import { removeWithUndo } from '../../composables/useUndoRemove'
+import { openRollSheet } from '../../composables/useRollSheet'
+import { DOMAINS, domainById } from '../../data/sindragosa/domains'
+import type { Character, WeaponRow } from '../../types/character'
 
-const props = defineProps<{ character: Character }>();
+/**
+ * Armes : dégâts fixes et domaine d'attaque. Taper une arme lance l'attaque ;
+ * dégâts = arme + marge − armure.
+ */
+const props = defineProps<{ character: Character; editing?: boolean; readonly?: boolean }>()
 
-const catalogPick = ref("");
-
-const weaponsByCategory = computed(() =>
-  MARTIAL_WEAPON_CATEGORIES.map((cat) => ({
-    id: cat.id,
-    label: cat.label,
-    weapons: WEAPONS_CATALOG.filter((w) => w.martialFamily === cat.id)
-      .sort((a, b) => a.name.localeCompare(b.name, "fr")),
-  })).filter((g) => g.weapons.length > 0),
-);
-
-function weaponRowFromCatalog(entry: (typeof WEAPONS_CATALOG)[number]): WeaponRow {
-  return {
-    id: crypto.randomUUID(),
-    name: entry.name,
-    attackType: entry.attackType,
-    damageDice: entry.damageDice,
-    damageAbility: entry.damageAbility,
-    martialFamily: entry.martialFamily,
-    rangeMeters: entry.rangeMeters,
-    catalogId: entry.id,
-    notes: entry.notes,
-  };
+function add() {
+  props.character.weapons.push({ id: crypto.randomUUID(), name: 'Arme', damage: 2, domainId: 'melee-bourrine' })
 }
 
-function onCatalogWeaponChange() {
-  const entry = WEAPONS_CATALOG.find((w) => w.id === catalogPick.value);
-  if (!entry) return;
-  props.character.weapons.push(weaponRowFromCatalog(entry));
-  catalogPick.value = "";
-}
-
-function addCustomWeapon() {
-  props.character.weapons.push({
-    id: crypto.randomUUID(),
-    name: "",
-    attackType: "contact",
-    damageDice: "1d6",
-    damageAbility: "strength",
-    martialFamily: "guerre",
-    rangeMeters: null,
-  });
-}
-
-function removeWeapon(i: number) { props.character.weapons.splice(i, 1); }
-
-function damageAbilitySelectValue(w: WeaponRow): string { return w.damageAbility ?? ""; }
-
-function setDamageAbilityFromSelect(w: WeaponRow, v: string) {
-  if (v === "") w.damageAbility = null;
-  else if (v === "strength" || v === "dexterity") w.damageAbility = v;
+function attack(w: WeaponRow) {
+  openRollSheet({ domainId: w.domainId, label: w.name, weapon: w, context: 'fiche' })
 }
 </script>
 
 <template>
-  <AppCard>
-    <div class="card-head">
-      <h2>Armes</h2>
-      <div class="card-head-actions">
-        <AppSelect
-          v-model="catalogPick"
-          class="select weapon-catalog-select"
-          @update:model-value="onCatalogWeaponChange"
-        >
-          <option value="">Ajouter depuis le livre</option>
-          <optgroup v-for="g in weaponsByCategory" :key="g.id" :label="g.label">
-            <option v-for="w in g.weapons" :key="w.id" :value="w.id">{{ w.name }}</option>
-          </optgroup>
-        </AppSelect>
-        <AppButton size="small" @click="addCustomWeapon">+ Perso</AppButton>
-      </div>
-    </div>
-
-    <ul v-if="character.weapons.length" class="weapon-sheet-list">
-      <li v-for="(w, wi) in character.weapons" :key="w.id" class="weapon-sheet-card">
-        <AppInput v-model="w.name" placeholder="Nom de l'arme" />
-        <div class="grid-2 tight">
-          <label class="field">
-            <span>Type</span>
-            <AppSelect
-              class="select"
-              :model-value="w.attackType"
-              @update:model-value="w.attackType = $event as 'contact' | 'distance'"
-            >
-              <option value="contact">Contact</option>
-              <option value="distance">Distance</option>
-            </AppSelect>
-          </label>
-          <label class="field">
-            <span>Catégorie martiale</span>
-            <AppSelect
-              class="select"
-              :model-value="w.martialFamily"
-              @update:model-value="w.martialFamily = $event as MartialWeaponCategoryId"
-            >
-              <option v-for="c in MARTIAL_WEAPON_CATEGORIES" :key="c.id" :value="c.id">{{ c.label }}</option>
-            </AppSelect>
-          </label>
-        </div>
-        <div class="grid-2 tight">
-          <label class="field">
-            <span>Dés de dégâts</span>
-            <AppInput v-model="w.damageDice" placeholder="1d8" />
-          </label>
-          <label class="field">
-            <span>Mod. dégâts</span>
-            <AppSelect
-              class="select"
-              :model-value="damageAbilitySelectValue(w)"
-              @update:model-value="setDamageAbilityFromSelect(w, $event)"
-            >
-              <option value="">Aucun (—)</option>
-              <option value="strength">FOR</option>
-              <option value="dexterity">DEX</option>
-            </AppSelect>
-          </label>
-        </div>
-        <div class="grid-2 tight">
-          <label class="field">
-            <span>Portée (m)</span>
-            <AppInput
-              :model-value="w.rangeMeters ?? ''"
-              type="number"
-              :min="0"
-              :step="1"
-              placeholder="—"
-              @update:model-value="(v: string | number) => w.rangeMeters = v === '' ? null : Number(v)"
-            />
-          </label>
-          <label class="field">
-            <span>Notes</span>
-            <AppInput v-model="w.notes" placeholder="Optionnel" />
-          </label>
-        </div>
-        <AppButton size="small" @click="removeWeapon(wi)">Retirer</AppButton>
+  <AppCard v-if="character.weapons.length || (editing && !readonly)" title="Armes">
+    <template v-if="editing && !readonly" #titleActions>
+      <AppIconBtn title="Ajouter une arme" data-testid="weapon-add" @click="add">
+        <Plus :size="16" />
+      </AppIconBtn>
+    </template>
+    <ul class="rows">
+      <li v-for="(w, i) in character.weapons" :key="w.id" class="row" data-testid="weapon-row">
+        <template v-if="editing && !readonly">
+          <div class="row-edit">
+            <AppInput v-model="w.name" placeholder="Nom" />
+            <div class="row-edit-line">
+              <AppInput v-model="w.damage" type="number" :min="0" class="row-damage" text-align="center" />
+              <AppSelect v-model="w.domainId" class="row-domain">
+                <option v-for="d in DOMAINS" :key="d.id" :value="d.id">{{ d.label }}</option>
+              </AppSelect>
+            </div>
+          </div>
+          <AppIconBtn variant="danger" title="Supprimer" @click="removeWithUndo(character.weapons, i, w.name)">
+            <Trash2 :size="16" />
+          </AppIconBtn>
+        </template>
+        <button v-else type="button" class="weapon" :disabled="readonly" @click="attack(w)">
+          <Swords :size="16" class="weapon-icon" />
+          <span class="weapon-name">{{ w.name }}</span>
+          <span class="weapon-meta">{{ domainById(w.domainId)?.label }} · {{ w.damage }} dégâts</span>
+        </button>
       </li>
     </ul>
-    <p v-else class="muted">Aucune arme listée.</p>
   </AppCard>
 </template>
 
 <style scoped>
-.card-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 0.8rem;
-  gap: 0.6rem;
-}
-
-.card-head h2 { margin: 0; }
-
-.card-head-actions {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.45rem;
-  justify-content: flex-end;
-}
-
-.weapon-catalog-select { min-width: 11rem; max-width: 100%; }
-
-.weapon-sheet-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.65rem; }
-
-.weapon-sheet-card {
-  padding: 0.68rem;
-  border-radius: var(--radius-md);
-  border: 1px dashed var(--border-strong);
+.rows {
+  list-style: none;
+  margin: 0;
+  padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.45rem;
+  gap: var(--space-xs);
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.row-edit {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.row-edit-line {
+  display: flex;
+  gap: var(--space-xs);
+}
+
+.row-damage {
+  width: 4rem;
+}
+
+.row-domain {
+  flex: 1;
+  min-width: 0;
+}
+
+.weapon {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  min-height: 40px;
+  padding: var(--space-xs) var(--space-sm);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
   background: var(--surface-2);
-}
-
-.grid-2 { display: grid; grid-template-columns: 1fr; gap: 0.65rem; }
-
-@media (min-width: 520px) {
-  .grid-2 { grid-template-columns: 1fr 1fr; gap: 0.75rem 0.95rem; }
-}
-
-.grid-2.tight { margin-top: 0.7rem; }
-
-.field { display: flex; flex-direction: column; gap: 0.32rem; font-size: 0.83rem; color: var(--muted); }
-.field > span:first-child { font-weight: 600; }
-
-select.select {
-  appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 0.7rem center;
-  padding-right: 2rem;
+  color: var(--text);
+  font: inherit;
+  text-align: left;
   cursor: pointer;
 }
 
-.muted { color: var(--muted); font-size: 0.9rem; margin: 0; }
+.weapon:disabled {
+  cursor: default;
+}
+
+.weapon-icon {
+  color: var(--accent);
+}
+
+.weapon-name {
+  flex: 1;
+  font-weight: 600;
+}
+
+.weapon-meta {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
 </style>

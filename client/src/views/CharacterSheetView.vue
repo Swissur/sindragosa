@@ -1,62 +1,72 @@
 <script setup lang="ts">
-import { useRoute } from "vue-router";
-import AppPageLayout from "../components/ui/AppPageLayout.vue";
-import AppPageHead from "../components/ui/AppPageHead.vue";
-import AppEmptyState from "../components/ui/AppEmptyState.vue";
-import AppButton from "../components/ui/AppButton.vue";
-import AppTabs from "../components/ui/AppTabs.vue";
-import { useCharacter, loadCharacter } from "../composables/useCharacter";
-import { useSheetEffects } from "../composables/useSheetEffects";
-import { inferProfileFamily } from "../utils/inferProfileFamily";
-import { Skull } from "lucide-vue-next";
-import { computed, ref } from "vue";
+import { ref, watch } from 'vue'
+import { useRoute } from 'vue-router'
+import { ScrollText, BookOpen, Sparkles, Pencil, PencilOff } from 'lucide-vue-next'
+import AppPageLayout from '../components/ui/AppPageLayout.vue'
+import AppPageHead from '../components/ui/AppPageHead.vue'
+import AppEmptyState from '../components/ui/AppEmptyState.vue'
+import AppButton from '../components/ui/AppButton.vue'
+import AppIconBtn from '../components/ui/AppIconBtn.vue'
+import AppTabs from '../components/ui/AppTabs.vue'
+import { useCharacter, loadCharacter } from '../composables/useCharacter'
+import { showToast } from '../composables/useToast'
 
-import IdentityCard from "../components/character-sheet/IdentityCard.vue";
-import AbilitiesCard from "../components/character-sheet/AbilitiesCard.vue";
-import ResourcesCard from "../components/character-sheet/ResourcesCard.vue";
-import CombatCard from "../components/character-sheet/CombatCard.vue";
-import VoiesCard from "../components/character-sheet/VoiesCard.vue";
-import PassifsCard from "../components/character-sheet/PassifsCard.vue";
-import MartialFormationsCard from "../components/character-sheet/MartialFormationsCard.vue";
-import WeaponsCard from "../components/character-sheet/WeaponsCard.vue";
-import EquipmentCard from "../components/character-sheet/EquipmentCard.vue";
-import CompetencesCard from "../components/character-sheet/CompetencesCard.vue";
-import { PR_MAX } from "../composables/useCharacter";
+import HeroCard from '../components/character-sheet/HeroCard.vue'
+import VitalsCard from '../components/character-sheet/VitalsCard.vue'
+import StatsCard from '../components/character-sheet/StatsCard.vue'
+import ResourcesCard from '../components/character-sheet/ResourcesCard.vue'
+import WeaponsCard from '../components/character-sheet/WeaponsCard.vue'
+import SessionTicksBanner from '../components/character-sheet/SessionTicksBanner.vue'
+import DomainsCard from '../components/character-sheet/DomainsCard.vue'
+import DistinctionsCard from '../components/character-sheet/DistinctionsCard.vue'
+import CraftsCard from '../components/character-sheet/CraftsCard.vue'
+import AbilitiesPanel from '../components/abilities/AbilitiesPanel.vue'
 
-const { character, loading, loadError, saveStatus, abilityModifier, computedDef, computedMp, computedHp, computedHpBase, computedHpDv, computedHpConMod, computedHpGrowth, computedDv, computedInitiative, computedPcMax, computedAttackContact, computedAttackDistance, computedAttackMagique } = useCharacter();
-const { sheetClasses } = useSheetEffects(character, computedHp, computedMp, loading);
-const family = computed(() => inferProfileFamily(character.value.paths));
-const route = useRoute();
+const { character, loading, loadError, saveStatus, computedHp, computedInitiative, unlocked } = useCharacter()
+const route = useRoute()
 
-const id = route.query.id ? Number(route.query.id) : undefined;
-loadCharacter(id);
+const id = route.query.id ? Number(route.query.id) : undefined
+loadCharacter(id)
 
-function retryLoadSheet() {
-  loadCharacter(id);
-}
+type TabId = 'heros' | 'savoirs' | 'pouvoirs'
+const activeTab = ref<TabId>('heros')
+const editing = ref(false)
+const newPowers = ref(false)
 
-// ── Onglets ───────────────────────────────────────────────────────────────────
-type TabId = 'identite' | 'voies' | 'combat'
-const activeTab = ref<TabId>('identite')
-
-const TABS: { value: TabId; label: string; icon: string }[] = [
-  { value: 'identite', label: 'Identité', icon: '⚔️' },
-  { value: 'voies', label: 'Voies', icon: '✨' },
-  { value: 'combat', label: 'Combat', icon: '🗡️' },
+const TABS = [
+  { value: 'heros', label: 'Héros', icon: ScrollText },
+  { value: 'savoirs', label: 'Savoirs', icon: BookOpen },
+  { value: 'pouvoirs', label: 'Pouvoirs', icon: Sparkles },
 ]
+
+// Un domaine qui monte peut débloquer des compétences : pastille sur l'onglet Pouvoirs.
+watch(() => unlocked.value.length, (now, before) => {
+  if (loading.value || before === undefined || now <= before) return
+  showToast(now - before > 1 ? `${now - before} nouvelles compétences !` : 'Nouvelle compétence débloquée !')
+  if (activeTab.value !== 'pouvoirs') newPowers.value = true
+})
+
+watch(activeTab, (tab) => { if (tab === 'pouvoirs') newPowers.value = false })
 </script>
 
 <template>
-  <AppPageLayout :class="sheetClasses">
+  <AppPageLayout>
     <template #top-bar>
-      <div class="gv-vignette" aria-hidden="true" />
-      <div class="gv-a-terre-banner" aria-live="polite">
-        <Skull :size="14" /> A terre <Skull :size="14" />
-      </div>
       <AppPageHead>
-        Fiche {{ character.name || "personnage" }}
+        {{ character.name || 'Fiche' }}
+        <template #actions>
+          <AppIconBtn
+            :variant="editing ? 'primary' : 'ghost'"
+            :title="editing ? 'Terminer l’édition' : 'Modifier la fiche'"
+            data-testid="sheet-edit"
+            @click="editing = !editing"
+          >
+            <PencilOff v-if="editing" :size="18" />
+            <Pencil v-else :size="18" />
+          </AppIconBtn>
+        </template>
       </AppPageHead>
-      <p v-if="saveStatus === 'error'" class="save-status error">Erreur de sauvegarde</p>
+      <p v-if="saveStatus === 'error'" class="save-status">Erreur de sauvegarde</p>
     </template>
 
     <AppEmptyState v-if="loading" variant="loading">Chargement…</AppEmptyState>
@@ -64,91 +74,47 @@ const TABS: { value: TabId; label: string; icon: string }[] = [
     <AppEmptyState v-else-if="loadError" variant="error">
       <p>{{ loadError }}</p>
       <template #actions>
-        <AppButton size="small" @click="retryLoadSheet">Réessayer</AppButton>
+        <AppButton size="small" @click="loadCharacter(id)">Réessayer</AppButton>
       </template>
     </AppEmptyState>
 
-    <template v-else-if="!loading && !loadError">
+    <template v-else>
       <AppTabs
+        v-model="activeTab"
         class="sheet-tabs"
-        :model-value="activeTab"
-        :tabs="TABS"
-        @update:model-value="activeTab = $event as TabId"
+        :tabs="TABS.map((t) => ({ ...t, dot: t.value === 'pouvoirs' && newPowers }))"
+        icon-only-mobile
       />
 
-      <!-- Onglet 1 : Identité + Carac + PV & Ressources -->
-      <template v-if="activeTab === 'identite'">
-        <IdentityCard :character="character" />
-        <AbilitiesCard :character="character" :ability-modifier="abilityModifier" />
-        <ResourcesCard
-          :character="character"
-          :computed-mp="computedMp"
-          :computed-hp="computedHp"
-          :computed-hp-base="computedHpBase"
-          :computed-hp-dv="computedHpDv"
-          :computed-hp-con-mod="computedHpConMod"
-          :computed-hp-growth="computedHpGrowth"
-          :family="family"
-          :ability-modifier="abilityModifier"
-          :computed-dv="computedDv"
-          :computed-pc-max="computedPcMax"
-          :pr-max="PR_MAX"
-        />
+      <template v-if="activeTab === 'heros'">
+        <HeroCard :character="character" :editing="editing" />
+        <VitalsCard :character="character" :hp-max="computedHp" :initiative="computedInitiative" :editing="editing" />
+        <StatsCard :character="character" :editing="editing" />
+        <WeaponsCard :character="character" :editing="editing" />
+        <ResourcesCard :character="character" :editing="editing" />
       </template>
 
-      <!-- Onglet 2 : Voies + Compétences -->
-      <template v-if="activeTab === 'voies'">
-        <VoiesCard :character="character" />
-        <PassifsCard :character="character" />
-        <CompetencesCard :character="character" />
+      <template v-if="activeTab === 'savoirs'">
+        <SessionTicksBanner :session-ticks="character.sessionTicks" />
+        <DomainsCard :character="character" :editing="editing" />
+        <DistinctionsCard :character="character" />
+        <CraftsCard :character="character" :editing="editing" />
       </template>
 
-      <!-- Onglet 3 : Combat + Formations martiales + Armes -->
-      <template v-if="activeTab === 'combat'">
-        <CombatCard
-          :character="character"
-          :computed-attack-contact="computedAttackContact"
-          :computed-attack-distance="computedAttackDistance"
-          :computed-attack-magique="computedAttackMagique"
-          :computed-def="computedDef"
-          :computed-initiative="computedInitiative"
-          :ability-modifier="abilityModifier"
-          :family="family"
-        />
-        <EquipmentCard :character="character" />
-        <MartialFormationsCard :character="character" />
-        <WeaponsCard :character="character" />
-      </template>
+      <AbilitiesPanel v-if="activeTab === 'pouvoirs'" :character="character" :unlocked="unlocked" />
     </template>
   </AppPageLayout>
 </template>
 
 <style scoped>
-
 .save-status {
   margin: 0;
   font-size: 0.82rem;
   font-weight: 600;
-}
-
-.save-status.error {
   color: var(--danger);
 }
 
 .sheet-tabs {
-  margin-bottom: 0.85rem;
-}
-
-.btn.small {
-  min-height: 38px;
-  padding: 0.3rem 0.58rem;
-  font-size: 0.82rem;
-}
-
-@media (min-width: 760px) {
-  .card {
-    padding: 1.1rem 1.2rem;
-    margin-bottom: 1rem;
-  }
+  margin-bottom: var(--space-md);
 }
 </style>

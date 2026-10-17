@@ -26,18 +26,18 @@ const KIND_LABELS: Record<RollKind, string> = {
   weapon: 'Arme',
   action: 'Action',
   ability: 'Carac.',
-  manoeuvre: 'Manoeuvre',
+  domaine: 'Domaine',
   competence: 'Compétence',
   libre: 'Libre',
 }
 
 const critCount = computed(() => history.value.filter((e) => rollOutcome(e) === 'critical').length)
 const fumbleCount = computed(() => history.value.filter((e) => rollOutcome(e) === 'fumble').length)
-const d20Avg = computed(() => {
-  const d20Rolls = history.value.filter((e) => e.sides === 20)
-  if (!d20Rolls.length) return null
-  const sum = d20Rolls.reduce((s, e) => s + e.die, 0)
-  return (sum / d20Rolls.length).toFixed(1)
+const avgSuccesses = computed(() => {
+  const pools = history.value.filter((e) => e.pool)
+  if (!pools.length) return null
+  const sum = pools.reduce((s, e) => s + e.total, 0)
+  return (sum / pools.length).toFixed(1)
 })
 
 function formatTime(ts: number): string {
@@ -50,7 +50,7 @@ function detail(entry: RollEntry) {
   return rollDetailParts(entry)
 }
 
-function entryClass(entry: Pick<RollEntry, 'kind' | 'die' | 'sides' | 'damage'>): string {
+function entryClass(entry: Pick<RollEntry, 'kind' | 'die' | 'sides' | 'damage' | 'pool'>): string {
   const outcome = rollOutcome(entry)
   if (outcome === 'critical') return 'entry--critical'
   if (outcome === 'fumble') return 'entry--fumble'
@@ -89,7 +89,7 @@ function entryClass(entry: Pick<RollEntry, 'kind' | 'die' | 'sides' | 'damage'>)
 
     <template v-if="isOpen">
       <div v-if="history.length" class="stats-row">
-        <span class="stat"><span class="stat-label">Moyenne d20</span> <strong>{{ d20Avg }}</strong></span>
+        <span class="stat"><span class="stat-label">Succès moyens</span> <strong>{{ avgSuccesses ?? '–' }}</strong></span>
         <span class="stat stat--crit"><span class="stat-label">Critiques</span> <strong>{{ critCount }}</strong></span>
         <span class="stat stat--fumble"><span class="stat-label">Fumbles</span> <strong>{{ fumbleCount }}</strong></span>
       </div>
@@ -107,7 +107,7 @@ function entryClass(entry: Pick<RollEntry, 'kind' | 'die' | 'sides' | 'damage'>)
           <span class="entry-kind">{{ KIND_LABELS[entry.kind] }}</span>
           <span class="entry-label">{{ entry.label }}</span>
           <span class="entry-die"
-            >{{ detail(entry).label }}={{ detail(entry).kept.join('+') }}<span
+            >{{ detail(entry).label }}={{ detail(entry).kept.join(detail(entry).separator) }}<span
               v-for="(d, i) in detail(entry).dropped"
               :key="i"
               class="entry-dropped"
@@ -119,6 +119,7 @@ function entryClass(entry: Pick<RollEntry, 'kind' | 'die' | 'sides' | 'damage'>)
             <Star v-if="rollOutcome(entry) === 'critical'" :size="13" class="entry-mark" />
             <Skull v-else-if="rollOutcome(entry) === 'fumble'" :size="13" class="entry-mark" />
             <strong>{{ entry.total }}</strong>
+            <template v-if="detail(entry).tier">{{ ' ' + detail(entry).tier }}</template>
           </span>
           <span v-if="entry.damage" class="entry-dmg">
             <template v-if="entry.damage.fumble">Échec critique</template>

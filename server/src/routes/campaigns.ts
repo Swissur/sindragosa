@@ -5,6 +5,8 @@ import { campaigns, campaignMembers, characters, users, encounterTemplates, enco
 import { requireAuth, type AuthRequest } from '../auth/middleware.js'
 import { avatarKind, toAvatarLink } from '../avatarUrl.js'
 import { broadcastCampaignEvent, broadcastCampaignRoll, getClientsForCampaign, isViewerRequest, type SseClient } from '../campaigns/sseStore.js'
+import { parsePool } from '../campaigns/rollPool.js'
+import { pickGmEditable } from '../characters/updatable.js'
 import { applyRest, isRestKind, restDelta, type RestBroadcast } from '../campaigns/rest.js'
 import { dominantColor } from '../campaigns/diceStyle.js'
 import { effectiveDiceStyle } from '../campaigns/diceStyleQuery.js'
@@ -274,6 +276,37 @@ router.get('/:id/members/:userId/character', async (req, res) => {
   const portraitDataUrl = character.portraitImageId ? `/api/images/${character.portraitImageId}` : null
 
   res.json({ ...character, portraitDataUrl })
+})
+
+// PATCH /api/campaigns/:id/members/:userId/character — le MJ règle la fiche d'un joueur
+// (caracs, rangs, récompenses, titres). Le joueur reçoit le patch par SSE pour
+// que sa sauvegarde auto n'écrase pas la modif.
+router.patch('/:id/members/:userId/character', async (req, res) => {
+  const currentUserId = (req as unknown as AuthRequest).userId
+  const campaignId = Number(req.params.id)
+  const targetUserId = Number(req.params.userId)
+
+  const check = await verifyGm(campaignId, currentUserId)
+  if (check === 'not_found') { res.status(404).json({ error: 'Campagne introuvable' }); return }
+  if (check === 'forbidden') { res.status(403).json({ error: 'Réservé au MJ' }); return }
+
+  const patch = pickGmEditable((req.body ?? {}) as Record<string, unknown>)
+  if (Object.keys(patch).length === 0) { res.status(400).json({ error: 'Rien à modifier' }); return }
+
+  const [member] = await db
+    .select({ characterId: campaignMembers.characterId })
+    .from(campaignMembers)
+    .where(and(eq(campaignMembers.campaignId, campaignId), eq(campaignMembers.userId, targetUserId)))
+  if (!member?.characterId) { res.status(404).json({ error: 'Membre ou personnage introuvable' }); return }
+
+  const [updated] = await db
+    .update(characters)
+    .set({ ...(patch as Partial<typeof characters.$inferInsert>), updatedAt: new Date() })
+    .where(eq(characters.id, member.characterId))
+    .returning()
+
+  broadcastCampaignEvent(campaignId, 'character', { userId: targetUserId, characterId: updated.id, patch })
+  res.json(updated)
 })
 
 // ── Helper: verify GM ownership ─────────────────────────────────────────────
@@ -651,6 +684,7 @@ router.post('/:id/rolls', async (req, res) => {
     kind?: string; label?: string; context?: string
     die?: number; sides?: number; bonus?: number; total?: number
     rolls?: number[]; dropped?: number[]; damage?: { total: number; critical: boolean; fumble: boolean }
+    pool?: unknown
     asMonster?: string
   }
   if (typeof body.die !== 'number' || typeof body.sides !== 'number' || typeof body.total !== 'number') {
@@ -707,6 +741,7 @@ router.post('/:id/rolls', async (req, res) => {
     rolls: Array.isArray(body.rolls) ? body.rolls : null,
     dropped: Array.isArray(body.dropped) ? body.dropped : null,
     damage: body.damage ?? null,
+    pool: parsePool(body.pool),
   }).returning()
 
   // Le style du dé voyage avec le jet : les autres membres l'affichent en 3D

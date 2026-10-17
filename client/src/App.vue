@@ -4,6 +4,7 @@ import { computed, defineAsyncComponent, onBeforeUnmount, ref, watch } from "vue
 import { useRoute } from "vue-router";
 import { UserCircle, Loader2, ScrollText, Swords, Backpack, BookOpenText, Map, Palette, Dices, History, Users, Wrench, Tv } from "lucide-vue-next";
 import AppToast from "./components/ui/AppToast.vue";
+import RollSheet from "./components/roll/RollSheet.vue";
 import DiceBar from "./components/DiceBar.vue";
 import RollLogDrawer from "./components/roll-log/RollLogDrawer.vue";
 import Dice3DOverlay from "./components/dice3d/Dice3DOverlay.vue";
@@ -205,6 +206,7 @@ if (savedStyle) {
     <CampfireOverlay />
     <DevToolsSheet v-if="isDev" v-model="devToolsOpen" />
     <RestSummaryModal />
+    <RollSheet v-if="user" />
     <AppToast />
   </div>
 </template>

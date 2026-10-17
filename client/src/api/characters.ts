@@ -2,49 +2,40 @@ import type { Character } from '../types/character'
 
 const BASE = '/api/characters'
 
+/** Une ligne de la table `character`, telle que l'API la renvoie. */
 export interface ServerCharacter {
   id: number
   userId: number
   isActive: boolean
   name: string
-  profile: string
   histoire: string
-  people: string
-  level: number
+  race: string
+  portraitImageId: number | null
   hpMax: number
   hpCurrent: number
-  mpMax: number
-  mpCurrent: number | undefined
-  defense: number
-  initiativeBonus: number
+  hpBonus: number
+  armor: number
   str: number
-  dex: number
-  con: number
+  agi: number
+  end: number
   int: number
   wis: number
   cha: number
-  skills: Character['skills']
+  domains: Character['domains']
+  specialties: Character['specialties']
+  advancedDomains: Character['advancedDomains']
+  titles: string[]
+  abilityUses: Character['abilityUses']
+  sessionTicks: Character['sessionTicks']
+  resources: Character['resources']
+  crafts: Character['crafts']
   weapons: Character['weapons']
-  martialFormations: Character['martialFormations']
-  paths: Character['paths']
-  mysticTalent: string | null | undefined
-  armorId: string | null | undefined
-  shieldId: string | null | undefined
-  defenseBonus: number | undefined
-  attackContactBonus: number | undefined
-  attackDistanceBonus: number | undefined
-  attackMagiqueBonus: number | undefined
-  hpLevelGains: number[] | undefined
-  hpBonus: number | undefined
-  items: Character['items'] | undefined
-  goldCoins: number | undefined
-  silverCoins: number | undefined
-  copperCoins: number | undefined
-  pcCurrent: number | undefined
-  prCurrent: number | undefined
-  states: Character['states'] | undefined
-  competences: Character['competences'] | undefined
-  portraitImageId: number | null | undefined
+  items: Character['items']
+  goldCoins: number
+  silverCoins: number
+  copperCoins: number
+  pcCurrent: number
+  states: Character['states']
 }
 
 export async function fetchCharacter(id: number): Promise<ServerCharacter> {

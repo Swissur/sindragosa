@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { Heart, Sparkles, HeartPulse, Moon, Sunrise } from 'lucide-vue-next'
+import { Heart, Clover, Coffee, Moon, Sunrise } from 'lucide-vue-next'
 import AppModal from '../ui/AppModal.vue'
 import AppButton from '../ui/AppButton.vue'
 import { restSummary, closeRestSummary } from '../../composables/useRest'
@@ -23,28 +23,25 @@ const lines = computed(() => {
   if (!delta) return []
   const rows: { key: string; label: string; icon: typeof Heart; change: RestChange }[] = []
   if (delta.hp) rows.push({ key: 'hp', label: 'Points de vie', icon: Heart, change: delta.hp })
-  if (delta.mp) rows.push({ key: 'mp', label: 'Points de magie', icon: Sparkles, change: delta.mp })
-  if (delta.pr) rows.push({ key: 'pr', label: 'Points de récupération', icon: HeartPulse, change: delta.pr })
+  if (delta.pc) rows.push({ key: 'pc', label: 'Points de chance', icon: Clover, change: delta.pc })
   return rows
 })
 
-const title = computed(() =>
-  restSummary.value?.kind === 'complet' ? 'Repos complet' : 'La nuit passe',
-)
+const COPY = {
+  court: { title: 'Une courte pause', subtitle: 'Le temps de souffler et de recharger.', icon: Coffee },
+  long: { title: 'La nuit passe', subtitle: 'Six heures de sommeil, le feu se meurt.', icon: Moon },
+  seance: { title: 'Fin de séance', subtitle: 'Le groupe repart à neuf, la chance revient.', icon: Sunrise },
+} as const
 
-const subtitle = computed(() =>
-  restSummary.value?.kind === 'complet'
-    ? 'Le groupe repart à neuf.'
-    : 'Six heures de sommeil, le feu se meurt.',
-)
+const copy = computed(() => COPY[restSummary.value?.kind ?? 'long'])
 </script>
 
 <template>
-  <AppModal v-model="open" :title="title" description="Ce que le repos a changé sur ta fiche.">
+  <AppModal v-model="open" :title="copy.title" description="Ce que le repos a changé sur ta fiche.">
     <div class="rest">
       <p class="rest-lead">
-        <component :is="restSummary?.kind === 'complet' ? Sunrise : Moon" :size="16" />
-        {{ subtitle }}
+        <component :is="copy.icon" :size="16" />
+        {{ copy.subtitle }}
       </p>
 
       <ul v-if="lines.length" class="rest-list">

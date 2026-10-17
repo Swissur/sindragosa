@@ -96,7 +96,6 @@ cp server/.env.example server/.env
 ```
 
 Puis ouvre `server/.env` et :
-- dans `DATABASE_URL`, remplace le port `5432` par `5440` (c'est le port publié par `docker-compose.yml`) ;
 - remplace `JWT_SECRET` par une longue chaîne aléatoire.
 
 ---

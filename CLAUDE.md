@@ -271,7 +271,7 @@ Ne jamais monter ce routeur en prod, ne jamais retirer le double verrou.
 |---|---|
 | API (Express) | `http://localhost:3566` |
 | Client (Vite) | `http://localhost:5173` — proxy `/api` vers l'API |
-| PostgreSQL | `localhost:5432`, base `arrandnd` |
+| PostgreSQL | `localhost:5441`, base `sindragosa` (conteneur `sindragosa-postgres-1`, distinct de la base Arran) |
 
 ### Appeler l'API authentifiée
 
@@ -294,7 +294,7 @@ Attention : la table des utilisateurs s'appelle `"user"` (singulier, mot réserv
 ## Tests end-to-end
 
 `npm run e2e` — Playwright, headless, une seule commande. Elle build, prépare
-la base dédiée `arrandnd_e2e`, démarre le serveur de prod sur le port 3567,
+la base dédiée `sindragosa_e2e`, démarre le serveur de prod sur le port 3567,
 joue les tests, coupe tout. Elle ne touche jamais à la base de dev ni au
 `npm run dev` qui tourne dans ton terminal.
 

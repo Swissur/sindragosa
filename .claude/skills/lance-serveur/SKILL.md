@@ -12,17 +12,11 @@ Exécute toi-même toutes les étapes, depuis la racine du projet, sans demander
 ## 1. Prérequis
 
 - `docker info` doit répondre. Sinon : demande d'ouvrir Docker Desktop, attendre le logo vert, et arrête-toi là.
-- `server/.env` doit exister. Sinon : `cp server/.env.example server/.env`, remplace le port `5432` par `5440` dans `DATABASE_URL` et `JWT_SECRET` par `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`.
+- `server/.env` doit exister. Sinon : `cp server/.env.example server/.env`, puis remplace `JWT_SECRET` par `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`.
 
-## 2. Base de données (port 5440)
+## 2. Base de données (port 5441)
 
-Si un conteneur tourne déjà en publiant le port 5440, réutilise-le tel quel — c'est souvent celui d'une autre copie du projet (`C:\JDRAPP\arran-dnd-main\arran-dnd`), qui partage la même base :
-
-```bash
-docker ps --filter publish=5440 --format '{{.Names}}'
-```
-
-Sinon : `docker compose up -d`.
+`docker compose up -d` : conteneur `sindragosa-postgres-1`, base `sindragosa`. Elle est propre à Sindragosa : ne jamais réutiliser la base d’Arran (port 5440, base `arrandnd`).
 
 ## 3. Image de l'app
 
@@ -40,7 +34,7 @@ Si le build échoue, montre les dernières lignes d'erreur et arrête-toi.
 docker rm -f sindragosa 2>/dev/null
 docker run -d --name sindragosa -p 8080:8080 --env-file server/.env \
   -e PORT=8080 \
-  -e DATABASE_URL=postgres://arran:arran_dev@host.docker.internal:5440/arrandnd \
+  -e DATABASE_URL=postgres://sindragosa:sindragosa_dev@host.docker.internal:5441/sindragosa \
   sindragosa
 ```
 

@@ -1,11 +1,12 @@
-# Deploys on push to main.
-# 1. Create app (once): fly apps create arran-dnd  # or change `app` in fly.toml
+# Déploiement manuel uniquement (Actions > Deploy to Fly.io > Run workflow) :
+# Sindragosa n'a pas encore son app Fly. Ne jamais viser l'app arran-dnd, qui reste
+# celle d'Arran avec sa propre base.
+# 1. Create app (once): fly apps create sindragosa  # matches `app` in fly.toml
 # 2. Secrets (once): fly secrets set JWT_SECRET=...  # see server/.env.example
 # 3. GitHub repo secret: FLY_API_TOKEN from `fly tokens create deploy`
 name: Deploy to Fly.io
 on:
-  push:
-    branches: [main]
+  workflow_dispatch:
 
 jobs:
   test:

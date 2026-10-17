@@ -4,12 +4,12 @@
  */
 export const E2E_PORT = Number(process.env.E2E_PORT) || 3567
 
-export const E2E_DB_NAME = 'arrandnd_e2e'
+export const E2E_DB_NAME = 'sindragosa_e2e'
 
 /** Même utilisateur Postgres que le dev, autre base. */
 export const E2E_DATABASE_URL =
   process.env.E2E_DATABASE_URL ??
-  `postgres://arran:arran_dev@localhost:5432/${E2E_DB_NAME}`
+  `postgres://sindragosa:sindragosa_dev@localhost:5441/${E2E_DB_NAME}`
 
 export const BASE_URL = `http://localhost:${E2E_PORT}`
 

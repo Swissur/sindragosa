@@ -1,12 +1,14 @@
+# Base locale de Sindragosa, distincte de celle d'Arran (projet, port, volume).
+name: sindragosa
 services:
   postgres:
     image: postgres:16-alpine
     environment:
-      POSTGRES_DB: arrandnd
-      POSTGRES_USER: arran
-      POSTGRES_PASSWORD: arran_dev
+      POSTGRES_DB: sindragosa
+      POSTGRES_USER: sindragosa
+      POSTGRES_PASSWORD: sindragosa_dev
     ports:
-      - "5440:5432"
+      - "5441:5432"
     volumes:
       - pg_data:/var/lib/postgresql/data
 

@@ -35,7 +35,7 @@ L’objectif est de réduire la paperasse (calculs, consultation des règles, su
 ## Démarrage rapide
 
 ```bash
-cp server/.env.example server/.env   # puis ajuster DATABASE_URL (port 5440, voir docker-compose.yml) et JWT_SECRET
+cp server/.env.example server/.env   # puis remplacer JWT_SECRET
 npm install
 docker compose up -d
 npm run dev

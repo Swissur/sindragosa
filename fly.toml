@@ -1,5 +1,6 @@
-# Rename `app` to match `fly apps create <name>` or run `fly launch` once to bind.
-app = "arran-dnd"
+# App Fly propre à Sindragosa (à créer : fly apps create sindragosa), avec sa propre base.
+# Ne jamais remettre arran-dnd : c'est l'app Arran, qui continue de vivre.
+app = "sindragosa"
 primary_region = "cdg"
 
 [build]

@@ -14,27 +14,32 @@ export const SEED_GM = 'mj-dev'
 
 /**
  * Fiches volontairement variées : c'est là qu'on attrape les bugs.
- * - une armure lourde → initiative très basse, voire négative
- * - un perso à 2 PV → teste l'agonie et les seuils de couleur
- * - deux DEX identiques → teste les égalités d'initiative
+ * - Bracco, armure lourde et peu agile → initiative basse (4)
+ * - Orlane à 2 PV → teste l'agonie et les seuils de couleur
+ * - Nym et Kaeliss à 6 d'initiative → teste les égalités
  *
- * Les voies fixent la famille (donc le dé de vie), et les jets de croissance
- * donnent exactement le hpMax affiché : base (dé max + mod CON) + Σ(jet + mod CON).
- * Sans ça, la fiche recalcule d'autres PV que ceux du seed.
+ * hpMax suit la formule du moteur (client/src/utils/sindragosa/combat.ts) :
+ * 20 + 2 par rang en Force/Endurance (5 en Résistance physique) + 8 par point
+ * d'Endurance gagné depuis la création. Sinon la fiche recalcule d'autres PV.
  */
 export const SEED_PLAYERS = [
   {
     username: 'bracco',
     character: {
-      name: 'Bracco Pouce-Cassé', profile: 'Guerrier', people: 'Nain', level: 5,
-      hpMax: 48, hpCurrent: 48, defense: 18, armorId: 'cotte-mailles', shieldId: 'grand-bouclier',
-      str: 17, dex: 12, con: 16, int: 8, wis: 10, cha: 9, initiativeBonus: 0,
-      // Combattant (d10), CON +3 : 13 + (7+3) + (5+3) + (6+3) + (5+3) = 48
-      paths: [
-        { id: 'voie-du-bastion', name: 'Voie du bastion', rank: 3 },
-        { id: 'voie-de-la-guerre', name: 'Voie de la guerre', rank: 2 },
+      name: 'Bracco Pouce-Cassé', race: 'nain',
+      str: 2, agi: 2, end: 3, int: 2, wis: 2, cha: 2, armor: 4,
+      // 20 + Mêlée 3×2 + Armures 2×2 + Athlétisme 1×2 + Résistance 2×5 = 42
+      hpMax: 42, hpCurrent: 42,
+      domains: {
+        'melee-bourrine': { rank: 3, ticks: 1 },
+        'armures-boucliers': { rank: 2, ticks: 0 },
+        athletisme: { rank: 1, ticks: 0 },
+        'resistance-physique': { rank: 2, ticks: 2 },
+      },
+      specialties: [
+        { id: 's-haches', domainId: 'melee-bourrine', name: 'Haches', level: 2, ticks: 0 },
+        { id: 's-boucliers', domainId: 'melee-bourrine', name: 'Boucliers', level: 1, ticks: 1 },
       ],
-      hpLevelGains: [7, 5, 6, 5],
       // Deux états posés d'entrée : de quoi voir les pastilles sans cliquer.
       states: ['renverse', 'desarme'] as string[],
     },
@@ -42,50 +47,61 @@ export const SEED_PLAYERS = [
   {
     username: 'nym',
     character: {
-      name: 'Nym la Vive', profile: 'Voleur', people: 'Halfelin', level: 5,
-      hpMax: 30, hpCurrent: 30, defense: 16, armorId: 'cuir', shieldId: null,
-      str: 9, dex: 18, con: 11, int: 13, wis: 12, cha: 14, initiativeBonus: 2,
-      // Aventurière (d8), CON +0 : 8 + 6 + 4 + 7 + 5 = 30
-      // Acrobatie au rang 5 : elle a « Dextérité héroïque », le passif qui
-      // monte la DEX de 2 (18 -> 20) et donne l'avantage aux tests de DEX.
-      // C'est le seul perso du bac à sable avec un passif de rang 5.
-      paths: [
-        { id: 'voie-de-lescrime', name: "Voie de l'escrime", rank: 3 },
-        { id: 'voie-de-lacrobatie', name: "Voie de l'acrobatie", rank: 5 },
+      name: 'Nym la Vive', race: 'elfe-nuit',
+      str: 2, agi: 3, end: 2, int: 2, wis: 2, cha: 2, armor: 1,
+      hpMax: 20, hpCurrent: 20,
+      domains: {
+        'acrobatie-furtivite': { rank: 3, ticks: 2 },
+        'combat-precision': { rank: 3, ticks: 0 },
+        'escamotage-crochetage': { rank: 2, ticks: 0 },
+        'perception-sens': { rank: 1, ticks: 0 },
+      },
+      // Spécialité Maître : critiques sur 5 et 6.
+      specialties: [
+        { id: 's-dagues', domainId: 'combat-precision', name: 'Dagues', level: 3, ticks: 0 },
+        { id: 's-ombre', domainId: 'acrobatie-furtivite', name: "Discrétion dans l'ombre", level: 2, ticks: 1 },
       ],
-      hpLevelGains: [6, 4, 7, 5],
     },
   },
   {
     username: 'orlane',
     character: {
       // À 2 PV : teste l'agonie, les seuils de couleur et le tri des mourants.
-      name: 'Orlane du Vent', profile: 'Magicien', people: 'Humain', level: 5,
-      hpMax: 26, hpCurrent: 2, mpMax: 12, mpCurrent: 10, defense: 12, armorId: null, shieldId: null,
-      str: 8, dex: 14, con: 10, int: 18, wis: 13, cha: 12, initiativeBonus: 0,
-      // Mage avec des sorts : teste le coût en PM et la concentration.
-      // Deux voies mystiques → famille mystique (d6), CON +0 : 6 + 5 + 6 + 4 + 5 = 26
-      paths: [
-        { id: 'voie-de-la-magie-elementaliste', name: 'Voie de la magie élémentaliste', rank: 4 },
-        { id: 'voie-du-mysticisme', name: 'Voie du mysticisme', rank: 1 },
+      name: 'Orlane du Vent', race: 'gnome',
+      str: 2, agi: 2, end: 2, int: 3, wis: 2, cha: 2, armor: 0,
+      // 20 + Volonté & Récupération 1×2 = 22
+      hpMax: 22, hpCurrent: 2,
+      domains: {
+        'magie-profane-arcanes': { rank: 3, ticks: 3 },
+        'histoire-geographie': { rank: 1, ticks: 1 },
+        'volonte-recuperation': { rank: 1, ticks: 0 },
+      },
+      advancedDomains: { pyromancie: { rank: 1, ticks: 0 } },
+      specialties: [
+        { id: 's-arcane', domainId: 'magie-profane-arcanes', name: "Sorts d'Arcane", level: 1, ticks: 1 },
       ],
-      hpLevelGains: [5, 6, 4, 5],
+      resources: [{ id: 'r-mana', name: 'Mana', current: 10, max: 12 }],
       states: ['affaibli'] as string[],
     },
   },
   {
     username: 'kaeliss',
     character: {
-      // Même DEX que Nym, sans le bonus : teste les égalités d'initiative.
-      name: 'Kaeliss Feuille-Grise', profile: 'Rôdeur', people: 'Elfe sylvain', level: 5,
-      hpMax: 34, hpCurrent: 34, defense: 15, armorId: 'cuir-renforce', shieldId: null,
-      str: 12, dex: 18, con: 12, int: 11, wis: 15, cha: 10, initiativeBonus: 0,
-      // Aventurière (d8), CON +1 : 9 + (6+1) + (5+1) + (4+1) + (6+1) = 34
-      paths: [
-        { id: 'voie-de-larcherie', name: "Voie de l'archerie", rank: 3 },
-        { id: 'voie-de-lacrobatie', name: "Voie de l'acrobatie", rank: 2 },
+      // Même initiative que Nym (6) : teste les égalités.
+      name: 'Kaeliss Feuille-Grise', race: 'troll',
+      str: 2, agi: 3, end: 2, int: 2, wis: 2, cha: 2, armor: 2,
+      // 20 + Survie 2×2 = 24
+      hpMax: 24, hpCurrent: 24,
+      domains: {
+        'tir-lancer': { rank: 3, ticks: 0 },
+        'survie-milieu-hostile': { rank: 2, ticks: 1 },
+        'acrobatie-furtivite': { rank: 1, ticks: 0 },
+        'perception-sens': { rank: 1, ticks: 1 },
+      },
+      specialties: [
+        { id: 's-arcs', domainId: 'tir-lancer', name: 'Arcs', level: 2, ticks: 0 },
       ],
-      hpLevelGains: [6, 5, 4, 6],
+      titles: [] as string[],
     },
   },
 ] as const

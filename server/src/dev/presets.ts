@@ -1,7 +1,7 @@
 import { eq } from 'drizzle-orm'
 import { db } from '../db/index.js'
 import { combats, combatParticipants, campaignMembers, characters } from '../db/schema.js'
-import { computeInitiative } from '../routes/combats.js'
+import { computeInitiative } from '../combats/initiative.js'
 import { turnOrder, firstActiveId, step } from '../combats/turnOrder.js'
 import { DEV_BESTIARY, type DevMonster } from './bestiary.js'
 import { startingPosition } from '../combats/placement.js'
@@ -78,7 +78,7 @@ export async function createPresetCombat(campaignId: number, preset: PresetId): 
       initiative: preset === 'egalites' ? 12 : computeInitiative(char),
       hpMax: null,
       hpCurrent: null,
-      def: char.defense,
+      def: char.armor,
       ...startingPosition('player', playerSlot++),
     }).returning({ id: combatParticipants.id })
     firstPlayerId ??= row.id

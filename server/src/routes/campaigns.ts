@@ -761,10 +761,10 @@ router.post('/:id/rest', async (req, res) => {
       name: characters.name,
       hpCurrent: characters.hpCurrent,
       hpMax: characters.hpMax,
-      mpCurrent: characters.mpCurrent,
-      mpMax: characters.mpMax,
-      prCurrent: characters.prCurrent,
+      pcCurrent: characters.pcCurrent,
       states: characters.states,
+      abilityUses: characters.abilityUses,
+      sessionTicks: characters.sessionTicks,
     })
     .from(campaignMembers)
     .innerJoin(characters, eq(characters.id, campaignMembers.characterId))
@@ -773,21 +773,20 @@ router.post('/:id/rest', async (req, res) => {
   const deltas: RestBroadcast['deltas'] = []
   for (const row of rows) {
     const before = {
-      hpCurrent: row.hpCurrent, hpMax: row.hpMax,
-      mpCurrent: row.mpCurrent, mpMax: row.mpMax,
-      prCurrent: row.prCurrent, states: row.states,
+      hpCurrent: row.hpCurrent, hpMax: row.hpMax, pcCurrent: row.pcCurrent,
+      states: row.states, abilityUses: row.abilityUses, sessionTicks: row.sessionTicks,
     }
     const after = applyRest(before, kind)
     const delta = restDelta(before, after)
     deltas.push({ userId: row.userId, characterName: row.name, delta, after })
-    if (Object.keys(delta).length === 0 && row.states.length === 0) continue
     await db
       .update(characters)
       .set({
         hpCurrent: after.hpCurrent,
-        mpCurrent: after.mpCurrent,
-        prCurrent: after.prCurrent,
+        pcCurrent: after.pcCurrent,
         states: after.states,
+        abilityUses: after.abilityUses,
+        sessionTicks: after.sessionTicks,
       })
       .where(eq(characters.id, row.id))
   }

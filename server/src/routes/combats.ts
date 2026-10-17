@@ -12,21 +12,7 @@ import { turnOrder, firstActiveId, step } from '../combats/turnOrder.js'
 import { startingPosition, clampToBoard } from '../combats/placement.js'
 import { isEtatId } from '../combats/etats.js'
 import { sanitizeObstacles } from '../combats/obstacles.js'
-
-// Armor/shield lookup for initiative calculation (mirrors client armorsCatalog.ts)
-const ARMOR_DEF: Record<string, number> = {
-  'tissu-matelasse': 1, 'cuir': 2, 'cuir-renforce': 3,
-  'chemise-mailles': 4, 'cotte-mailles': 5, 'demi-plaque': 6, 'armure-plaques': 7,
-}
-const SHIELD_DEF: Record<string, number> = {
-  'petit-bouclier': 1, 'grand-bouclier': 2,
-}
-
-export function computeInitiative(char: { dex: number; armorId: string | null; shieldId: string | null; initiativeBonus: number }): number {
-  const armorDef = char.armorId ? (ARMOR_DEF[char.armorId] ?? 0) : 0
-  const shieldDef = char.shieldId ? (SHIELD_DEF[char.shieldId] ?? 0) : 0
-  return char.dex - armorDef - shieldDef + (char.initiativeBonus ?? 0)
-}
+import { computeInitiative } from '../combats/initiative.js'
 
 const router = Router()
 
@@ -77,15 +63,11 @@ async function insertPlayerParticipant(
     kind: 'player',
     userId: member.userId,
     name: char.name,
-    initiative: computeInitiative({
-      dex: char.dex,
-      armorId: char.armorId,
-      shieldId: char.shieldId,
-      initiativeBonus: char.initiativeBonus,
-    }),
+    initiative: computeInitiative(char),
     hpMax: null,
     hpCurrent: null,
-    def: char.defense,
+    // Pour un PJ, « def » porte son armure physique (AP) — renommage prévu à l'étape 7 du plan 31.
+    def: char.armor,
     ...startingPosition('player', slot),
   })
   return true

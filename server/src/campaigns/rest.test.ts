@@ -1,76 +1,67 @@
 import { describe, expect, it } from 'vitest'
-import { applyRest, isRestKind, restDelta, PR_MAX, type RestState } from './rest.js'
+import { applyRest, isRestKind, restDelta, type RestState } from './rest.js'
 
 function state(over: Partial<RestState> = {}): RestState {
   return {
     hpCurrent: 7,
     hpMax: 24,
-    mpCurrent: 2,
-    mpMax: 12,
-    prCurrent: 3,
-    states: [],
+    pcCurrent: 0,
+    states: ['affaibli'],
+    abilityUses: { combat: { 30: 1 }, 'repos-court': { 11: 1 }, 'repos-long': { 40: 1 }, seance: { 123: 1 } },
+    sessionTicks: { success: 2, critFail: 1 },
     ...over,
   }
 }
 
-describe('applyRest — repos long', () => {
-  it('rend tous les PM et un seul PR, sans toucher aux PV', () => {
-    const after = applyRest(state(), 'long')
+describe('applyRest — repos court', () => {
+  it('vide les usages par combat et par repos court, rien d\'autre', () => {
+    const after = applyRest(state(), 'court')
+    expect(Object.keys(after.abilityUses).sort()).toEqual(['repos-long', 'seance'])
     expect(after.hpCurrent).toBe(7)
-    expect(after.mpCurrent).toBe(12)
-    expect(after.prCurrent).toBe(4)
-  })
-
-  it('ne dépasse jamais le plafond de PR', () => {
-    expect(applyRest(state({ prCurrent: PR_MAX }), 'long').prCurrent).toBe(PR_MAX)
-  })
-
-  it('laisse un personnage à 0 PV à 0 PV', () => {
-    expect(applyRest(state({ hpCurrent: 0 }), 'long').hpCurrent).toBe(0)
-  })
-
-  it('lève les états', () => {
-    expect(applyRest(state({ states: ['affaibli'] }), 'long').states).toEqual([])
+    expect(after.states).toEqual(['affaibli'])
+    expect(after.pcCurrent).toBe(0)
   })
 })
 
-describe('applyRest — repos complet', () => {
-  it('remet PV, PM et PR au maximum', () => {
-    const after = applyRest(state({ states: ['affaibli'] }), 'complet')
-    expect(after).toMatchObject({
-      hpCurrent: 24,
-      mpCurrent: 12,
-      prCurrent: PR_MAX,
-      states: [],
-    })
+describe('applyRest — repos long', () => {
+  it('vide aussi les usages par repos long, remonte les PV et lève les états', () => {
+    const after = applyRest(state(), 'long')
+    expect(Object.keys(after.abilityUses)).toEqual(['seance'])
+    expect(after.hpCurrent).toBe(24)
+    expect(after.states).toEqual([])
   })
 
-  it('ne fait rien à un personnage déjà au maximum', () => {
-    const full = state({ hpCurrent: 24, mpCurrent: 12, prCurrent: PR_MAX })
-    expect(applyRest(full, 'complet')).toEqual(full)
+  it('ne touche ni à la chance ni aux coches de la séance', () => {
+    const after = applyRest(state(), 'long')
+    expect(after.pcCurrent).toBe(0)
+    expect(after.sessionTicks).toEqual({ success: 2, critFail: 1 })
+  })
+})
+
+describe('applyRest — fin de séance', () => {
+  it('remet tout : usages, PV, chance à 2, coches à 0', () => {
+    const after = applyRest(state(), 'seance')
+    expect(after.abilityUses).toEqual({})
+    expect(after.hpCurrent).toBe(24)
+    expect(after.pcCurrent).toBe(2)
+    expect(after.sessionTicks).toEqual({ success: 0, critFail: 0 })
   })
 })
 
 describe('restDelta', () => {
-  it("n'écrit que les ressources qui ont bougé", () => {
+  it('ne rapporte que ce qui a changé', () => {
     const before = state()
-    expect(restDelta(before, applyRest(before, 'long'))).toEqual({
-      mp: { before: 2, after: 12 },
-      pr: { before: 3, after: 4 },
+    expect(restDelta(before, applyRest(before, 'court'))).toEqual({})
+    expect(restDelta(before, applyRest(before, 'seance'))).toEqual({
+      hp: { before: 7, after: 24 },
+      pc: { before: 0, after: 2 },
     })
-  })
-
-  it('rend un delta vide quand rien ne change', () => {
-    const full = state({ hpCurrent: 24, mpCurrent: 12, prCurrent: PR_MAX })
-    expect(restDelta(full, applyRest(full, 'complet'))).toEqual({})
   })
 })
 
 describe('isRestKind', () => {
-  it('refuse tout ce qui ne vient pas du MJ', () => {
-    expect(isRestKind('long')).toBe(true)
-    expect(isRestKind('complet')).toBe(true)
-    expect(isRestKind('court')).toBe(false)
-    expect(isRestKind(undefined)).toBe(false)
+  it('accepte court, long, seance', () => {
+    expect(['court', 'long', 'seance'].every(isRestKind)).toBe(true)
+    expect(isRestKind('complet')).toBe(false)
   })
 })

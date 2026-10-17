@@ -9,22 +9,7 @@ function username(req: unknown): string {
 }
 import { broadcastUserCombats } from '../combats/sseStore.js'
 import { pickUpdatable } from '../characters/updatable.js'
-type SkillRow = { name: string; rank: number }
-type CompetenceRow = { id: string; name: string; ability: string | null; bonus: number }
-type PathRow = { id?: string; name: string; rank: number; kind?: string; notes?: string }
-type ItemRow = { id: string; name: string; description?: string; quantity: number }
-type WeaponRow = {
-  id: string
-  name: string
-  attackType: 'contact' | 'distance'
-  damageDice: string
-  damageAbility: 'strength' | 'dexterity' | null
-  martialFamily: string
-  rangeMeters: number | null
-  catalogId?: string
-  notes?: string
-  handRole?: 'main' | 'offhand'
-}
+type CharacterInsert = typeof characters.$inferInsert
 
 const router = Router()
 router.use(requireAuth)
@@ -51,70 +36,21 @@ router.get('/:id', async (req, res) => {
   res.json(row)
 })
 
-// POST /api/characters — crée un personnage
+// POST /api/characters — crée un personnage.
+// Les valeurs par défaut de Sindragosa (caracs à 2, 20 PV, 2 points de chance…)
+// viennent de la base ; le client peut en préciser certaines (nom, race, caracs).
 router.post('/', async (req, res) => {
   const userId = (req as unknown as AuthRequest).userId
-  const body = req.body as Partial<{
-    name: string
-    profile: string
-    histoire: string
-    people: string
-    level: number
-    hpMax: number
-    hpCurrent?: number
-    mpMax: number
-    defense: number
-    initiativeBonus: number
-    attackContactBonus: number
-    attackDistanceBonus: number
-    attackMagiqueBonus: number
-    str: number; dex: number; con: number; int: number; wis: number; cha: number
-    skills: SkillRow[]
-    weapons: WeaponRow[]
-    martialFormations: string[]
-    paths: PathRow[]
-    mysticTalent: string | null
-    armorId: string | null
-    shieldId: string | null
-    items: ItemRow[]
-    goldCoins: number
-    silverCoins: number
-    copperCoins: number
-    pcCurrent: number
-    prCurrent: number
-    competences: CompetenceRow[]
-  }>
+  const body = pickUpdatable((req.body ?? {}) as Record<string, unknown>) as Partial<CharacterInsert>
 
   const existing = await db.select({ id: characters.id }).from(characters).where(eq(characters.userId, userId)).limit(1)
   const isFirst = existing.length === 0
 
-  const dex = body.dex ?? 10
-  const hpMax = body.hpMax ?? 10
   const [row] = await db.insert(characters).values({
+    ...body,
+    hpCurrent: typeof body.hpCurrent === 'number' ? body.hpCurrent : (body.hpMax ?? 20),
     userId,
     isActive: isFirst,
-    name: body.name ?? 'Nouveau héros',
-    profile: body.profile ?? '',
-    histoire: body.histoire ?? '',
-    people: body.people ?? '',
-    level: body.level ?? 1,
-    hpMax,
-    hpCurrent: typeof body.hpCurrent === 'number' ? body.hpCurrent : hpMax,
-    mpMax: body.mpMax ?? 0,
-    defense: body.defense ?? 12,
-    // Base initiative score = DEX (Terres d’Arran); default follows dex when omitted
-    initiativeBonus: body.initiativeBonus ?? dex,
-    str: body.str ?? 10,
-    dex,
-    con: body.con ?? 10,
-    int: body.int ?? 10,
-    wis: body.wis ?? 10,
-    cha: body.cha ?? 10,
-    skills: body.skills ?? [],
-    weapons: body.weapons ?? [],
-    martialFormations: body.martialFormations ?? [],
-    paths: body.paths ?? [],
-    mysticTalent: body.mysticTalent ?? null,
   }).returning()
 
   console.log(`[character] created: user=${username(req)} name="${row.name}"`)
@@ -126,44 +62,7 @@ router.put('/:id', async (req, res) => {
   const userId = (req as unknown as AuthRequest).userId
   const id = Number(req.params.id)
   const rawBody = (req.body ?? {}) as Record<string, unknown>
-  type UpdatableBody = Partial<{
-    name: string
-    profile: string
-    histoire: string
-    people: string
-    level: number
-    hpMax: number
-    hpCurrent: number
-    mpMax: number
-    mpCurrent: number
-    defense: number
-    initiativeBonus: number
-    attackContactBonus: number
-    attackDistanceBonus: number
-    attackMagiqueBonus: number
-    defenseBonus: number
-    str: number; dex: number; con: number; int: number; wis: number; cha: number
-    skills: SkillRow[]
-    weapons: WeaponRow[]
-    martialFormations: string[]
-    paths: PathRow[]
-    mysticTalent: string | null
-    armorId: string | null
-    shieldId: string | null
-    items: ItemRow[]
-    goldCoins: number
-    silverCoins: number
-    copperCoins: number
-    pcCurrent: number
-    prCurrent: number
-    states: string[]
-    competences: CompetenceRow[]
-    portraitImageId: number | null
-    hpLevelGains: number[]
-    hpBonus: number
-  }>
-
-  const body = pickUpdatable(rawBody) as UpdatableBody
+  const body = pickUpdatable(rawBody) as Partial<CharacterInsert>
 
   const [row] = await db
     .update(characters)

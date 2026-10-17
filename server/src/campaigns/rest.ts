@@ -1,66 +1,52 @@
 /**
- * Repos partagé — la règle, et rien d'autre.
+ * Repos et fin de séance, lancés par le MJ pour tout le groupe (plans/31 § 6).
  *
- * Deux repos seulement passent par le MJ : ceux qui s'appliquent à tout le
- * monde sans coût ni choix. Le repos court (5 min, 1 PR contre des PV) reste
- * une décision de joueur et vit sur la fiche, pas ici.
+ * Chaque repos vide les usages des compétences pour certaines périodes
+ * (`abilityUses` est rangé par période, donc pas besoin du catalogue ici).
+ * Hypothèse à confirmer : le repos long et la fin de séance remontent les PV au max.
  */
 
-/** PR max de base (CO / Terres d'Arran). */
-export const PR_MAX = 5
-
-export type RestKind = 'long' | 'complet'
+export type RestKind = 'court' | 'long' | 'seance'
 
 export function isRestKind(value: unknown): value is RestKind {
-  return value === 'long' || value === 'complet'
+  return value === 'court' || value === 'long' || value === 'seance'
+}
+
+/** Points de chance rendus à chaque nouvelle séance. */
+export const LUCK_PER_SESSION = 2
+
+/** Périodes d'usage remises à zéro par chaque repos (le plus long inclut les plus courts). */
+export const RESET_PERIODS: Record<RestKind, string[]> = {
+  court: ['combat', 'repos-court'],
+  long: ['combat', 'repos-court', 'repos-long', 'jour'],
+  seance: ['combat', 'repos-court', 'repos-long', 'jour', 'seance'],
 }
 
 /** Ce qu'un repos peut toucher sur une fiche. */
 export interface RestState {
   hpCurrent: number
   hpMax: number
-  mpCurrent: number
-  mpMax: number
-  prCurrent: number
+  pcCurrent: number
   states: string[]
+  abilityUses: Record<string, Record<string, number>>
+  sessionTicks: { success: number; critFail: number }
 }
 
-/**
- * Applique un repos et rend le nouvel état.
- *
- * - `long` : la règle stricte de la nuit — tous les PM, +1 PR, **aucun PV**.
- *   Les PV ne remontent que par PR dépensés ou par soins, c'est ce qui donne
- *   leur poids aux PR.
- * - `complet` : maison-règle du MJ entre deux sessions — tout au maximum.
- *
- * Les PC ne sont jamais touchés ici : ils reviennent au passage de niveau
- * (règle), et leur maximum se calcule côté client, qui seul connaît la famille
- * de profil. Le repos complet les remet à neuf depuis le navigateur.
- */
 export function applyRest(state: RestState, kind: RestKind): RestState {
-  if (kind === 'complet') {
-    return {
-      ...state,
-      hpCurrent: state.hpMax,
-      mpCurrent: state.mpMax,
-      prCurrent: PR_MAX,
-      states: [],
-    }
-  }
+  const abilityUses = { ...state.abilityUses }
+  for (const period of RESET_PERIODS[kind]) delete abilityUses[period]
 
-  return {
-    ...state,
-    mpCurrent: state.mpMax,
-    prCurrent: Math.min(PR_MAX, state.prCurrent + 1),
-    states: [],
-  }
+  if (kind === 'court') return { ...state, abilityUses }
+
+  const rested = { ...state, abilityUses, hpCurrent: state.hpMax, states: [] }
+  if (kind === 'long') return rested
+  return { ...rested, pcCurrent: LUCK_PER_SESSION, sessionTicks: { success: 0, critFail: 0 } }
 }
 
-/** Ce qui a bougé, pour la modal du joueur. Une clé absente = rien n'a changé. */
+/** Ce qui a bougé, pour la modale du joueur. Une clé absente = rien n'a changé. */
 export interface RestDelta {
   hp?: { before: number; after: number }
-  mp?: { before: number; after: number }
-  pr?: { before: number; after: number }
+  pc?: { before: number; after: number }
 }
 
 /** Ce qui part sur le flux SSE : de quoi jouer l'animation et rafraîchir la fiche. */
@@ -76,14 +62,7 @@ export interface RestBroadcast {
 
 export function restDelta(before: RestState, after: RestState): RestDelta {
   const delta: RestDelta = {}
-  if (before.hpCurrent !== after.hpCurrent) {
-    delta.hp = { before: before.hpCurrent, after: after.hpCurrent }
-  }
-  if (before.mpCurrent !== after.mpCurrent) {
-    delta.mp = { before: before.mpCurrent, after: after.mpCurrent }
-  }
-  if (before.prCurrent !== after.prCurrent) {
-    delta.pr = { before: before.prCurrent, after: after.prCurrent }
-  }
+  if (before.hpCurrent !== after.hpCurrent) delta.hp = { before: before.hpCurrent, after: after.hpCurrent }
+  if (before.pcCurrent !== after.pcCurrent) delta.pc = { before: before.pcCurrent, after: after.pcCurrent }
   return delta
 }

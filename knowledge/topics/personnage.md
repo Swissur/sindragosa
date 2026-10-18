@@ -92,7 +92,7 @@ Force de personnalité, leadership, illusion et magie de l'Ombre/Fél.
 
 ## Domaines avancés
 
-- Un domaine avancé **s'ouvre** quand ses prérequis sont réunis (domaines de base ou autres domaines avancés), ou quand le personnage débloque la **compétence du même nom** (Ivresse du Combat, Danse des Lames). Ceux qui restent fermés ne s'affichent pas au joueur.
+- Un domaine avancé **s'ouvre** quand ses prérequis sont réunis (domaines de base ou autres domaines avancés), sauf ceux qui portent le nom d'une **compétence** (Ivresse du Combat, Danse des Lames) : ils s'ouvrent seulement quand le personnage la débloque (décidé le 2026-10-18). Ceux qui restent fermés ne s'affichent pas au joueur.
 - Une fois ouvert, il part du rang 0 et **progresse comme un domaine** (mêmes paliers de coches).
 - Son **jet** : la plus haute des caractéristiques liées à ses prérequis + son rang. Pas de spécialité.
 - Prérequis de chacun : `client/src/data/sindragosa/domains.ts` (table du plan 31 § 7).

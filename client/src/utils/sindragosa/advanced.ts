@@ -1,9 +1,11 @@
 /**
  * Domaines avancés (décidé le 2026-10-18) :
  * - ils s'ouvrent quand leurs prérequis (domaines de base ou autres domaines
- *   avancés) sont réunis, ou quand le personnage débloque la compétence du même nom ;
+ *   avancés) sont réunis ; ceux qui ont une compétence du même nom (Ivresse du
+ *   Combat, Danse des Lames) s'ouvrent seulement par elle ;
  * - leur jet utilise la plus haute des caractéristiques liées à leurs prérequis.
  */
+import { ABILITIES } from '../../data/sindragosa/abilities'
 import { ADVANCED_DOMAINS, advancedDomainById, domainById, type AdvancedDomain, type StatId } from '../../data/sindragosa/domains'
 import type { Ability } from '../../data/sindragosa/types'
 import type { Stats } from '../../types/character'
@@ -34,13 +36,14 @@ export function homonymAbility(domain: AdvancedDomain, abilities: Ability[]): Ab
 }
 
 /**
- * Domaines avancés ouverts : prérequis réunis, compétence homonyme débloquée,
- * ou déjà entamés (rang ou coches donnés par le MJ).
+ * Domaines avancés ouverts : déjà entamés (rang donné par le MJ), sinon
+ * - s'il existe une compétence du même nom, seulement quand elle est débloquée ;
+ * - sinon, quand ses prérequis sont réunis.
  */
 export function unlockedAdvancedDomains(state: ProgressState, unlockedAbilities: Ability[]): AdvancedDomain[] {
-  return ADVANCED_DOMAINS.filter((d) =>
-    (state.advancedRanks[d.id] ?? 0) > 0
-    || d.prerequisites.every((p) => meetsPrerequisite(state, p))
-    || !!homonymAbility(d, unlockedAbilities),
-  )
+  return ADVANCED_DOMAINS.filter((d) => {
+    if ((state.advancedRanks[d.id] ?? 0) > 0) return true
+    if (homonymAbility(d, ABILITIES)) return !!homonymAbility(d, unlockedAbilities)
+    return d.prerequisites.every((p) => meetsPrerequisite(state, p))
+  })
 }

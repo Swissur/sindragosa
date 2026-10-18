@@ -32,6 +32,14 @@ describe('ouverture', () => {
     expect(ids(unlockedAdvancedDomains(empty, [ivresse]))).toEqual(['ivresse-combat'])
   })
 
+  it('un domaine qui a une compétence homonyme ne s’ouvre que par elle', () => {
+    // Nym : Combat de précision 3 + Acrobatie 3, mais pas Combat à deux armes (Expert).
+    const nym = { ...empty, domainRanks: { 'combat-precision': 3, 'acrobatie-furtivite': 3 } }
+    expect(ids(unlockedAdvancedDomains(nym, []))).not.toContain('danse-lames')
+    const danse = ABILITIES.find((a) => a.name === 'Danse des lames')!
+    expect(ids(unlockedAdvancedDomains(nym, [danse]))).toContain('danse-lames')
+  })
+
   it('un domaine déjà entamé reste ouvert', () => {
     expect(ids(unlockedAdvancedDomains({ ...empty, advancedRanks: { chronomancie: 1 } }, []))).toEqual(['chronomancie'])
   })
@@ -53,12 +61,12 @@ describe('les 22 domaines avancés sont atteignables', () => {
   })
 
   it('aucune boucle, et chacun a au moins une caractéristique pour son jet', () => {
-    // Tous les domaines de base au rang 5 : le moteur doit tout ouvrir de proche en proche.
+    // Tous les domaines de base au rang 5 et toutes les compétences : le moteur doit tout ouvrir de proche en proche.
     const maxed: ProgressState = { ...empty, domainRanks: Object.fromEntries(DOMAINS.map((d) => [d.id, 5])) }
     const open = new Set<string>()
     for (let pass = 0; pass < ADVANCED_DOMAINS.length; pass++) {
       const state = { ...maxed, advancedRanks: Object.fromEntries([...open].map((id) => [id, 5])) }
-      for (const d of unlockedAdvancedDomains(state, [])) open.add(d.id)
+      for (const d of unlockedAdvancedDomains(state, ABILITIES)) open.add(d.id)
     }
     expect(open.size).toBe(ADVANCED_DOMAINS.length)
     for (const d of ADVANCED_DOMAINS) expect(advancedStats(d.id).length, d.id).toBeGreaterThan(0)

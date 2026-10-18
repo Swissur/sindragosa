@@ -5,10 +5,11 @@ import { ArrowLeft, BookOpen, Sparkles, Crown, Check, Lock } from 'lucide-vue-ne
 import { fetchCampaign, fetchMemberCharacter, type CampaignMember } from '../api/campaigns'
 import { user } from '../composables/useAuth'
 import { toCharacter } from '../composables/useCharacter'
-import { ADVANCED_DOMAINS } from '../data/sindragosa/domains'
+import { ADVANCED_DOMAINS, type AdvancedDomain } from '../data/sindragosa/domains'
+import { ABILITIES } from '../data/sindragosa/abilities'
 import { TITLES } from '../data/sindragosa/titles'
 import { prerequisiteLabel, unlockedAbilities } from '../utils/sindragosa/prerequisites'
-import { unlockedAdvancedDomains } from '../utils/sindragosa/advanced'
+import { homonymAbility, unlockedAdvancedDomains } from '../utils/sindragosa/advanced'
 import { progressState } from '../utils/sindragosa/sheet'
 import type { Character } from '../types/character'
 import AppPageLayout from '../components/ui/AppPageLayout.vue'
@@ -57,7 +58,12 @@ const openAdvanced = computed(() => {
   if (!character.value) return new Set<string>()
   return new Set(unlockedAdvancedDomains(progressState(character.value), unlocked.value).map((d) => d.id))
 })
-const ownedTitles = computed(() => new Set(character.value?.titles ?? []))
+/** Comment s'ouvre un domaine avancé : sa compétence homonyme s'il en a une, sinon ses prérequis. */
+function advancedHowTo(d: AdvancedDomain): string {
+  const ability = homonymAbility(d, ABILITIES)
+  return ability ? `Compétence : ${ability.name}` : d.prerequisites.map(prerequisiteLabel).join(' · ')
+}
+const ownedTitles =computed(() => new Set(character.value?.titles ?? []))
 
 type TabId = 'competences' | 'avances' | 'titres'
 const activeTab = ref<TabId>('competences')
@@ -119,7 +125,7 @@ const TABS = [
             </template>
             <strong>{{ d.label }}</strong>
           </span>
-          <span class="row-meta">{{ d.prerequisites.map(prerequisiteLabel).join(' · ') }}</span>
+          <span class="row-meta">{{ advancedHowTo(d) }}</span>
         </li>
       </ul>
     </AppCard>

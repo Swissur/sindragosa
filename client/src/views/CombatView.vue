@@ -83,17 +83,27 @@ const activeTab = ref<CombatTab>("timeline");
 
 // L'onglet Actions n'existe que pour les joueurs. Le log des jets vit dans le
 // tiroir global (App.vue), il n'a plus d'onglet ici.
+// Tablette et ordinateur : l'ordre du combat et le champ de bataille sur le
+// même écran, côte à côte, pas en onglets. Le téléphone garde les onglets.
+const splitQuery = window.matchMedia("(min-width: 768px)");
+const split = ref(splitQuery.matches);
+const onSplitChange = (e: MediaQueryListEvent) => { split.value = e.matches; };
+splitQuery.addEventListener("change", onSplitChange);
+onBeforeUnmount(() => splitQuery.removeEventListener("change", onSplitChange));
+
 const combatTabs = computed<AppTab[]>(() => [
   { value: "timeline", label: "Combat", icon: LayoutList },
   ...(isGm.value ? [] : [{ value: "actions", label: "Mes actions", icon: Zap }]),
-  { value: "map", label: "Champ de bataille", icon: Map },
+  ...(split.value ? [] : [{ value: "map", label: "Champ de bataille", icon: Map }]),
 ]);
 
 // La carte 3D coûte un contexte WebGL et un sol de 1152 px à peindre : on ne
-// la construit pas tant que personne n'a ouvert l'onglet.
+// la construit pas tant que personne n'a ouvert l'onglet (ou que l'écran
+// n'est pas assez large pour l'afficher d'office).
 const mapEverOpened = ref(false);
-watch(activeTab, (tab) => {
-  if (tab === "map") mapEverOpened.value = true;
+watch([activeTab, split], ([tab, isSplit]) => {
+  if (isSplit && tab === "map") activeTab.value = "timeline";
+  if (tab === "map" || isSplit) mapEverOpened.value = true;
 }, { immediate: true });
 
 // Expanded card (click to toggle)
@@ -383,7 +393,7 @@ function goBack() {
 </script>
 
 <template>
-  <AppPageLayout mode="scroll" class="combat-page">
+  <AppPageLayout mode="scroll" :width="split ? 'full' : 'default'" class="combat-page">
     <template #top-bar>
       <AppPageHead>
         <template #actions>
@@ -412,15 +422,22 @@ function goBack() {
 
       <template v-else-if="combat">
         <!-- Tabs: Timeline / Actions (joueur) -->
-        <AppTabs :model-value="activeTab" :tabs="combatTabs" @update:model-value="activeTab = $event as CombatTab" />
+        <AppTabs
+          v-if="combatTabs.length > 1"
+          :model-value="activeTab"
+          :tabs="combatTabs"
+          @update:model-value="activeTab = $event as CombatTab"
+        />
 
+        <div class="combat-body" :class="{ 'combat-body--split': split }">
         <!-- Tab: Champ de bataille 3D -->
         <!-- Montée au premier affichage, puis gardée : un v-if reconstruisait
              toute la scène three.js (sol 1152px, décor, 3 canvas par pion) à
              chaque passage d'onglet, et fuyait ses textures au passage. -->
         <BattleMapTab
           v-if="mapEverOpened"
-          v-show="activeTab === 'map'"
+          v-show="split || activeTab === 'map'"
+          class="combat-map"
           :combat="combat"
           :is-gm="isGm"
         />
@@ -659,6 +676,7 @@ function goBack() {
         </div>
 
         </div>
+        </div>
 
       </template>
     </div>
@@ -893,6 +911,23 @@ function goBack() {
 .combat-columns {
   display: flex;
   flex-direction: column;
+}
+
+.combat-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+/* Côte à côte : l'ordre du combat à gauche, la carte à droite. */
+.combat-body--split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+  align-items: start;
+}
+
+.combat-body--split .combat-map {
+  order: 2;
 }
 
 .combat-content {

@@ -4,7 +4,7 @@ import { computed, useSlots } from "vue";
 const props = withDefaults(
   defineProps<{
     mode?: "scroll" | "full";
-    width?: "default" | "wide";
+    width?: "default" | "wide" | "full";
   }>(),
   {
     mode: "scroll",
@@ -49,6 +49,11 @@ const classes = computed(() => [
 
 .page-layout--w-wide {
   max-width: 800px;
+}
+
+/* Écrans à deux colonnes (combat sur tablette / ordinateur). */
+.page-layout--w-full {
+  max-width: 1400px;
 }
 
 /* ── Scroll mode (default) ── */

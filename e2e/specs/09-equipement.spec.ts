@@ -52,26 +52,39 @@ test('une arme équipée donne une attaque dans les compétences et dans Mes act
   }
 })
 
-test('un objet fabriqué arrive dans l’inventaire', async ({ browser }) => {
+test('fabriquer utilise les composants et met l’objet dans l’inventaire', async ({ browser }) => {
   const ctx = await browser.newContext({ storageState: stateFor('orlane') })
   const page = await ctx.newPage()
   // Tous les dés font 6 : le jet de fabrication réussit à coup sûr.
   await page.addInitScript(() => { Math.random = () => 0.99 })
   const orlane = await activeCharacter(page)
+  // Pointe de lance renforcée (forge, rang 1) : 1 Lingot de Fer brut + 1 Lanière de cuir.
+  const lingots = { id: 'e2e-lingot', name: 'Lingots de fer brut', quantity: 2, type: 'composant' }
+  const laniere = { id: 'e2e-laniere', name: 'Lanière de cuir', quantity: 1, type: 'composant' }
   try {
-    await page.request.put(`/api/characters/${orlane.id}`, { data: { crafts: { forge: 1 } } })
+    await page.request.put(`/api/characters/${orlane.id}`, { data: { crafts: { forge: 1 }, items: [] } })
     await page.goto('/personnage')
     await page.getByRole('tab', { name: 'Domaines', exact: true }).click()
     await page.getByText('Forge & Métallurgie').click()
-    await page.getByTitle('Fabriquer').first().click()
+    // Sans composants, impossible de fabriquer.
+    await expect(page.getByTestId('craft-forge-r1-01')).toBeDisabled()
+
+    await page.request.put(`/api/characters/${orlane.id}`, { data: { items: [lingots, laniere] } })
+    await page.reload()
+    await page.getByRole('tab', { name: 'Domaines', exact: true }).click()
+    await page.getByText('Forge & Métallurgie').click()
+    await page.getByTestId('craft-forge-r1-01').click()
 
     const saved = page.waitForResponse(isCharacterPut)
     await page.getByTestId('roll-launch').click()
     await expect(page.getByTestId('roll-dice')).toBeVisible({ timeout: 20_000 })
     await saved
 
-    const items = (await activeCharacter(page)).items as { name: string }[]
-    expect(items.map((i) => i.name)).toContain('Pointe de lance renforcée')
+    const items = (await activeCharacter(page)).items as { name: string; quantity: number }[]
+    expect(items.map((i) => [i.name, i.quantity])).toEqual([
+      ['Lingots de fer brut', 1],
+      ['Pointe de lance renforcée', 1],
+    ])
   } finally {
     await page.request.put(`/api/characters/${orlane.id}`, { data: { crafts: {}, items: orlane.items } })
     await ctx.close()

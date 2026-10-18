@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
-import { craftDomainId, recipesFor } from './crafting'
+import { componentKey, componentNeeds, consumeComponents, craftDomainId, hasComponents, recipesFor } from './crafting'
+import type { ItemRow } from '../../types/character'
 import { CRAFTS } from '../../data/sindragosa/crafts'
 
 describe('craftDomainId', () => {
@@ -26,5 +27,38 @@ describe('recipesFor', () => {
 
   it('un métier hybride donne toutes ses recettes', () => {
     expect(recipesFor('hybride', 1, catalog).map((r) => r.id)).toEqual(['c'])
+  })
+})
+
+describe('composants', () => {
+  const recipe = {
+    id: 'r', craft: 'forge', rank: 1, name: 'Épée', batch: null, effect: '',
+    components: [{ qty: 3, name: 'Lingots de Fer brut' }, { qty: 1, name: 'Bois dur' }],
+  }
+  const items: ItemRow[] = [
+    { id: 'a', name: 'Lingot de fer brut', quantity: 2, type: 'composant' },
+    { id: 'b', name: 'Lingots de Fer brut', quantity: 2, type: 'composant' },
+    { id: 'c', name: 'Bois dur', quantity: 1, type: 'composant' },
+    { id: 'd', name: 'Potion', quantity: 1, type: 'consommable' },
+  ]
+
+  it('singulier, pluriel, casse et accents ne comptent pas', () => {
+    expect(componentKey('Lingots de Fer brut')).toBe(componentKey('lingot de fer brut'))
+    expect(componentKey('Cuirs épais')).toBe(componentKey('Cuir epais'))
+  })
+
+  it('compte ce que l’inventaire contient', () => {
+    expect(componentNeeds(items, recipe)).toEqual([
+      { name: 'Lingots de Fer brut', qty: 3, have: 4 },
+      { name: 'Bois dur', qty: 1, have: 1 },
+    ])
+    expect(hasComponents(items, recipe)).toBe(true)
+    expect(hasComponents(items.slice(1), recipe)).toBe(false)
+  })
+
+  it('consomme les quantités et retire les objets épuisés', () => {
+    const after = consumeComponents(items, recipe)
+    expect(after.map((i) => [i.id, i.quantity])).toEqual([['b', 1], ['d', 1]])
+    expect(items[0].quantity).toBe(2)
   })
 })

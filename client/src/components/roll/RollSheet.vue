@@ -16,6 +16,7 @@ import { rollPool, DIFFICULTY_LABELS, type PoolResult } from '../../utils/sindra
 import { rollSetup, poolSummary, tickReasonFor, SPECIALTY_LEVEL_LABELS, type RollMode } from '../../utils/sindragosa/rollSetup'
 import { applyTick, type TickTarget } from '../../utils/sindragosa/sheet'
 import { itemFromRecipe, weaponDamage } from '../../utils/sindragosa/equipment'
+import { consumeComponents, hasComponents } from '../../utils/sindragosa/crafting'
 
 /**
  * Feuille de jet Sindragosa (plans/32) : on choisit domaine, spécialité,
@@ -70,10 +71,19 @@ const domainLabel = (id: string) => domainById(id)?.label ?? advancedDomainById(
 
 const title = computed(() => rollRequest.value?.label || domainLabel(domainId.value) || 'Jet')
 
+/** Fabrication : il faut avoir les composants du patron pour lancer. */
+const missingComponents = computed(() => {
+  const recipe = rollRequest.value?.recipe
+  return !!recipe && !hasComponents(character.value.items, recipe)
+})
+
 async function roll() {
   const s = setup.value
-  if (!s || s.count === 0 || rolling.value) return
+  if (!s || s.count === 0 || rolling.value || missingComponents.value) return
   rolling.value = true
+  // Les composants sont utilisés dès le jet, qu'il réussisse ou non.
+  const recipe = rollRequest.value?.recipe
+  if (recipe) character.value.items = consumeComponents(character.value.items, recipe)
   const r = rollPool(s.count, s.specialtyLevel)
   const spent = Math.min(luck.value, character.value.pcCurrent)
   character.value.pcCurrent -= spent
@@ -90,11 +100,12 @@ async function roll() {
   ticked.value = false
   rolling.value = false
   // Fabrication réussie (au moins 1 succès) : l'objet arrive dans l'inventaire du fabricant.
-  const recipe = rollRequest.value?.recipe
   if (recipe && r.successes > 0) {
     const item = itemFromRecipe(recipe)
     character.value.items.push(item)
     showToast(`${item.name}${item.quantity > 1 ? ` ×${item.quantity}` : ''} rejoint ton inventaire !`)
+  } else if (recipe) {
+    showToast('Fabrication ratée : les composants sont perdus.')
   }
   const specialty = specialties.value.find((x) => x.id === specialtyId.value)
   addRoll({
@@ -191,12 +202,13 @@ const weaponHint = computed(() => {
         <AppButton
           variant="primary"
           block
-          :disabled="!setup || setup.count === 0 || rolling"
+          :disabled="!setup || setup.count === 0 || rolling || missingComponents"
           data-testid="roll-launch"
           @click="roll"
         >
           <Dices :size="18" /> Lancer
         </AppButton>
+        <p v-if="missingComponents" class="roll-note" data-testid="roll-missing-components">Il manque des composants.</p>
       </template>
 
       <template v-else>

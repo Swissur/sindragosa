@@ -4,7 +4,9 @@ Source : `docs/regles/Artisanat (Sindragosa).pdf`. Catalogue : `client/src/data/
 
 ## Fabriquer
 
-**Réunir les composants de la recette, puis réussir un jet du domaine du métier** (le premier domaine cité dans sa base). Un jet réussi (au moins 1 succès) met l'objet **directement dans l'inventaire** du fabricant, avec son type déduit du patron (arme et son gabarit, armure et son AP, consommable, composant). Les composants ne sont pas décomptés par l'app.
+**Réunir les composants de la recette, puis réussir un jet du domaine du métier** (le premier domaine cité dans sa base). - Il faut **avoir les composants** dans l'inventaire pour lancer le jet (singulier et pluriel se valent : « Lingot de Fer brut » = « Lingots de Fer brut »).
+- Les composants sont **consommés à chaque jet**, réussi ou raté.
+- Un jet réussi (au moins 1 succès) met l'objet **directement dans l'inventaire** du fabricant, avec son type déduit du patron (arme et son gabarit, armure et son AP, consommable, composant).
 
 - Les **métiers de base** ont des rangs de 1 à 5 : on accède aux recettes de son rang et des rangs inférieurs.
 - Les **métiers hybrides** croisent deux domaines ou plus ; leurs recettes n'ont pas de rang.

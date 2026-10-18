@@ -7,7 +7,7 @@ import AppSelect from '../ui/AppSelect.vue'
 import AppStepper from '../ui/AppStepper.vue'
 import AppIconBtn from '../ui/AppIconBtn.vue'
 import { CRAFTS, RECIPES } from '../../data/sindragosa/crafts'
-import { craftDomainId, recipesFor } from '../../utils/sindragosa/crafting'
+import { componentNeeds, craftDomainId, hasComponents, recipesFor } from '../../utils/sindragosa/crafting'
 import { openRollSheet } from '../../composables/useRollSheet'
 import { showToast } from '../../composables/useToast'
 import type { Character } from '../../types/character'
@@ -77,11 +77,21 @@ function craft(craftId: string, recipeName: string) {
           <div class="recipe-text">
             <strong>{{ r.name }}<template v-if="r.batch"> (×{{ r.batch }})</template></strong>
             <span class="recipe-components">
-              {{ r.components.map((x) => `${x.qty} ${x.name}`).join(', ') }}
+              <span
+                v-for="(n, ci) in componentNeeds(character.items, r)"
+                :key="ci"
+                :class="n.have >= n.qty ? 'component--ok' : 'component--missing'"
+              >{{ ci > 0 ? ', ' : '' }}{{ n.have }}/{{ n.qty }} {{ n.name }}</span>
             </span>
             <span class="recipe-effect">{{ r.effect }}</span>
           </div>
-          <AppIconBtn v-if="!readonly" title="Fabriquer" @click="craft(k.craft.id, r.name)">
+          <AppIconBtn
+            v-if="!readonly"
+            :title="hasComponents(character.items, r) ? 'Fabriquer' : 'Composants manquants'"
+            :disabled="!hasComponents(character.items, r)"
+            :data-testid="`craft-${r.id}`"
+            @click="craft(k.craft.id, r.name)"
+          >
             <Dices :size="16" />
           </AppIconBtn>
         </li>
@@ -133,6 +143,10 @@ function craft(craftId: string, recipeName: string) {
 .recipe-components {
   color: var(--muted);
   font-size: 0.8rem;
+}
+
+.component--missing {
+  color: var(--danger);
 }
 
 .recipe-effect {

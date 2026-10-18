@@ -14,7 +14,7 @@ Décidé le 2026-10-18.
 
   Plus un bonus éventuel (patron, enchantement). Dégâts infligés = dégâts de l'arme + marge − armure.
 - **Armure Physique (AP)** = somme des armures **équipées** + bonus des compétences (réglé à la main).
-- **Fabrication** : un jet réussi (au moins 1 succès) met l'objet directement dans l'inventaire du fabricant. Les composants ne sont pas décomptés (pas suivis par l'app).
+- **Fabrication** : il faut avoir les composants dans l'inventaire pour lancer le jet ; ils sont consommés à chaque jet, réussi ou raté. Un jet réussi (au moins 1 succès) met l'objet directement dans l'inventaire du fabricant.
 
 ## Objets
 

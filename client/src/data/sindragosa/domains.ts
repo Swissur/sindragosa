@@ -120,6 +120,7 @@ export const ADVANCED_DOMAINS: AdvancedDomain[] = [
  * Noms de spécialités équivalents : les PDF écrivent parfois la même spécialité
  * de deux façons. Les alternatives « A/B » et entre parenthèses sont déjà lues
  * par `specialtyNameVariants` ; ne figurent ici que les vrais synonymes.
+ * Le 1er nom de chaque groupe est celui du catalogue : c'est lui qu'affichent les prérequis.
  */
 export const SPECIALTY_ALIASES: string[][] = [
   ['Boucliers', 'Bouclier'],

@@ -35,6 +35,12 @@ export function specialtyNameVariants(name: string): Set<string> {
 
 const ALIAS_GROUPS = SPECIALTY_ALIASES.map((g) => new Set(g.map(normalizeName)))
 
+/** Nom affiché d'une spécialité : celui du catalogue (1er de son groupe d'alias), pour que MJ et joueur lisent le même. */
+export function catalogSpecialtyName(name: string): string {
+  const n = normalizeName(name)
+  return SPECIALTY_ALIASES.find((g) => g.some((alias) => normalizeName(alias) === n))?.[0] ?? name
+}
+
 /** Une spécialité porte-t-elle le nom exigé (en tenant compte des variantes des deux côtés) ? */
 export function specialtyMatches(owned: string, required: string): boolean {
   const accepted = specialtyNameVariants(required)
@@ -72,7 +78,7 @@ export function prerequisiteLabel(p: Prerequisite): string {
     case 'advanced':
       return `${advancedDomainById(p.id)?.label ?? p.id} ${p.rank}`
     case 'specialty':
-      return `${p.name} (${LEVELS[p.level] ?? p.level})`
+      return `${catalogSpecialtyName(p.name)} (${LEVELS[p.level] ?? p.level})`
     case 'title':
       return `Titre : ${p.name}`
   }

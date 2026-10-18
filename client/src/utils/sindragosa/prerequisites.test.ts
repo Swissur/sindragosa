@@ -73,4 +73,9 @@ describe('prerequisiteLabel', () => {
     expect(prerequisiteLabel({ kind: 'specialty', name: 'Dagues', level: 2 })).toBe('Dagues (Expert)')
     expect(prerequisiteLabel({ kind: 'title', name: 'Archimage' })).toBe('Titre : Archimage')
   })
+
+  it('affiche le nom du catalogue pour une spécialité synonyme', () => {
+    expect(prerequisiteLabel({ kind: 'specialty', name: 'Furtivité', level: 1 })).toBe("Discrétion dans l'ombre (Apprenti)")
+    expect(prerequisiteLabel({ kind: 'specialty', name: 'Bouclier', level: 2 })).toBe('Boucliers (Expert)')
+  })
 })

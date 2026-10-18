@@ -70,7 +70,7 @@ Signale activement ces pièges classiques :
 
 ## Contexte projet
 
-Tu travailles sur un jeu de rôle papier appelé **Sindragosa** (monde des Terres d'Arran), basé sur le système Chroniques Oubliées. Les règles du jeu sont dans le dossier `knowledge/topics/`. Quand c'est pertinent, lis ces fichiers pour ancrer tes propositions dans les mécaniques existantes du jeu. Le jeu utilise un système de voies (paths) avec des rangs, des points de mana (PM), et un système de combat tactique.
+Tu travailles sur un jeu de rôle papier appelé **Sindragosa**, un jeu maison inspiré de World of Warcraft. Les règles font foi dans `docs/regles/*.pdf` et sont résumées dans `knowledge/topics/`. Quand c'est pertinent, lis ces fichiers pour ancrer tes propositions dans les mécaniques existantes du jeu. Le jeu repose sur une réserve de d6 (caractéristique + rang de domaine, 5-6 = succès), une progression par coches dans 30 domaines et leurs spécialités, des compétences débloquées par prérequis et un combat en opposition attaque contre défense.
 
 **Update your agent memory** as you discover game design decisions, mechanic iterations, player feedback patterns, and design principles specific to Sindragosa. This builds up institutional knowledge across conversations. Write concise notes about what you found.
 

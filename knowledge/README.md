@@ -1,39 +1,17 @@
-# Knowledge base — Terres d’Arran
+# Knowledge — Sindragosa
 
-Curated rules and references for the **in-app Q&A** (Claude) and for agents working in this repo. This is **not** a full reproduction of the *Livre du joueur*.
+Règles et lore de Sindragosa en Markdown. Rien ne lit ces fichiers à l'exécution : ils servent de référence aux humains et aux agents qui travaillent sur le dépôt, et ils expliquent les catalogues de `client/src/data/sindragosa/`.
 
-## Authoring (LLM-assisted, no PDF scripts)
+## Sources
 
-1. Open the official PDF locally. In Cursor, attach it with **@** when prompting an LLM.
-2. Ask the model to produce structured Markdown: sections, bullets, tables, and explicit gaps marked *à vérifier dans le PDF*.
-3. **Manually verify** all numbers, caps, and prerequisites against the book.
-4. Save under `topics/` (narrative rules) or `reference/` (dense tables, JSON).
-5. Add an entry in the table below and, if needed, register the file in `server/src/knowledge/bundles.ts`.
+- Les règles font foi dans `docs/regles/` : `Sindragosa.pdf`, `Compétences & Domaines (Sindragosa).pdf`, `Artisanat (Sindragosa).pdf`.
+- Les décisions prises quand les règles se contredisent ou se taisent sont dans `plans/31-refonte-regles-sindragosa.md` § 6 et 7.
+- Ce qui reste à définir est dans la TODO de `ROADMAP.md`.
 
-## Topic index
+## Contenu
 
-| File | Covers (summary) |
-|------|-------------------|
-| [topics/00-index.md](topics/00-index.md) | Short overview + topic list for small context windows |
-| [topics/creation-personnage.md](topics/creation-personnage.md) | Character creation pipeline (CO / TdA) |
-| [topics/combat.md](topics/combat.md) | Combat flow, attacks, damage (CO-style) |
-| [topics/magie.md](topics/magie.md) | Magic / resources overview *(expand from PDF)* |
-| [topics/monde-arran.md](topics/monde-arran.md) | Peuples d’Arran — aperçu création *(voir aussi `races.md` pour le détail)* |
-| [topics/monde-lore-chroniques.md](topics/monde-lore-chroniques.md) | Lore — chronologie, crystaux, Grand Schisme, Fléaux, prophéties |
-| [topics/monde-lore-peuples-elfes.md](topics/monde-lore-peuples-elfes.md) | Lore — Elfes par ethnie, Semi-Elfes |
-| [topics/monde-lore-peuples-nains-humains.md](topics/monde-lore-peuples-nains-humains.md) | Lore — ordres nains, cultures humaines |
-| [topics/monde-lore-peuples-autres.md](topics/monde-lore-peuples-autres.md) | Lore — Orcs, Gobelins, Ogres, Trolls, Centaures |
-| [topics/races.md](topics/races.md) | Peuples jouables : lore, roleplay, modificateurs, voie de peuple, voies culturelles |
-| [topics/voies-de-profil.md](topics/voies-de-profil.md) | Detailed profile paths, ranks, effects and prerequisites |
-| [topics/voies-de-prestige.md](topics/voies-de-prestige.md) | Prestige paths and progression details |
-| [topics/equipement.md](topics/equipement.md) | Currency, weapons/armor tables, encumbrance, gear, mounts, lodging, poisons (summary) |
+Voir `topics/00-index.md`.
 
-## Reference data
+## Ajouter du contenu
 
-| File | Purpose |
-|------|---------|
-| [reference/derived-stats.example.json](reference/derived-stats.example.json) | Example shape for programmatic tables *(replace with verified data)* |
-
-## Bundles (API)
-
-The server loads **bundles** of files per request (see `server/src/knowledge/bundles.ts`). Default bundle: `core`.
+Utiliser `/add-knowledge` avec un fichier `.txt`. Ne rien inventer : un point absent des règles se signale comme tel et va dans la TODO de la roadmap.

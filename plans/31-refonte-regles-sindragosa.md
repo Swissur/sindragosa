@@ -129,7 +129,7 @@ On reste sur le modèle actuel : un personnage est une ligne, avec ses listes en
 7. Combat : initiative, attaque contre défense, recharges. Vérification : e2e du combat.
 8. Bestiaire converti. Vérification : test de conversion.
 9. `knowledge/` purgé, puis règles et lore Sindragosa. Vérification : `git grep` sans Arran.
-10. Refonte UI des écrans à partir de `docs/ecrans.excalidraw`.
+10. ~~Refonte UI des écrans à partir de `docs/ecrans.excalidraw`.~~ Abandonnée le 2026-10-18 : les maquettes ne sont plus d'actualité, le fichier est supprimé.
 
 ### Avancement (2026-10-17, branche `refonte-sindragosa`)
 
@@ -138,6 +138,8 @@ On reste sur le modèle actuel : un personnage est une ligne, avec ses listes en
   - Route `PATCH /api/campaigns/:id/members/:userId/character` réservée au MJ. Le joueur reçoit le réglage par SSE (`character`), pour que sa sauvegarde auto ne l'écrase pas.
   - Repos court, repos long et fin de séance lancés par le MJ depuis la page Campagne.
 - Étape 7 : faite le 2026-10-18. L'initiative suit Sindragosa ; les monstres attaquent et se défendent en réserve de d6.
+- Étape 9 : faite le 2026-10-18. `knowledge/` ne contient plus rien d'Arran : 10 fiches résument les règles des PDF et l'histoire d'Azeroth. Les scans du bestiaire CO sont dans `scripts/sources/bestiaire-co/`.
+- Étape 10 : abandonnée (maquettes Excalidraw obsolètes).
 - Étape 8 : faite le 2026-10-18, voir `plans/33-bestiaire-sindragosa.md`. 211 monstres convertis, une seule capacité reste à relire (« L'hallali » du Worg).
 - L'agonie garde le jet de mort d'Arran (d20 ≥ 11) tant que les règles ne la décrivent pas.
 

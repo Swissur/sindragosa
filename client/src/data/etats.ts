@@ -1,9 +1,10 @@
 /**
- * Les états préjudiciables — `knowledge/topics/combat.md`.
+ * Les états préjudiciables, hérités d'Arran (Chroniques Oubliées) : leurs
+ * effets sont encore écrits en d20. Les règles Sindragosa ne les décrivent pas
+ * encore ; ils seront remplacés quand elles le feront (TODO de `ROADMAP.md`).
  *
- * Les 8 de la section « États préjudiciables », plus les 5 que produisent les
- * manœuvres du même fichier. Rien d'inventé : chaque `effect` est la règle
- * recopiée, c'est le texte qu'on affiche tel quel dans l'infobulle.
+ * Les 8 états préjudiciables d'Arran, plus les 5 que produisaient ses
+ * manœuvres. Chaque `effect` est affiché tel quel dans l'infobulle.
  *
  * L'emoji sert au pion du champ de bataille, qui est un canvas 3D : on ne peut
  * pas y poser un SVG Lucide sans le rastériser. Les icônes Lucide (rendu Vue)

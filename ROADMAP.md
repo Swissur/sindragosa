@@ -113,8 +113,8 @@ L’app gère déjà ces mécaniques, héritées d’Arran / Chroniques Oubliée
 4. **Fiche personnage et Mes actions** : refaites autour des domaines et spécialités.
 5. **Combat** : initiative, opposition attaque/défense, dégâts.
 6. **Bestiaire** : conversion des monstres au nouveau format.
-7. **Knowledge** : purge d’Arran, intégration des règles et du lore Sindragosa / WoW.
-8. **UI** : refonte des écrans à partir des wireframes `docs/ecrans.excalidraw`.
+7. ~~**Knowledge** : purge d’Arran, intégration des règles et du lore Sindragosa / WoW.~~ Fait le 2026-10-18. Le lore s’arrête au début de World of Warcraft (fin du PDF) : régions et extensions à ajouter avec `/add-knowledge`.
+8. ~~**UI** : refonte des écrans à partir des wireframes `docs/ecrans.excalidraw`.~~ Abandonnée le 2026-10-18 (maquettes obsolètes, fichier supprimé).
 
 ### Sources
 

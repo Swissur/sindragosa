@@ -2,7 +2,7 @@
 
 ## Project Structure
 
-Sindragosa is a monorepo with three workspaces. Its game world stays the Terres d'Arran (Chroniques Oubliées): the app is Sindragosa, the setting is not. The app has **no AI feature** (see `plans/30-sindragosa-sans-ia.md`). Run everything from the root with `npm run dev`.
+Sindragosa is a monorepo with three workspaces. It supports **Sindragosa**, a homebrew d6 tabletop RPG set in World of Warcraft's Azeroth (rules in `docs/regles/`, overhaul in `plans/31-refonte-regles-sindragosa.md`). The app has **no AI feature** (see `plans/30-sindragosa-sans-ia.md`). Run everything from the root with `npm run dev`.
 
 ```
 sindragosa/
@@ -13,21 +13,22 @@ sindragosa/
 
 ### `knowledge/`
 
-Static Markdown files describing the game rules and world lore. Nothing reads them at runtime: they are the reference behind the static catalogs in `client/src/data/`.
+Static Markdown files summarising the Sindragosa rules (`docs/regles/*.pdf`) and the Azeroth lore. Nothing reads them at runtime: they are the reference behind the static catalogs in `client/src/data/sindragosa/`.
 
 ```
 knowledge/
 └── topics/
     ├── 00-index.md          # Master index — lists all topics
+    ├── regles-jets.md       # d6 pool, successes, criticals, specialties, luck
+    ├── personnage.md        # Stats, 30 domains, specialties, advanced domains
+    ├── progression.md       # Ticks, session limits, ranks, titles
     ├── combat.md
-    ├── creation-personnage.md
-    ├── equipement.md
     ├── magie.md
     ├── races.md
-    ├── voies-de-profil.md
-    ├── voies-de-prestige.md
-    ├── monde-arran.md
-    └── monde-lore-*.md      # World lore (peoples, chronicles…)
+    ├── competences.md
+    ├── artisanat.md
+    ├── bestiaire.md
+    └── monde-azeroth.md     # World lore
 ```
 
 - Never edit these files by hand unless correcting a factual error in the game rules.
@@ -67,17 +68,18 @@ client/src/
 │   └── ActionsView.vue         # Combat actions reference
 ├── components/
 │   ├── ui/                     # Shared primitives (AppCard, AppBadge…) — see below
-│   └── character-sheet/        # Cards rendered inside CharacterSheetView
-│       ├── AbilitiesCard.vue
-│       ├── CombatCard.vue
-│       ├── VoiesCard.vue
-│       ├── ItemsCard.vue
-│       └── …
+│   ├── character-sheet/        # Cards rendered inside CharacterSheetView
+│   │   ├── HeroCard.vue
+│   │   ├── DomainsCard.vue
+│   │   ├── GmToolsSheet.vue
+│   │   └── …
+│   ├── abilities/              # Ability cards and panel (Pouvoirs tab)
+│   └── roll/RollSheet.vue      # The single d6 roll sheet
 ├── composables/                # useAuth, useCharacter, etc.
 ├── api/                        # Typed fetch wrappers for each API route
-├── data/                       # Static game data (catalogs, lookups)
+├── data/                       # Static game data (catalogs in data/sindragosa/)
 ├── types/                      # Shared TypeScript interfaces
-└── utils/                      # Pure helpers (game calculations, formatting)
+└── utils/                      # Pure helpers (rules engine in utils/sindragosa/)
 ```
 
 Routes (defined in `client/src/router/index.ts`):
@@ -251,7 +253,7 @@ Actifs seulement si `DEV_TOOLS=1` dans `server/.env` **et** `NODE_ENV !== 'produ
 **Le bac à sable** : `npm run seed-dev` recrée la campagne « Bac à sable » avec
 le MJ `mj-dev` et 4 joueurs (`bracco`, `nym`, `orlane`, `kaeliss`), mot de passe
 `dev` pour tous. Les fiches sont volontairement variées : armure lourde (init
-très basse), un perso à 2 PV, deux DEX identiques pour tester les égalités
+très basse), un perso à 2 PV, deux initiatives identiques pour tester les égalités
 d'initiative. Idempotent — il supprime et recrée la campagne, les comptes sont
 réutilisés. Il ne touche à aucune autre campagne.
 

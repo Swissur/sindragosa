@@ -1,27 +1,20 @@
----
-source: tda-livre-joueur
-version: "0.3"
-last_reviewed: 2026-09-11
----
+# Sindragosa — index des règles et du lore
 
-# Table des matières des règles — Terres d'Arran (CO)
+Sindragosa est un jeu de rôle maison inspiré de World of Warcraft. Le joueur lance une réserve de d6 (caractéristique + rang de domaine) ; chaque 5 ou 6 est un succès. Il progresse en cochant les domaines et spécialités qu'il pratique, sans niveaux ni classes.
 
-Tous les sujets ci-dessous sont déjà présents dans ton contexte, en entier. Rien à charger : cette table sert à te repérer, et surtout à savoir quels sujets croiser pour une même question (une capacité de voie + la règle générale de combat, un sort + son coût en PM, etc.).
+Les règles complètes sont dans `docs/regles/*.pdf` ; ces fiches les résument et pointent vers le code qui les applique.
 
-Faits vérifiés à partir du PDF (chapitres 2-6, pages 42-166).
+| Fichier | Contenu |
+|---|---|
+| `regles-jets.md` | Réserve de d6, succès, paliers, critiques, spécialités, chance |
+| `personnage.md` | Création, caractéristiques, 30 domaines, spécialités, domaines avancés |
+| `progression.md` | Coches, limites par séance, rangs, titres |
+| `combat.md` | PV, initiative, attaque contre défense, dégâts, armure, repos |
+| `magie.md` | Apprendre la magie, concentration |
+| `races.md` | Les 12 races jouables et leurs pouvoirs |
+| `competences.md` | Compétences débloquables : prérequis, types d'action, usages |
+| `artisanat.md` | Métiers, recettes, fabrication |
+| `bestiaire.md` | Monstres en jeu et conversion depuis Chroniques Oubliées |
+| `monde-azeroth.md` | Histoire d'Azeroth jusqu'au début de World of Warcraft |
 
-- **creation-personnage** : caractéristiques, peuple/culture, familles de profils, voies de départ, initiative, PV/DEF/attaques, PC/PM, progression, équipement de départ.
-- **combat** : résolution des tests, difficultés, critiques, opposition/séries/coopération, déroulé du combat, **manœuvres** (désarmer, renverser, aveugler, bloquer, repousser, tenir à distance, menacer, faire diversion ; test d'attaque puis test opposé ; échec marge ≥ 10 ; pénalité de taille pour Bloquer / Renverser / Repousser), états préjudiciables, mort, PR, poursuite.
-- **magie** : incantation (sorts \*), PM et récupération, brûlure de magie, concentration (L), attaque magique opposée, talents magiques (mystiques), règles d'avancement.
-- **equipement** : devises, armes (tableaux), armures et encombrement, matériel, montures, hébergement, biens, soins, poisons.
-- **races** : fiches détaillées des peuples/races avec voies culturelles complètes.
-- **voies-de-profil** : voies liées aux profils (guerrier, rôdeur, mage, etc.).
-- **voies-de-prestige** : voies de prestige avancées.
-- **monde-arran** : peuples jouables (modificateurs, traits) et voies (aperçu).
-- **monde-lore-chroniques** : ères mythiques, crystaux, Grand Schisme, Fléaux, Monde noir, prophéties (Lah'saa, Alyana) — histoire et géopolitique narrative.
-- **monde-lore-peuples-elfes** : ethnies elfiques, Semi-Elfes, références BD.
-- **monde-lore-peuples-nains-humains** : ordres nains, cultures humaines.
-- **monde-lore-peuples-autres** : Orcs, Gobelins, Ogres, Trolls, Centaures.
-- **bestiaire** : 214 fiches de monstres (stats, attaques, capacités). **Seul sujet absent de ton contexte** : tu n'as que la liste des noms. Une fiche se lit une par une avec l'outil `get_monstre(nom)`, réservé au MJ.
-
-Si une règle précise manque ici, indiquer de consulter le livre officiel.
+Ce qui n'est pas encore défini par les règles est listé dans la TODO de `ROADMAP.md`.

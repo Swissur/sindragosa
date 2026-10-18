@@ -2,7 +2,7 @@
 
 ## Purpose
 
-**Sindragosa** is a web app to support **Les Terres d’Arran**, a French tabletop RPG using the **Chroniques Oubliées** engine, set in the world of the Arran comic series (*Elfes*, *Nains*, *Orcs & Gobelins*, *Mages*, etc.). The goal is to reduce bookkeeping (math, reference lookup, character tracking) so players and GMs spend more time playing. The app has no AI feature.
+**Sindragosa** is a web app for **Sindragosa**, a French homebrew tabletop RPG set in World of Warcraft's Azeroth. It uses a d6 dice pool (stat + domain rank) and progression by ticks. The goal is to reduce bookkeeping (math, reference lookup, character tracking) so players and GMs spend more time playing. The app has no AI feature.
 
 ## Repository map
 
@@ -21,12 +21,12 @@
 
 ## Rules integrity
 
-- Canonical mechanics live in **`knowledge/topics/`** and **`knowledge/reference/`**. Do not invent scores, DCs, or tables: if something is missing, say so and point to the official book/PDF.
+- The rules are the PDFs in **`docs/regles/`**, summarised in **`knowledge/topics/`**; decisions are in `plans/31-refonte-regles-sindragosa.md`. Do not invent scores or tables: if something is missing, say so and add it to the TODO in `ROADMAP.md`.
 - Homebrew or house rules must be labeled explicitly.
 
 ## Copyright
 
-The *Livre du joueur Terres d’Arran* PDF is copyrighted. Do **not** commit the PDF or large verbatim excerpts. Prefer paraphrase, mechanical summaries, and short quotes where appropriate. Treat `knowledge/` as **private reference** for your table; be careful what you publish publicly.
+The rules PDFs are the table's own work. World of Warcraft and its lore belong to Blizzard: keep lore to paraphrased summaries and treat `knowledge/` as a **private reference** for the table. The bestiary was converted from Chroniques Oubliées; its sources (`scripts/sources/`) stay private too.
 
 ## Running locally
 

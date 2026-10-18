@@ -4,7 +4,7 @@ description: Analyse un fichier .txt de contenu brut (règles, lore, PDF copié)
 allowed_tools: Read, Glob, Grep, Write, Edit, Bash, TodoWrite
 ---
 
-Tu es chargé d'intégrer du nouveau contenu dans la base de knowledge du projet Sindragosa (règles des Terres d'Arran).
+Tu es chargé d'intégrer du nouveau contenu dans la base de knowledge du projet Sindragosa (jeu maison inspiré de World of Warcraft).
 
 ## Étape 1 — Trouver le fichier source
 
@@ -30,7 +30,7 @@ Cela te permettra de décider si le contenu doit :
 
 Lis le fichier `.txt` source en entier. Identifie :
 
-1. **Le sujet principal** : règles de jeu, lore, équipement, voies, races, etc.
+1. **Le sujet principal** : règles de jeu, lore, races, domaines, compétences, etc.
 2. **Le format** : extrait PDF, notes manuscrites, texte structuré
 3. **Les lacunes à signaler** : passages flous, chiffres à vérifier, références croisées manquantes — marque-les avec ⚠️ *à vérifier dans le PDF*
 
@@ -40,17 +40,16 @@ En te basant sur l'index existant :
 
 | Type de contenu | Fichier cible |
 |---|---|
-| Règles de création de personnage | `topics/creation-personnage.md` |
-| Combat, manœuvres, états | `topics/combat.md` |
-| Magie, PM, sorts | `topics/magie.md` |
-| Lore historique, ères, événements | `topics/monde-lore-chroniques.md` |
-| Lore elfes / Semi-Elfes | `topics/monde-lore-peuples-elfes.md` |
-| Lore nains / humains | `topics/monde-lore-peuples-nains-humains.md` |
-| Lore autres peuples | `topics/monde-lore-peuples-autres.md` |
-| Races jouables, modificateurs, voies culturelles | `topics/races.md` |
-| Voies de profil | `topics/voies-de-profil.md` |
-| Voies de prestige | `topics/voies-de-prestige.md` |
-| Équipement, monnaie, objets | `topics/equipement.md` |
+| Lancer de dés, succès, critiques, chance | `topics/regles-jets.md` |
+| Création, caractéristiques, domaines, spécialités | `topics/personnage.md` |
+| Coches, rangs, titres (classes émergentes) | `topics/progression.md` |
+| Combat, armure, repos, états | `topics/combat.md` |
+| Magie, sorts | `topics/magie.md` |
+| Races jouables, pouvoirs raciaux | `topics/races.md` |
+| Compétences débloquables | `topics/competences.md` |
+| Artisanat, métiers, recettes | `topics/artisanat.md` |
+| Monstres | `topics/bestiaire.md` |
+| Lore, histoire, géographie d'Azeroth | `topics/monde-azeroth.md` |
 | Nouveau sujet sans fichier existant | Créer `topics/<nom-slug>.md` |
 
 Si le contenu touche plusieurs sujets, répartis-le dans les fichiers appropriés.

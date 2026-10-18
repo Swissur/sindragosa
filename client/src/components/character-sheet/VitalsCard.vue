@@ -32,37 +32,36 @@ defineProps<{
         <span :style="{ color: hpGradientColor(character.hpCurrent, hpMax) }" data-testid="hp-current">{{ character.hpCurrent }}</span>
         <span class="vital-max">/{{ hpMax }}</span>
       </AppStepper>
-      <span v-else class="vital-value">{{ character.hpCurrent }}<span class="vital-max">/{{ hpMax }}</span></span>
+      <span v-else class="vital-value vital-value--static">{{ character.hpCurrent }}<span class="vital-max">/{{ hpMax }}</span></span>
     </div>
 
     <div class="vital">
       <span class="vital-label"><Clover :size="15" /> Chance</span>
       <AppStepper v-if="!readonly" v-model="character.pcCurrent" label="Points de chance" testid="luck" />
-      <span v-else class="vital-value">{{ character.pcCurrent }}</span>
+      <span v-else class="vital-value vital-value--static">{{ character.pcCurrent }}</span>
     </div>
 
-    <div class="vital-row">
-      <div class="vital vital--small">
-        <span class="vital-label">
-          <Shield :size="15" /> Armure
-          <AppTooltip label="Calcul de l'armure">
-            <template #trigger><span class="vital-help">?</span></template>
-            Armure Physique (AP) = armures équipées dans l'inventaire + bonus des compétences ({{ character.armorBonus }}).
-          </AppTooltip>
-        </span>
-        <span class="vital-value" data-testid="armor-value">{{ character.armor }}</span>
-      </div>
-      <div class="vital vital--small">
-        <span class="vital-label">
-          <Zap :size="15" /> Initiative
-          <AppTooltip label="Calcul de l'initiative">
-            <template #trigger><span class="vital-help">?</span></template>
-            Agilité ({{ character.stats.agi }}) + Sagesse ({{ character.stats.wis }})
-            + rang en Perception &amp; Sens ({{ character.domains['perception-sens']?.rank ?? 0 }}).
-          </AppTooltip>
-        </span>
-        <span class="vital-value" data-testid="initiative">{{ initiative }}</span>
-      </div>
+    <div class="vital">
+      <span class="vital-label">
+        <Shield :size="15" /> Armure
+        <AppTooltip label="Calcul de l'armure">
+          <template #trigger><span class="vital-help">?</span></template>
+          Armure Physique (AP) = armures équipées dans l'inventaire + bonus des compétences ({{ character.armorBonus }}).
+        </AppTooltip>
+      </span>
+      <span class="vital-value vital-value--static" data-testid="armor-value">{{ character.armor }}</span>
+    </div>
+
+    <div class="vital">
+      <span class="vital-label">
+        <Zap :size="15" /> Initiative
+        <AppTooltip label="Calcul de l'initiative">
+          <template #trigger><span class="vital-help">?</span></template>
+          Agilité ({{ character.stats.agi }}) + Sagesse ({{ character.stats.wis }})
+          + rang en Perception &amp; Sens ({{ character.domains['perception-sens']?.rank ?? 0 }}).
+        </AppTooltip>
+      </span>
+      <span class="vital-value vital-value--static" data-testid="initiative">{{ initiative }}</span>
     </div>
 
     <div v-if="editing && !readonly" class="vital">
@@ -95,10 +94,20 @@ defineProps<{
   min-height: 40px;
 }
 
-.vital-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--space-md);
+/* Toutes les valeurs dans une même colonne : celle des compteurs − valeur +,
+   dont la valeur prend une largeur fixe (assez pour « 89/91 »). */
+.vitals {
+  --vital-value-width: 3.6rem;
+}
+
+.vitals :deep(.stepper-value) {
+  min-width: var(--vital-value-width);
+}
+
+.vital-value--static {
+  /* 2 boutons de 34px (AppStepper) + 2 gaps + la valeur */
+  width: calc(2 * 34px + 2 * var(--space-xs) + var(--vital-value-width));
+  text-align: center;
 }
 
 .vital-status {

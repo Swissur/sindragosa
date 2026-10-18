@@ -2,7 +2,7 @@
 import AppButton from './AppButton.vue'
 
 defineProps<{
-  variant?: 'ghost' | 'primary' | 'danger' | 'bare'
+  variant?: 'ghost' | 'primary' | 'danger' | 'success' | 'bare'
   size?: number
   title?: string
   disabled?: boolean

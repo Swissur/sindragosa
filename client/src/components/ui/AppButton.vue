@@ -5,7 +5,7 @@ import { cn } from '@/utils/cn'
 import type { HTMLAttributes } from 'vue'
 
 interface Props extends PrimitiveProps {
-  variant?: 'primary' | 'ghost' | 'danger' | 'bare'
+  variant?: 'primary' | 'ghost' | 'danger' | 'success' | 'bare'
   size?: 'normal' | 'small'
   type?: 'button' | 'submit'
   disabled?: boolean
@@ -37,6 +37,10 @@ const buttonVariants = cva(
           'bg-card text-destructive ' +
           'border-[color-mix(in_srgb,var(--danger)_55%,var(--border))] ' +
           'hover:border-[var(--danger)] hover:bg-[color-mix(in_srgb,var(--danger)_16%,transparent)]',
+        success:
+          'bg-card text-[var(--success)] ' +
+          'border-[color-mix(in_srgb,var(--success)_55%,var(--border))] ' +
+          'hover:border-[var(--success)] hover:bg-[color-mix(in_srgb,var(--success)_16%,transparent)]',
         // Sans cadre ni fond : l'icône seule (étoile de favori…)
         bare: 'bg-transparent text-foreground hover:bg-[var(--accent-soft)]',
       },
@@ -68,7 +72,7 @@ const buttonVariants = cva(
         buttonVariants({ variant: variant ?? 'ghost', size: size ?? 'normal', block }),
         variant !== 'bare' && 'btn',
         variant ?? 'ghost',
-        variant === 'danger' && 'ghost',
+        (variant === 'danger' || variant === 'success') && 'ghost',
         size === 'small' && 'small',
         props.class,
       )

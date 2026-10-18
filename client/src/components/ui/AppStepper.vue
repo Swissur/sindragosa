@@ -16,6 +16,9 @@ const props = withDefaults(defineProps<{
   disabled?: boolean
 }>(), { min: 0, max: undefined, testid: undefined })
 
+/** Plus petits que les 40px habituels : empilés, deux compteurs ne se touchent plus. */
+const BUTTON_SIZE = 34
+
 const emit = defineEmits<{ (e: 'update:modelValue', value: number): void }>()
 
 function step(delta: number) {
@@ -29,6 +32,9 @@ function step(delta: number) {
 <template>
   <div class="stepper" role="group" :aria-label="label">
     <AppIconBtn
+      variant="danger"
+      class="rounded-full"
+      :size="BUTTON_SIZE"
       :title="`${label} −1`"
       :disabled="disabled || modelValue <= min"
       :data-testid="testid && `${testid}-minus`"
@@ -40,6 +46,9 @@ function step(delta: number) {
       <slot :value="modelValue">{{ modelValue }}</slot>
     </span>
     <AppIconBtn
+      variant="success"
+      class="rounded-full"
+      :size="BUTTON_SIZE"
       :title="`${label} +1`"
       :disabled="disabled || (max !== undefined && modelValue >= max)"
       :data-testid="testid && `${testid}-plus`"

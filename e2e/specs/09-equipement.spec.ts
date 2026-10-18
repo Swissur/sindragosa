@@ -44,7 +44,7 @@ test('une arme équipée donne une attaque dans les compétences et dans Mes act
     await expect(page.getByTestId('strike-i-dagues')).toContainText('Dagues jumelles')
 
     await page.goto('/actions')
-    await page.getByRole('tab', { name: 'Combat' }).click()
+    await page.getByRole('tab', { name: 'Combat', exact: true }).click()
     // Arme légère : 2 dégâts.
     await expect(page.getByTestId('tile-weapon-i-dagues')).toContainText('2 dégâts')
   } finally {
@@ -75,16 +75,17 @@ test('fabriquer utilise les composants et met l’objet dans l’inventaire', as
     await page.getByText('Forge & Métallurgie').click()
     await page.getByTestId('craft-forge-r1-01').click()
 
-    const saved = page.waitForResponse(isCharacterPut)
     await page.getByTestId('roll-launch').click()
     await expect(page.getByTestId('roll-dice')).toBeVisible({ timeout: 20_000 })
-    await saved
 
-    const items = (await activeCharacter(page)).items as { name: string; quantity: number }[]
-    expect(items.map((i) => [i.name, i.quantity])).toEqual([
-      ['Lingots de fer brut', 1],
-      ['Pointe de lance renforcée', 1],
-    ])
+    // La sauvegarde auto est debouncée : on attend que l'objet soit en base.
+    await expect
+      .poll(async () => ((await activeCharacter(page)).items as { name: string; quantity: number }[])
+        .map((i) => [i.name, i.quantity]), { timeout: 10_000 })
+      .toEqual([
+        ['Lingots de fer brut', 1],
+        ['Pointe de lance renforcée', 1],
+      ])
   } finally {
     await page.request.put(`/api/characters/${orlane.id}`, { data: { crafts: {}, items: orlane.items } })
     await ctx.close()

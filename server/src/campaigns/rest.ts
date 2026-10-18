@@ -3,7 +3,7 @@
  *
  * Chaque repos vide les usages des compétences pour certaines périodes
  * (`abilityUses` est rangé par période, donc pas besoin du catalogue ici).
- * Hypothèse à confirmer : le repos long et la fin de séance remontent les PV au max.
+ * Le repos long et la fin de séance remontent les PV au max (confirmé le 2026-10-18).
  */
 
 export type RestKind = 'court' | 'long' | 'seance'

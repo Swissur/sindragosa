@@ -49,5 +49,5 @@ Le joueur choisit la spécialité utilisée ; elle doit correspondre exactement 
 
 Tranchés dans le plan 31 § 6–7 :
 
-- Le PDF dit qu'un échec critique donne « 2 cases de pratique » puis, plus loin, « 1 coche automatique ». L'app applique **1 coche** (hypothèse à confirmer).
+- Le PDF dit qu'un échec critique donne « 2 cases de pratique » puis, plus loin, « 1 coche automatique ». L'app applique **1 coche** (confirmé le 2026-10-18).
 - Le PDF définit aussi la réussite critique comme « aucun 1 et une marge d'au moins 1 ». L'app applique la règle validée : critique sur 6, et sur 5 avec une spécialité Maître.

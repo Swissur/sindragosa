@@ -18,8 +18,7 @@ interface DeathRoll {
   result: 'success' | 'failure' | 'critical-save' | 'critical-death'
 }
 
-// TODO (ROADMAP) : l'agonie n'est pas décrite par les règles Sindragosa,
-// le jet de mort d'Arran (d20 ≥ 11) est gardé tel quel en attendant.
+// L'agonie garde le jet de mort d'Arran au d20 (≥ 11) : décidé le 2026-10-18.
 const attackDieSides = 20
 
 const rolls = ref<DeathRoll[]>([])

@@ -57,25 +57,25 @@ Sindragosa n’est plus un outil pour les Terres d’Arran (Chroniques Oubliées
   - [x] **Spécialités homonymes** (tranché le 2026-10-18) : débloquer une compétence qui porte le nom d'une spécialité exigée la donne au niveau Apprenti, hors limite de spécialités. Concerne « Analyse des failles » (#60, rattachée à Tactique & Analyse) ; « Second souffle » est déjà une spécialité d'exemple de Volonté & Récupération.
   - [x] **Spécialités d'exemple** (tranché le 2026-10-18) : les suggestions de chaque domaine sont désormais les spécialités qu'exigent les compétences ; les 13 domaines qu'aucune compétence ne cite gardent les exemples du livre (Volonté spirituelle n'en a aucun). Une table d'équivalences (« Bouclier » = « Boucliers »…) et la lecture des alternatives « A/B » et « (A/B) » garantissent que chaque spécialité exigée est atteignable (testé).
   - [x] **Titres** (tranché le 2026-10-18) : seul le MJ en accorde, en choisissant parmi les 22 titres qu'exigent les compétences (ou en écrivant un autre). Le serveur refuse qu'un joueur modifie ses titres.
-- [ ] **Prérequis des domaines avancés** : à proposer (déduits des compétences), puis à valider.
+- [x] **Prérequis des domaines avancés** : adoptés le 2026-10-18 (voir « Domaines avancés atteignables » ci-dessus).
 
 ### TODO — termes utilisés par les règles mais pas encore définis
 
-On ne touche pas aux mécaniques tant que ces points ne sont pas définis.
+On ne touche pas aux mécaniques tant que ces points ne sont pas définis. Décisions du 2026-10-18 : les hypothèses du moteur sont confirmées (plan 31 § 7), et les points cochés ci-dessous sont tranchés.
 
 - [ ] **RP = Résistance Psychique** (nom donné par l’artisanat) : quel maximum, comment la perd-on, à quoi sert-elle ?
-- [ ] **AP = Armure Physique** (nom donné par l’artisanat, apportée par l’équipement) : est-ce la somme des pièces portées ? Y a-t-il une valeur de base ?
+- [x] **AP = Armure Physique** : modifiée uniquement par l’équipement et les compétences, elle diminue les dégâts reçus. Pas de valeur de base (0).
 - [ ] **Ressources de classe** citées par les compétences : Énergie, Rage, Ferveur, Focalisation, Points de Combo, Puissance Runique / Sacrée / Céleste, Éclats d’Âme, Charges Arcaniques, Fureur démoniaque, Insalubrité.
-- [ ] **Repos court / repos long / séance** : ce sont les unités qui remettent les usages à zéro.
+- [x] **Repos court / repos long / séance** : les unités qui remettent les usages à zéro (tranché le 2026-10-17, plan 31 § 6).
 - [ ] **Noms de domaines** différents d’un PDF à l’autre : liste à valider dans `plans/31-refonte-regles-sindragosa.md` § 6.
 - [ ] **Mana / Énergie** : existe-t-il une réserve de mana ou d’énergie ? Comment se calcule-t-elle et se récupère-t-elle ?
-- [ ] **Types d’action** : Action Rapide, Action Complète, Action Gratuite, Réaction. Combien par tour ?
-- [ ] **Déplacement** : vitesse de base en mètres (les pouvoirs raciaux parlent de « +3 m », « double sa vitesse », « 8 m »)
-- [ ] **« 1/jour »** : qu’est-ce qu’un jour en jeu ? (repos, séance, jour narratif)
+- [x] **Types d’action** : Rapide, Mouvement, Complète, sur le modèle connu : à son tour, une action Rapide et une action de Mouvement, ou une action Complète à la place des deux. Les compétences « Gratuite » et « Réaction » gardent leur texte.
+- [x] **Déplacement** : 6 m de base pour tout le monde, sauf exception ou modification par une compétence (ou un pouvoir racial).
+- [x] **« 1/jour »** : une fois par repos long.
 - [ ] **États** : Étourdissement, Enracinement, Peur, Sommeil, Charme, Silence, Saignement, Poison, Maladie, À terre. Liste officielle et effets.
 - [ ] **Jet « Athlétisme/Équilibre »** (pouvoir du Tauren) : Équilibre n’est pas un domaine.
 - [ ] **Parade « Force + Armes de Contact »** : le domaine « Armes de Contact » n’existe pas. Est-ce Mêlée bourrine ? Combat de précision ?
-- [ ] **Alchimie & Herboristerie** : présente sous Intelligence **et** sous Sagesse. Doublon voulu ?
+- [x] **Alchimie & Herboristerie** : sous Sagesse seulement (tranché le 2026-10-17).
 - [ ] **Dégâts des armes** : valeur fixe ou dés ? Catalogue d’armes ?
 - [ ] **Classes émergentes** : liste des titres, des combinaisons de compétences et des hauts-faits.
 - [ ] **Récapitulatif d’équilibre par race** : il donne « Troll » alors que la fiche raciale dit « Trolle ». Harmoniser le nom.
@@ -91,7 +91,7 @@ L’app gère déjà ces mécaniques, héritées d’Arran / Chroniques Oubliée
 | **Points de chance (PC)** : relancer un jet ou +10 au résultat | Mes actions | Adapter : relancer les dés ratés ? |
 | **Points de récupération (PR) + dé de vie** : se soigner hors combat | `useRest`, modale Repos | Reste à décider |
 | **Repos du groupe** (long / complet), lancé par le MJ, avec bilan pour chaque joueur | `campfire/`, `RestSummaryModal` | Garder : peut porter le « 1/jour » |
-| **Agonie** : jets de mort à 0 PV (3 succès / 3 échecs) | `AgonieModal` | Adapter au d6 |
+| **Agonie** : jets de mort à 0 PV (3 succès / 3 échecs) | `AgonieModal` | Gardée au d20 (décidé le 2026-10-18) |
 | **États** (13 : Aveuglé, Affaibli, Étourdi, Immobilisé, Paralysé, Ralenti, Renversé, Surpris, Désarmé, Bloqué, Repoussé, Diversion, Menacé) | `data/etats.ts`, combat | Fusionner avec les états des règles (TODO) |
 | **Défense fixe (DEF)** | fiche, combat | Remplacée par l’opposition parer / esquiver |
 | **Bonus d’attaque contact / distance / magique** | `attackBonus.ts` | Remplacés par carac. + domaine |

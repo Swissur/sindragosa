@@ -141,7 +141,7 @@ On reste sur le modèle actuel : un personnage est une ligne, avec ses listes en
 - Étape 9 : faite le 2026-10-18. `knowledge/` ne contient plus rien d'Arran : 10 fiches résument les règles des PDF et l'histoire d'Azeroth. Les scans du bestiaire CO sont dans `scripts/sources/bestiaire-co/`.
 - Étape 10 : abandonnée (maquettes Excalidraw obsolètes).
 - Étape 8 : faite le 2026-10-18, voir `plans/33-bestiaire-sindragosa.md`. 211 monstres convertis, une seule capacité reste à relire (« L'hallali » du Worg).
-- L'agonie garde le jet de mort d'Arran (d20 ≥ 11) tant que les règles ne la décrivent pas.
+- L'agonie garde le jet de mort d'Arran au d20 (≥ 11) : décidé le 2026-10-18.
 
 ## 6. Décisions (tranchées le 2026-10-17)
 
@@ -195,7 +195,8 @@ Les prérequis du catalogue de compétences désignent un **domaine** (son ident
 |---|---|
 | **Gardé** | repos de groupe, états, jets cachés du MJ, renforts en réserve, inventaire, monnaie (or / argent / cuivre) |
 | **Gardé, règle changée** | **points de chance** : 2 par séance, remis à 2 en fin de séance ; en dépenser 1 ajoute 1d6 au jet. **Avantage** : +1d6. **Désavantage** : −1d6. |
-| **Adapté au d6** | agonie à 0 PV, moment critique (sur un critique ou un échec critique), combat à deux armes |
+| **Adapté au d6** | moment critique (sur un critique ou un échec critique), combat à deux armes |
+| **Gardé tel quel** | agonie à 0 PV, au d20 (décidé le 2026-10-18) |
 | **Gardé, à adapter (TODO)** | concentration des sorts (Économe / Étendue / Puissante) |
 | **Retiré** | niveaux et montée de niveau, formations martiales, PM (remplacés par les compteurs libres), points de récupération et dé de vie |
 
@@ -232,10 +233,14 @@ Table de départ, déduite des compétences qui les citent : le domaine de base 
 | Dressage Sauvage | Communion naturelle & Chamanisme 2 + Survie en milieu hostile 1 | |
 | Magie Draconique | Magie profane & Arcanes 3 + Histoire & Géographie 2 | |
 
+### Hypothèses du moteur (confirmées le 2026-10-18)
+
+- **Échec critique** : le § 1.A dit « 2 cases de pratique », le § D « 1 coche automatique ». Le moteur applique **1 coche**.
+- **Récompenses du MJ** (quête, donjon, entraînement) : **hors** de la limite de 3 coches par séance.
+- **Niveaux de spécialité cumulatifs** : un Maître a aussi la relance d'Apprenti et le +1d6 d'Expert.
+- **+8 PV par point d'Endurance** : seulement pour les points gagnés **après** la création.
+- **Repos long** : PV au maximum, états levés.
+
 ### Autres questions
 
-- **Échec critique** : le § 1.A dit « gagne immédiatement 2 cases de pratique », alors que le § D dit « 1 coche automatique ». Le moteur applique pour l'instant **1 coche** (§ D, plus précis).
-- **Récompenses du MJ** (quête, donjon, entraînement) : le moteur les compte **hors** de la limite de 3 coches par séance. À confirmer.
-- **Niveaux de spécialité cumulatifs** : le moteur suppose qu'un Maître a aussi les bonus d'Apprenti (relance d'un 1) et d'Expert (+1d6). À confirmer.
-- **Gain de PV par point d'Endurance** (+8) : le moteur ne compte que les points gagnés **après** la création. À confirmer.
 - Points TODO de la roadmap (RP, AP de base, types d'action, déplacement, liste des états, dégâts des armes, titres).

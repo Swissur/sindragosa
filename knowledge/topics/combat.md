@@ -26,7 +26,12 @@ Source : `docs/regles/Sindragosa.pdf` § 1.B et 4. Moteur : `client/src/utils/si
 
 ## Armure
 
-L'armure (AP, Armure Physique) se retire des dégâts reçus. Celle d'un personnage se règle sur sa fiche ; celle des monstres vient du bestiaire (`bestiaire.md`).
+L'**Armure Physique (AP)** se retire des dégâts reçus. Elle vaut 0 de base et n'est modifiée **que par l'équipement et les compétences**. Celle d'un personnage se règle sur sa fiche (mode édition) ; celle des monstres vient du bestiaire (`bestiaire.md`).
+
+## Actions et déplacement
+
+- **Types d'action** : Rapide, Mouvement, Complète. À son tour, un personnage fait une action Rapide et une action de Mouvement, ou une action Complète à la place des deux. Les compétences « Gratuite » et « Réaction » s'utilisent comme leur texte l'indique.
+- **Déplacement** : 6 m par action de Mouvement pour tout le monde, sauf exception ou modification par une compétence ou un pouvoir racial.
 
 ## Repos et fin de séance
 
@@ -35,16 +40,19 @@ Lancés par le MJ pour tout le groupe. Chaque repos remet à zéro les usages li
 | Repos | Usages rendus | Autres effets |
 |---|---|---|
 | Repos court | « combat », « repos court » | — |
-| Repos long | + « repos long », « jour » | PV au maximum, états levés (hypothèse) |
+| Repos long | + « repos long », « jour » | PV au maximum, états levés |
 | Fin de séance | + « séance » | comme un repos long, chance remise à 2, coches de séance à zéro |
+
+« 1/jour » veut dire une fois par repos long.
+
+## Agonie
+
+À 0 PV, jets de mort au d20, gardés d'Arran (décidé le 2026-10-18) : ≥ 11 = succès, 3 succès pour se stabiliser, 3 échecs pour mourir ; un 20 stabilise, un 1 tue.
 
 ## Hérité d'Arran, à adapter
 
-Ces mécaniques existent dans l'app mais les règles Sindragosa ne les décrivent pas encore (voir `ROADMAP.md`) :
-
-- **Agonie** : à 0 PV, jets de mort au d20 (≥ 11 = succès, 3 succès ou 3 échecs).
 - **États préjudiciables** (`client/src/data/etats.ts`) : Aveuglé, Affaibli, Étourdi, Immobilisé, Paralysé, Ralenti, Renversé, Surpris, Désarmé, Bloqué, Repoussé, Diversion, Menacé. Leurs effets sont encore écrits en d20.
 
 ## Non définis par les règles
 
-Types d'action (rapide, complète, gratuite, réaction) et leur nombre par tour, vitesse de déplacement, Résistance Psychique (RP). Voir la TODO de `ROADMAP.md`.
+Résistance Psychique (RP), Mana / Énergie, liste des états. Voir la TODO de `ROADMAP.md`.

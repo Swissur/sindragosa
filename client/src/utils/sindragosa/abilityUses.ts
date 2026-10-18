@@ -10,7 +10,8 @@ export const USES_PER_LABELS: Record<NonNullable<Ability['usesPer']>, string> = 
   combat: '1 / combat',
   'repos-court': '1 / repos court',
   'repos-long': '1 / repos long',
-  jour: '1 / jour',
+  // « 1/jour » = une fois par repos long (décidé le 2026-10-18)
+  jour: '1 / jour (repos long)',
   seance: '1 / séance',
   scenario: '1 / scénario',
   campagne: '1 / campagne',

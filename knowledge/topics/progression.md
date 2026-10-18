@@ -49,7 +49,7 @@ Elles ne se gagnent pas avec des coches : elles montent **à la discrétion du M
 - Une compétence qui porte le **nom d'une spécialité** exigée ailleurs (ex. « Analyse des failles ») donne cette spécialité au niveau Apprenti quand on la débloque, en plus de la limite de spécialités du domaine.
 - Un **titre** (classe émergente) se débloque quand le personnage réunit une combinaison de compétences et accomplit un haut-fait. **Seul le MJ l'accorde**, depuis ses outils : il choisit parmi les 22 titres qu'exigent les compétences (`client/src/data/sindragosa/titles.ts`) ou en écrit un autre. Un joueur ne peut pas s'en donner.
 
-## Hypothèses du moteur, à confirmer
+## Précisions confirmées (2026-10-18)
 
 - Un échec critique donne 1 coche (le PDF dit aussi « 2 cases »).
 - Les récompenses du MJ ne comptent pas dans la limite de séance.

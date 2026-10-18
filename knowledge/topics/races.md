@@ -26,6 +26,6 @@ Six races pour l'Alliance, six pour la Horde. Chacune donne **+1 à une caracté
 | Elfe de Sang | Intelligence | **Torrent Arcane** (Action Rapide) : Libère une onde de choc magique qui réduit au silence tous les lanceurs de sorts ennemis dans un rayon de 4 mètres pendant 1 tour, tout en restaurant 5 points de Mana / Énergie (ou 3 RP) à l'Elfe de Sang. |
 | Goblin | Charisme | **Saut de Fusée / Fusée de Poche** (Action Rapide) : Au choix lors du déclenchement — Saut : déploie sa ceinture à fusée pour se propulser instantanément à 8 mètres dans n'importe quelle direction (ignore les obstacles au sol). Tir : tire une roquette de poche infligeant 2d6 dégâts de Feu de zone (2m) à distance. |
 
-Termes encore non définis dans ces pouvoirs : RP, AP, Mana / Énergie, types d'action, vitesse de déplacement, jet « Athlétisme/Équilibre » (voir `ROADMAP.md`).
+Repères : « 1/jour » = une fois par repos long ; déplacement de base 6 m ; AP = Armure Physique (`combat.md`). Encore non définis : RP, Mana / Énergie, jet « Athlétisme/Équilibre » (voir `ROADMAP.md`).
 
 Le contexte historique des peuples est dans `monde-azeroth.md`.

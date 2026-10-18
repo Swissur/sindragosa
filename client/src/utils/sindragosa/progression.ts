@@ -12,6 +12,8 @@ export const MAX_TICKS_PER_SESSION = 3
 /** Dont au plus 2 pour une réussite marquante et 1 pour un échec critique. */
 export const MAX_SUCCESS_TICKS_PER_SESSION = 2
 export const MAX_CRIT_FAIL_TICKS_PER_SESSION = 1
+/** En dev (`npm run dev`), pas de limite de séance pour tester la progression. Les tests unitaires et l'e2e la gardent. */
+const SESSION_LIMIT_OFF = import.meta.env.DEV && import.meta.env.MODE !== 'test'
 
 /** Coches nécessaires pour atteindre `rank` depuis rank - 1 : rang 1 = 2 coches … rang 5 = 6 coches. */
 export function ticksForRank(rank: number): number {
@@ -59,7 +61,7 @@ export interface SessionTicks {
 
 /** Une coche de ce motif peut-elle encore être validée pendant la séance ? */
 export function canTick(reason: TickReason, session: SessionTicks): boolean {
-  if (reason === 'reward') return true
+  if (reason === 'reward' || SESSION_LIMIT_OFF) return true
   if (session.success + session.critFail >= MAX_TICKS_PER_SESSION) return false
   if (reason === 'success') return session.success < MAX_SUCCESS_TICKS_PER_SESSION
   return session.critFail < MAX_CRIT_FAIL_TICKS_PER_SESSION

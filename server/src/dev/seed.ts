@@ -17,11 +17,22 @@ export const SEED_GM = 'mj-dev'
  * - Bracco, armure lourde et peu agile → initiative basse (4)
  * - Orlane à 2 PV → teste l'agonie et les seuils de couleur
  * - Nym et Kaeliss à 6 d'initiative → teste les égalités
+ * - Valère au rang 3 dans tous les domaines → teste les spécialités et les compétences
  *
  * hpMax suit la formule du moteur (client/src/utils/sindragosa/combat.ts) :
  * 20 + 2 par rang en Force/Endurance (5 en Résistance physique) + 8 par point
  * d'Endurance gagné depuis la création. Sinon la fiche recalcule d'autres PV.
  */
+/** Les 30 domaines de base (miroir de `DOMAINS`, client/src/data/sindragosa/domains.ts). */
+const ALL_DOMAIN_IDS = [
+  'athletisme', 'melee-bourrine', 'armures-boucliers', 'intimidation-physique', 'artisanat-lourd',
+  'acrobatie-furtivite', 'combat-precision', 'tir-lancer', 'escamotage-crochetage', 'artisanat-delicat',
+  'resistance-physique', 'volonte-recuperation', 'survie-milieu-hostile', 'tolerance-toxines', 'energie-souffle',
+  'magie-profane-arcanes', 'explosifs-ingenierie', 'histoire-geographie', 'tactique-analyse', 'medecine-soins',
+  'perception-sens', 'magie-divine-sacree', 'communion-naturelle-chamanisme', 'alchimie-herboristerie', 'volonte-spirituelle',
+  'persuasion-diplomatie', 'commandement-inspiration', 'magie-ombre-fel', 'negociation-commerce', 'tromperie-comedie',
+]
+
 export const SEED_PLAYERS = [
   {
     username: 'bracco',
@@ -114,6 +125,17 @@ export const SEED_PLAYERS = [
         { id: 's-arcs', domainId: 'tir-lancer', name: 'Arcs', level: 2, ticks: 0 },
       ],
       titles: [] as string[],
+    },
+  },
+  {
+    username: 'touche-a-tout',
+    character: {
+      // Rang 3 partout : 3 spécialités possibles dans chaque domaine, pour les explorer.
+      name: 'Valère Touche-à-tout', race: 'humain',
+      str: 2, agi: 2, end: 2, int: 2, wis: 2, cha: 3, armor: 0,
+      // 20 + 9 domaines de Force/Endurance × 3×2 + Résistance physique 3×5 = 89
+      hpMax: 89, hpCurrent: 89,
+      domains: Object.fromEntries(ALL_DOMAIN_IDS.map((id) => [id, { rank: 3, ticks: 0 }])),
     },
   },
 ] as const

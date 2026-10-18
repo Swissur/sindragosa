@@ -12,6 +12,8 @@ import { computeMaxHp, progressState, domainRanks } from '../utils/sindragosa/sh
 import { initiative } from '../utils/sindragosa/combat'
 import { unlockedAbilities } from '../utils/sindragosa/prerequisites'
 import { unlockedAdvancedDomains } from '../utils/sindragosa/advanced'
+import { specialtyGrants } from '../utils/sindragosa/specialtyGrants'
+import { showToast } from './useToast'
 
 /** Points de chance rendus à chaque séance. */
 export const LUCK_PER_SESSION = 2
@@ -135,6 +137,16 @@ watch(computedHp, (val) => {
 }, { immediate: true })
 
 const loading = ref(false)
+
+// Une compétence homonyme d'une spécialité exigée (« Analyse des failles ») donne
+// cette spécialité, au niveau Apprenti. La sauvegarde auto l'enregistre.
+watch(unlocked, (list) => {
+  if (loading.value || !serverId.value) return
+  const grants = specialtyGrants(character.value.specialties, list)
+  if (!grants.length) return
+  character.value.specialties.push(...grants)
+  for (const g of grants) showToast(`Nouvelle spécialité : ${g.name} (Apprenti) !`)
+})
 const loadError = ref<string | null>(null)
 const saveStatus = ref<'idle' | 'saving' | 'saved' | 'error'>('idle')
 

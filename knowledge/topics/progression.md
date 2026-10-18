@@ -46,6 +46,7 @@ Elles ne se gagnent pas avec des coches : elles montent **à la discrétion du M
 
 - Une **compétence** se débloque automatiquement dès que tous ses prérequis sont réunis. Un prérequis sans rang précisé vaut rang 1. Voir `competences.md`.
 - Un **domaine avancé** s'ouvre par ses prérequis ou par la compétence du même nom, puis progresse comme un domaine (mêmes paliers de coches). Voir `personnage.md`.
+- Une compétence qui porte le **nom d'une spécialité** exigée ailleurs (ex. « Analyse des failles ») donne cette spécialité au niveau Apprenti quand on la débloque, en plus de la limite de spécialités du domaine.
 - Un **titre** (classe émergente) se débloque quand le personnage réunit une combinaison de compétences et accomplit un haut-fait. C'est le MJ qui l'accorde.
 
 ## Hypothèses du moteur, à confirmer

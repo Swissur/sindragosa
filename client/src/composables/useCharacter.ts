@@ -11,6 +11,7 @@ import {
 import { computeMaxHp, progressState, domainRanks } from '../utils/sindragosa/sheet'
 import { initiative } from '../utils/sindragosa/combat'
 import { unlockedAbilities } from '../utils/sindragosa/prerequisites'
+import { unlockedAdvancedDomains } from '../utils/sindragosa/advanced'
 
 /** Points de chance rendus à chaque séance. */
 export const LUCK_PER_SESSION = 2
@@ -123,6 +124,9 @@ export const computedInitiative = computed(() => initiative(character.value.stat
 
 /** Compétences dont tous les prérequis sont réunis. */
 export const unlocked = computed(() => unlockedAbilities(progressState(character.value)))
+
+/** Domaines avancés ouverts : prérequis réunis ou compétence homonyme débloquée. */
+export const unlockedAdvanced = computed(() => unlockedAdvancedDomains(progressState(character.value), unlocked.value))
 
 // PV max calculés → stockés sur la fiche (le serveur s'en sert en combat et au repos).
 watch(computedHp, (val) => {
@@ -271,5 +275,6 @@ export function useCharacter() {
     computedHp,
     computedInitiative,
     unlocked,
+    unlockedAdvanced,
   }
 }

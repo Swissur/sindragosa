@@ -22,7 +22,7 @@ import DistinctionsCard from '../components/character-sheet/DistinctionsCard.vue
 import CraftsCard from '../components/character-sheet/CraftsCard.vue'
 import UnlockedAbilitiesCard from '../components/abilities/UnlockedAbilitiesCard.vue'
 
-const { character, loading, loadError, saveStatus, computedHp, computedInitiative, unlocked } = useCharacter()
+const { character, loading, loadError, saveStatus, computedHp, computedInitiative, unlocked, unlockedAdvanced } = useCharacter()
 const route = useRoute()
 
 const id = route.query.id ? Number(route.query.id) : undefined
@@ -39,10 +39,17 @@ const TABS = [
   { value: 'avances', label: 'Domaines avancés', icon: Sparkles },
 ]
 
-// Un domaine qui monte peut débloquer des compétences : pastille sur l'onglet Domaines avancés.
+// Un domaine qui monte peut débloquer des compétences ou ouvrir un domaine avancé :
+// pastille sur l'onglet Domaines avancés.
 watch(() => unlocked.value.length, (now, before) => {
   if (loading.value || before === undefined || now <= before) return
   showToast(now - before > 1 ? `${now - before} nouvelles compétences !` : 'Nouvelle compétence débloquée !')
+  if (activeTab.value !== 'avances') newPowers.value = true
+})
+
+watch(() => unlockedAdvanced.value.length, (now, before) => {
+  if (loading.value || before === undefined || now <= before) return
+  showToast(now - before > 1 ? `${now - before} domaines avancés s'ouvrent !` : 'Un domaine avancé s’ouvre !')
   if (activeTab.value !== 'avances') newPowers.value = true
 })
 
@@ -101,7 +108,7 @@ watch(activeTab, (tab) => { if (tab === 'avances') newPowers.value = false })
       </template>
 
       <template v-if="activeTab === 'avances'">
-        <DistinctionsCard :character="character" />
+        <DistinctionsCard :character="character" :advanced="unlockedAdvanced" />
         <UnlockedAbilitiesCard :character="character" :unlocked="unlocked" />
       </template>
     </template>

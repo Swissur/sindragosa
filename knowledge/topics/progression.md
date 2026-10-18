@@ -45,7 +45,7 @@ Elles ne se gagnent pas avec des coches : elles montent **à la discrétion du M
 ## Compétences, domaines avancés et titres
 
 - Une **compétence** se débloque automatiquement dès que tous ses prérequis sont réunis. Un prérequis sans rang précisé vaut rang 1. Voir `competences.md`.
-- Un **domaine avancé** progresse comme un domaine (mêmes paliers de coches). Leurs prérequis restent à valider (plan 31 § 7).
+- Un **domaine avancé** s'ouvre par ses prérequis ou par la compétence du même nom, puis progresse comme un domaine (mêmes paliers de coches). Voir `personnage.md`.
 - Un **titre** (classe émergente) se débloque quand le personnage réunit une combinaison de compétences et accomplit un haut-fait. C'est le MJ qui l'accorde.
 
 ## Hypothèses du moteur, à confirmer

@@ -201,9 +201,11 @@ Les prérequis du catalogue de compétences désignent un **domaine** (son ident
 
 ## 7. Questions encore ouvertes
 
-### Prérequis des domaines avancés (proposition à valider)
+### Prérequis des domaines avancés (adoptés le 2026-10-18)
 
-Déduits des compétences qui les citent : le domaine de base qui les accompagne le plus souvent, et le rang le plus bas où il apparaît.
+Règles tranchées : un domaine avancé s'ouvre quand ses prérequis (domaines de base ou autres domaines avancés) sont réunis, ou quand le personnage débloque la compétence du même nom (Ivresse du Combat, Danse des Lames). Son jet utilise la plus haute des caractéristiques liées à ses prérequis, plus son rang. Données : `client/src/data/sindragosa/domains.ts` ; moteur : `client/src/utils/sindragosa/advanced.ts`.
+
+Table de départ, déduite des compétences qui les citent : le domaine de base qui les accompagne le plus souvent, et le rang le plus bas où il apparaît.
 
 | Domaine avancé | Prérequis proposé | Pourquoi |
 |---|---|---|

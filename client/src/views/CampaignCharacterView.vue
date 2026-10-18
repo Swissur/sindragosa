@@ -9,6 +9,7 @@ import { user } from '../composables/useAuth'
 import { computeMaxHp, domainRanks, progressState } from '../utils/sindragosa/sheet'
 import { initiative } from '../utils/sindragosa/combat'
 import { unlockedAbilities } from '../utils/sindragosa/prerequisites'
+import { unlockedAdvancedDomains } from '../utils/sindragosa/advanced'
 import type { Character } from '../types/character'
 
 import AppPageLayout from '../components/ui/AppPageLayout.vue'
@@ -64,6 +65,9 @@ onMounted(async () => {
 const hpMax = computed(() => (character.value ? computeMaxHp(character.value) : 0))
 const init = computed(() => (character.value ? initiative(character.value.stats, domainRanks(character.value)) : 0))
 const unlocked = computed(() => (character.value ? unlockedAbilities(progressState(character.value)) : []))
+const unlockedAdvanced = computed(() =>
+  character.value ? unlockedAdvancedDomains(progressState(character.value), unlocked.value) : [],
+)
 
 type TabId = 'heros' | 'domaines' | 'avances'
 const activeTab = ref<TabId>('heros')
@@ -117,7 +121,7 @@ const TABS = [
       </template>
 
       <template v-if="activeTab === 'avances'">
-        <DistinctionsCard :character="character" />
+        <DistinctionsCard :character="character" :advanced="unlockedAdvanced" readonly />
         <!-- Le MJ voit tout le catalogue, verrouillées comprises ; un autre joueur, seulement ce qui est débloqué. -->
         <AbilitiesPanel v-if="isGm" :character="character" :unlocked="unlocked" readonly />
         <UnlockedAbilitiesCard v-else :character="character" :unlocked="unlocked" readonly />

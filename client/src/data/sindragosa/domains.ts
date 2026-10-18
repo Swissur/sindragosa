@@ -68,35 +68,47 @@ export const DOMAINS: Domain[] = [
   { id: 'tromperie-comedie', stat: 'cha', label: 'Tromperie & Comédie', specialties: ['Déguisement', "Usurpation d'identité", 'Bobards & Bluff'] },
 ]
 
-/** Domaines avancés : progressent comme un domaine, s'ouvrent par prérequis (à définir). */
+/** Prérequis d'un domaine avancé : un domaine de base ou un autre domaine avancé. */
+export interface AdvancedPrerequisite {
+  kind: 'domain' | 'advanced'
+  id: string
+  rank: number
+}
+
+/**
+ * Domaines avancés : progressent comme un domaine et s'ouvrent par prérequis
+ * (décidé le 2026-10-18, table du plan 31 § 7). Le jet utilise la plus haute des
+ * caractéristiques liées à leurs prérequis (`utils/sindragosa/advanced.ts`).
+ */
 export interface AdvancedDomain {
   id: string
   label: string
+  prerequisites: AdvancedPrerequisite[]
 }
 
 export const ADVANCED_DOMAINS: AdvancedDomain[] = [
-  { id: 'ivresse-combat', label: 'Ivresse du Combat' },
-  { id: 'tactique-choc', label: 'Tactique de Choc' },
-  { id: 'danse-lames', label: 'Danse des Lames' },
-  { id: 'poisons-toxines', label: 'Poisons & Toxines' },
-  { id: 'necromancie-peste', label: 'Nécromancie & Peste' },
-  { id: 'maitrise-arcanes', label: 'Maîtrise des Arcanes' },
-  { id: 'magie-givre-alteration', label: 'Magie du Givre & Altération' },
-  { id: 'pyromancie', label: 'Pyromancie' },
-  { id: 'chronomancie', label: 'Chronomancie' },
-  { id: 'runes-anciennes', label: 'Runes Anciennes' },
-  { id: 'maitrise-elements', label: 'Maîtrise des Éléments' },
-  { id: 'astral-celeste', label: 'Astral & Céleste' },
-  { id: 'lumiere-vengeuse', label: 'Lumière Vengeuse' },
-  { id: 'discipline-absolution', label: 'Discipline & Absolution' },
-  { id: 'demonologie-fel', label: 'Démonologie & Fél' },
-  { id: 'maledictions-affliction', label: 'Malédictions & Affliction' },
-  { id: 'magie-vide', label: 'Magie du Vide' },
-  { id: 'ingenierie-goblino-gnome', label: 'Ingénierie Goblino-Gnome' },
-  { id: 'elixirs-arcaniques', label: 'Élixirs Arcaniques' },
-  { id: 'toxines-sauvages', label: 'Toxines Sauvages' },
-  { id: 'dressage-sauvage', label: 'Dressage Sauvage' },
-  { id: 'magie-draconique', label: 'Magie Draconique' },
+  { id: 'ivresse-combat', label: 'Ivresse du Combat', prerequisites: [{ kind: 'domain', id: 'melee-bourrine', rank: 2 }, { kind: 'domain', id: 'volonte-recuperation', rank: 1 }] },
+  { id: 'tactique-choc', label: 'Tactique de Choc', prerequisites: [{ kind: 'domain', id: 'intimidation-physique', rank: 2 }, { kind: 'domain', id: 'tactique-analyse', rank: 1 }] },
+  { id: 'danse-lames', label: 'Danse des Lames', prerequisites: [{ kind: 'domain', id: 'combat-precision', rank: 2 }, { kind: 'domain', id: 'acrobatie-furtivite', rank: 1 }] },
+  { id: 'poisons-toxines', label: 'Poisons & Toxines', prerequisites: [{ kind: 'domain', id: 'escamotage-crochetage', rank: 2 }, { kind: 'domain', id: 'alchimie-herboristerie', rank: 1 }] },
+  { id: 'necromancie-peste', label: 'Nécromancie & Peste', prerequisites: [{ kind: 'domain', id: 'melee-bourrine', rank: 2 }, { kind: 'domain', id: 'magie-ombre-fel', rank: 1 }] },
+  { id: 'maitrise-arcanes', label: 'Maîtrise des Arcanes', prerequisites: [{ kind: 'domain', id: 'magie-profane-arcanes', rank: 2 }] },
+  { id: 'magie-givre-alteration', label: 'Magie du Givre & Altération', prerequisites: [{ kind: 'domain', id: 'magie-profane-arcanes', rank: 2 }] },
+  { id: 'pyromancie', label: 'Pyromancie', prerequisites: [{ kind: 'domain', id: 'magie-profane-arcanes', rank: 2 }] },
+  { id: 'chronomancie', label: 'Chronomancie', prerequisites: [{ kind: 'domain', id: 'magie-profane-arcanes', rank: 3 }, { kind: 'domain', id: 'histoire-geographie', rank: 1 }] },
+  { id: 'runes-anciennes', label: 'Runes Anciennes', prerequisites: [{ kind: 'domain', id: 'magie-profane-arcanes', rank: 2 }, { kind: 'domain', id: 'histoire-geographie', rank: 2 }] },
+  { id: 'maitrise-elements', label: 'Maîtrise des Éléments', prerequisites: [{ kind: 'domain', id: 'communion-naturelle-chamanisme', rank: 3 }] },
+  { id: 'astral-celeste', label: 'Astral & Céleste', prerequisites: [{ kind: 'domain', id: 'communion-naturelle-chamanisme', rank: 2 }, { kind: 'domain', id: 'magie-profane-arcanes', rank: 2 }] },
+  { id: 'lumiere-vengeuse', label: 'Lumière Vengeuse', prerequisites: [{ kind: 'domain', id: 'magie-divine-sacree', rank: 3 }, { kind: 'domain', id: 'commandement-inspiration', rank: 1 }] },
+  { id: 'discipline-absolution', label: 'Discipline & Absolution', prerequisites: [{ kind: 'domain', id: 'magie-divine-sacree', rank: 2 }, { kind: 'domain', id: 'volonte-spirituelle', rank: 2 }] },
+  { id: 'demonologie-fel', label: 'Démonologie & Fél', prerequisites: [{ kind: 'domain', id: 'magie-ombre-fel', rank: 2 }] },
+  { id: 'maledictions-affliction', label: 'Malédictions & Affliction', prerequisites: [{ kind: 'domain', id: 'magie-ombre-fel', rank: 2 }] },
+  { id: 'magie-vide', label: 'Magie du Vide', prerequisites: [{ kind: 'domain', id: 'magie-ombre-fel', rank: 2 }, { kind: 'domain', id: 'volonte-spirituelle', rank: 1 }] },
+  { id: 'ingenierie-goblino-gnome', label: 'Ingénierie Goblino-Gnome', prerequisites: [{ kind: 'domain', id: 'explosifs-ingenierie', rank: 2 }] },
+  { id: 'elixirs-arcaniques', label: 'Élixirs Arcaniques', prerequisites: [{ kind: 'domain', id: 'alchimie-herboristerie', rank: 2 }, { kind: 'domain', id: 'magie-profane-arcanes', rank: 1 }] },
+  { id: 'toxines-sauvages', label: 'Toxines Sauvages', prerequisites: [{ kind: 'domain', id: 'alchimie-herboristerie', rank: 2 }, { kind: 'domain', id: 'survie-milieu-hostile', rank: 1 }] },
+  { id: 'dressage-sauvage', label: 'Dressage Sauvage', prerequisites: [{ kind: 'domain', id: 'communion-naturelle-chamanisme', rank: 2 }, { kind: 'domain', id: 'survie-milieu-hostile', rank: 1 }] },
+  { id: 'magie-draconique', label: 'Magie Draconique', prerequisites: [{ kind: 'domain', id: 'magie-profane-arcanes', rank: 3 }, { kind: 'domain', id: 'histoire-geographie', rank: 2 }] },
 ]
 
 export const domainById = (id: string): Domain | undefined => DOMAINS.find((d) => d.id === id)

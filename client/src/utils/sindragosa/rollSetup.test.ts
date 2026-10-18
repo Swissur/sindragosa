@@ -46,6 +46,15 @@ describe('rollSetup', () => {
     expect(rollSetup(char(), { ...base, mode: 'desavantage' })!.count).toBe(4)
   })
 
+  it('un domaine avancé prend la plus haute de ses caractéristiques liées', () => {
+    // Ivresse du Combat : Mêlée bourrine (FOR) + Volonté & Récupération (END)
+    const c = char({ stats: { str: 2, agi: 3, end: 4, int: 2, wis: 2, cha: 2 }, advancedDomains: { 'ivresse-combat': { rank: 2, ticks: 0 } } })
+    const s = rollSetup(c, { ...base, domainId: 'ivresse-combat', specialtyId: 'dag' })!
+    expect(s.kind).toBe('advanced')
+    expect(s.parts).toEqual([{ label: 'END', value: 4 }, { label: 'rang', value: 2 }])
+    expect(s.count).toBe(6)
+  })
+
   it('domaine inconnu', () => {
     expect(rollSetup(char(), { ...base, domainId: 'nope' })).toBeNull()
   })

@@ -3,7 +3,8 @@
  * Fonctions pures, utilisées par la feuille de jet (`RollSheet`).
  */
 import type { Character } from '../../types/character'
-import { STATS, domainById } from '../../data/sindragosa/domains'
+import { STATS, advancedDomainById, domainById, type StatId } from '../../data/sindragosa/domains'
+import { bestAdvancedStat } from './advanced'
 import { poolSize, type PoolResult, type SpecialtyLevel } from './pool'
 import { canTick, type TickReason } from './progression'
 import type { RollPool } from '../rollOutcome'
@@ -20,6 +21,8 @@ export interface RollChoice {
 }
 
 export interface RollSetup {
+  /** Domaine de base ou domaine avancé : décide où va la coche. */
+  kind: 'domain' | 'advanced'
   count: number
   specialtyLevel: SpecialtyLevel
   /** « AGI 3 + rang 2 + Expert 1 + chance 1 = 7d6 » en morceaux, pour l'affichage. */
@@ -28,19 +31,32 @@ export interface RollSetup {
 
 export const SPECIALTY_LEVEL_LABELS = ['', 'Apprenti', 'Expert', 'Maître'] as const
 
+/**
+ * Un domaine de base se lance avec sa caractéristique ; un domaine avancé avec la
+ * plus haute de celles liées à ses prérequis, et sans spécialité.
+ */
+function rollTarget(c: Character, id: string): { kind: 'domain' | 'advanced'; statId: StatId; rank: number } | null {
+  const domain = domainById(id)
+  if (domain) return { kind: 'domain', statId: domain.stat, rank: c.domains[id]?.rank ?? 0 }
+  const statId = advancedDomainById(id) && bestAdvancedStat(c.stats, id)
+  return statId ? { kind: 'advanced', statId, rank: c.advancedDomains[id]?.rank ?? 0 } : null
+}
+
 export function rollSetup(c: Character, choice: RollChoice): RollSetup | null {
-  const domain = domainById(choice.domainId)
-  if (!domain) return null
-  const stat = c.stats[domain.stat]
-  const rank = c.domains[domain.id]?.rank ?? 0
-  const specialty = c.specialties.find((s) => s.id === choice.specialtyId && s.domainId === domain.id)
+  const target = rollTarget(c, choice.domainId)
+  if (!target) return null
+  const stat = c.stats[target.statId]
+  const rank = target.rank
+  const specialty = target.kind === 'domain'
+    ? c.specialties.find((s) => s.id === choice.specialtyId && s.domainId === choice.domainId)
+    : undefined
   const specialtyLevel = (specialty?.level ?? 0) as SpecialtyLevel
   const advantages = choice.mode === 'avantage' ? 1 : 0
   const disadvantages = choice.mode === 'desavantage' ? 1 : 0
   const luck = Math.max(0, Math.min(choice.luck, c.pcCurrent))
 
   const parts = [
-    { label: STATS.find((st) => st.id === domain.stat)!.abbr, value: stat },
+    { label: STATS.find((st) => st.id === target.statId)!.abbr, value: stat },
     { label: 'rang', value: rank },
   ]
   if (specialtyLevel >= 2) parts.push({ label: SPECIALTY_LEVEL_LABELS[specialtyLevel], value: 1 })
@@ -49,6 +65,7 @@ export function rollSetup(c: Character, choice: RollChoice): RollSetup | null {
   if (luck) parts.push({ label: 'chance', value: luck })
 
   return {
+    kind: target.kind,
     count: poolSize({ stat, domainRank: rank, specialtyLevel, advantages, disadvantages, luck }),
     specialtyLevel,
     parts,

@@ -27,7 +27,7 @@ import type { Pin } from '../utils/sindragosa/pins'
  */
 const props = withDefaults(defineProps<{ embedded?: boolean }>(), { embedded: false })
 
-const { character, loading, loadError, computedHp, computedInitiative, unlocked } = useCharacter()
+const { character, loading, loadError, computedHp, computedInitiative, unlocked, unlockedAdvanced } = useCharacter()
 if (!props.embedded) loadCharacter()
 
 const { pins, toggle, isPinned } = usePins(character)
@@ -48,19 +48,24 @@ function poolLabel(domainId: string): string {
   return s ? `${s.count}d6` : ''
 }
 
-const startedDomains = computed(() =>
-  DOMAINS.filter((d) => {
+/** Domaines entamés, puis domaines avancés ouverts : tout ce qui se lance hors combat. */
+const startedDomains = computed<{ id: string; label: string }[]>(() => [
+  ...DOMAINS.filter((d) => {
     const p = character.value.domains[d.id]
     return p && (p.rank > 0 || p.ticks > 0)
   }),
-)
+  ...unlockedAdvanced.value,
+])
 
 const activeAbilities = computed(() => unlocked.value.filter((a) => a.actionType !== 'passif'))
 const combatAbilities = computed(() => activeAbilities.value.filter((a) => COMBAT_ACTION_TYPES.includes(a.actionType)))
 const otherAbilities = computed(() => activeAbilities.value.filter((a) => !COMBAT_ACTION_TYPES.includes(a.actionType)))
 
 const pinnedDomains = computed(() =>
-  pins.value.filter((p) => p.startsWith('domain:')).map((p) => domainById(p.slice(7))).filter((d) => !!d),
+  pins.value
+    .filter((p) => p.startsWith('domain:'))
+    .map((p) => domainById(p.slice(7)) ?? unlockedAdvanced.value.find((d) => d.id === p.slice(7)))
+    .filter((d) => !!d),
 )
 const pinnedAbilities = computed(() => {
   const ids = new Set(pins.value.filter((p) => p.startsWith('ability:')).map((p) => Number(p.slice(8))))

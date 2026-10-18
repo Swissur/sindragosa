@@ -6,12 +6,12 @@ import AppButton from '../ui/AppButton.vue'
 import AppSelect from '../ui/AppSelect.vue'
 import AppStepper from '../ui/AppStepper.vue'
 import AppToggleGroup, { type AppToggleItem } from '../ui/AppToggleGroup.vue'
-import { character } from '../../composables/useCharacter'
+import { character, unlockedAdvanced } from '../../composables/useCharacter'
 import { rollRequest, closeRollSheet } from '../../composables/useRollSheet'
 import { useRollHistory } from '../../composables/useRollHistory'
 import { playDiceRoll } from '../../composables/useDice3D'
 import { showToast } from '../../composables/useToast'
-import { DOMAINS, STATS, domainById } from '../../data/sindragosa/domains'
+import { DOMAINS, STATS, advancedDomainById, domainById } from '../../data/sindragosa/domains'
 import { rollPool, DIFFICULTY_LABELS, type PoolResult } from '../../utils/sindragosa/pool'
 import { rollSetup, poolSummary, tickReasonFor, SPECIALTY_LEVEL_LABELS, type RollMode } from '../../utils/sindragosa/rollSetup'
 import { applyTick, type TickTarget } from '../../utils/sindragosa/sheet'
@@ -65,7 +65,9 @@ const MODE_ITEMS: AppToggleItem[] = [
   { value: 'avantage', icon: ArrowUp, title: 'Avantage (+1d6)', testid: 'roll-mode-avantage' },
 ]
 
-const title = computed(() => rollRequest.value?.label ?? domainById(domainId.value)?.label ?? 'Jet')
+const domainLabel = (id: string) => domainById(id)?.label ?? advancedDomainById(id)?.label ?? ''
+
+const title = computed(() => rollRequest.value?.label || domainLabel(domainId.value) || 'Jet')
 
 async function roll() {
   const s = setup.value
@@ -105,7 +107,7 @@ const tickReason = computed(() => (result.value ? tickReasonFor(result.value, ch
 
 const tickTargets = computed<{ target: TickTarget; label: string }[]>(() => {
   const list: { target: TickTarget; label: string }[] = [
-    { target: { kind: 'domain', id: domainId.value }, label: domainById(domainId.value)?.label ?? '' },
+    { target: { kind: setup.value?.kind ?? 'domain', id: domainId.value }, label: domainLabel(domainId.value) },
   ]
   const s = specialties.value.find((x) => x.id === specialtyId.value)
   if (s) list.push({ target: { kind: 'specialty', id: s.id }, label: s.name })
@@ -143,6 +145,11 @@ const weaponHint = computed(() => {
             <optgroup v-for="g in domainGroups" :key="g.stat.id" :label="g.stat.label">
               <option v-for="d in g.domains" :key="d.id" :value="d.id">
                 {{ d.label }} ({{ character.domains[d.id]?.rank ?? 0 }})
+              </option>
+            </optgroup>
+            <optgroup v-if="unlockedAdvanced.length" label="Domaines avancés">
+              <option v-for="d in unlockedAdvanced" :key="d.id" :value="d.id">
+                {{ d.label }} ({{ character.advancedDomains[d.id]?.rank ?? 0 }})
               </option>
             </optgroup>
           </AppSelect>

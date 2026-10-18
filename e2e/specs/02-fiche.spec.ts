@@ -166,3 +166,24 @@ test('le joueur ne voit que ses compétences débloquées, le MJ voit tout le ca
     await mj.close()
   }
 })
+
+// Domaines avancés (2026-10-18) : ouverts par leurs prérequis, lancés avec la
+// plus haute des caractéristiques liées.
+test('un domaine avancé s’ouvre par ses prérequis et se lance', async ({ browser }) => {
+  const ctx = await browser.newContext({ storageState: stateFor('orlane') })
+  const page = await ctx.newPage()
+  try {
+    await page.goto('/personnage')
+    await page.getByRole('tab', { name: 'Domaines avancés' }).click()
+    // Chronomancie : Magie profane & Arcanes 3 + Histoire & Géographie 1 → Orlane y est.
+    await expect(page.getByTestId('advanced-chronomancie')).toBeVisible()
+    // Démonologie demande Magie de l'Ombre & Fél 2 : fermé, donc invisible.
+    await expect(page.getByTestId('advanced-demonologie-fel')).toHaveCount(0)
+
+    await page.getByTestId('advanced-roll-chronomancie').click()
+    await expect(page.getByTestId('roll-formula')).toContainText('INT 3')
+    await expect(page.getByTestId('roll-formula')).toContainText('= 3d6')
+  } finally {
+    await ctx.close()
+  }
+})

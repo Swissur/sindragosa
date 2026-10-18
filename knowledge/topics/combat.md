@@ -18,7 +18,7 @@ Source : `docs/regles/Sindragosa.pdf` § 1.B et 4. Moteur : `client/src/utils/si
 
 1. **L'attaquant** lance sa réserve : caractéristique + domaine d'attaque (celui de son arme).
 2. **Le défenseur** réagit avec sa propre réserve :
-   - **Parer** : Force + domaine d'armes de contact ;
+   - **Parer** : le domaine de l'arme de contact tenue, avec sa caractéristique (Force + Mêlée bourrine pour une hache, Agilité + Combat de précision pour une dague), plus la spécialité de cette arme si le personnage l'a ;
    - **Esquiver** : Agilité + Acrobatie & Furtivité.
 3. **Résolution** : marge = succès de l'attaque − succès de la défense.
    - Marge ≤ 0 : attaque parée ou esquivée, pas de dégâts.

@@ -74,7 +74,7 @@ On ne touche pas aux mécaniques tant que ces points ne sont pas définis. Déci
 - [x] **« 1/jour »** : une fois par repos long.
 - [ ] **États** : Étourdissement, Enracinement, Peur, Sommeil, Charme, Silence, Saignement, Poison, Maladie, À terre. Liste officielle et effets.
 - [ ] **Jet « Athlétisme/Équilibre »** (pouvoir du Tauren) : Équilibre n’est pas un domaine.
-- [ ] **Parade « Force + Armes de Contact »** : le domaine « Armes de Contact » n’existe pas. Est-ce Mêlée bourrine ? Combat de précision ?
+- [x] **Parade** (tranché le 2026-10-18) : on pare avec le domaine de l’arme tenue (Mêlée bourrine pour une hache, Combat de précision pour une dague), plus la spécialité de cette arme si on l’a.
 - [x] **Alchimie & Herboristerie** : sous Sagesse seulement (tranché le 2026-10-17).
 - [ ] **Dégâts des armes** : valeur fixe ou dés ? Catalogue d’armes ?
 - [ ] **Classes émergentes** : liste des titres, des combinaisons de compétences et des hauts-faits.

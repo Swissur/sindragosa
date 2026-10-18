@@ -58,8 +58,10 @@ export const characters = pgTable(
     hpCurrent: integer('hp_current').notNull().default(20),
     /** Bonus de PV max divers (objets, compétences passives). */
     hpBonus: integer('hp_bonus').notNull().default(0),
-    /** Armure physique (AP), saisie à la main tant que l'équipement n'est pas défini. */
+    /** Armure Physique totale (armures équipées + bonus), synchronisée par la fiche : le combat la lit. */
     armor: integer('armor').notNull().default(0),
+    /** AP apportée par les compétences, réglée à la main. */
+    armorBonus: integer('armor_bonus').notNull().default(0),
 
     /** Caractéristiques : nombre de d6 de base, réglées par le MJ. */
     str: integer('str').notNull().default(2),
@@ -85,10 +87,10 @@ export const characters = pgTable(
     resources: jsonb('resources').notNull().default([]),
     /** Métiers d'artisanat connus : { [craftId]: rang } */
     crafts: jsonb('crafts').$type<Record<string, number>>().notNull().default({}),
-    /** Armes : [{ id, name, damage, domainId }] */
-    weapons: jsonb('weapons').notNull().default([]),
-
-    /** Inventory items: [{ id, name, description?, quantity }] */
+    /**
+     * Inventaire : [{ id, name, description?, quantity, type?, equipped?, size?,
+     * damageBonus?, domainId?, armor? }] (plans/35-equipement.md).
+     */
     items: jsonb('items').notNull().default([]),
     /** Monnaie : 1 or = 10 argent = 100 cuivre. */
     goldCoins: integer('gold_coins').notNull().default(0),

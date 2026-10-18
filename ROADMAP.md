@@ -64,7 +64,7 @@ Sindragosa n’est plus un outil pour les Terres d’Arran (Chroniques Oubliées
 On ne touche pas aux mécaniques tant que ces points ne sont pas définis. Décisions du 2026-10-18 : les hypothèses du moteur sont confirmées (plan 31 § 7), et les points cochés ci-dessous sont tranchés.
 
 - [ ] **RP = Résistance Psychique** (nom donné par l’artisanat) : quel maximum, comment la perd-on, à quoi sert-elle ?
-- [x] **AP = Armure Physique** : modifiée uniquement par l’équipement et les compétences, elle diminue les dégâts reçus. Pas de valeur de base (0).
+- [x] **AP = Armure Physique** : modifiée uniquement par l’équipement et les compétences, elle diminue les dégâts reçus. Pas de valeur de base (0). Calculée : armures équipées + bonus des compétences (`plans/35-equipement.md`).
 - [ ] **Ressources de classe** citées par les compétences : Énergie, Rage, Ferveur, Focalisation, Points de Combo, Puissance Runique / Sacrée / Céleste, Éclats d’Âme, Charges Arcaniques, Fureur démoniaque, Insalubrité.
 - [x] **Repos court / repos long / séance** : les unités qui remettent les usages à zéro (tranché le 2026-10-17, plan 31 § 6).
 - [ ] **Noms de domaines** différents d’un PDF à l’autre : liste à valider dans `plans/31-refonte-regles-sindragosa.md` § 6.
@@ -76,7 +76,7 @@ On ne touche pas aux mécaniques tant que ces points ne sont pas définis. Déci
 - [ ] **Jet « Athlétisme/Équilibre »** (pouvoir du Tauren) : Équilibre n’est pas un domaine.
 - [x] **Parade** (tranché le 2026-10-18) : on pare avec le domaine de l’arme tenue (Mêlée bourrine pour une hache, Combat de précision pour une dague), plus la spécialité de cette arme si on l’a.
 - [x] **Alchimie & Herboristerie** : sous Sagesse seulement (tranché le 2026-10-17).
-- [ ] **Dégâts des armes** : valeur fixe ou dés ? Catalogue d’armes ?
+- [x] **Dégâts des armes** (2026-10-18, à tester en jeu) : fixes selon le gabarit, légère 2, une main 3, deux mains 5, plus un bonus. Les armes sont des objets de l’inventaire (`plans/35-equipement.md`).
 - [ ] **Classes émergentes** : liste des titres, des combinaisons de compétences et des hauts-faits.
 - [ ] **Récapitulatif d’équilibre par race** : il donne « Troll » alors que la fiche raciale dit « Trolle ». Harmoniser le nom.
 

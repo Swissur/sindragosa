@@ -5,10 +5,10 @@
 // Les titres n'y sont pas : seul le MJ en accorde (`GM_EDITABLE_FIELDS`).
 export const UPDATABLE_FIELDS = [
   'name', 'histoire', 'race', 'portraitImageId',
-  'hpMax', 'hpCurrent', 'hpBonus', 'armor',
+  'hpMax', 'hpCurrent', 'hpBonus', 'armor', 'armorBonus',
   'str', 'agi', 'end', 'int', 'wis', 'cha',
   'domains', 'specialties', 'advancedDomains',
-  'abilityUses', 'sessionTicks', 'resources', 'crafts', 'weapons',
+  'abilityUses', 'sessionTicks', 'resources', 'crafts',
   'items', 'goldCoins', 'silverCoins', 'copperCoins',
   'pcCurrent', 'states',
 ] as const

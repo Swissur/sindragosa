@@ -15,7 +15,6 @@ import HeroCard from '../components/character-sheet/HeroCard.vue'
 import VitalsCard from '../components/character-sheet/VitalsCard.vue'
 import StatsCard from '../components/character-sheet/StatsCard.vue'
 import ResourcesCard from '../components/character-sheet/ResourcesCard.vue'
-import WeaponsCard from '../components/character-sheet/WeaponsCard.vue'
 import SessionTicksBanner from '../components/character-sheet/SessionTicksBanner.vue'
 import DomainsCard from '../components/character-sheet/DomainsCard.vue'
 import DistinctionsCard from '../components/character-sheet/DistinctionsCard.vue'
@@ -97,7 +96,6 @@ watch(activeTab, (tab) => { if (tab === 'avances') newPowers.value = false })
         <HeroCard :character="character" :editing="editing" />
         <VitalsCard :character="character" :hp-max="computedHp" :initiative="computedInitiative" :editing="editing" />
         <StatsCard :character="character" :editing="editing" />
-        <WeaponsCard :character="character" :editing="editing" />
         <ResourcesCard :character="character" :editing="editing" />
       </template>
 

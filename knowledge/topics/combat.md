@@ -26,7 +26,19 @@ Source : `docs/regles/Sindragosa.pdf` § 1.B et 4. Moteur : `client/src/utils/si
 
 ## Armure
 
-L'**Armure Physique (AP)** se retire des dégâts reçus. Elle vaut 0 de base et n'est modifiée **que par l'équipement et les compétences**. Celle d'un personnage se règle sur sa fiche (mode édition) ; celle des monstres vient du bestiaire (`bestiaire.md`).
+L'**Armure Physique (AP)** se retire des dégâts reçus. Elle vaut 0 de base et n'est modifiée **que par l'équipement et les compétences** : AP = armures **équipées** dans l'inventaire + bonus des compétences (réglé en mode édition). Celle des monstres vient du bestiaire (`bestiaire.md`).
+
+## Armes
+
+Les armes sont des objets de l'inventaire. Leurs dégâts sont **fixes selon le gabarit** (à tester en jeu), plus un bonus éventuel :
+
+| Gabarit | Dégâts |
+|---|---|
+| Légère (dague, arme de jet) | 2 |
+| Une main | 3 |
+| Deux mains | 5 |
+
+Une arme **équipée** donne une attaque (« Frapper ») dans la liste des compétences et dans Mes actions, avec son domaine d'attaque.
 
 ## Actions et déplacement
 

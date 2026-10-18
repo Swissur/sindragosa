@@ -47,13 +47,21 @@ const showEtats = ref(false)
     <div class="vital-row">
       <div class="vital vital--small">
         <span class="vital-label"><Shield :size="15" /> Armure</span>
-        <AppStepper v-if="editing && !readonly" v-model="character.armor" label="Armure" testid="armor" />
-        <span v-else class="vital-value" data-testid="armor-value">{{ character.armor }}</span>
+        <span class="vital-value" data-testid="armor-value">{{ character.armor }}</span>
+        <AppTooltip label="Calcul de l'armure">
+          <template #trigger><span class="vital-help">?</span></template>
+          Armure Physique (AP) = armures équipées dans l'inventaire + bonus des compétences ({{ character.armorBonus }}).
+        </AppTooltip>
       </div>
       <div class="vital vital--small">
         <span class="vital-label"><Zap :size="15" /> Initiative</span>
         <span class="vital-value" data-testid="initiative">{{ initiative }}</span>
       </div>
+    </div>
+
+    <div v-if="editing && !readonly" class="vital">
+      <span class="vital-label">Bonus d'armure (compétences)</span>
+      <AppStepper v-model="character.armorBonus" :min="-99" label="Bonus d'armure" testid="armor-bonus" />
     </div>
 
     <div v-if="editing && !readonly" class="vital">

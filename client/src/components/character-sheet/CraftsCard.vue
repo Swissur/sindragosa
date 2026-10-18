@@ -6,7 +6,7 @@ import AppAccordion from '../ui/AppAccordion.vue'
 import AppSelect from '../ui/AppSelect.vue'
 import AppStepper from '../ui/AppStepper.vue'
 import AppIconBtn from '../ui/AppIconBtn.vue'
-import { CRAFTS } from '../../data/sindragosa/crafts'
+import { CRAFTS, RECIPES } from '../../data/sindragosa/crafts'
 import { craftDomainId, recipesFor } from '../../utils/sindragosa/crafting'
 import { openRollSheet } from '../../composables/useRollSheet'
 import { showToast } from '../../composables/useToast'
@@ -46,7 +46,8 @@ function remove(id: string, label: string) {
 function craft(craftId: string, recipeName: string) {
   const c = CRAFTS.find((x) => x.id === craftId)
   const domainId = c && craftDomainId(c)
-  if (domainId) openRollSheet({ domainId, label: `Fabriquer : ${recipeName}`, context: 'fiche' })
+  const recipe = RECIPES.find((r) => r.craft === craftId && r.name === recipeName)
+  if (domainId) openRollSheet({ domainId, label: `Fabriquer : ${recipeName}`, recipe, context: 'fiche' })
 }
 </script>
 

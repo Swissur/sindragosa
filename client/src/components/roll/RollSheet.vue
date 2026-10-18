@@ -15,6 +15,7 @@ import { DOMAINS, STATS, advancedDomainById, domainById } from '../../data/sindr
 import { rollPool, DIFFICULTY_LABELS, type PoolResult } from '../../utils/sindragosa/pool'
 import { rollSetup, poolSummary, tickReasonFor, SPECIALTY_LEVEL_LABELS, type RollMode } from '../../utils/sindragosa/rollSetup'
 import { applyTick, type TickTarget } from '../../utils/sindragosa/sheet'
+import { itemFromRecipe, weaponDamage } from '../../utils/sindragosa/equipment'
 
 /**
  * Feuille de jet Sindragosa (plans/32) : on choisit domaine, spécialité,
@@ -88,6 +89,13 @@ async function roll() {
   result.value = r
   ticked.value = false
   rolling.value = false
+  // Fabrication réussie (au moins 1 succès) : l'objet arrive dans l'inventaire du fabricant.
+  const recipe = rollRequest.value?.recipe
+  if (recipe && r.successes > 0) {
+    const item = itemFromRecipe(recipe)
+    character.value.items.push(item)
+    showToast(`${item.name}${item.quantity > 1 ? ` ×${item.quantity}` : ''} rejoint ton inventaire !`)
+  }
   const specialty = specialties.value.find((x) => x.id === specialtyId.value)
   addRoll({
     characterName: character.value.name,
@@ -132,7 +140,7 @@ function tick(target: TickTarget, label: string) {
 const weaponHint = computed(() => {
   const w = rollRequest.value?.weapon
   if (!w || !result.value) return null
-  return `Dégâts = ${w.damage} + marge (tes succès − ceux de la défense) − armure`
+  return `Dégâts = ${weaponDamage(w)} + marge (tes succès − ceux de la défense) − armure`
 })
 </script>
 

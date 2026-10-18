@@ -3,6 +3,8 @@ import { computed, toRef } from 'vue'
 import AppCard from '../ui/AppCard.vue'
 import AppEmptyState from '../ui/AppEmptyState.vue'
 import AbilityCard from './AbilityCard.vue'
+import WeaponStrikes from './WeaponStrikes.vue'
+import { equippedWeapons } from '../../utils/sindragosa/equipment'
 import { usePins } from '../../composables/usePins'
 import type { Ability } from '../../data/sindragosa/types'
 import type { Character } from '../../types/character'
@@ -17,11 +19,13 @@ const props = defineProps<{ character: Character; unlocked: Ability[]; readonly?
 const { isPinned, toggle } = usePins(toRef(props, 'character'))
 
 const sorted = computed(() => [...props.unlocked].sort((a, b) => a.name.localeCompare(b.name, 'fr')))
+const hasWeapons = computed(() => equippedWeapons(props.character).length > 0)
 </script>
 
 <template>
   <AppCard title="Compétences" data-testid="unlocked-abilities">
-    <AppEmptyState v-if="!sorted.length">
+    <WeaponStrikes :character="character" :readonly="readonly" />
+    <AppEmptyState v-if="!sorted.length && !hasWeapons">
       Aucune compétence pour l'instant : continue à pratiquer tes domaines, elles se révèlent d'elles-mêmes.
     </AppEmptyState>
     <AbilityCard

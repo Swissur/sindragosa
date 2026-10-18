@@ -18,6 +18,7 @@ import { usePins } from '../composables/usePins'
 import { DOMAINS, domainById } from '../data/sindragosa/domains'
 import { rollSetup } from '../utils/sindragosa/rollSetup'
 import { USES_PER_LABELS } from '../utils/sindragosa/abilityUses'
+import { equippedWeapons, weaponDamage } from '../utils/sindragosa/equipment'
 import type { Ability } from '../data/sindragosa/types'
 import type { Pin } from '../utils/sindragosa/pins'
 
@@ -56,6 +57,9 @@ const startedDomains = computed<{ id: string; label: string }[]>(() => [
   }),
   ...unlockedAdvanced.value,
 ])
+
+/** Les armes équipées : leur attaque est une action de combat. */
+const weapons = computed(() => equippedWeapons(character.value))
 
 const activeAbilities = computed(() => unlocked.value.filter((a) => a.actionType !== 'passif'))
 const combatAbilities = computed(() => activeAbilities.value.filter((a) => COMBAT_ACTION_TYPES.includes(a.actionType)))
@@ -169,13 +173,13 @@ function onStabilise() {
 
       <div v-if="activeTab === 'combat'" class="tiles">
         <ActionTile
-          v-for="w in character.weapons"
+          v-for="w in weapons"
           :key="w.id"
           :icon="Swords"
           :label="w.name"
-          :detail="`${poolLabel(w.domainId)} · ${w.damage} dégâts`"
+          :detail="`${poolLabel(w.domainId ?? '')} · ${weaponDamage(w)} dégâts`"
           :testid="`tile-weapon-${w.id}`"
-          @activate="openRollSheet({ domainId: w.domainId, label: w.name, weapon: w, context: 'actions' })"
+          @activate="openRollSheet({ domainId: w.domainId ?? 'melee-bourrine', label: w.name, weapon: w, context: 'actions' })"
         />
         <ActionTile
           v-for="a in combatAbilities"
@@ -188,8 +192,8 @@ function onStabilise() {
           @activate="openedAbility = a"
           @toggle-pin="toggle(abilityPin(a.id))"
         />
-        <AppEmptyState v-if="!character.weapons.length && !combatAbilities.length">
-          Pas encore d'arme ni de compétence de combat.
+        <AppEmptyState v-if="!weapons.length && !combatAbilities.length">
+          Pas encore d'arme équipée ni de compétence de combat.
         </AppEmptyState>
       </div>
 

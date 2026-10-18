@@ -3,11 +3,25 @@
 import type { EtatId } from '../data/etats'
 import type { StatId } from '../data/sindragosa/domains'
 
+export type ItemType = 'arme' | 'armure' | 'consommable' | 'composant' | 'divers'
+export type WeaponSize = 'legere' | 'une-main' | 'deux-mains'
+
+/** Un objet de l'inventaire (plans/35-equipement.md). */
 export interface ItemRow {
   id: string
   name: string
   description?: string
   quantity: number
+  /** Absent sur les objets créés avant le 2026-10-18 : « divers ». */
+  type?: ItemType
+  /** Arme ou armure portée. */
+  equipped?: boolean
+  /** Arme : gabarit (fixe les dégâts), bonus de dégâts, domaine d'attaque. */
+  size?: WeaponSize
+  damageBonus?: number
+  domainId?: string
+  /** Armure : Armure Physique apportée quand elle est équipée. */
+  armor?: number
 }
 
 /** Rang d'un domaine (ou domaine avancé) et coches accumulées vers le rang suivant. */
@@ -33,15 +47,6 @@ export interface ResourceRow {
   max: number
 }
 
-export interface WeaponRow {
-  id: string
-  name: string
-  /** Dégâts fixes de l'arme (dégâts = arme + marge − armure). */
-  damage: number
-  /** Domaine utilisé pour attaquer. */
-  domainId: string
-}
-
 export type Stats = Record<StatId, number>
 
 export interface Character {
@@ -59,8 +64,10 @@ export interface Character {
   hpMax: number
   /** Bonus de PV max divers (objets, compétences passives). */
   hpBonus: number
-  /** Armure physique (AP). */
+  /** Armure Physique (AP) totale : armures équipées + `armorBonus`. Synchronisée pour le combat. */
   armor: number
+  /** AP apportée par les compétences, réglée à la main. */
+  armorBonus: number
 
   domains: Record<string, DomainProgress>
   specialties: SpecialtyRow[]
@@ -72,7 +79,6 @@ export interface Character {
   resources: ResourceRow[]
   /** Métiers d'artisanat connus : { [craftId]: rang }. */
   crafts: Record<string, number>
-  weapons: WeaponRow[]
 
   items: ItemRow[]
   /** Monnaie : 1 or = 10 argent = 100 cuivre. */

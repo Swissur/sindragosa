@@ -20,7 +20,6 @@ import AppTabs from '../components/ui/AppTabs.vue'
 import HeroCard from '../components/character-sheet/HeroCard.vue'
 import VitalsCard from '../components/character-sheet/VitalsCard.vue'
 import StatsCard from '../components/character-sheet/StatsCard.vue'
-import WeaponsCard from '../components/character-sheet/WeaponsCard.vue'
 import ResourcesCard from '../components/character-sheet/ResourcesCard.vue'
 import SessionTicksBanner from '../components/character-sheet/SessionTicksBanner.vue'
 import DomainsCard from '../components/character-sheet/DomainsCard.vue'
@@ -110,7 +109,6 @@ const TABS = [
         <HeroCard :character="character" :portrait-override-url="portraitDataUrl" readonly />
         <VitalsCard :character="character" :hp-max="hpMax" :initiative="init" readonly />
         <StatsCard :character="character" readonly />
-        <WeaponsCard :character="character" readonly />
         <ResourcesCard :character="character" readonly />
       </template>
 

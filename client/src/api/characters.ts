@@ -15,6 +15,7 @@ export interface ServerCharacter {
   hpCurrent: number
   hpBonus: number
   armor: number
+  armorBonus: number
   str: number
   agi: number
   end: number
@@ -29,7 +30,6 @@ export interface ServerCharacter {
   sessionTicks: Character['sessionTicks']
   resources: Character['resources']
   crafts: Character['crafts']
-  weapons: Character['weapons']
   items: Character['items']
   goldCoins: number
   silverCoins: number

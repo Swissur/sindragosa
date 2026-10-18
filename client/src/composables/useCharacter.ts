@@ -10,6 +10,7 @@ import {
 } from '../api/characters'
 import { computeMaxHp, progressState, domainRanks } from '../utils/sindragosa/sheet'
 import { initiative } from '../utils/sindragosa/combat'
+import { effectiveArmor } from '../utils/sindragosa/equipment'
 import { unlockedAbilities } from '../utils/sindragosa/prerequisites'
 import { unlockedAdvancedDomains } from '../utils/sindragosa/advanced'
 import { specialtyGrants } from '../utils/sindragosa/specialtyGrants'
@@ -33,6 +34,7 @@ export function toCharacter(s: ServerCharacter): Character {
     hpMax: s.hpMax,
     hpBonus: s.hpBonus ?? 0,
     armor: s.armor ?? 0,
+    armorBonus: s.armorBonus ?? 0,
     domains: obj(s.domains, {}),
     specialties: arr(s.specialties),
     advancedDomains: obj(s.advancedDomains, {}),
@@ -41,7 +43,6 @@ export function toCharacter(s: ServerCharacter): Character {
     sessionTicks: obj(s.sessionTicks, { success: 0, critFail: 0 }),
     resources: arr(s.resources),
     crafts: obj(s.crafts, {}),
-    weapons: arr(s.weapons),
     items: arr(s.items),
     goldCoins: s.goldCoins ?? 0,
     silverCoins: s.silverCoins ?? 0,
@@ -61,6 +62,7 @@ export function toServerPayload(c: Character): Omit<ServerCharacter, 'id' | 'use
     hpCurrent: c.hpCurrent,
     hpBonus: Number(c.hpBonus) || 0,
     armor: Number(c.armor) || 0,
+    armorBonus: Number(c.armorBonus) || 0,
     str: c.stats.str,
     agi: c.stats.agi,
     end: c.stats.end,
@@ -75,7 +77,6 @@ export function toServerPayload(c: Character): Omit<ServerCharacter, 'id' | 'use
     sessionTicks: c.sessionTicks,
     resources: c.resources,
     crafts: c.crafts,
-    weapons: c.weapons,
     items: c.items,
     goldCoins: c.goldCoins,
     silverCoins: c.silverCoins,
@@ -97,6 +98,7 @@ export function createDefaultCharacter(): Character {
     hpMax: 20,
     hpBonus: 0,
     armor: 0,
+    armorBonus: 0,
     domains: {},
     specialties: [],
     advancedDomains: {},
@@ -105,7 +107,6 @@ export function createDefaultCharacter(): Character {
     sessionTicks: { success: 0, critFail: 0 },
     resources: [],
     crafts: {},
-    weapons: [],
     items: [],
     goldCoins: 0,
     silverCoins: 0,
@@ -129,6 +130,12 @@ export const unlocked = computed(() => unlockedAbilities(progressState(character
 
 /** Domaines avancés ouverts : prérequis réunis ou compétence homonyme débloquée. */
 export const unlockedAdvanced = computed(() => unlockedAdvancedDomains(progressState(character.value), unlocked.value))
+
+/** AP = armures équipées + bonus des compétences (plans/35-equipement.md). */
+export const computedArmor = computed(() => effectiveArmor(character.value))
+
+// AP calculée → stockée sur la fiche : le combat la lit.
+watch(computedArmor, (val) => { character.value.armor = val }, { immediate: true })
 
 // PV max calculés → stockés sur la fiche (le serveur s'en sert en combat et au repos).
 watch(computedHp, (val) => {

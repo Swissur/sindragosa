@@ -28,6 +28,10 @@ export const SEED_PLAYERS = [
     character: {
       name: 'Bracco Pouce-Cassé', race: 'nain',
       str: 2, agi: 2, end: 3, int: 2, wis: 2, cha: 2, armor: 4,
+      items: [
+        { id: 'i-cuirasse', name: 'Cuirasse de plaques', quantity: 1, type: 'armure', armor: 4, equipped: true },
+        { id: 'i-hache', name: "Hache d'armes", quantity: 1, type: 'arme', size: 'une-main', damageBonus: 0, domainId: 'melee-bourrine', equipped: true },
+      ],
       // 20 + Mêlée 3×2 + Armures 2×2 + Athlétisme 1×2 + Résistance 2×5 = 42
       hpMax: 42, hpCurrent: 42,
       domains: {
@@ -49,6 +53,10 @@ export const SEED_PLAYERS = [
     character: {
       name: 'Nym la Vive', race: 'elfe-nuit',
       str: 2, agi: 3, end: 2, int: 2, wis: 2, cha: 2, armor: 1,
+      items: [
+        { id: 'i-cuir', name: 'Cuir souple', quantity: 1, type: 'armure', armor: 1, equipped: true },
+        { id: 'i-dagues', name: 'Dagues jumelles', quantity: 1, type: 'arme', size: 'legere', damageBonus: 0, domainId: 'combat-precision', equipped: true },
+      ],
       hpMax: 20, hpCurrent: 20,
       domains: {
         'acrobatie-furtivite': { rank: 3, ticks: 2 },
@@ -90,6 +98,10 @@ export const SEED_PLAYERS = [
       // Même initiative que Nym (6) : teste les égalités.
       name: 'Kaeliss Feuille-Grise', race: 'troll',
       str: 2, agi: 3, end: 2, int: 2, wis: 2, cha: 2, armor: 2,
+      items: [
+        { id: 'i-clous', name: 'Cuir clouté', quantity: 1, type: 'armure', armor: 2, equipped: true },
+        { id: 'i-arc', name: 'Arc long', quantity: 1, type: 'arme', size: 'deux-mains', damageBonus: 0, domainId: 'tir-lancer', equipped: true },
+      ],
       // 20 + Survie 2×2 = 24
       hpMax: 24, hpCurrent: 24,
       domains: {

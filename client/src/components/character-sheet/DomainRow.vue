@@ -5,6 +5,7 @@ import AppTickGauge from '../ui/AppTickGauge.vue'
 import AppIconBtn from '../ui/AppIconBtn.vue'
 import AppInput from '../ui/AppInput.vue'
 import AppButton from '../ui/AppButton.vue'
+import AppModal from '../ui/AppModal.vue'
 import { openRollSheet } from '../../composables/useRollSheet'
 import { removeWithUndo } from '../../composables/useUndoRemove'
 import { addSpecialty } from '../../utils/sindragosa/sheet'
@@ -30,6 +31,8 @@ const emit = defineEmits<{ (e: 'toggle-pin'): void }>()
 
 const expanded = ref(false)
 const newName = ref('')
+/** Modale « + Autre » : spécialité hors des suggestions. */
+const otherOpen = ref(false)
 
 const progress = computed(() => props.character.domains[props.domain.id] ?? { rank: 0, ticks: 0 })
 const specialties = computed(() => props.character.specialties.filter((s) => s.domainId === props.domain.id))
@@ -48,6 +51,7 @@ function add(name: string) {
   if (!next) return
   props.character.specialties = next.specialties
   newName.value = ''
+  otherOpen.value = false
 }
 
 function remove(id: string) {
@@ -105,18 +109,25 @@ function remove(id: string) {
         </AppIconBtn>
       </div>
 
-      <div v-if="canAdd && !readonly" class="specialty-add">
-        <div class="specialty-suggestions">
-          <AppButton v-for="n in suggestions" :key="n" size="small" @click="add(n)">{{ n }}</AppButton>
-        </div>
-        <div class="specialty-free">
-          <AppInput v-model="newName" placeholder="Autre spécialité" class="specialty-input" data-testid="specialty-input" />
-          <AppIconBtn variant="primary" title="Ajouter" :disabled="!newName.trim()" data-testid="specialty-add" @click="add(newName)">
-            <Plus :size="16" />
-          </AppIconBtn>
-        </div>
+      <div v-if="canAdd && !readonly" class="specialty-suggestions">
+        <AppButton v-for="n in suggestions" :key="n" size="small" @click="add(n)">{{ n }}</AppButton>
+        <AppButton size="small" data-testid="specialty-other" @click="otherOpen = true">
+          <Plus :size="14" /> Autre
+        </AppButton>
       </div>
     </div>
+
+    <AppModal v-model="otherOpen" :title="`Spécialité — ${domain.label}`">
+      <form id="specialty-other-form" @submit.prevent="add(newName)">
+        <AppInput v-model="newName" placeholder="Nom de la spécialité" autofocus data-testid="specialty-input" />
+      </form>
+      <template #footer>
+        <AppButton @click="otherOpen = false">Annuler</AppButton>
+        <AppButton type="submit" form="specialty-other-form" variant="primary" :disabled="!newName.trim()" data-testid="specialty-add">
+          Ajouter
+        </AppButton>
+      </template>
+    </AppModal>
   </div>
 </template>
 
@@ -197,24 +208,9 @@ function remove(id: string) {
   font-size: 0.92rem;
 }
 
-.specialty-add {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-xs);
-}
-
 .specialty-suggestions {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-xs);
-}
-
-.specialty-free {
-  display: flex;
-  gap: var(--space-xs);
-}
-
-.specialty-input {
-  flex: 1;
 }
 </style>

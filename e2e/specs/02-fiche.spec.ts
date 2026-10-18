@@ -51,6 +51,7 @@ test.describe('fiche de personnage', () => {
       await page.getByRole('tab', { name: 'Domaines', exact: true }).click()
       // Athlétisme rang 1, aucune spécialité : une place est libre.
       await page.getByTestId('domain-expand-athletisme').click()
+      await page.getByTestId('specialty-other').click()
       await page.getByTestId('specialty-input').fill('Escalade e2e')
       const saved = page.waitForResponse(isCharacterPut)
       await page.getByTestId('specialty-add').click()

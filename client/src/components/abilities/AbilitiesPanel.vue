@@ -13,8 +13,11 @@ import { normalizeName } from '../../utils/sindragosa/prerequisites'
 import type { Ability, ActionType } from '../../data/sindragosa/types'
 import type { Character } from '../../types/character'
 
-/** Catalogue complet des compétences, pour le MJ : recherche, filtre Débloquées / Verrouillées / Toutes, type d'action. */
-const props = defineProps<{ character: Character; unlocked: Ability[]; readonly?: boolean }>()
+/**
+ * Catalogue complet des compétences, pour le MJ : recherche, filtre Débloquées / Verrouillées / Toutes, type d'action.
+ * Sans personnage, c'est le catalogue nu (page Savoir) : pas de filtre de verrou ni de ✓/✗.
+ */
+const props = defineProps<{ character?: Character | null; unlocked?: Ability[]; readonly?: boolean }>()
 
 const search = ref('')
 const lockFilter = ref<'' | 'unlocked' | 'locked'>('unlocked')
@@ -25,14 +28,15 @@ const LOCK_ITEMS: AppToggleItem[] = [
   { value: 'locked', icon: Lock, title: 'Verrouillées', testid: 'abilities-locked' },
 ]
 
-const unlockedIds = computed(() => new Set(props.unlocked.map((a) => a.id)))
+const unlockedIds = computed(() => new Set((props.unlocked ?? []).map((a) => a.id)))
+const lockActive = computed(() => (props.character ? lockFilter.value : ''))
 
 const groups = computed(() => {
   const q = normalizeName(search.value)
   const list = ABILITIES.filter((a) => {
     const isUnlocked = unlockedIds.value.has(a.id)
-    if (lockFilter.value === 'unlocked' && !isUnlocked) return false
-    if (lockFilter.value === 'locked' && isUnlocked) return false
+    if (lockActive.value === 'unlocked' && !isUnlocked) return false
+    if (lockActive.value === 'locked' && isUnlocked) return false
     if (actionType.value && a.actionType !== actionType.value) return false
     return !q || normalizeName(a.name).includes(q)
   })
@@ -47,7 +51,7 @@ const groups = computed(() => {
     <div class="abilities-filters">
       <AppInput v-model="search" placeholder="Chercher une compétence" class="abilities-search" data-testid="abilities-search" />
       <div class="abilities-filters-line">
-        <AppToggleGroup v-model="lockFilter" :items="LOCK_ITEMS" />
+        <AppToggleGroup v-if="character" v-model="lockFilter" :items="LOCK_ITEMS" />
         <AppSelect v-model="actionType" class="abilities-type">
           <option value="">Tous les types</option>
           <option v-for="(meta, id) in ACTION_TYPES" :key="id" :value="id">{{ meta.label }}</option>
@@ -56,7 +60,7 @@ const groups = computed(() => {
     </div>
 
     <AppEmptyState v-if="!groups.length">
-      {{ lockFilter === 'unlocked' && !search
+      {{ lockActive === 'unlocked' && !search
         ? 'Aucune compétence débloquée : monte tes domaines pour en gagner.'
         : 'Aucune compétence ne correspond.' }}
     </AppEmptyState>
@@ -67,7 +71,7 @@ const groups = computed(() => {
         :key="a.id"
         :ability="a"
         :character="character"
-        :unlocked="unlockedIds.has(a.id)"
+        :unlocked="!character || unlockedIds.has(a.id)"
         :readonly="readonly"
       />
     </AppCard>

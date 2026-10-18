@@ -18,7 +18,8 @@ import type { Character } from '../../types/character'
  */
 const props = defineProps<{
   ability: Ability
-  character: Character
+  /** Absent = catalogue de la page Savoir : ni usage ni ✓/✗. */
+  character?: Character | null
   unlocked: boolean
   readonly?: boolean
   /** Absent = pas de bouton d'épingle. */
@@ -32,8 +33,8 @@ const open = ref(props.defaultOpen ?? false)
 const concentration = ref<ConcentrationMode | ''>('')
 
 const type = computed(() => ACTION_TYPES[props.ability.actionType])
-const used = computed(() => isUsed(props.character, props.ability))
-const state = computed(() => progressState(props.character))
+const used = computed(() => (props.character ? isUsed(props.character, props.ability) : false))
+const state = computed(() => (props.character ? progressState(props.character) : null))
 const modes = computed(() => (props.unlocked ? allowedModes(props.ability) : []))
 
 const MODE_ICONS = { econome: Coins, etendue: Expand, puissante: Flame } as const
@@ -46,7 +47,7 @@ const effect = computed(() =>
 )
 
 function use() {
-  props.character.abilityUses = toggleUse(props.character, props.ability)
+  if (props.character) props.character.abilityUses = toggleUse(props.character, props.ability)
 }
 </script>
 
@@ -62,7 +63,7 @@ function use() {
         <span class="ability-name">{{ ability.name }}</span>
       </button>
       <button
-        v-if="ability.usesPer && unlocked"
+        v-if="ability.usesPer && unlocked && character"
         type="button"
         class="ability-use"
         :class="{ 'ability-use--spent': used }"
@@ -96,10 +97,12 @@ function use() {
         <li
           v-for="(p, i) in ability.prerequisites"
           :key="i"
-          :class="meetsPrerequisite(state, p) ? 'prereq--ok' : 'prereq--missing'"
+          :class="state && (meetsPrerequisite(state, p) ? 'prereq--ok' : 'prereq--missing')"
         >
-          <Check v-if="meetsPrerequisite(state, p)" :size="13" />
-          <X v-else :size="13" />
+          <template v-if="state">
+            <Check v-if="meetsPrerequisite(state, p)" :size="13" />
+            <X v-else :size="13" />
+          </template>
           {{ prerequisiteLabel(p) }}
         </li>
       </ul>

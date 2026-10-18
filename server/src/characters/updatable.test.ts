@@ -30,6 +30,12 @@ describe('pickUpdatable', () => {
   })
 })
 
+describe('titres', () => {
+  it('un joueur ne peut pas s’accorder un titre', () => {
+    expect(pickUpdatable({ titles: ['Archimage'], name: 'Orlane' })).toEqual({ name: 'Orlane' })
+  })
+})
+
 describe('pickGmEditable', () => {
   it('garde caracs, rangs, titres et PV max', () => {
     expect(pickGmEditable({ end: 4, titles: ['Champion'], hpMax: 28 })).toEqual({ end: 4, titles: ['Champion'], hpMax: 28 })

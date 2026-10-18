@@ -187,3 +187,40 @@ test('un domaine avancé s’ouvre par ses prérequis et se lance', async ({ bro
     await ctx.close()
   }
 })
+
+test('seul le MJ accorde un titre', async ({ browser }) => {
+  const mj = await browser.newContext({ storageState: stateFor('mj-dev') })
+  const joueur = await browser.newContext({ storageState: stateFor('nym') })
+  const pageMj = await mj.newPage()
+  const pageJoueur = await joueur.newPage()
+
+  const nym = await activeCharacter(pageJoueur)
+  const campaigns = await (await pageMj.request.get('/api/campaigns')).json()
+  const sandbox = campaigns.find((c: { name: string }) => c.name === 'Bac à sable')
+  const detail = await (await pageMj.request.get(`/api/campaigns/${sandbox.id}`)).json()
+  const member = detail.members.find((m: { username: string }) => m.username === 'nym')
+  const memberCharacter = `/api/campaigns/${sandbox.id}/members/${member.userId}/character`
+
+  try {
+    // Le joueur tente de s'accorder un titre par l'API : le serveur l'ignore.
+    await pageJoueur.request.put(`/api/characters/${nym.id}`, { data: { titles: ['Héros d’Azeroth'] } })
+    expect((await activeCharacter(pageJoueur)).titles).toEqual([])
+
+    // Le MJ le choisit dans la liste de ses outils.
+    await pageMj.goto(`/campagnes/${sandbox.id}/personnage/${member.userId}`)
+    await pageMj.getByTestId('open-gm-tools').click()
+    await pageMj.getByTestId('gm-title-select').selectOption('Saigneur de la Nuit')
+    await pageMj.getByTestId('gm-title-add').click()
+    const patched = pageMj.waitForResponse(
+      (r) => r.url().endsWith(memberCharacter) && r.request().method() === 'PATCH' && r.ok(),
+    )
+    await pageMj.getByTestId('gm-save').click()
+    await patched
+
+    expect((await activeCharacter(pageJoueur)).titles).toEqual(['Saigneur de la Nuit'])
+  } finally {
+    await pageMj.request.patch(memberCharacter, { data: { titles: [] } })
+    await mj.close()
+    await joueur.close()
+  }
+})

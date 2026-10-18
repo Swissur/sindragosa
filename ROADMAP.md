@@ -51,12 +51,12 @@ Sindragosa n’est plus un outil pour les Terres d’Arran (Chroniques Oubliées
 - [x] **Favoris depuis la fiche** : une étoile sur chaque domaine (onglet Domaines) et sur chaque compétence débloquée. Les favoris sont partagés avec Mes actions. Fait le 2026-10-18.
 - [x] **Compétences à l'aveugle** : le joueur ne voit que ses compétences débloquées, dans l'onglet Domaines avancés, section « Compétences ». Le catalogue complet (verrouillées, prérequis) reste visible du MJ dans la fiche d'un membre. Fait le 2026-10-18.
 - [x] **Onglets de la fiche** : Héros / Domaines / Domaines avancés. Le dernier regroupe domaines avancés, titres et compétences. Fait le 2026-10-18.
-- [ ] **Prérequis des compétences** : audit fait le 2026-10-18, décisions à prendre.
+- [x] **Prérequis des compétences** : audit fait et tranché le 2026-10-18.
   - Toutes les compétences (490) demandent au moins un domaine de base ; aucune n'est débloquée d'office. 281 ne demandent que des domaines de base.
   - [x] **Domaines avancés atteignables** (tranché le 2026-10-18) : chacun s'ouvre par ses prérequis (domaines de base ou avancés, table du plan 31 § 7) ou par la compétence du même nom (Ivresse du Combat, Danse des Lames). Son jet prend la plus haute des caractéristiques liées. Les 121 compétences qui en exigent un sont donc atteignables.
   - [x] **Spécialités homonymes** (tranché le 2026-10-18) : débloquer une compétence qui porte le nom d'une spécialité exigée la donne au niveau Apprenti, hors limite de spécialités. Concerne « Analyse des failles » (#60, rattachée à Tactique & Analyse) ; « Second souffle » est déjà une spécialité d'exemple de Volonté & Récupération.
   - [x] **Spécialités d'exemple** (tranché le 2026-10-18) : les suggestions de chaque domaine sont désormais les spécialités qu'exigent les compétences ; les 13 domaines qu'aucune compétence ne cite gardent les exemples du livre (Volonté spirituelle n'en a aucun). Une table d'équivalences (« Bouclier » = « Boucliers »…) et la lecture des alternatives « A/B » et « (A/B) » garantissent que chaque spécialité exigée est atteignable (testé).
-  - **22 titres** sont exigés (26 compétences), sans liste officielle : le MJ les tape à la main dans ses outils, au risque d'une faute de frappe. Une liste de titres dans les outils du MJ éviterait ça.
+  - [x] **Titres** (tranché le 2026-10-18) : seul le MJ en accorde, en choisissant parmi les 22 titres qu'exigent les compétences (ou en écrivant un autre). Le serveur refuse qu'un joueur modifie ses titres.
 - [ ] **Prérequis des domaines avancés** : à proposer (déduits des compétences), puis à valider.
 
 ### TODO — termes utilisés par les règles mais pas encore définis

@@ -11,6 +11,7 @@ import AppBadge from '../ui/AppBadge.vue'
 import { patchMemberCharacter, type GmCharacterPatch } from '../../api/campaigns'
 import { showToast } from '../../composables/useToast'
 import { ADVANCED_DOMAINS, DOMAINS, STATS } from '../../data/sindragosa/domains'
+import { TITLES } from '../../data/sindragosa/titles'
 import { applyTick, computeMaxHp, type TickTarget } from '../../utils/sindragosa/sheet'
 import { MAX_DOMAIN_RANK } from '../../utils/sindragosa/progression'
 import type { Character } from '../../types/character'
@@ -33,7 +34,12 @@ watch(open, (v) => { if (v) draft.value = copy(props.character) })
 // Une cible de progression : « domain:id », « advanced:id » ou « specialty:id »
 const rewardTarget = ref('')
 const forceTarget = ref('')
+/** Un titre de la liste, ou OTHER_TITLE pour en écrire un autre. */
+const titleChoice = ref('')
 const newTitle = ref('')
+const OTHER_TITLE = '__autre'
+const availableTitles = computed(() => TITLES.filter((t) => !draft.value.titles.includes(t)))
+const titleToAdd = computed(() => (titleChoice.value === OTHER_TITLE ? newTitle.value.trim() : titleChoice.value))
 const saving = ref(false)
 
 function parseTarget(value: string): TickTarget | null {
@@ -66,9 +72,10 @@ const forced = computed({
 })
 
 function addTitle() {
-  const t = newTitle.value.trim()
+  const t = titleToAdd.value
   if (!t || draft.value.titles.includes(t)) return
   draft.value.titles = [...draft.value.titles, t]
+  titleChoice.value = ''
   newTitle.value = ''
 }
 
@@ -162,11 +169,22 @@ async function save() {
           </AppBadge>
         </div>
         <div class="gm-line">
-          <AppInput v-model="newTitle" placeholder="Nouveau titre" class="gm-grow" data-testid="gm-title-input" />
-          <AppIconBtn title="Ajouter le titre" :disabled="!newTitle.trim()" data-testid="gm-title-add" @click="addTitle">
+          <AppSelect v-model="titleChoice" class="gm-grow" data-testid="gm-title-select">
+            <option value="">Choisir un titre…</option>
+            <option v-for="t in availableTitles" :key="t" :value="t">{{ t }}</option>
+            <option :value="OTHER_TITLE">Autre titre…</option>
+          </AppSelect>
+          <AppIconBtn title="Accorder le titre" :disabled="!titleToAdd" data-testid="gm-title-add" @click="addTitle">
             <Plus :size="16" />
           </AppIconBtn>
         </div>
+        <AppInput
+          v-if="titleChoice === OTHER_TITLE"
+          v-model="newTitle"
+          placeholder="Nom du titre"
+          class="gm-other-title"
+          data-testid="gm-title-input"
+        />
       </section>
 
       <AppButton variant="primary" block :disabled="saving" data-testid="gm-save" @click="save">
@@ -216,6 +234,10 @@ async function save() {
 .gm-grow {
   flex: 1;
   min-width: 0;
+}
+
+.gm-other-title {
+  margin-top: var(--space-xs);
 }
 
 .gm-titles {

@@ -2,11 +2,12 @@
 // Bloque le mass-assignment (userId, isActive, createdAt…) et les clés inconnues.
 // ⚠ Tout nouveau champ de fiche doit être ajouté ici, sinon il est jeté en
 // silence (c'est ce qui est arrivé aux jets de croissance des PV en août 2026).
+// Les titres n'y sont pas : seul le MJ en accorde (`GM_EDITABLE_FIELDS`).
 export const UPDATABLE_FIELDS = [
   'name', 'histoire', 'race', 'portraitImageId',
   'hpMax', 'hpCurrent', 'hpBonus', 'armor',
   'str', 'agi', 'end', 'int', 'wis', 'cha',
-  'domains', 'specialties', 'advancedDomains', 'titles',
+  'domains', 'specialties', 'advancedDomains',
   'abilityUses', 'sessionTicks', 'resources', 'crafts', 'weapons',
   'items', 'goldCoins', 'silverCoins', 'copperCoins',
   'pcCurrent', 'states',

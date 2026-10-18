@@ -2,11 +2,11 @@
 
 Source : `docs/regles/Sindragosa.pdf` § 6. Catalogue : `client/src/data/sindragosa/races.ts`.
 
-Six races pour l'Alliance, six pour la Horde. Chacune donne **+1 à une caractéristique** et un **pouvoir racial utilisable une fois par jour**. Chaque caractéristique est la caractéristique phare d'une race dans chaque faction.
+Six races pour l'Alliance, six pour la Horde. Chacune donne **+1 à une caractéristique** et un **pouvoir racial utilisable une fois par repos court**. Chaque caractéristique est la caractéristique phare d'une race dans chaque faction.
 
 ### Alliance
 
-| Race | Carac. +1 | Pouvoir racial (1/jour) |
+| Race | Carac. +1 | Pouvoir racial (1/repos court) |
 |---|---|---|
 | Humain | Charisme | **Chacun pour soi** (Action Rapide (Réaction)) : Dissipe immédiatement n'importe quel effet d'incapacité mentale ou physique (Étourdissement, Enracinement, Peur ou Sommeil) qui affecte le personnage et restaure instantanément +3 points de RP. |
 | Nain | Endurance | **Forme de Pierre** (Action Rapide) : Pendant 2 tours, le Nain gagne +2 AP (Armure Physique) supplémentaire, purge tous les effets actifs de Saignement, Poison et Maladie, et devient immunisé à ces derniers pour la durée du pouvoir. |
@@ -17,7 +17,7 @@ Six races pour l'Alliance, six pour la Horde. Chacune donne **+1 à une caracté
 
 ### Horde
 
-| Race | Carac. +1 | Pouvoir racial (1/jour) |
+| Race | Carac. +1 | Pouvoir racial (1/repos court) |
 |---|---|---|
 | Orc | Force | **Fureur Sanguinaire** (Action Rapide) : Pendant 2 tours, le personnage ajoute +1d6 à tous ses jets de dégâts physiques en mêlée ou à distance, et devient totalement immunisé aux effets de Peur. |
 | Troll | Agilité | **Berserker** (Action Rapide) : Le Troll entre dans une transe de frénésie. Pendant 1 tour complet, toutes ses actions coûtent 1 cran de moins (une Action Complète devient une Action Rapide, une Action Rapide devient une Action Gratuite). |
@@ -26,6 +26,6 @@ Six races pour l'Alliance, six pour la Horde. Chacune donne **+1 à une caracté
 | Elfe de Sang | Intelligence | **Torrent Arcane** (Action Rapide) : Libère une onde de choc magique qui réduit au silence tous les lanceurs de sorts ennemis dans un rayon de 4 mètres pendant 1 tour, tout en restaurant 5 points de Mana / Énergie (ou 3 RP) à l'Elfe de Sang. |
 | Goblin | Charisme | **Saut de Fusée / Fusée de Poche** (Action Rapide) : Au choix lors du déclenchement — Saut : déploie sa ceinture à fusée pour se propulser instantanément à 8 mètres dans n'importe quelle direction (ignore les obstacles au sol). Tir : tire une roquette de poche infligeant 2d6 dégâts de Feu de zone (2m) à distance. |
 
-Repères : « 1/jour » = une fois par repos long ; déplacement de base 6 m ; AP = Armure Physique (`combat.md`). Encore non définis : RP, Mana / Énergie, jet « Athlétisme/Équilibre » (voir `ROADMAP.md`).
+Repères : le PDF dit « 1/jour », passé à 1/repos court le 2026-10-19 ; déplacement de base 6 m ; AP = Armure Physique (`combat.md`). Encore non définis : RP, Mana / Énergie, jet « Athlétisme/Équilibre » (voir `ROADMAP.md`).
 
 Le contexte historique des peuples est dans `monde-azeroth.md`.

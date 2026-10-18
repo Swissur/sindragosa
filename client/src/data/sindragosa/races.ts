@@ -1,8 +1,10 @@
 /**
- * Races jouables de Sindragosa : +1 à une caractéristique et un pouvoir racial 1/jour.
+ * Races jouables de Sindragosa : +1 à une caractéristique et un pouvoir racial
+ * 1/repos court (le PDF dit 1/jour ; passé à 1/repos court le 2026-10-19).
  * Source : docs/regles/Sindragosa.pdf, « Les Races jouables ».
  */
 import type { StatId } from './domains'
+import type { Ability, ActionType, UsesPer } from './types'
 
 export type Faction = 'alliance' | 'horde'
 
@@ -15,7 +17,9 @@ export interface Race {
   flavor: string
   power: {
     name: string
+    actionType: ActionType
     actionLabel: string
+    usesPer: UsesPer
     effect: string
   }
 }
@@ -25,7 +29,7 @@ export const RACES: Race[] = [
     id: 'humain', label: 'Humain', faction: 'alliance', stat: 'cha',
     flavor: 'Adaptabilité, diplomatie et leadership.',
     power: {
-      name: 'Chacun pour soi', actionLabel: 'Action Rapide (Réaction)',
+      name: 'Chacun pour soi', actionType: 'reaction', actionLabel: 'Action Rapide (Réaction)', usesPer: 'repos-court',
       effect: "Dissipe immédiatement n'importe quel effet d'incapacité mentale ou physique (Étourdissement, Enracinement, Peur ou Sommeil) qui affecte le personnage et restaure instantanément +3 points de RP.",
     },
   },
@@ -33,7 +37,7 @@ export const RACES: Race[] = [
     id: 'nain', label: 'Nain', faction: 'alliance', stat: 'end',
     flavor: 'Une constitution légendaire taillée dans la roche.',
     power: {
-      name: 'Forme de Pierre', actionLabel: 'Action Rapide',
+      name: 'Forme de Pierre', actionType: 'rapide', actionLabel: 'Action Rapide', usesPer: 'repos-court',
       effect: 'Pendant 2 tours, le Nain gagne +2 AP (Armure Physique) supplémentaire, purge tous les effets actifs de Saignement, Poison et Maladie, et devient immunisé à ces derniers pour la durée du pouvoir.',
     },
   },
@@ -41,7 +45,7 @@ export const RACES: Race[] = [
     id: 'elfe-nuit', label: 'Elfe de la Nuit', faction: 'alliance', stat: 'agi',
     flavor: 'Grâce aérienne, réflexes félins et précision.',
     power: {
-      name: "Camouflage dans l'Ombre", actionLabel: 'Action Rapide',
+      name: "Camouflage dans l'Ombre", actionType: 'rapide', actionLabel: 'Action Rapide', usesPer: 'repos-court',
       effect: "L'Elfe fond instantanément dans les ombres et devient totalement invisible tant qu'il reste immobile. Si la première action qu'il effectue en sortant du camouflage est une attaque, celle-ci gagne +2d6 aux dégâts.",
     },
   },
@@ -49,7 +53,7 @@ export const RACES: Race[] = [
     id: 'gnome', label: 'Gnome', faction: 'alliance', stat: 'int',
     flavor: 'Esprit vif, inventivité et génie mécanique.',
     power: {
-      name: "Artiste de l'Évasion", actionLabel: 'Action Rapide',
+      name: "Artiste de l'Évasion", actionType: 'rapide', actionLabel: 'Action Rapide', usesPer: 'repos-court',
       effect: 'Se libère instantanément de tout piège au sol, lien, filet ou effet de ralentissement/enracinement. De plus, il gagne +3 mètres de déplacement pour le tour en cours.',
     },
   },
@@ -57,7 +61,7 @@ export const RACES: Race[] = [
     id: 'draenei', label: 'Draeneï', faction: 'alliance', stat: 'wis',
     flavor: 'Guidés par la Lumière et une mémoire millénaire.',
     power: {
-      name: 'Don des Naaru', actionLabel: 'Action Complète',
+      name: 'Don des Naaru', actionType: 'complete', actionLabel: 'Action Complète', usesPer: 'repos-court',
       effect: 'Invoque une bénédiction lumineuse sur le Draeneï ou un allié adjacent. La cible régénère 5 PV par tour pendant 3 tours (soit 15 PV au total). Ce soin ne peut pas être interrompu par les dégâts.',
     },
   },
@@ -65,7 +69,7 @@ export const RACES: Race[] = [
     id: 'worgen', label: 'Worgen', faction: 'alliance', stat: 'str',
     flavor: 'Puissance sauvage et férocité canine.',
     power: {
-      name: 'Sombre Trot', actionLabel: 'Action Rapide',
+      name: 'Sombre Trot', actionType: 'rapide', actionLabel: 'Action Rapide', usesPer: 'repos-court',
       effect: 'Le Worgen prend sa forme sauvage et double sa vitesse de déplacement pendant 2 tours. Sa prochaine attaque de mêlée au cours de cette charge inflige +1d6 de dégâts tranchants supplémentaires.',
     },
   },
@@ -73,7 +77,7 @@ export const RACES: Race[] = [
     id: 'orc', label: 'Orc', faction: 'horde', stat: 'str',
     flavor: 'La Fureur de la Horde et une musculature colossale.',
     power: {
-      name: 'Fureur Sanguinaire', actionLabel: 'Action Rapide',
+      name: 'Fureur Sanguinaire', actionType: 'rapide', actionLabel: 'Action Rapide', usesPer: 'repos-court',
       effect: 'Pendant 2 tours, le personnage ajoute +1d6 à tous ses jets de dégâts physiques en mêlée ou à distance, et devient totalement immunisé aux effets de Peur.',
     },
   },
@@ -81,7 +85,7 @@ export const RACES: Race[] = [
     id: 'troll', label: 'Troll', faction: 'horde', stat: 'agi',
     flavor: 'Souplesse vaudou, vitesse et précision au tir.',
     power: {
-      name: 'Berserker', actionLabel: 'Action Rapide',
+      name: 'Berserker', actionType: 'rapide', actionLabel: 'Action Rapide', usesPer: 'repos-court',
       effect: 'Le Troll entre dans une transe de frénésie. Pendant 1 tour complet, toutes ses actions coûtent 1 cran de moins (une Action Complète devient une Action Rapide, une Action Rapide devient une Action Gratuite).',
     },
   },
@@ -89,7 +93,7 @@ export const RACES: Race[] = [
     id: 'tauren', label: 'Tauren', faction: 'horde', stat: 'end',
     flavor: 'Gabarit massif et connexion profonde avec la Terre-Mère.',
     power: {
-      name: 'Choc Martial', actionLabel: 'Action Complète',
+      name: 'Choc Martial', actionType: 'complete', actionLabel: 'Action Complète', usesPer: 'repos-court',
       effect: "Frappe violemment le sol du sabot. Tous les ennemis adjacents (rayon de 3 mètres) doivent réussir un jet d'Athlétisme/Équilibre sous peine d'être assommés (Étourdissement 1 tour) et projetés À terre.",
     },
   },
@@ -97,7 +101,7 @@ export const RACES: Race[] = [
     id: 'reprouve', label: 'Réprouvé', faction: 'horde', stat: 'wis',
     flavor: 'Volonté macabre, résistance à la douleur et esprit tenace.',
     power: {
-      name: 'Volonté des Réprouvés', actionLabel: 'Action Rapide (Réaction)',
+      name: 'Volonté des Réprouvés', actionType: 'reaction', actionLabel: 'Action Rapide (Réaction)', usesPer: 'repos-court',
       effect: "Immunise ou annule immédiatement les effets de Charme, Peur et Sommeil. De plus, si le Réprouvé consomme le cadavre d'un humanoïde ou d'une bête fraîchement tuée hors combat (1 minute), il régénère 50 % de ses PV Max.",
     },
   },
@@ -105,7 +109,7 @@ export const RACES: Race[] = [
     id: 'elfe-sang', label: 'Elfe de Sang', faction: 'horde', stat: 'int',
     flavor: 'Affinité exceptionnelle avec la magie et les arcanes.',
     power: {
-      name: 'Torrent Arcane', actionLabel: 'Action Rapide',
+      name: 'Torrent Arcane', actionType: 'rapide', actionLabel: 'Action Rapide', usesPer: 'repos-court',
       effect: "Libère une onde de choc magique qui réduit au silence tous les lanceurs de sorts ennemis dans un rayon de 4 mètres pendant 1 tour, tout en restaurant 5 points de Mana / Énergie (ou 3 RP) à l'Elfe de Sang.",
     },
   },
@@ -113,10 +117,34 @@ export const RACES: Race[] = [
     id: 'goblin', label: 'Goblin', faction: 'horde', stat: 'cha',
     flavor: 'Sens des affaires, marchandage culotté et ruse.',
     power: {
-      name: 'Saut de Fusée / Fusée de Poche', actionLabel: 'Action Rapide',
+      name: 'Saut de Fusée / Fusée de Poche', actionType: 'rapide', actionLabel: 'Action Rapide', usesPer: 'repos-court',
       effect: "Au choix lors du déclenchement — Saut : déploie sa ceinture à fusée pour se propulser instantanément à 8 mètres dans n'importe quelle direction (ignore les obstacles au sol). Tir : tire une roquette de poche infligeant 2d6 dégâts de Feu de zone (2m) à distance.",
     },
   },
 ]
 
 export const raceById = (id: string): Race | undefined => RACES.find((r) => r.id === id)
+
+/**
+ * Le pouvoir racial vu comme une compétence, pour l'afficher, le marquer utilisé
+ * et l'épingler comme les autres. Même id pour toutes les races (les compétences
+ * du PDF commencent à 1) : usage et épingle suivent le personnage, pas la race.
+ */
+export const RACE_ABILITY_ID = 0
+
+export function raceAbility(race: Race): Ability {
+  return {
+    id: RACE_ABILITY_ID,
+    name: race.power.name,
+    nameEn: null,
+    category: 'Trait racial',
+    prerequisites: [],
+    prerequisitesRaw: '',
+    actionType: race.power.actionType,
+    actionLabel: race.power.actionLabel,
+    condition: '',
+    cooldownTurns: null,
+    usesPer: race.power.usesPer,
+    effect: race.power.effect,
+  }
+}

@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest'
 import { ABILITIES } from './abilities'
 import { CRAFTS, RECIPES } from './crafts'
 import { DOMAINS, ADVANCED_DOMAINS, STATS } from './domains'
-import { RACES } from './races'
+import { RACES, RACE_ABILITY_ID, raceAbility } from './races'
 import { specialtyMatches } from '../../utils/sindragosa/prerequisites'
 
 describe('domaines', () => {
@@ -21,6 +21,14 @@ describe('races', () => {
     expect(RACES.filter((r) => r.faction === 'alliance')).toHaveLength(6)
     expect(RACES.filter((r) => r.faction === 'horde')).toHaveLength(6)
     for (const r of RACES) expect(STATS.map((s) => s.id)).toContain(r.stat)
+  })
+
+  it('chaque pouvoir racial est limité à 1/repos court', () => {
+    for (const r of RACES) expect(raceAbility(r).usesPer, r.id).toBe('repos-court')
+  })
+
+  it("le pouvoir racial ne prend l'id d'aucune compétence", () => {
+    expect(ABILITIES.map((a) => a.id)).not.toContain(RACE_ABILITY_ID)
   })
 })
 

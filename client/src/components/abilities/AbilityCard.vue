@@ -25,6 +25,8 @@ const props = defineProps<{
   /** Absent = pas de bouton d'épingle. */
   pinned?: boolean
   defaultOpen?: boolean
+  /** Sans l'icône du type d'action (le trait racial sur la fiche). */
+  hideType?: boolean
 }>()
 
 const emit = defineEmits<{ (e: 'toggle-pin'): void }>()
@@ -59,7 +61,7 @@ function use() {
   >
     <div class="ability-head">
       <button type="button" class="ability-toggle" :aria-expanded="open" data-testid="ability-toggle" @click="open = !open">
-        <component :is="type.icon" :size="16" class="ability-type" :title="type.label" />
+        <component :is="type.icon" v-if="!hideType" :size="16" class="ability-type" :title="type.label" />
         <span class="ability-name">{{ ability.name }}</span>
       </button>
       <button

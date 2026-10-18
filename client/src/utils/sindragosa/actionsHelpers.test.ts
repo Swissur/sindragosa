@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import type { Character } from '../../types/character'
 import { isUsed, toggleUse } from './abilityUses'
-import { defaultPins, togglePin } from './pins'
+import { defaultPins, migrateLegacyPins, RACE_PIN, togglePin } from './pins'
 
 function char(over: Partial<Character> = {}): Character {
   return {
@@ -48,6 +48,16 @@ describe('épingles', () => {
 
   it('aucun domaine entamé : aucune épingle', () => {
     expect(defaultPins(char())).toEqual([])
+  })
+
+  it('race choisie : son pouvoir est favori par défaut, en tête', () => {
+    const c = char({ race: 'nain', domains: { athletisme: { rank: 1, ticks: 0 } } })
+    expect(defaultPins(c)).toEqual([RACE_PIN, 'domain:athletisme'])
+  })
+
+  it('épingles gardées avant le pouvoir racial : il y entre une fois', () => {
+    expect(migrateLegacyPins(['domain:a'])).toEqual([RACE_PIN, 'domain:a'])
+    expect(migrateLegacyPins(['domain:a', RACE_PIN])).toEqual(['domain:a', RACE_PIN])
   })
 
   it('épingle et désépingle', () => {

@@ -1,15 +1,17 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-import { Upload, Trash2, ChevronDown, Award } from 'lucide-vue-next'
+import { computed, ref, toRef } from 'vue'
+import { Upload, Trash2, Award } from 'lucide-vue-next'
 import AppCard from '../ui/AppCard.vue'
 import AppInput from '../ui/AppInput.vue'
 import AppSelect from '../ui/AppSelect.vue'
 import AppTextarea from '../ui/AppTextarea.vue'
 import AppBadge from '../ui/AppBadge.vue'
 import AppAccordion from '../ui/AppAccordion.vue'
-import AppTooltip from '../ui/AppTooltip.vue'
-import { RACES, raceById } from '../../data/sindragosa/races'
+import AbilityCard from '../abilities/AbilityCard.vue'
+import { RACES, raceAbility, raceById } from '../../data/sindragosa/races'
 import { withRace } from '../../utils/sindragosa/sheet'
+import { RACE_PIN } from '../../utils/sindragosa/pins'
+import { usePins } from '../../composables/usePins'
 import type { Character } from '../../types/character'
 
 /** Identité : portrait, nom, race (et son pouvoir), histoire. */
@@ -21,6 +23,7 @@ const props = defineProps<{
 }>()
 
 const race = computed(() => raceById(props.character.race))
+const { isPinned, toggle } = usePins(toRef(props, 'character'))
 
 const raceModel = computed({
   get: () => props.character.race,
@@ -118,25 +121,22 @@ async function removePortrait() {
             <Award :size="12" /> {{ t }}
           </AppBadge>
         </p>
-        <p v-if="race" class="hero-trait">
-          <span>Trait racial :</span>
-          <AppTooltip :label="race.power.name" side="bottom">
-            <template #trigger>
-              <span class="hero-trait-name" data-testid="hero-trait">
-                {{ race.power.name }} <ChevronDown :size="14" />
-              </span>
-            </template>
-            <strong class="hero-trait-action">{{ race.power.actionLabel }}</strong>
-            {{ race.power.effect }}
-          </AppTooltip>
-        </p>
+        <AbilityCard
+          v-if="race"
+          :ability="raceAbility(race)"
+          :character="character"
+          :unlocked="true"
+          :readonly="readonly"
+          :pinned="readonly ? undefined : isPinned(RACE_PIN)"
+          hide-type
+          @toggle-pin="toggle(RACE_PIN)"
+        />
+        <AppAccordion title="Histoire" :default-open="editing">
+          <AppTextarea v-if="editing && !readonly" v-model="character.histoire" :rows="5" placeholder="D'où vient ton héros ?" />
+          <p v-else class="hero-text">{{ character.histoire || 'Pas encore écrite.' }}</p>
+        </AppAccordion>
       </div>
     </div>
-
-    <AppAccordion title="Histoire" :default-open="editing">
-      <AppTextarea v-if="editing && !readonly" v-model="character.histoire" :rows="5" placeholder="D'où vient ton héros ?" />
-      <p v-else class="hero-text">{{ character.histoire || 'Pas encore écrite.' }}</p>
-    </AppAccordion>
   </AppCard>
 </template>
 
@@ -144,8 +144,7 @@ async function removePortrait() {
 .hero-top {
   display: flex;
   gap: var(--space-md);
-  align-items: center;
-  margin-bottom: var(--space-sm);
+  align-items: flex-start;
 }
 
 .portrait-wrapper {
@@ -231,28 +230,6 @@ async function removePortrait() {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-xs);
-}
-
-.hero-trait {
-  margin: 0;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-sm);
-  font-size: 0.85rem;
-  color: var(--muted);
-}
-
-.hero-trait-name {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-xs);
-  font-weight: 600;
-}
-
-/* Le contenu du popover est teleporte dans <body>, hors du scope */
-:global(.hero-trait-action) {
-  display: block;
 }
 
 .hero-text {

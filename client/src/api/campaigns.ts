@@ -23,6 +23,8 @@ export interface CampaignMember {
   characterName: string | null
   portraitUrl: string | null
   joinedAt: string
+  /** Un flux SSE est ouvert sur la campagne (pastille verte). */
+  online: boolean
 }
 
 export interface CampaignDetail {
@@ -30,9 +32,15 @@ export interface CampaignDetail {
   name: string
   gmUserId: number
   gmUsername: string
+  system: CampaignSystem
+  sessionActive: boolean
   members: CampaignMember[]
   createdAt: string
 }
+
+/** Systèmes de jeu proposés à la création (un seul pour l'instant). */
+export const CAMPAIGN_SYSTEMS = [{ value: 'wow-forever', label: 'WoW Forever' }] as const
+export type CampaignSystem = (typeof CAMPAIGN_SYSTEMS)[number]['value']
 
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
   const res = await fetch(BASE + path, {
@@ -51,11 +59,44 @@ export function fetchCampaigns(): Promise<CampaignSummary[]> {
   return request<CampaignSummary[]>('/')
 }
 
-export function createCampaign(name: string): Promise<{ id: number; name: string }> {
+export function createCampaign(name: string, system: CampaignSystem): Promise<{ id: number; name: string }> {
   return request('/', {
     method: 'POST',
-    body: JSON.stringify({ name }),
+    body: JSON.stringify({ name, system }),
   })
+}
+
+export function updateCampaign(id: number, patch: { name?: string; system?: CampaignSystem }): Promise<void> {
+  return request(`/${id}`, { method: 'PATCH', body: JSON.stringify(patch) })
+}
+
+/** Entre dans une campagne : elle devient la campagne active (log de jets, codex…). */
+export function activateCampaign(id: number): Promise<void> {
+  return request(`/${id}/activate`, { method: 'POST', body: JSON.stringify({}) })
+}
+
+/** Début / fin de session. La fin applique la fin de séance à tout le groupe. */
+export function setCampaignSession(id: number, active: boolean): Promise<{ sessionActive: boolean }> {
+  return request(`/${id}/session`, { method: 'POST', body: JSON.stringify({ active }) })
+}
+
+// ── Échange avec le MJ ──────────────────────────────────────────────────────
+
+export interface GmMessage {
+  id: number
+  toUserId: number
+  toUsername: string
+  body: string
+  createdAt: string
+}
+
+/** Le MJ reçoit tout ce qu'il a envoyé, le joueur ses propres messages. */
+export function fetchGmMessages(campaignId: number): Promise<GmMessage[]> {
+  return request(`/${campaignId}/messages`)
+}
+
+export function sendGmMessage(campaignId: number, toUserId: number, body: string): Promise<void> {
+  return request(`/${campaignId}/messages`, { method: 'POST', body: JSON.stringify({ toUserId, body }) })
 }
 
 export function fetchCampaign(id: number): Promise<CampaignDetail> {
@@ -252,7 +293,7 @@ export function fetchCampaignRolls(campaignId: number, viewer = false): Promise<
 
 // ── Repos partagé ───────────────────────────────────────────────────────────
 
-/** Repos court, repos long, fin de séance : tous lancés par le MJ pour le groupe. */
+/** Repos court, repos long (menu repos) et fin de séance (fin de session), lancés par le MJ. */
 export type RestKind = 'court' | 'long' | 'seance'
 
 export interface RestChange {

@@ -6,6 +6,7 @@ const BASE = '/api/campaigns'
 export interface CombatSummary {
   id: number
   campaignId: number
+  encounterId: number | null
   name: string
   status: 'active' | 'finished'
   roundNumber: number

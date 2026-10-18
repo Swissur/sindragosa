@@ -9,6 +9,7 @@ import { rollOutcome, type RollOutcome } from '../utils/rollOutcome'
 import { parseDiceStyle } from '../data/diceStyle'
 import { refreshActiveCombat } from './useActiveCombat'
 import { appendFeed, clearFeed, feedLineFor, secretLineFor } from './useViewerFeed'
+import { incomingGmMessage, liveSessionActive, onlineUserIds, resetCampaignLive, type IncomingGmMessage } from './useCampaignLive'
 
 /** Filtre du panneau de log. */
 export type RollFilter = 'all' | 'combat' | 'player' | 'monster'
@@ -115,6 +116,7 @@ function connect(campaignId: number, options: { viewer?: boolean } = {}): void {
   const asViewer = !!options.viewer
   if (connectedCampaignId === campaignId && eventSource && viewer === asViewer) return
   disconnect()
+  resetCampaignLive()
   connectedCampaignId = campaignId
   viewer = asViewer
 
@@ -164,6 +166,28 @@ function connect(campaignId: number, options: { viewer?: boolean } = {}): void {
       const moment = JSON.parse(e.data as string) as { outcome: RollOutcome; actorName: string }
       if (moment.outcome) celebrate(moment.outcome, moment.actorName)
       if (viewer) appendFeed(secretLineFor(moment))
+      resetIdleTimer()
+    } catch { /* ignore */ }
+  })
+
+  // Pastille verte de l'écran MJ : qui a le flux ouvert.
+  eventSource.addEventListener('presence', (e: MessageEvent) => {
+    try {
+      onlineUserIds.value = (JSON.parse(e.data as string) as { online: number[] }).online
+    } catch { /* ignore */ }
+  })
+
+  eventSource.addEventListener('session', (e: MessageEvent) => {
+    try {
+      liveSessionActive.value = (JSON.parse(e.data as string) as { sessionActive: boolean }).sessionActive
+      resetIdleTimer()
+    } catch { /* ignore */ }
+  })
+
+  // Le MJ m'écrit : le message s'ouvre au milieu de l'écran.
+  eventSource.addEventListener('gm-message', (e: MessageEvent) => {
+    try {
+      if (!viewer) incomingGmMessage.value = JSON.parse(e.data as string) as IncomingGmMessage
       resetIdleTimer()
     } catch { /* ignore */ }
   })

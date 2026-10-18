@@ -1,5 +1,6 @@
 import { test, expect, type Page } from '../fixtures/test'
 import { stateFor } from '../fixtures/auth'
+import { ouvrirLancement } from '../fixtures/campaign'
 
 /**
  * Nym la Vive est la seule joueuse du bac à sable qui démarre sans aucun état
@@ -22,11 +23,7 @@ test("le MJ pose un état sur un PJ, le joueur le voit sur sa fiche", async ({ b
 
   try {
     // ── Le MJ lance un combat depuis la rencontre du bac à sable ──
-    await pageMj.goto('/campagnes')
-    await pageMj.getByText('Bac à sable').first().click()
-    await pageMj.getByRole('tab', { name: 'Rencontres' }).click()
-    await pageMj.getByRole('button', { name: 'Jouer' }).click()
-    await pageMj.locator('select').selectOption({ index: 1 })
+    await ouvrirLancement(pageMj)
     await pageMj.getByRole('button', { name: 'Lancer !' }).click()
     await expect(pageMj).toHaveURL(/\/combat\/\d+$/)
 

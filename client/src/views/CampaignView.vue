@@ -1,19 +1,31 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { ArrowLeft, Crown, LogOut, User, Plus, Trash2, Swords, Play, Settings, Flame, Moon, Sunrise, Coffee } from 'lucide-vue-next'
-import { fetchCampaign, leaveCampaign, fetchEncounters, createEncounter, deleteEncounter, postRest, type CampaignDetail, type EncounterSummary, type RestKind } from '../api/campaigns'
-import { fetchCombats, createCombat, type CombatSummary } from '../api/combats'
+import { ArrowLeft, Crown, Swords, Settings, Bed, BookOpen, Moon, Coffee, Sunrise, Sunset } from 'lucide-vue-next'
+import {
+  activateCampaign,
+  fetchCampaign,
+  postRest,
+  setCampaignSession,
+  type CampaignDetail,
+  type CampaignMember,
+  type RestKind,
+} from '../api/campaigns'
+import { fetchCombats, type CombatSummary } from '../api/combats'
 import { user } from '../composables/useAuth'
+import { refreshActiveCombat } from '../composables/useActiveCombat'
+import { liveSessionActive, onlineUserIds } from '../composables/useCampaignLive'
 import AppPageLayout from '../components/ui/AppPageLayout.vue'
 import AppPageHead from '../components/ui/AppPageHead.vue'
 import AppIconBtn from '../components/ui/AppIconBtn.vue'
 import AppButton from '../components/ui/AppButton.vue'
-import AppInput from '../components/ui/AppInput.vue'
 import AppEmptyState from '../components/ui/AppEmptyState.vue'
 import AppBottomSheet from '../components/ui/AppBottomSheet.vue'
-import AppTabs, { type AppTab } from '../components/ui/AppTabs.vue'
-import AppSelect from '../components/ui/AppSelect.vue'
+import AppModal from '../components/ui/AppModal.vue'
+import MemberGrid from '../components/campaign/MemberGrid.vue'
+import MemberShortcutsSheet from '../components/campaign/MemberShortcutsSheet.vue'
+import CombatPanelSheet from '../components/campaign/CombatPanelSheet.vue'
+import CampaignOptionsSheet from '../components/campaign/CampaignOptionsSheet.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -23,41 +35,68 @@ const loading = ref(false)
 const error = ref<string | null>(null)
 
 const isGm = computed(() => campaign.value?.gmUserId === user.value?.id)
-const isMember = computed(() =>
-  campaign.value?.members.some((m) => m.userId === user.value?.id) ?? false,
+
+/** Le flux SSE ne parle que de la campagne active. */
+const isLive = computed(() => campaign.value != null && user.value?.activeCampaignId === campaign.value.id)
+
+const online = computed(() => {
+  if (isLive.value && onlineUserIds.value) return new Set(onlineUserIds.value)
+  return new Set(campaign.value?.members.filter((m) => m.online).map((m) => m.userId) ?? [])
+})
+
+const sessionActive = computed(() =>
+  (isLive.value ? liveSessionActive.value : null) ?? campaign.value?.sessionActive ?? false,
 )
 
-// Tabs
-type TabId = 'joueurs' | 'rencontres' | 'combat'
-const activeTab = ref<TabId>('joueurs')
-
-const tabs = computed<AppTab[]>(() => [
-  { value: 'joueurs', label: 'Joueurs', icon: User },
-  ...(isGm.value ? [{ value: 'rencontres', label: 'Rencontres', icon: Swords }] : []),
-  ...(activeCombat.value ? [{ value: 'combat', label: 'Combat', icon: Play }] : []),
-])
-
-// Encounters
-const encounters = ref<EncounterSummary[]>([])
-const showCreateEncounter = ref(false)
-const newEncounterName = ref('')
-const encounterError = ref<string | null>(null)
-
-// Combats
 const combatsList = ref<CombatSummary[]>([])
 const activeCombat = computed(() => combatsList.value.find((c) => c.status === 'active'))
 
-// Launch combat bottom sheet
-const showLaunchSheet = ref(false)
-const selectedEncounterId = ref<number | null>(null)
-const excludedUserIds = ref<Set<number>>(new Set())
-const launchError = ref<string | null>(null)
-
-// Settings menu
-const showSettings = ref(false)
-
-// Repos partagé (MJ) — le serveur applique et diffuse, le feu de camp part tout seul
+// Panneaux de l'écran MJ
+const shortcutsFor = ref<CampaignMember | null>(null)
+const showCombat = ref(false)
 const showRest = ref(false)
+const showOptions = ref(false)
+const confirmEndSession = ref(false)
+
+onMounted(load)
+
+async function load() {
+  loading.value = true
+  error.value = null
+  try {
+    campaign.value = await fetchCampaign(Number(route.params.id))
+    combatsList.value = await fetchCombats(campaign.value.id)
+    await makeActive(campaign.value)
+  } catch (e) {
+    error.value = e instanceof Error ? e.message : 'Erreur'
+  } finally {
+    loading.value = false
+  }
+}
+
+/** Ouvrir une campagne, c'est y entrer : présence et session arrivent par son flux. */
+async function makeActive(c: CampaignDetail) {
+  const me = user.value
+  if (!me || me.activeCampaignId === c.id) return
+  const isMember = c.gmUserId === me.id || c.members.some((m) => m.userId === me.id)
+  if (!isMember) return
+  await activateCampaign(c.id)
+  user.value = { ...me, activeCampaignId: c.id }
+}
+
+async function reloadCombats() {
+  if (!campaign.value) return
+  combatsList.value = await fetchCombats(campaign.value.id)
+  void refreshActiveCombat()
+}
+
+function onMemberSelect(m: CampaignMember) {
+  if (isGm.value) shortcutsFor.value = m
+  else router.push(`/campagnes/${campaign.value!.id}/personnage/${m.userId}`)
+}
+
+// Repos partagé (MJ) — le serveur applique et diffuse, le feu de camp part tout seul.
+// La fin de séance passe par « Fin de session ».
 const resting = ref(false)
 const restError = ref<string | null>(null)
 
@@ -75,95 +114,20 @@ async function doRest(kind: RestKind) {
   }
 }
 
-onMounted(load)
+const sessionBusy = ref(false)
 
-async function load() {
-  loading.value = true
-  error.value = null
+async function setSession(active: boolean) {
+  if (!campaign.value || sessionBusy.value) return
+  sessionBusy.value = true
+  confirmEndSession.value = false
   try {
-    campaign.value = await fetchCampaign(Number(route.params.id))
-    if (isGm.value) {
-      encounters.value = await fetchEncounters(campaign.value.id)
-    }
-    combatsList.value = await fetchCombats(campaign.value.id)
-    // Auto-switch to combat tab if there's an active combat and user is not GM
-    if (activeCombat.value && !isGm.value) {
-      activeTab.value = 'combat'
-    }
+    const result = await setCampaignSession(campaign.value.id, active)
+    campaign.value = { ...campaign.value, sessionActive: result.sessionActive }
+    if (isLive.value) liveSessionActive.value = result.sessionActive
   } catch (e) {
     error.value = e instanceof Error ? e.message : 'Erreur'
   } finally {
-    loading.value = false
-  }
-}
-
-async function handleLeave() {
-  if (!campaign.value) return
-  try {
-    await leaveCampaign(campaign.value.id)
-    router.push('/campagnes')
-  } catch (e) {
-    error.value = e instanceof Error ? e.message : 'Erreur'
-  }
-}
-
-function viewCharacter(memberId: number) {
-  if (!campaign.value) return
-  router.push(`/campagnes/${campaign.value.id}/personnage/${memberId}`)
-}
-
-async function handleCreateEncounter() {
-  if (!campaign.value) return
-  encounterError.value = null
-  try {
-    const enc = await createEncounter(campaign.value.id, { name: newEncounterName.value.trim() })
-    newEncounterName.value = ''
-    showCreateEncounter.value = false
-    router.push(`/campagnes/${campaign.value.id}/rencontres/${enc.id}`)
-  } catch (e) {
-    encounterError.value = e instanceof Error ? e.message : 'Erreur'
-  }
-}
-
-async function handleDeleteEncounter(eid: number) {
-  if (!campaign.value) return
-  try {
-    await deleteEncounter(campaign.value.id, eid)
-    encounters.value = encounters.value.filter((e) => e.id !== eid)
-  } catch (e) {
-    encounterError.value = e instanceof Error ? e.message : 'Erreur'
-  }
-}
-
-function openLaunchSheet() {
-  excludedUserIds.value = new Set()
-  selectedEncounterId.value = null
-  launchError.value = null
-  showLaunchSheet.value = true
-}
-
-function togglePlayer(userId: number) {
-  if (excludedUserIds.value.has(userId)) {
-    excludedUserIds.value.delete(userId)
-  } else {
-    excludedUserIds.value.add(userId)
-  }
-  // Trigger reactivity
-  excludedUserIds.value = new Set(excludedUserIds.value)
-}
-
-async function handleLaunchCombat() {
-  if (!campaign.value) return
-  launchError.value = null
-  try {
-    const result = await createCombat(campaign.value.id, {
-      encounterId: selectedEncounterId.value ?? undefined,
-      excludedUserIds: [...excludedUserIds.value],
-    })
-    showLaunchSheet.value = false
-    router.push(`/campagnes/${campaign.value.id}/combat/${result.id}`)
-  } catch (e) {
-    launchError.value = e instanceof Error ? e.message : 'Erreur'
+    sessionBusy.value = false
   }
 }
 </script>
@@ -173,13 +137,10 @@ async function handleLaunchCombat() {
     <template #top-bar>
       <AppPageHead>
         <template #actions>
-          <AppIconBtn title="Retour" @click="router.push('/campagnes')">
+          <AppIconBtn title="Campagnes" @click="router.push('/campagnes')">
             <ArrowLeft :size="18" />
           </AppIconBtn>
-          <AppIconBtn v-if="isGm" title="Faire reposer le groupe" @click="showRest = true">
-            <Flame :size="18" />
-          </AppIconBtn>
-          <AppIconBtn v-if="isMember && !isGm" title="Options" @click="showSettings = true">
+          <AppIconBtn v-if="campaign && !isGm" title="Options" @click="showOptions = true">
             <Settings :size="18" />
           </AppIconBtn>
         </template>
@@ -188,121 +149,86 @@ async function handleLaunchCombat() {
     </template>
 
     <AppEmptyState v-if="loading" variant="loading">Chargement…</AppEmptyState>
-    <AppEmptyState v-else-if="error" variant="error">{{ error }}</AppEmptyState>
+    <AppEmptyState v-else-if="error && !campaign" variant="error">{{ error }}</AppEmptyState>
 
     <template v-else-if="campaign">
       <div class="gm-banner">
         <Crown :size="16" class="gm-icon" />
         <span>MJ : <strong>{{ campaign.gmUsername }}</strong></span>
+        <span v-if="sessionActive" class="session-tag" data-testid="session-tag">Session en cours</span>
       </div>
 
-      <!-- Tabs -->
-      <AppTabs
-        :model-value="activeTab"
-        :tabs="tabs"
-        @update:model-value="activeTab = $event as TabId"
+      <AppEmptyState v-if="campaign.members.length === 0">
+        Aucun joueur n'a encore rejoint cette campagne.
+      </AppEmptyState>
+      <MemberGrid v-else :members="campaign.members" :online="online" @select="onMemberSelect" />
+
+      <div
+        v-if="activeCombat"
+        class="active-combat"
+        data-testid="active-combat"
+        @click="router.push(`/campagnes/${campaign.id}/combat/${activeCombat.id}`)"
+      >
+        <Swords :size="20" class="combat-icon" />
+        <div class="active-combat-info">
+          <span class="combat-name">{{ activeCombat.name }}</span>
+          <span class="combat-round">Round {{ activeCombat.roundNumber }}</span>
+        </div>
+        <AppButton variant="primary" size="small">Rejoindre</AppButton>
+      </div>
+
+      <template v-if="isGm">
+        <nav class="gm-tools" aria-label="Outils du MJ">
+          <AppIconBtn title="Combat" data-testid="gm-combat" @click="showCombat = true">
+            <Swords :size="20" />
+          </AppIconBtn>
+          <AppIconBtn title="Repos" data-testid="gm-rest" @click="showRest = true">
+            <Bed :size="20" />
+          </AppIconBtn>
+          <AppIconBtn title="Savoir" data-testid="gm-savoir" @click="router.push('/savoir')">
+            <BookOpen :size="20" />
+          </AppIconBtn>
+          <AppIconBtn title="Options" data-testid="gm-options" @click="showOptions = true">
+            <Settings :size="20" />
+          </AppIconBtn>
+        </nav>
+
+        <AppButton
+          v-if="!sessionActive"
+          variant="primary"
+          block
+          :disabled="sessionBusy"
+          data-testid="session-start"
+          @click="setSession(true)"
+        >
+          <Sunrise :size="16" />
+          Début de la session
+        </AppButton>
+        <AppButton
+          v-else
+          variant="danger"
+          block
+          :disabled="sessionBusy"
+          data-testid="session-end"
+          @click="confirmEndSession = true"
+        >
+          <Sunset :size="16" />
+          Fin de session
+        </AppButton>
+        <p v-if="error" class="form-error">{{ error }}</p>
+      </template>
+
+      <MemberShortcutsSheet v-if="isGm" v-model="shortcutsFor" :campaign-id="campaign.id" />
+      <CombatPanelSheet
+        v-if="isGm"
+        v-model="showCombat"
+        :campaign="campaign"
+        :active-combat="activeCombat"
+        @combats-changed="reloadCombats"
       />
-
-      <!-- Tab: Joueurs -->
-      <template v-if="activeTab === 'joueurs'">
-        <section class="members-section">
-          <AppEmptyState v-if="campaign.members.length === 0">
-            Aucun joueur n'a encore rejoint cette campagne.
-          </AppEmptyState>
-
-          <div v-else class="members-grid">
-            <div
-              v-for="m in campaign.members"
-              :key="m.userId"
-              class="member-card"
-              :class="{ clickable: isGm || isMember }"
-              @click="(isGm || isMember) ? viewCharacter(m.userId) : undefined"
-            >
-              <div class="member-avatar">
-                <img v-if="m.portraitUrl" :src="m.portraitUrl" alt="" />
-                <img v-else-if="m.avatarUrl" :src="m.avatarUrl" alt="" />
-                <User v-else :size="28" class="avatar-placeholder" />
-              </div>
-              <div class="member-info">
-                <span class="member-character">{{ m.characterName ?? '—' }}</span>
-                <span class="member-username">{{ m.username }}</span>
-              </div>
-            </div>
-          </div>
-        </section>
-
-      </template>
-
-      <!-- Tab: Rencontres (GM only) -->
-      <template v-if="activeTab === 'rencontres' && isGm">
-        <div class="encounters-header">
-          <h2 class="section-title">Rencontres ({{ encounters.length }})</h2>
-          <div class="encounters-header-actions">
-            <AppButton variant="primary" size="small" @click="openLaunchSheet">
-              <Play :size="16" />
-              Jouer
-            </AppButton>
-            <AppIconBtn title="Nouvelle rencontre" @click="showCreateEncounter = !showCreateEncounter">
-              <Plus :size="18" />
-            </AppIconBtn>
-          </div>
-        </div>
-
-        <form v-if="showCreateEncounter" class="create-form" @submit.prevent="handleCreateEncounter">
-          <AppInput
-            v-model="newEncounterName"
-            class="create-name"
-            placeholder="Nom de la rencontre"
-            :required="true"
-            :autofocus="true"
-          />
-          <AppButton type="submit" variant="primary">Créer</AppButton>
-        </form>
-
-        <p v-if="encounterError" class="form-error">{{ encounterError }}</p>
-
-        <AppEmptyState v-if="encounters.length === 0 && !showCreateEncounter">
-          Aucune rencontre. Prépare tes combats !
-        </AppEmptyState>
-
-        <div v-else class="encounters-list">
-          <div
-            v-for="enc in encounters"
-            :key="enc.id"
-            class="encounter-card"
-            @click="router.push(`/campagnes/${campaign!.id}/rencontres/${enc.id}`)"
-          >
-            <div class="encounter-info">
-              <span class="encounter-name">{{ enc.name }}</span>
-              <span class="encounter-meta">{{ enc.monsterCount }} monstre{{ enc.monsterCount > 1 ? 's' : '' }}</span>
-            </div>
-            <AppIconBtn
-              variant="danger"
-              title="Supprimer"
-              @click.stop="handleDeleteEncounter(enc.id)"
-            >
-              <Trash2 :size="16" />
-            </AppIconBtn>
-          </div>
-        </div>
-      </template>
-
-      <!-- Tab: Combat (visible par tous quand actif) -->
-      <template v-if="activeTab === 'combat' && activeCombat">
-        <div class="active-combat-card" @click="router.push(`/campagnes/${campaign!.id}/combat/${activeCombat!.id}`)">
-          <div class="active-combat-info">
-            <Swords :size="20" class="combat-icon" />
-            <div>
-              <span class="combat-name">{{ activeCombat!.name }}</span>
-              <span class="combat-round">Round {{ activeCombat!.roundNumber }}</span>
-            </div>
-          </div>
-          <AppButton variant="primary" size="small">Rejoindre</AppButton>
-        </div>
-      </template>
+      <CampaignOptionsSheet v-model="showOptions" :campaign="campaign" :is-gm="isGm" @updated="load" />
     </template>
 
-    <!-- Bottom sheet: Settings -->
     <!-- Repos partagé (MJ) : chaque repos remet à zéro les usages de sa période. -->
     <AppBottomSheet v-model="showRest" title="Faire reposer le groupe">
       <div class="rest-choices">
@@ -320,221 +246,99 @@ async function handleLaunchCombat() {
             <small>Une nuit — PV au max, états levés, usages du jour rendus.</small>
           </span>
         </button>
-        <button type="button" class="rest-choice" :disabled="resting" data-testid="rest-seance" @click="doRest('seance')">
-          <Sunrise :size="20" class="rest-choice-icon" />
-          <span class="rest-choice-text">
-            <strong>Fin de séance</strong>
-            <small>Comme un repos long, plus 2 points de chance et les coches remises à zéro.</small>
-          </span>
-        </button>
       </div>
       <p v-if="restError" class="rest-error">{{ restError }}</p>
     </AppBottomSheet>
 
-    <AppBottomSheet v-model="showSettings" title="Options">
-      <AppButton variant="danger" block @click="handleLeave">
-        <LogOut :size="16" />
-        Quitter la campagne
-      </AppButton>
-    </AppBottomSheet>
-
-    <!-- Bottom sheet: Lancer un combat -->
-    <AppBottomSheet v-model="showLaunchSheet" title="Lancer un combat">
-      <div class="sheet-content">
-        <!-- Choix de la rencontre -->
-        <div class="sheet-section">
-          <label class="sheet-label">Rencontre</label>
-          <AppSelect v-model="selectedEncounterId">
-            <option :value="null">Combat vide</option>
-            <option v-for="enc in encounters" :key="enc.id" :value="enc.id">
-              {{ enc.name }} ({{ enc.monsterCount }} monstres)
-            </option>
-          </AppSelect>
-        </div>
-
-        <!-- Sélection des joueurs -->
-        <div class="sheet-section">
-          <label class="sheet-label">Joueurs</label>
-          <div class="player-toggles">
-            <div
-              v-for="m in campaign!.members"
-              :key="m.userId"
-              class="player-toggle"
-              :class="{ excluded: excludedUserIds.has(m.userId) }"
-              @click="togglePlayer(m.userId)"
-            >
-              <span class="player-toggle-name">{{ m.characterName ?? m.username }}</span>
-            </div>
-          </div>
-        </div>
-
-        <p v-if="launchError" class="form-error">{{ launchError }}</p>
-
-        <div class="sheet-actions">
-          <AppButton variant="ghost" @click="showLaunchSheet = false">Annuler</AppButton>
-          <AppButton variant="primary" @click="handleLaunchCombat">
-            <Play :size="16" />
-            Lancer !
-          </AppButton>
-        </div>
-      </div>
-    </AppBottomSheet>
+    <AppModal v-model="confirmEndSession" title="Fin de session">
+      <p class="confirm">
+        Tout le groupe fait un repos long, récupère 2 points de chance et ses coches de séance sont remises à zéro.
+      </p>
+      <template #footer>
+        <AppButton @click="confirmEndSession = false">Annuler</AppButton>
+        <AppButton variant="danger" data-testid="session-end-confirm" @click="setSession(false)">Terminer</AppButton>
+      </template>
+    </AppModal>
   </AppPageLayout>
 </template>
 
 <style scoped>
-
 .gm-banner {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.6rem 1rem;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
   background: var(--surface-2);
   border: 1px solid var(--border);
-  border-radius: var(--radius-xl);
+  border-radius: var(--radius-lg);
   font-size: 0.9rem;
   color: var(--muted);
 }
 
-.gm-icon { color: var(--accent); }
+.gm-icon {
+  color: var(--accent);
+}
 
-.section-title {
-  font-size: 1rem;
+.session-tag {
+  margin-left: auto;
+  padding: 0.1rem var(--space-sm);
+  border-radius: var(--radius-pill);
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+  font-size: 0.75rem;
   font-weight: 700;
-  margin: 0;
-  color: var(--text);
 }
 
-.members-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-  gap: 0.75rem;
-}
-
-.member-card {
+.gm-tools {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 1rem 0.75rem;
+  justify-content: center;
+  gap: var(--space-md);
+  padding: var(--space-sm);
   background: var(--surface-2);
   border: 1px solid var(--border);
-  border-radius: var(--radius-xxl);
-  transition: border-color 160ms ease, transform 160ms ease;
+  border-radius: var(--radius-lg);
 }
 
-.member-card.clickable { cursor: pointer; }
-.member-card.clickable:hover { border-color: var(--accent); transform: translateY(-2px); }
-
-.member-avatar {
-  width: 52px; height: 52px; border-radius: 50%; overflow: hidden;
-  background: var(--surface-3, var(--border));
-  display: flex; align-items: center; justify-content: center;
+.active-combat {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-sm) var(--space-md);
+  background: var(--surface-2);
+  border: 2px solid var(--accent);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
 }
 
-.member-avatar img { width: 100%; height: 100%; object-fit: cover; }
-.avatar-placeholder { color: var(--muted); }
-
-.member-info {
-  display: flex; flex-direction: column; align-items: center; gap: 0.1rem;
-  min-width: 0; width: 100%;
-}
-
-.member-character {
-  font-weight: 700; font-size: 0.9rem; color: var(--text); text-align: center;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;
-}
-
-.member-username { font-size: 0.75rem; color: var(--muted); }
-
-/* Encounters */
-.encounters-header { display: flex; align-items: center; justify-content: space-between; }
-.encounters-header-actions { display: flex; gap: 0.35rem; align-items: center; }
-
-.create-form {
-  display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center;
-  padding: 0.85rem 1rem; background: var(--surface-2);
-  border: 1px solid var(--border); border-radius: var(--radius-xl);
-}
-
-.create-form .create-name { flex: 1; min-width: 0; }
-
-.form-error { color: var(--danger, #e05252); font-size: 0.85rem; margin: 0; }
-
-.encounters-list { display: flex; flex-direction: column; gap: 0.65rem; }
-
-.encounter-card {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 0.85rem 1rem; background: var(--surface-2);
-  border: 1px solid var(--border); border-radius: var(--radius-xxl);
-  gap: 0.75rem; cursor: pointer; transition: border-color 160ms ease;
-}
-
-.encounter-card:hover { border-color: var(--accent); }
-
-.encounter-info { display: flex; flex-direction: column; gap: 0.15rem; min-width: 0; }
-
-.encounter-name {
-  font-weight: 700; font-size: 1rem; color: var(--text);
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
-
-.encounter-meta { font-size: 0.8rem; color: var(--muted); }
-
-/* Active combat card */
-.active-combat-card {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 1rem 1.2rem; background: var(--surface-2);
-  border: 2px solid var(--accent); border-radius: var(--radius-xxl);
-  cursor: pointer; gap: 1rem;
-}
-
-.active-combat-info { display: flex; align-items: center; gap: 0.75rem; }
-.combat-icon { color: var(--accent); }
-
-.combat-name {
-  font-weight: 700; font-size: 1rem; color: var(--text); display: block;
-}
-
-.combat-round { font-size: 0.8rem; color: var(--muted); }
-
-/* Bottom sheet */
-.sheet-content {
+.active-combat-info {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  min-width: 0;
 }
 
-.sheet-section { display: flex; flex-direction: column; gap: 0.4rem; }
-
-.sheet-label {
-  font-size: 0.78rem; font-weight: 600; color: var(--muted);
-  text-transform: uppercase; letter-spacing: 0.04em;
+.combat-icon {
+  color: var(--accent);
 }
 
-.player-toggles { display: flex; flex-wrap: wrap; gap: 0.4rem; }
-
-.player-toggle {
-  padding: 0.45rem 0.8rem;
-  background: var(--accent-soft);
-  border: 1px solid var(--accent);
-  border-radius: var(--radius-pill);
-  cursor: pointer;
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--accent-strong);
-  transition: all 150ms ease;
+.combat-name {
+  font-weight: 700;
 }
 
-.player-toggle.excluded {
-  background: var(--surface-3, var(--border));
-  border-color: var(--border);
+.combat-round {
+  font-size: 0.8rem;
   color: var(--muted);
-  opacity: 0.5;
-  text-decoration: line-through;
 }
 
-.sheet-actions { display: flex; gap: 0.5rem; justify-content: flex-end; }
+.form-error {
+  color: var(--danger);
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+.confirm {
+  margin: 0;
+}
 
 /* ── Repos partagé ──────────────────────────────────────────────────────── */
 .rest-choices {

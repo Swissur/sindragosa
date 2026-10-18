@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, watch, onMounted } from "vue";
 import { useRoute } from "vue-router";
-import { BookText, Users, StickyNote, Brush, BookUser, Pencil, BookPlus, History } from "lucide-vue-next";
+import { BookText, Users, StickyNote, Brush, BookUser, Pencil, BookPlus, History, MessagesSquare } from "lucide-vue-next";
 import AppPageLayout from "../components/ui/AppPageLayout.vue";
 import AppPageHead from "../components/ui/AppPageHead.vue";
 import AppButton from "../components/ui/AppButton.vue";
@@ -12,6 +12,7 @@ import AppTabs from "../components/ui/AppTabs.vue";
 import NotesTab from "../components/journal/NotesTab.vue";
 import MentionTextarea from "../components/journal/MentionTextarea.vue";
 import CodexTab from "../components/journal/CodexTab.vue";
+import GmExchangeTab from "../components/journal/GmExchangeTab.vue";
 import {
   fetchJournalCompagnie,
   saveJournalCompagnie,
@@ -26,8 +27,8 @@ import { relativeTime } from "../utils/relativeTime";
 
 const route = useRoute();
 
-type Tab = "compagnie" | "notes" | "dessins" | "fiches";
-const initialTab = ["compagnie", "notes", "dessins", "fiches"].includes(String(route.query.tab))
+type Tab = "compagnie" | "notes" | "dessins" | "fiches" | "mj";
+const initialTab = ["compagnie", "notes", "dessins", "fiches", "mj"].includes(String(route.query.tab))
   ? (String(route.query.tab) as Tab)
   : "compagnie";
 const activeTab = ref<Tab>(initialTab);
@@ -37,6 +38,7 @@ const TABS = [
   { value: "notes", label: "Notes", icon: StickyNote },
   { value: "dessins", label: "Dessins", icon: Brush },
   { value: "fiches", label: "Fiches", icon: BookUser },
+  { value: "mj", label: "Échange avec le MJ", icon: MessagesSquare },
 ];
 
 // ── Journal compagnie (live) ─────────────────────────────────────────────────
@@ -285,6 +287,9 @@ onMounted(load);
 
       <!-- ── Fiches ── -->
       <CodexTab v-if="activeTab === 'fiches'" class="tab-content" />
+
+      <!-- ── Échange avec le MJ ── -->
+      <GmExchangeTab v-if="activeTab === 'mj'" class="tab-content" />
     </template>
   </AppPageLayout>
 </template>

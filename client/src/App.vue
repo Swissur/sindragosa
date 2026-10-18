@@ -10,6 +10,7 @@ import RollLogDrawer from "./components/roll-log/RollLogDrawer.vue";
 import Dice3DOverlay from "./components/dice3d/Dice3DOverlay.vue";
 import CampfireOverlay from "./components/campfire/CampfireOverlay.vue";
 import RestSummaryModal from "./components/campfire/RestSummaryModal.vue";
+import GmMessageModal from "./components/campaign/GmMessageModal.vue";
 import CriticalMomentOverlay from "./components/CriticalMomentOverlay.vue";
 import { user, authReady } from "./composables/useAuth";
 import { useActiveCombat, refreshActiveCombat } from "./composables/useActiveCombat";
@@ -206,6 +207,7 @@ if (savedStyle) {
     <CampfireOverlay />
     <DevToolsSheet v-if="isDev" v-model="devToolsOpen" />
     <RestSummaryModal />
+    <GmMessageModal v-if="user" />
     <RollSheet v-if="user" />
     <AppToast />
   </div>

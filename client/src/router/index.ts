@@ -17,12 +17,26 @@ import EncounterEditView from '../views/EncounterEditView.vue'
 import CombatView from '../views/CombatView.vue'
 import { authReady, user, initAuth } from '../composables/useAuth'
 import { safeNext, PENDING_NEXT_KEY } from '../utils/safeNext'
+import { autoEntryCampaign } from '../utils/entryRoute'
+import { fetchCampaigns } from '../api/campaigns'
+import { enterCampaign } from '../composables/useCampaignEntry'
+
+async function entryRedirect(): Promise<string> {
+  if (!user.value) return '/login'
+  try {
+    const campaign = autoEntryCampaign(await fetchCampaigns(), user.value.id)
+    return campaign ? await enterCampaign(campaign) : '/campagnes'
+  } catch {
+    return '/personnage'
+  }
+}
 
 export const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     { path: '/login', name: 'login', component: LoginView, meta: { public: true } },
-    { path: '/', redirect: '/personnage' },
+    // Entrée de l'app : une seule campagne → on y entre, sinon on la choisit.
+    { path: '/', component: CampaignListView, beforeEnter: entryRedirect },
     { path: '/personnages', name: 'characters', component: CharacterListView },
     { path: '/personnage', name: 'character', component: CharacterSheetView },
     { path: '/actions', name: 'actions', component: ActionsView },
@@ -34,6 +48,8 @@ export const router = createRouter({
     { path: '/journal/:id', name: 'journal-page', component: JournalPageView },
     { path: '/campagnes', name: 'campaigns', component: CampaignListView },
     { path: '/campagnes/:id', name: 'campaign', component: CampaignView },
+    // Le savoir du MJ : domaines avancés, compétences, titres. Lié depuis l'écran MJ seulement.
+    { path: '/savoir', name: 'savoir', component: () => import('../views/SavoirView.vue') },
     { path: '/campagnes/:campaignId/personnage/:userId', name: 'campaign-character', component: CampaignCharacterView },
     { path: '/campagnes/:id/rencontres/:eid', name: 'encounter-edit', component: EncounterEditView },
     { path: '/campagnes/:id/combat/:cid', name: 'combat', component: CombatView },

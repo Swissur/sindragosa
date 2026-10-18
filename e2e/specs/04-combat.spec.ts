@@ -1,5 +1,6 @@
 import { test, expect, type Page } from '../fixtures/test'
 import { stateFor } from '../fixtures/auth'
+import { ouvrirLancement } from '../fixtures/campaign'
 
 /** Le participant dont c'est le tour. On compare des id : deux monstres peuvent porter le même nom. */
 function tourEnCours(page: Page) {
@@ -18,14 +19,7 @@ test('le MJ lance un combat et le joueur suit le même tour', async ({ browser }
 
   try {
     // ── Le MJ lance le combat depuis la rencontre du bac à sable ──
-    await pageMj.goto('/campagnes')
-    await pageMj.getByText('Bac à sable').first().click()
-    await pageMj.getByRole('tab', { name: 'Rencontres' }).click()
-    await pageMj.getByRole('button', { name: 'Jouer' }).click()
-
-    // "Combat vide" est la première option : on prend la rencontre seedée.
-    const select = pageMj.locator('select')
-    await select.selectOption({ index: 1 })
+    await ouvrirLancement(pageMj)
     await pageMj.getByRole('button', { name: 'Lancer !' }).click()
 
     await expect(pageMj).toHaveURL(/\/combat\/\d+$/)
@@ -64,10 +58,7 @@ test('le MJ fait entrer en cours de combat un PJ resté dehors', async ({ browse
 
   try {
     // ── Le MJ lance le combat en laissant Bracco sur le banc ──
-    await pageMj.goto('/campagnes')
-    await pageMj.getByText('Bac à sable').first().click()
-    await pageMj.getByRole('tab', { name: 'Rencontres' }).click()
-    await pageMj.getByRole('button', { name: 'Jouer' }).click()
+    await ouvrirLancement(pageMj, { rencontre: false })
     await pageMj.getByRole('dialog').getByText('Bracco Pouce-Cassé').click()
     await pageMj.getByRole('button', { name: 'Lancer !' }).click()
 
@@ -104,11 +95,7 @@ test('le MJ lance l’attaque d’un monstre en réserve de d6', async ({ browse
   const pageMj = await mj.newPage()
 
   try {
-    await pageMj.goto('/campagnes')
-    await pageMj.getByText('Bac à sable').first().click()
-    await pageMj.getByRole('tab', { name: 'Rencontres' }).click()
-    await pageMj.getByRole('button', { name: 'Jouer' }).click()
-    await pageMj.locator('select').selectOption({ index: 1 })
+    await ouvrirLancement(pageMj)
     await pageMj.getByRole('button', { name: 'Lancer !' }).click()
     await expect(pageMj).toHaveURL(/\/combat\/\d+$/)
 

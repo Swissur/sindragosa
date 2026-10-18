@@ -1,27 +1,27 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
+import { Plus, User } from "lucide-vue-next";
 import {
   fetchCharacters,
   activateCharacter,
-  deleteCharacter,
   createCharacter,
   type ServerCharacter,
 } from "../api/characters";
 import { raceById } from "../data/sindragosa/races";
 import AppPageLayout from "../components/ui/AppPageLayout.vue";
 import AppPageHead from "../components/ui/AppPageHead.vue";
-import AppBadge from "../components/ui/AppBadge.vue";
+import AppIconBtn from "../components/ui/AppIconBtn.vue";
 import AppEmptyState from "../components/ui/AppEmptyState.vue";
 import AppButton from "../components/ui/AppButton.vue";
 
+// Choix du personnage : affiché quand le joueur en a plusieurs. Le perso
+// choisi devient actif et le serveur le met dans la campagne active.
 const router = useRouter();
 const characters = ref<ServerCharacter[]>([]);
 const loading = ref(false);
 const listError = ref<string | null>(null);
-const activating = ref<number | null>(null);
-const deleting = ref<number | null>(null);
-const creating = ref(false);
+const busy = ref(false);
 
 async function load() {
   loading.value = true;
@@ -29,73 +29,49 @@ async function load() {
   try {
     characters.value = await fetchCharacters();
   } catch {
-    listError.value =
-      "Impossible de joindre l’API ou erreur serveur. Vérifie que npm run dev tourne, puis relance la migration si la base a changé (npm run db:migrate).";
+    listError.value = "Impossible de charger tes personnages.";
   } finally {
     loading.value = false;
   }
 }
 
-async function handleActivate(c: ServerCharacter) {
-  if (c.isActive) return;
-  activating.value = c.id;
+async function choose(c: ServerCharacter) {
+  if (busy.value) return;
+  busy.value = true;
   try {
-    await activateCharacter(c.id);
-    characters.value = characters.value.map((ch) => ({
-      ...ch,
-      isActive: ch.id === c.id,
-    }));
+    if (!c.isActive) await activateCharacter(c.id);
+    router.push({ path: "/personnage", query: { id: c.id } });
   } finally {
-    activating.value = null;
-  }
-}
-
-function openSheet(c: ServerCharacter) {
-  router.push({ path: "/personnage", query: { id: c.id } });
-}
-
-async function handleDelete(c: ServerCharacter) {
-  deleting.value = c.id;
-  try {
-    await deleteCharacter(c.id);
-    characters.value = characters.value.filter((ch) => ch.id !== c.id);
-  } finally {
-    deleting.value = null;
+    busy.value = false;
   }
 }
 
 async function handleCreate() {
-  creating.value = true;
+  if (busy.value) return;
+  busy.value = true;
   try {
     const created = await createCharacter({});
+    await activateCharacter(created.id);
     router.push({ path: "/personnage", query: { id: created.id } });
   } finally {
-    creating.value = false;
+    busy.value = false;
   }
 }
 
 onMounted(load);
-
-function listMetaLine(c: ServerCharacter): string {
-  return raceById(c.race)?.label ?? "Race à choisir";
-}
 </script>
 
 <template>
   <AppPageLayout>
     <template #top-bar>
       <AppPageHead>
-      Personnages
-      <template #actions>
-        <AppButton
-          size="small"
-          :disabled="creating"
-          @click="handleCreate"
-        >
-          {{ creating ? "…" : "+ Créer" }}
-        </AppButton>
-      </template>
-    </AppPageHead>
+        Choix du personnage
+        <template #actions>
+          <AppIconBtn variant="primary" title="Nouveau personnage" :disabled="busy" @click="handleCreate">
+            <Plus :size="18" />
+          </AppIconBtn>
+        </template>
+      </AppPageHead>
     </template>
 
     <AppEmptyState v-if="loading" variant="loading">Chargement…</AppEmptyState>
@@ -107,171 +83,91 @@ function listMetaLine(c: ServerCharacter): string {
       </template>
     </AppEmptyState>
 
-    <ul v-else class="char-list">
-      <li
+    <AppEmptyState v-else-if="characters.length === 0">Aucun personnage.</AppEmptyState>
+
+    <div v-else class="char-grid">
+      <button
         v-for="c in characters"
         :key="c.id"
-        class="char-row"
+        type="button"
+        class="char-pick"
         :class="{ active: c.isActive }"
+        :disabled="busy"
+        :data-testid="`pick-character-${c.id}`"
+        @click="choose(c)"
       >
-        <label
-          class="active-check"
-          :title="c.isActive ? 'Personnage actif' : 'Définir comme actif'"
-        >
-          <input
-            type="checkbox"
-            :checked="c.isActive"
-            :disabled="activating !== null"
-            @change="handleActivate(c)"
-          />
-          <span class="check-mark" :class="{ checked: c.isActive }">✓</span>
-        </label>
-
-        <button type="button" class="char-name" @click="openSheet(c)">
-          <span class="name-row">
-            <span class="name">{{ c.name }}</span>
-            <AppBadge v-if="c.isActive" variant="active">Actif</AppBadge>
-          </span>
-          <span class="meta">{{ listMetaLine(c) }}</span>
-        </button>
-
-        <button
-          type="button"
-          class="btn-delete"
-          title="Supprimer"
-          :disabled="deleting === c.id"
-          @click="handleDelete(c)"
-        >
-          🗑️
-        </button>
-      </li>
-    </ul>
-
-    <AppEmptyState v-if="!loading && !listError && characters.length === 0">
-      Aucun personnage.
-    </AppEmptyState>
+        <span class="portrait">
+          <img v-if="c.portraitImageId" :src="`/api/images/${c.portraitImageId}`" alt="" />
+          <User v-else :size="30" class="placeholder" />
+        </span>
+        <span class="name">{{ c.name }}</span>
+        <span class="meta">{{ raceById(c.race)?.label ?? "Race à choisir" }}</span>
+      </button>
+    </div>
   </AppPageLayout>
 </template>
 
 <style scoped>
-.char-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
+.char-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: var(--space-md);
+}
+
+.char-pick {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-}
-
-.char-row {
-  display: flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem 0.95rem;
+  gap: var(--space-xs);
+  padding: var(--space-sm);
+  background: none;
+  border: none;
   border-radius: var(--radius-lg);
-  border: 1px solid var(--border);
-  background: var(--surface);
-  transition: border-color 160ms ease;
-}
-
-.char-row.active {
-  border-color: var(--accent);
-  background: color-mix(in srgb, var(--accent-soft) 40%, var(--surface));
-}
-
-.active-check {
-  display: flex;
-  align-items: center;
+  color: inherit;
+  font: inherit;
   cursor: pointer;
-  flex-shrink: 0;
 }
 
-.active-check input {
-  position: absolute;
-  opacity: 0;
-  width: 0;
-  height: 0;
+.char-pick:hover .portrait,
+.char-pick.active .portrait {
+  border-color: var(--accent);
 }
 
-.check-mark {
-  width: 26px;
-  height: 26px;
+.portrait {
+  width: 72px;
+  height: 72px;
   border-radius: 50%;
-  border: 2px solid var(--border-strong);
+  overflow: hidden;
+  border: 3px solid var(--border);
+  background: var(--surface-2);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.85rem;
-  color: transparent;
-  transition: all 160ms ease;
+  transition: border-color 160ms ease;
 }
 
-.check-mark.checked {
-  border-color: var(--accent);
-  background: var(--accent-soft);
-  color: var(--accent-strong);
+.portrait img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
-.char-name {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0.2rem;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0;
-  text-align: left;
-  color: inherit;
-}
-
-.char-name:hover .name {
-  color: var(--accent-strong);
-}
-
-.name {
-  font-weight: 600;
-  font-size: 1rem;
-  transition: color 160ms ease;
-}
-
-.meta {
-  font-size: 0.8rem;
+.placeholder {
   color: var(--muted);
 }
 
-.name-row {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  flex-wrap: wrap;
+.name {
+  font-weight: 700;
+  font-size: 0.9rem;
+  text-align: center;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-
-.btn-delete {
-  flex-shrink: 0;
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 1.1rem;
-  padding: 0.3rem;
-  border-radius: var(--radius-sm);
-  line-height: 1;
-  opacity: 0.5;
-  transition:
-    opacity 160ms ease,
-    background 160ms ease;
+.meta {
+  font-size: 0.75rem;
+  color: var(--muted);
 }
-
-.btn-delete:hover:not(:disabled) {
-  opacity: 1;
-  background: #ff000018;
-}
-
-.btn-delete:disabled {
-  opacity: 0.25;
-  cursor: not-allowed;
-}
-
 </style>

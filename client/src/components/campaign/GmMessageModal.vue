@@ -1,0 +1,43 @@
+<script setup lang="ts">
+import { computed } from 'vue'
+import { useRouter } from 'vue-router'
+import { MessagesSquare } from 'lucide-vue-next'
+import { incomingGmMessage } from '../../composables/useCampaignLive'
+import AppModal from '../ui/AppModal.vue'
+import AppButton from '../ui/AppButton.vue'
+import AppIconBtn from '../ui/AppIconBtn.vue'
+
+// Le MJ m'a écrit : le message s'ouvre au milieu de l'écran, où que je sois.
+// Il reste ensuite dans le journal « Échange avec le MJ ».
+const router = useRouter()
+
+const open = computed({
+  get: () => incomingGmMessage.value !== null,
+  set: (v) => { if (!v) incomingGmMessage.value = null },
+})
+
+function toJournal() {
+  incomingGmMessage.value = null
+  router.push({ path: '/journal', query: { tab: 'mj' } })
+}
+</script>
+
+<template>
+  <AppModal v-model="open" title="Message du MJ">
+    <p class="body" data-testid="gm-message-body">{{ incomingGmMessage?.body }}</p>
+    <template #footer>
+      <AppIconBtn title="Voir l'échange avec le MJ" @click="toJournal">
+        <MessagesSquare :size="18" />
+      </AppIconBtn>
+      <AppButton variant="primary" data-testid="gm-message-ok" @click="open = false">Compris</AppButton>
+    </template>
+  </AppModal>
+</template>
+
+<style scoped>
+.body {
+  margin: 0;
+  font-size: 1.05rem;
+  white-space: pre-wrap;
+}
+</style>

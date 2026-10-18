@@ -1,20 +1,25 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { Plus, LogIn, Trash2, Map, Crown, DoorOpen } from 'lucide-vue-next'
+import { Plus, LogIn, Map, Crown } from 'lucide-vue-next'
 import {
   fetchCampaigns,
   createCampaign,
-  deleteCampaign,
   joinCampaign,
+  CAMPAIGN_SYSTEMS,
   type CampaignSummary,
+  type CampaignSystem,
 } from '../api/campaigns'
 import { user } from '../composables/useAuth'
+import { enterCampaign } from '../composables/useCampaignEntry'
+import { myCampaigns } from '../utils/entryRoute'
 import AppPageLayout from '../components/ui/AppPageLayout.vue'
 import AppPageHead from '../components/ui/AppPageHead.vue'
+import AppCard from '../components/ui/AppCard.vue'
 import AppIconBtn from '../components/ui/AppIconBtn.vue'
 import AppInput from '../components/ui/AppInput.vue'
 import AppButton from '../components/ui/AppButton.vue'
+import AppSelect from '../components/ui/AppSelect.vue'
 import AppEmptyState from '../components/ui/AppEmptyState.vue'
 import AppModal from '../components/ui/AppModal.vue'
 
@@ -22,10 +27,16 @@ const router = useRouter()
 
 const campaigns = ref<CampaignSummary[]>([])
 const loading = ref(false)
+const error = ref<string | null>(null)
+
+const mine = computed(() => myCampaigns(campaigns.value, user.value?.id ?? 0))
+const others = computed(() => campaigns.value.filter((c) => !mine.value.includes(c)))
+
+// Création : système + nom, le créateur devient MJ.
 const showCreate = ref(false)
 const newName = ref('')
-const error = ref<string | null>(null)
-const confirmDeleteId = ref<number | null>(null)
+const newSystem = ref<CampaignSystem>('wow-forever')
+const createError = ref<string | null>(null)
 
 onMounted(load)
 
@@ -38,41 +49,48 @@ async function load() {
   }
 }
 
+async function enter(c: CampaignSummary) {
+  error.value = null
+  try {
+    router.push(await enterCampaign(c))
+  } catch (e) {
+    error.value = e instanceof Error ? e.message : 'Erreur'
+  }
+}
+
+function onPick(id: number | null) {
+  const c = mine.value.find((m) => m.id === id)
+  if (c) void enter(c)
+}
+
+function openCreate() {
+  newName.value = ''
+  newSystem.value = 'wow-forever'
+  createError.value = null
+  showCreate.value = true
+}
+
 async function handleCreate() {
-  error.value = null
+  createError.value = null
   try {
-    const campaign = await createCampaign(newName.value.trim())
-    newName.value = ''
+    const created = await createCampaign(newName.value.trim(), newSystem.value)
     showCreate.value = false
-    router.push(`/campagnes/${campaign.id}`)
+    // Le serveur l'a déjà rendue active : le MJ arrive sur son écran.
+    if (user.value) user.value = { ...user.value, activeCampaignId: created.id }
+    router.push(`/campagnes/${created.id}`)
   } catch (e) {
-    error.value = e instanceof Error ? e.message : 'Erreur'
+    createError.value = e instanceof Error ? e.message : 'Erreur'
   }
 }
 
-async function handleJoin(id: number) {
+async function handleJoin(c: CampaignSummary) {
   error.value = null
   try {
-    await joinCampaign(id)
-    router.push(`/campagnes/${id}`)
+    await joinCampaign(c.id)
+    await enter({ ...c, isMember: true })
   } catch (e) {
     error.value = e instanceof Error ? e.message : 'Erreur'
   }
-}
-
-async function handleDelete(id: number) {
-  error.value = null
-  try {
-    await deleteCampaign(id)
-    campaigns.value = campaigns.value.filter((c) => c.id !== id)
-    confirmDeleteId.value = null
-  } catch (e) {
-    error.value = e instanceof Error ? e.message : 'Erreur'
-  }
-}
-
-function isGm(c: CampaignSummary) {
-  return c.gmUserId === user.value?.id
 }
 </script>
 
@@ -80,141 +98,124 @@ function isGm(c: CampaignSummary) {
   <AppPageLayout>
     <template #top-bar>
       <AppPageHead>
-      <Map :size="22" />
-      Campagnes
-      <template #actions>
-        <AppIconBtn variant="primary" title="Nouvelle campagne" @click="showCreate = !showCreate">
-          <Plus :size="18" />
-        </AppIconBtn>
-      </template>
-    </AppPageHead>
+        <Map :size="22" />
+        Campagnes
+      </AppPageHead>
     </template>
-
-    <form v-if="showCreate" class="create-form" @submit.prevent="handleCreate">
-      <AppInput
-        v-model="newName"
-        class="create-name"
-        placeholder="Nom de la campagne"
-        :required="true"
-        :autofocus="true"
-      />
-      <AppButton type="submit" variant="primary">Créer</AppButton>
-    </form>
-
-    <p v-if="error" class="form-error">{{ error }}</p>
 
     <AppEmptyState v-if="loading" variant="loading">Chargement…</AppEmptyState>
 
-    <AppEmptyState v-else-if="campaigns.length === 0 && !showCreate">
-      Aucune campagne pour le moment. Lance-toi !
-    </AppEmptyState>
-
-    <div v-else class="campaigns-list">
-      <div
-        v-for="c in campaigns"
-        :key="c.id"
-        class="campaign-card"
-        :class="{ clickable: isGm(c) || c.isMember }"
-        @click="(isGm(c) || c.isMember) && router.push(`/campagnes/${c.id}`)"
-      >
-        <div class="campaign-info">
-          <span class="campaign-name">{{ c.name }}</span>
-          <span class="campaign-meta">
-            <Crown :size="13" class="meta-icon" />
-            {{ c.gmUsername }}
-            <span class="meta-sep">&middot;</span>
-            {{ c.memberCount }} joueur{{ c.memberCount > 1 ? 's' : '' }}
-          </span>
+    <template v-else>
+      <AppCard title="Sélection de la campagne">
+        <div class="pick">
+          <AppSelect
+            v-if="mine.length > 0"
+            :model-value="null as number | null"
+            data-testid="campaign-select"
+            @update:model-value="onPick"
+          >
+            <option :value="null" disabled>Choisir une campagne…</option>
+            <option v-for="c in mine" :key="c.id" :value="c.id">
+              {{ c.name }}{{ c.gmUserId === user?.id ? ' (MJ)' : '' }}
+            </option>
+          </AppSelect>
+          <p v-else class="hint">Pas encore de campagne. Crée la tienne ou rejoins-en une.</p>
+          <AppButton variant="primary" block data-testid="campaign-create" @click="openCreate">
+            <Plus :size="16" />
+            Créer une campagne
+          </AppButton>
         </div>
+      </AppCard>
 
-        <div class="campaign-actions">
-          <!-- Rejoindre -->
-          <AppIconBtn
-            v-if="!isGm(c) && !c.isMember"
-            title="Rejoindre"
-            @click.stop="handleJoin(c.id)"
-          >
-            <LogIn :size="18" />
-          </AppIconBtn>
+      <p v-if="error" class="form-error">{{ error }}</p>
 
-          <!-- Ouvrir -->
-          <AppIconBtn
-            v-if="!isGm(c) && c.isMember"
-            title="Ouvrir"
-            @click.stop="router.push(`/campagnes/${c.id}`)"
-          >
-            <DoorOpen :size="18" />
-          </AppIconBtn>
-
-          <!-- Delete (GM only) -->
-          <AppIconBtn
-            v-if="isGm(c)"
-            variant="danger"
-            title="Supprimer"
-            @click.stop="confirmDeleteId = c.id"
-          >
-            <Trash2 :size="18" />
-          </AppIconBtn>
+      <AppCard v-if="others.length > 0" title="Rejoindre">
+        <div class="campaigns-list">
+          <div v-for="c in others" :key="c.id" class="campaign-card">
+            <div class="campaign-info">
+              <span class="campaign-name">{{ c.name }}</span>
+              <span class="campaign-meta">
+                <Crown :size="13" class="meta-icon" />
+                {{ c.gmUsername }}
+                <span class="meta-sep">&middot;</span>
+                {{ c.memberCount }} joueur{{ c.memberCount > 1 ? 's' : '' }}
+              </span>
+            </div>
+            <AppIconBtn title="Rejoindre" @click="handleJoin(c)">
+              <LogIn :size="18" />
+            </AppIconBtn>
+          </div>
         </div>
-      </div>
-    </div>
+      </AppCard>
+    </template>
 
-    <!-- Modal de confirmation suppression -->
-    <AppModal
-      :model-value="confirmDeleteId !== null"
-      title="Supprimer la campagne"
-      @update:model-value="confirmDeleteId = null"
-    >
-      <p class="confirm-text">Supprimer cette campagne ? Cette action est irréversible.</p>
+    <AppModal v-model="showCreate" title="Nouvelle campagne">
+      <form id="create-campaign" class="create-form" @submit.prevent="handleCreate">
+        <label class="field">
+          <span class="field-label">Système</span>
+          <AppSelect v-model="newSystem">
+            <option v-for="s in CAMPAIGN_SYSTEMS" :key="s.value" :value="s.value">{{ s.label }}</option>
+          </AppSelect>
+        </label>
+        <label class="field">
+          <span class="field-label">Nom de la campagne</span>
+          <AppInput v-model="newName" :required="true" :autofocus="true" data-testid="campaign-name" />
+        </label>
+        <p class="hint"><Crown :size="13" class="meta-icon" /> En créant la campagne, tu en seras le MJ.</p>
+        <p v-if="createError" class="form-error">{{ createError }}</p>
+      </form>
       <template #footer>
-        <AppButton variant="ghost" @click="confirmDeleteId = null">Annuler</AppButton>
-        <AppButton variant="danger" @click="handleDelete(confirmDeleteId!)">Supprimer</AppButton>
+        <AppButton @click="showCreate = false">Annuler</AppButton>
+        <AppButton type="submit" form="create-campaign" variant="primary">Créer</AppButton>
       </template>
     </AppModal>
   </AppPageLayout>
 </template>
 
 <style scoped>
+.pick,
 .create-form {
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  align-items: center;
-  padding: 0.85rem 1rem;
-  background: var(--surface-2);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-xl);
+  flex-direction: column;
+  gap: var(--space-sm);
 }
 
-.create-form .create-name {
-  flex: 1;
-  min-width: 0;
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.field-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.hint {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--muted);
 }
 
 .campaigns-list {
   display: flex;
   flex-direction: column;
-  gap: 0.65rem;
+  gap: var(--space-sm);
 }
 
 .campaign-card {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.85rem 1rem;
+  gap: var(--space-md);
+  padding: var(--space-sm) var(--space-md);
   background: var(--surface-2);
   border: 1px solid var(--border);
-  border-radius: var(--radius-xxl);
-  gap: 0.75rem;
-  transition: border-color 160ms ease;
-}
-
-.campaign-card.clickable {
-  cursor: pointer;
-}
-
-.campaign-card:hover {
-  border-color: var(--accent);
+  border-radius: var(--radius-lg);
 }
 
 .campaign-info {
@@ -226,7 +227,6 @@ function isGm(c: CampaignSummary) {
 
 .campaign-name {
   font-weight: 700;
-  font-size: 1rem;
   color: var(--text);
   white-space: nowrap;
   overflow: hidden;
@@ -245,26 +245,9 @@ function isGm(c: CampaignSummary) {
   opacity: 0.6;
 }
 
-.meta-sep {
-  margin: 0 0.1rem;
-}
-
-.campaign-actions {
-  display: flex;
-  gap: 0.35rem;
-  flex-shrink: 0;
-}
-
 .form-error {
-  width: 100%;
-  color: var(--danger, #e05252);
+  color: var(--danger);
   font-size: 0.85rem;
   margin: 0;
-}
-
-.confirm-text {
-  margin: 0;
-  font-size: 0.95rem;
-  color: var(--text);
 }
 </style>

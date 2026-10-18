@@ -46,6 +46,8 @@ Les premières compétences ont des prérequis sans rang : « (2) » suivi de de
   - Alchimie (Sagesse).
 - **Patrons** : chaque métier a 5 rangs de 10 patrons. Un patron, c'est une liste de composants et un effet.
 - **20 métiers hybrides**, débloqués par une compétence (386 à 425), à 5 patrons chacun.
+  - *Décidé le 2026-10-18* : un métier hybride est un **artisanat avancé**, qui progresse comme un domaine avancé. Il s'ouvre quand l'une de ses deux compétences est débloquée (386-387 pour le 1er métier, 388-389 pour le 2e, etc.). Ses 5 patrons s'ouvrent un par rang, dans l'ordre du catalogue (rang 2 → les 2 premiers), et fabriquer lance un jet de cet artisanat avancé (son rang + la meilleure carac de ses compétences). Apprendre un métier à la main (carte Artisanat, mode édition) reste possible, comme passe-droit du MJ.
+  - Un rang dans un domaine d'artisanat (Artisanat lourd, Artisanat délicat, Explosifs & Ingénierie, Alchimie & Herboristerie) donne le métier de base lié, au rang du domaine (5 au plus).
 - **Matériaux par paliers** :
   - métaux : Fer, Acier, Mithril, Thorium, Adamantine, Arcanite ;
   - cuirs : brut, traité, épais, élite, légendaire ;

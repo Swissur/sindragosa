@@ -9,7 +9,7 @@ import { ADVANCED_DOMAINS, type AdvancedDomain } from '../data/sindragosa/domain
 import { ABILITIES } from '../data/sindragosa/abilities'
 import { TITLES } from '../data/sindragosa/titles'
 import { prerequisiteLabel, unlockedAbilities } from '../utils/sindragosa/prerequisites'
-import { homonymAbility, unlockedAdvancedDomains } from '../utils/sindragosa/advanced'
+import { openingAbilities, unlockedAdvancedDomains } from '../utils/sindragosa/advanced'
 import { progressState } from '../utils/sindragosa/sheet'
 import type { Character } from '../types/character'
 import AppPageLayout from '../components/ui/AppPageLayout.vue'
@@ -58,10 +58,12 @@ const openAdvanced = computed(() => {
   if (!character.value) return new Set<string>()
   return new Set(unlockedAdvancedDomains(progressState(character.value), unlocked.value).map((d) => d.id))
 })
-/** Comment s'ouvre un domaine avancé : sa compétence homonyme s'il en a une, sinon ses prérequis. */
+/** Comment s'ouvre un domaine avancé : par ses compétences s'il en a, sinon par ses prérequis. */
 function advancedHowTo(d: AdvancedDomain): string {
-  const ability = homonymAbility(d, ABILITIES)
-  return ability ? `Compétence : ${ability.name}` : d.prerequisites.map(prerequisiteLabel).join(' · ')
+  const abilities = openingAbilities(d, ABILITIES)
+  return abilities.length
+    ? `Compétence : ${abilities.map((a) => a.name).join(' ou ')}`
+    : d.prerequisites.map(prerequisiteLabel).join(' · ')
 }
 const ownedTitles =computed(() => new Set(character.value?.titles ?? []))
 

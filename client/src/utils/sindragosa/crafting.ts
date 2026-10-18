@@ -1,11 +1,12 @@
 /**
  * Artisanat : fabriquer = réunir les composants + un jet du domaine du métier.
- * Le domaine se lit dans la base du métier (« Artisanat lourd + Arcanes ») :
- * c'est le premier domaine cité. Pour un métier hybride, le joueur peut en
- * choisir un autre dans la feuille de jet.
+ * Métier de base : le domaine se lit dans sa base (« Artisanat lourd - Force »).
+ * Métier hybride : c'est un artisanat avancé, le jet lance ce domaine avancé
+ * lui-même (décidé le 2026-10-18). Le joueur peut changer de domaine dans la feuille de jet.
  */
 import type { Craft, Recipe } from '../../data/sindragosa/types'
-import { RECIPES } from '../../data/sindragosa/crafts'
+import { CRAFTS, RECIPES } from '../../data/sindragosa/crafts'
+import { ADVANCED_DOMAINS, DOMAINS } from '../../data/sindragosa/domains'
 import type { ItemRow } from '../../types/character'
 import { normalizeName } from './prerequisites'
 
@@ -16,13 +17,68 @@ const BASIS_DOMAIN: [RegExp, string][] = [
   [/^alchimie/i, 'alchimie-herboristerie'],
 ]
 
-export function craftDomainId(craft: Pick<Craft, 'basis'>): string | null {
+export function craftDomainId(craft: Pick<Craft, 'id' | 'kind' | 'basis'>): string | null {
+  if (craft.kind === 'hybrid') return craft.id
   return BASIS_DOMAIN.find(([re]) => re.test(craft.basis))?.[1] ?? null
 }
 
-/** Recettes accessibles : jusqu'au rang connu (les métiers hybrides n'ont pas de rang). */
+/**
+ * Recettes accessibles : jusqu'au rang connu. Les 5 patrons d'un métier hybride
+ * n'ont pas de rang : ils s'ouvrent un par rang, dans l'ordre du catalogue
+ * (décidé le 2026-10-18 : rang 2 → les 2 premiers).
+ */
 export function recipesFor(craftId: string, rank: number, catalog: Recipe[] = RECIPES): Recipe[] {
-  return catalog.filter((r) => r.craft === craftId && (r.rank === null || r.rank <= rank))
+  return catalog.filter((r) => r.craft === craftId).filter((r, i) => (r.rank ?? i + 1) <= rank)
+}
+
+/**
+ * Métiers maîtrisés : ceux appris, plus
+ * - le métier de base de chaque domaine d'artisanat où le perso a un rang
+ *   (Artisanat lourd 4 → Forge rang 4, 5 au plus) ;
+ * - chaque artisanat avancé (métier hybride) au rang 1 ou plus.
+ * Le meilleur des rangs l'emporte.
+ */
+export function effectiveCrafts(
+  learned: Record<string, number>,
+  domains: Record<string, { rank: number }>,
+  advancedDomains: Record<string, { rank: number }>,
+  crafts: Craft[] = CRAFTS,
+): Record<string, number> {
+  const out = { ...learned }
+  for (const craft of crafts) {
+    const domainId = craft.kind === 'base' ? craftDomainId(craft) : null
+    const rank = craft.kind === 'base'
+      ? Math.min(domainId ? domains[domainId]?.rank ?? 0 : 0, 5)
+      : advancedDomains[craft.id]?.rank ?? 0
+    if (rank > (out[craft.id] ?? 0)) out[craft.id] = rank
+  }
+  return out
+}
+
+export interface DomainRecipes {
+  domainId: string
+  recipes: { recipe: Recipe; craft: Craft }[]
+}
+
+/**
+ * Les patrons accessibles avec les métiers connus, rangés par domaine lié :
+ * les domaines de base dans l'ordre de la fiche, puis chaque artisanat avancé.
+ */
+export function recipesByDomain(
+  known: Record<string, number>,
+  crafts: Craft[] = CRAFTS,
+  catalog: Recipe[] = RECIPES,
+): DomainRecipes[] {
+  const groups = new Map<string, DomainRecipes['recipes']>()
+  for (const craft of crafts) {
+    const domainId = craft.id in known ? craftDomainId(craft) : null
+    if (!domainId) continue
+    const recipes = recipesFor(craft.id, known[craft.id], catalog).map((recipe) => ({ recipe, craft }))
+    groups.set(domainId, [...(groups.get(domainId) ?? []), ...recipes])
+  }
+  return [...DOMAINS, ...ADVANCED_DOMAINS]
+    .filter((d) => groups.get(d.id)?.length)
+    .map((d) => ({ domainId: d.id, recipes: groups.get(d.id)! }))
 }
 
 /**

@@ -2,7 +2,8 @@
  * Domaines avancés (décidé le 2026-10-18) :
  * - ils s'ouvrent quand leurs prérequis (domaines de base ou autres domaines
  *   avancés) sont réunis ; ceux qui ont une compétence du même nom (Ivresse du
- *   Combat, Danse des Lames) s'ouvrent seulement par elle ;
+ *   Combat, Danse des Lames) s'ouvrent seulement par elle, et les artisanats
+ *   avancés (métiers hybrides) par l'une de leurs deux compétences ;
  * - leur jet utilise la plus haute des caractéristiques liées à leurs prérequis.
  */
 import { ABILITIES } from '../../data/sindragosa/abilities'
@@ -35,15 +36,22 @@ export function homonymAbility(domain: AdvancedDomain, abilities: Ability[]): Ab
   return abilities.find((a) => normalizeName(a.name) === name)
 }
 
+/** Les compétences qui ouvrent un domaine avancé : celles qu'il désigne (artisanats avancés), sinon sa compétence homonyme. */
+export function openingAbilities(domain: AdvancedDomain, abilities: Ability[]): Ability[] {
+  if (domain.openedBy) return abilities.filter((a) => domain.openedBy!.includes(a.id))
+  const homonym = homonymAbility(domain, abilities)
+  return homonym ? [homonym] : []
+}
+
 /**
  * Domaines avancés ouverts : déjà entamés (rang donné par le MJ), sinon
- * - s'il existe une compétence du même nom, seulement quand elle est débloquée ;
+ * - s'il a des compétences qui l'ouvrent, seulement quand l'une est débloquée ;
  * - sinon, quand ses prérequis sont réunis.
  */
 export function unlockedAdvancedDomains(state: ProgressState, unlockedAbilities: Ability[]): AdvancedDomain[] {
   return ADVANCED_DOMAINS.filter((d) => {
     if ((state.advancedRanks[d.id] ?? 0) > 0) return true
-    if (homonymAbility(d, ABILITIES)) return !!homonymAbility(d, unlockedAbilities)
+    if (openingAbilities(d, ABILITIES).length) return openingAbilities(d, unlockedAbilities).length > 0
     return d.prerequisites.every((p) => meetsPrerequisite(state, p))
   })
 }

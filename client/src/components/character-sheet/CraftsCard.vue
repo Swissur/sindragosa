@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { Hammer, Plus, Trash2, Dices } from 'lucide-vue-next'
+import { Hammer, Plus, Trash2 } from 'lucide-vue-next'
 import AppCard from '../ui/AppCard.vue'
 import AppAccordion from '../ui/AppAccordion.vue'
 import AppSelect from '../ui/AppSelect.vue'
 import AppStepper from '../ui/AppStepper.vue'
 import AppIconBtn from '../ui/AppIconBtn.vue'
-import { CRAFTS, RECIPES } from '../../data/sindragosa/crafts'
-import { componentNeeds, craftDomainId, hasComponents, recipesFor } from '../../utils/sindragosa/crafting'
-import { openRollSheet } from '../../composables/useRollSheet'
+import RecipeList from './RecipeList.vue'
+import { CRAFTS } from '../../data/sindragosa/crafts'
+import { recipesFor } from '../../utils/sindragosa/crafting'
 import { showToast } from '../../composables/useToast'
 import type { Character } from '../../types/character'
 
@@ -21,7 +21,7 @@ const known = computed(() =>
   CRAFTS.filter((c) => c.id in props.character.crafts).map((c) => ({
     craft: c,
     rank: props.character.crafts[c.id],
-    recipes: recipesFor(c.id, props.character.crafts[c.id]),
+    recipes: recipesFor(c.id, props.character.crafts[c.id]).map((recipe) => ({ recipe, craft: c })),
   })),
 )
 
@@ -41,13 +41,6 @@ function remove(id: string, label: string) {
     actionLabel: 'Annuler',
     onAction: () => { props.character.crafts = { ...props.character.crafts, [id]: rank } },
   })
-}
-
-function craft(craftId: string, recipeName: string) {
-  const c = CRAFTS.find((x) => x.id === craftId)
-  const domainId = c && craftDomainId(c)
-  const recipe = RECIPES.find((r) => r.craft === craftId && r.name === recipeName)
-  if (domainId) openRollSheet({ domainId, label: `Fabriquer : ${recipeName}`, recipe, context: 'fiche' })
 }
 </script>
 
@@ -72,30 +65,7 @@ function craft(craftId: string, recipeName: string) {
           <Trash2 :size="16" />
         </AppIconBtn>
       </div>
-      <ul class="recipes">
-        <li v-for="r in k.recipes" :key="r.id" class="recipe">
-          <div class="recipe-text">
-            <strong>{{ r.name }}<template v-if="r.batch"> (×{{ r.batch }})</template></strong>
-            <span class="recipe-components">
-              <span
-                v-for="(n, ci) in componentNeeds(character.items, r)"
-                :key="ci"
-                :class="n.have >= n.qty ? 'component--ok' : 'component--missing'"
-              >{{ ci > 0 ? ', ' : '' }}{{ n.have }}/{{ n.qty }} {{ n.name }}</span>
-            </span>
-            <span class="recipe-effect">{{ r.effect }}</span>
-          </div>
-          <AppIconBtn
-            v-if="!readonly"
-            :title="hasComponents(character.items, r) ? 'Fabriquer' : 'Composants manquants'"
-            :disabled="!hasComponents(character.items, r)"
-            :data-testid="`craft-${r.id}`"
-            @click="craft(k.craft.id, r.name)"
-          >
-            <Dices :size="16" />
-          </AppIconBtn>
-        </li>
-      </ul>
+      <RecipeList :character="character" :recipes="k.recipes" :readonly="readonly" />
     </AppAccordion>
 
     <div v-if="editing && !readonly" class="craft-add">
@@ -116,41 +86,6 @@ function craft(craftId: string, recipeName: string) {
   justify-content: space-between;
   align-items: center;
   margin-bottom: var(--space-sm);
-}
-
-.recipes {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-sm);
-}
-
-.recipe {
-  display: flex;
-  align-items: flex-start;
-  gap: var(--space-sm);
-}
-
-.recipe-text {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  font-size: 0.88rem;
-}
-
-.recipe-components {
-  color: var(--muted);
-  font-size: 0.8rem;
-}
-
-.component--missing {
-  color: var(--danger);
-}
-
-.recipe-effect {
-  font-size: 0.82rem;
 }
 
 .craft-add {

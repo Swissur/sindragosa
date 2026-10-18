@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { ADVANCED_DOMAINS, DOMAINS } from '../../data/sindragosa/domains'
 import { ABILITIES } from '../../data/sindragosa/abilities'
-import { advancedStats, bestAdvancedStat, homonymAbility, unlockedAdvancedDomains } from './advanced'
+import { advancedStats, bestAdvancedStat, homonymAbility, openingAbilities, unlockedAdvancedDomains } from './advanced'
 import type { ProgressState } from './prerequisites'
 
 const empty: ProgressState = { domainRanks: {}, advancedRanks: {}, specialties: [], titles: [] }
@@ -40,12 +40,26 @@ describe('ouverture', () => {
     expect(ids(unlockedAdvancedDomains(nym, [danse]))).toContain('danse-lames')
   })
 
+  it('un artisanat avancé s’ouvre par l’une de ses deux compétences, pas par ses prérequis', () => {
+    const forgeFeu = ADVANCED_DOMAINS.find((d) => d.id === 'forge-feu')!
+    expect(openingAbilities(forgeFeu, ABILITIES).map((a) => a.id)).toEqual([402, 403])
+    const maxed = { ...empty, domainRanks: { 'artisanat-lourd': 5 }, advancedRanks: { pyromancie: 5 } }
+    expect(ids(unlockedAdvancedDomains(maxed, []))).not.toContain('forge-feu')
+    const cuirasse = ABILITIES.find((a) => a.id === 403)!
+    expect(ids(unlockedAdvancedDomains(empty, [cuirasse]))).toEqual(['forge-feu'])
+  })
+
+  it('un artisanat avancé se lance avec la carac de ses compétences', () => {
+    // Forge-Feu : Artisanat lourd (Force) + Pyromancie (Intelligence).
+    expect(advancedStats('forge-feu').sort()).toEqual(['int', 'str'])
+  })
+
   it('un domaine déjà entamé reste ouvert', () => {
     expect(ids(unlockedAdvancedDomains({ ...empty, advancedRanks: { chronomancie: 1 } }, []))).toEqual(['chronomancie'])
   })
 })
 
-describe('les 22 domaines avancés sont atteignables', () => {
+describe('les 22 domaines avancés et 20 artisanats avancés sont atteignables', () => {
   const domainIds = new Set(DOMAINS.map((d) => d.id))
   const advancedIds = new Set(ADVANCED_DOMAINS.map((d) => d.id))
 

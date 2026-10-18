@@ -2,6 +2,8 @@
  * Caractéristiques, domaines et domaines avancés de Sindragosa.
  * Source : docs/regles/Sindragosa.pdf, décisions dans plans/31-refonte-regles-sindragosa.md § 6.
  */
+import { ABILITIES } from './abilities'
+import { CRAFTS } from './crafts'
 
 export type StatId = 'str' | 'agi' | 'end' | 'int' | 'wis' | 'cha'
 
@@ -89,7 +91,49 @@ export interface AdvancedDomain {
   id: string
   label: string
   prerequisites: AdvancedPrerequisite[]
+  /** Compétences qui l'ouvrent (l'une suffit) ; ses prérequis ne servent alors qu'à la carac du jet. */
+  openedBy?: number[]
 }
+
+/**
+ * Artisanats avancés (décidé le 2026-10-18) : chaque métier hybride est un
+ * domaine avancé, ouvert par l'une de ses deux compétences (386 à 425 du PDF,
+ * deux par métier dans l'ordre du catalogue). Au rang 1, ses patrons
+ * s'ajoutent à l'onglet Artisanat. Prérequis = ceux des deux compétences.
+ */
+const HYBRID_CRAFT_ABILITIES: Record<string, [number, number]> = {
+  'forge-magie': [386, 387],
+  'alchimi-cuir': [388, 389],
+  'meca-botanique': [390, 391],
+  'electro-mecanique': [392, 393],
+  'necro-forge': [394, 395],
+  'cuirasse-sacree': [396, 397],
+  'archerie-artisan': [398, 399],
+  'horlogerie-chronomantique': [400, 401],
+  'forge-feu': [402, 403],
+  'tissage-vegetal': [404, 405],
+  gemmologie: [406, 407],
+  'artillerie-siege': [408, 409],
+  'botterie-acrobatie': [410, 411],
+  'cyber-equipement': [412, 413],
+  'parcheminerie-runique': [414, 415],
+  prothesiste: [416, 417],
+  'chimie-explosive': [418, 419],
+  'charpenterie-marine': [420, 421],
+  'tissage-ambre': [422, 423],
+  'dracono-forge': [424, 425],
+}
+
+const CRAFT_DOMAINS: AdvancedDomain[] = CRAFTS.filter((c) => c.kind === 'hybrid').map((c) => {
+  const openedBy = HYBRID_CRAFT_ABILITIES[c.id]
+  const prerequisites = new Map<string, AdvancedPrerequisite>()
+  for (const p of ABILITIES.filter((a) => openedBy.includes(a.id)).flatMap((a) => a.prerequisites)) {
+    if (p.kind !== 'domain' && p.kind !== 'advanced') continue
+    const key = `${p.kind}:${p.id}`
+    if (!prerequisites.has(key) || prerequisites.get(key)!.rank > p.rank) prerequisites.set(key, { kind: p.kind, id: p.id, rank: p.rank })
+  }
+  return { id: c.id, label: c.label, prerequisites: [...prerequisites.values()], openedBy }
+})
 
 export const ADVANCED_DOMAINS: AdvancedDomain[] = [
   { id: 'ivresse-combat', label: 'Ivresse du Combat', prerequisites: [{ kind: 'domain', id: 'melee-bourrine', rank: 2 }, { kind: 'domain', id: 'volonte-recuperation', rank: 1 }] },
@@ -114,6 +158,7 @@ export const ADVANCED_DOMAINS: AdvancedDomain[] = [
   { id: 'toxines-sauvages', label: 'Toxines Sauvages', prerequisites: [{ kind: 'domain', id: 'alchimie-herboristerie', rank: 2 }, { kind: 'domain', id: 'survie-milieu-hostile', rank: 1 }] },
   { id: 'dressage-sauvage', label: 'Dressage Sauvage', prerequisites: [{ kind: 'domain', id: 'communion-naturelle-chamanisme', rank: 2 }, { kind: 'domain', id: 'survie-milieu-hostile', rank: 1 }] },
   { id: 'magie-draconique', label: 'Magie Draconique', prerequisites: [{ kind: 'domain', id: 'magie-profane-arcanes', rank: 3 }, { kind: 'domain', id: 'histoire-geographie', rank: 2 }] },
+  ...CRAFT_DOMAINS,
 ]
 
 /**

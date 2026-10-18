@@ -29,4 +29,9 @@ describe('advancedDetail', () => {
     expect(d.meta).toMatch(/INT/)
     expect(d.text).toMatch(/^Ouvert par : .+ 3, .+ 1$/)
   })
+
+  it('un artisanat avancé donne les compétences qui l’ouvrent', () => {
+    const forgeFeu = ADVANCED_DOMAINS.find((d) => d.id === 'forge-feu')!
+    expect(advancedDetail(forgeFeu).text).toBe('Ouvert par : Lame de magma liquide ou Cuirasse de pyrite incandescente')
+  })
 })

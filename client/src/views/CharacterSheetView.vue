@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import { ScrollText, BookOpen, Sparkles, Pencil, PencilOff } from 'lucide-vue-next'
+import { ScrollText, BookOpen, Sparkles, Hammer, Pencil, PencilOff } from 'lucide-vue-next'
 import AppPageLayout from '../components/ui/AppPageLayout.vue'
 import AppPageHead from '../components/ui/AppPageHead.vue'
 import AppEmptyState from '../components/ui/AppEmptyState.vue'
@@ -13,6 +13,7 @@ import { showToast, type ToastDetail } from '../composables/useToast'
 import { usePins } from '../composables/usePins'
 import { abilityDetail, advancedDetail } from '../utils/sindragosa/unlockDetails'
 import type { Pin } from '../utils/sindragosa/pins'
+import { effectiveCrafts } from '../utils/sindragosa/crafting'
 
 import HeroCard from '../components/character-sheet/HeroCard.vue'
 import VitalsCard from '../components/character-sheet/VitalsCard.vue'
@@ -21,6 +22,7 @@ import ResourcesCard from '../components/character-sheet/ResourcesCard.vue'
 import SessionTicksBanner from '../components/character-sheet/SessionTicksBanner.vue'
 import DomainsCard from '../components/character-sheet/DomainsCard.vue'
 import CraftsCard from '../components/character-sheet/CraftsCard.vue'
+import CraftRecipesCard from '../components/character-sheet/CraftRecipesCard.vue'
 import UnlockedAbilitiesCard from '../components/abilities/UnlockedAbilitiesCard.vue'
 
 const { character, loading, loadError, saveStatus, computedHp, computedInitiative, unlocked, unlockedAdvanced } = useCharacter()
@@ -29,7 +31,7 @@ const route = useRoute()
 const id = route.query.id ? Number(route.query.id) : undefined
 loadCharacter(id)
 
-type TabId = 'heros' | 'domaines' | 'competences'
+type TabId = 'heros' | 'domaines' | 'competences' | 'artisanat'
 const activeTab = ref<TabId>('heros')
 const editing = ref(false)
 /** Pastille « du nouveau ici » sur un onglet. */
@@ -39,7 +41,17 @@ const TABS = [
   { value: 'heros', label: 'Héros', icon: ScrollText },
   { value: 'domaines', label: 'Domaines', icon: BookOpen },
   { value: 'competences', label: 'Compétences', icon: Sparkles },
+  { value: 'artisanat', label: 'Artisanat', icon: Hammer },
 ]
+
+// L'onglet Artisanat n'existe que pour un perso qui maîtrise au moins un métier
+// (appris, ou par un rang dans un domaine d'artisanat ou un artisanat avancé)
+const crafts = computed(() => effectiveCrafts(character.value.crafts, character.value.domains, character.value.advancedDomains))
+const crafter = computed(() => Object.keys(crafts.value).length > 0)
+const tabs = computed(() => TABS
+  .filter((t) => t.value !== 'artisanat' || crafter.value)
+  .map((t) => ({ ...t, dot: !!news.value[t.value as TabId] })))
+watch(crafter, (has) => { if (!has && activeTab.value === 'artisanat') activeTab.value = 'heros' })
 
 // Un domaine qui monte peut débloquer des compétences ou ouvrir un domaine avancé :
 // toast qui reste, avec la fiche de chaque nouveauté, et pastille sur l'onglet.
@@ -108,7 +120,7 @@ watch(activeTab, (tab) => { news.value[tab] = false })
       <AppTabs
         v-model="activeTab"
         class="sheet-tabs"
-        :tabs="TABS.map((t) => ({ ...t, dot: !!news[t.value as TabId] }))"
+        :tabs="tabs"
         icon-only-mobile
       />
 
@@ -127,6 +139,10 @@ watch(activeTab, (tab) => { news.value[tab] = false })
 
       <template v-if="activeTab === 'competences'">
         <UnlockedAbilitiesCard :character="character" :unlocked="unlocked" />
+      </template>
+
+      <template v-if="activeTab === 'artisanat'">
+        <CraftRecipesCard :character="character" :crafts="crafts" />
       </template>
     </template>
   </AppPageLayout>

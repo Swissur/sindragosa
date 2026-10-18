@@ -91,3 +91,40 @@ test('fabriquer utilise les composants et met l’objet dans l’inventaire', as
     await ctx.close()
   }
 })
+
+test('sans métier ni domaine d’artisanat, pas d’onglet Artisanat', async ({ browser }) => {
+  // Bracco n'a aucun rang en artisanat (dev/seed.ts).
+  const ctx = await browser.newContext({ storageState: stateFor('bracco') })
+  const page = await ctx.newPage()
+  try {
+    await page.goto('/personnage')
+    await expect(page.getByRole('tab', { name: 'Héros', exact: true })).toBeVisible()
+    await expect(page.getByRole('tab', { name: 'Artisanat', exact: true })).toHaveCount(0)
+  } finally {
+    await ctx.close()
+  }
+})
+
+test('l’onglet Artisanat range les patrons par domaine lié et se filtre', async ({ browser }) => {
+  const ctx = await browser.newContext({ storageState: stateFor('orlane') })
+  const page = await ctx.newPage()
+  const orlane = await activeCharacter(page)
+  try {
+    // Forge sous Artisanat lourd ; Forge-Feu (artisanat avancé, rang 1 → 1er patron seulement) à part.
+    await page.request.put(`/api/characters/${orlane.id}`, { data: { crafts: { forge: 1, 'forge-feu': 1 } } })
+    await page.goto('/personnage')
+    await page.getByRole('tab', { name: 'Artisanat', exact: true }).click()
+    await page.getByTestId('patrons-artisanat-lourd').click()
+    await expect(page.getByTestId('craft-forge-r1-01')).toBeVisible()
+    await page.getByTestId('patrons-forge-feu').click()
+    await expect(page.getByTestId('craft-forge-feu-01')).toBeVisible()
+    await expect(page.getByTestId('craft-forge-feu-02')).toHaveCount(0)
+
+    // La recherche ouvre les sections qui ont un résultat et cache les autres.
+    await page.getByTestId('patrons-search').fill('magma')
+    await expect(page.getByTestId('craft-forge-r1-01')).toHaveCount(0)
+  } finally {
+    await page.request.put(`/api/characters/${orlane.id}`, { data: { crafts: orlane.crafts } })
+    await ctx.close()
+  }
+})

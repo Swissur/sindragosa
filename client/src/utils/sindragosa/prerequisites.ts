@@ -4,7 +4,7 @@
  */
 import { ABILITIES } from '../../data/sindragosa/abilities'
 import type { Ability, Prerequisite } from '../../data/sindragosa/types'
-import { advancedDomainById, domainById } from '../../data/sindragosa/domains'
+import { SPECIALTY_ALIASES, advancedDomainById, domainById } from '../../data/sindragosa/domains'
 
 /** Ce qu'il faut savoir d'un personnage pour évaluer des prérequis. */
 export interface ProgressState {
@@ -20,11 +20,25 @@ export function normalizeName(s: string): string {
 }
 
 /**
- * Noms acceptés par un prérequis de spécialité. Le PDF écrit les alternatives avec « / »
- * (« Dagues/Lutte », « Lutte / Mains nues ») : n'importe laquelle convient.
+ * Variantes d'un nom de spécialité. Le PDF écrit les alternatives avec « / » ou
+ * entre parenthèses (« Dagues/Lutte », « Tranchant (Haches/Épées) ») : chacune compte,
+ * plus les équivalences de `SPECIALTY_ALIASES` (« Bouclier » = « Boucliers »).
  */
-function acceptedSpecialtyNames(name: string): string[] {
-  return [name, ...name.split('/')].map(normalizeName).filter(Boolean)
+export function specialtyNameVariants(name: string): Set<string> {
+  const parts = [name, ...name.replace(/[()]/g, '/').split('/')].map(normalizeName).filter(Boolean)
+  const variants = new Set(parts)
+  for (const group of ALIAS_GROUPS) {
+    if (parts.some((p) => group.has(p))) group.forEach((n) => variants.add(n))
+  }
+  return variants
+}
+
+const ALIAS_GROUPS = SPECIALTY_ALIASES.map((g) => new Set(g.map(normalizeName)))
+
+/** Une spécialité porte-t-elle le nom exigé (en tenant compte des variantes des deux côtés) ? */
+export function specialtyMatches(owned: string, required: string): boolean {
+  const accepted = specialtyNameVariants(required)
+  return [...specialtyNameVariants(owned)].some((n) => accepted.has(n))
 }
 
 export function meetsPrerequisite(state: ProgressState, p: Prerequisite): boolean {
@@ -33,10 +47,8 @@ export function meetsPrerequisite(state: ProgressState, p: Prerequisite): boolea
       return (state.domainRanks[p.id] ?? 0) >= p.rank
     case 'advanced':
       return (state.advancedRanks[p.id] ?? 0) >= p.rank
-    case 'specialty': {
-      const accepted = acceptedSpecialtyNames(p.name)
-      return state.specialties.some((s) => s.level >= p.level && accepted.includes(normalizeName(s.name)))
-    }
+    case 'specialty':
+      return state.specialties.some((s) => s.level >= p.level && specialtyMatches(s.name, p.name))
     case 'title':
       return state.titles.some((t) => normalizeName(t) === normalizeName(p.name))
   }

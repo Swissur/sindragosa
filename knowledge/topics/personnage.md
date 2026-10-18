@@ -14,29 +14,31 @@ Le personnage naît vierge : aucun historique imposé, aucune compétence, aucun
 
 1. **6 caractéristiques** : le potentiel brut. Elles montent à la discrétion du MJ.
 2. **5 domaines par caractéristique**, rang 0 à 5 : la réserve de base des jets.
-3. **Spécialités** dans un domaine, 3 niveaux (Apprenti, Expert, Maître). Celles ci-dessous sont des exemples : les joueurs peuvent en proposer d'autres.
+3. **Spécialités** dans un domaine, 3 niveaux (Apprenti, Expert, Maître). Les joueurs peuvent en proposer d'autres.
+
+Les spécialités suggérées ci-dessous sont celles qu'exigent les compétences (décidé le 2026-10-18) : un joueur qui suit une suggestion est sur la voie d'une compétence. Les domaines qu'aucune compétence ne cite gardent les exemples du livre de règles. Quelques noms sont équivalents (« Bouclier » = « Boucliers », « Furtivité » = « Discrétion dans l'ombre »…) : voir `SPECIALTY_ALIASES` dans `client/src/data/sindragosa/domains.ts`.
 
 ### Force (FOR)
 
 Puissance physique, puissance musculaire et capacité à porter/imposer son poids.
 
-| Domaine | Spécialités d'exemple |
+| Domaine | Spécialités suggérées |
 |---|---|
-| Athlétisme | Escalade, Saut, Natation, Brutalité |
-| Mêlée bourrine | Masses à deux mains, Haches, Boucliers, Lutte à mains nues |
-| Armures & boucliers | Armures de plaques, Mailles, Maintien de posture |
+| Athlétisme | Lutte / Mains nues |
+| Mêlée bourrine | Haches, Armes à deux mains, Masses, Exécution |
+| Armures & boucliers | Boucliers, Armures de plaques |
 | Intimidation physique | Provocation (Taunt), Posture imposante, Rugissement de guerre |
-| Artisanat lourd | Forgerie, Extraction (Minage), Port de charges lourdes |
+| Artisanat lourd | Extraction (Minage) |
 
 ### Agilité (AGI)
 
 Coordination, réflexes, précision et vitesse de déplacement.
 
-| Domaine | Spécialités d'exemple |
+| Domaine | Spécialités suggérées |
 |---|---|
-| Acrobatie & Furtivité | Discrétion dans l'ombre, Course sur les toits, Esquive |
-| Combat de précision | Dagues, Épées à une main, Combat à deux armes |
-| Tir & Lancer | Arcs, Arbalètes, Armes à feu, Lancer de shurikens |
+| Acrobatie & Furtivité | Discrétion dans l'ombre, Esquive |
+| Combat de précision | Dagues, Combat à deux armes, Poisons/Saignements, Lances/Bâtons, Tranchant/Perçant |
+| Tir & Lancer | Armes à feu/Arcs, Lancer de Shurikens/Dagues, Lancer d'armes, Lances/Javelots |
 | Escamotage & Crochetage | Désamorçage de pièges, Vol à la tire, Crochetage de coffres |
 | Artisanat délicat | Ingénierie de précision, Travail du cuir, Dépeçage |
 
@@ -44,11 +46,11 @@ Coordination, réflexes, précision et vitesse de déplacement.
 
 Résistance physique, métabolisme, santé et vigueur globale.
 
-| Domaine | Spécialités d'exemple |
+| Domaine | Spécialités suggérées |
 |---|---|
 | Résistance physique | Résistance aux impacts, Endurcissement, Absorber les coups |
-| Volonté & Récupération | Second souffle, Méditation, Détermination |
-| Survie en milieu hostile | Orientation, Campement sauvage, Piste de chasse |
+| Volonté & Récupération | Second souffle |
+| Survie en milieu hostile | Climats extrêmes |
 | Tolérance aux toxines | Résistance aux poisons, Tolérance à la Peste, Résistance aux maladies |
 | Énergie & Souffle | Marche forcée, Apnée, Course de fond |
 
@@ -56,37 +58,37 @@ Résistance physique, métabolisme, santé et vigueur globale.
 
 Érudition, raisonnement logique, analyse et magie profane.
 
-| Domaine | Spécialités d'exemple |
+| Domaine | Spécialités suggérées |
 |---|---|
-| Magie profane & Arcanes | Sorts d'Arcane, Conjuration, Téléportation & Portails |
-| Explosifs & Ingénierie | Bricolage Goblino-Gnome, Explosifs, Rétro-ingénierie |
+| Magie profane & Arcanes | Sorts d'Arcane, Sorts de Feu, Téléportation, Chronomancie, Décryptage de langues/Runes |
+| Explosifs & Ingénierie | Bricolage Goblino-Gnome, Explosifs |
 | Histoire & Géographie d'Azeroth | Histoire des Titans, Géographie d'Outreterre, Runes anciennes |
-| Tactique & Analyse | Analyse des points faibles, Stratégie de siège, Décryptage de langues |
+| Tactique & Analyse | Analyse des failles |
 | Médecine & Soins | Premiers secours, Traitement des malédictions, Sutures |
 
 ### Sagesse (SAG)
 
 Intuition, perception, connexion spirituelle, magie divine et naturelle.
 
-| Domaine | Spécialités d'exemple |
+| Domaine | Spécialités suggérées |
 |---|---|
-| Perception & Sens | Vigilance, Détection du camouflage, Pistage, Sensibilité à la Mana |
-| Magie divine & Sacrée | Lumière sacrée, Bénédictions, Exorcisme |
-| Communion naturelle & Chamanisme | Esprits des éléments, Esprits des ancêtres, Formes animales druidiques |
+| Perception & Sens | Pistage |
+| Magie divine & Sacrée | Soins Sacrés |
+| Communion naturelle & Chamanisme | Esprits des éléments, Forme animale, Magie de la Nature |
 | Alchimie & Herboristerie | Découverte des plantes, Potions de soins, Fortifiants, Transmutation |
-| Volonté spirituelle |  |
+| Volonté spirituelle | — |
 
 ### Charisme (CHA)
 
 Force de personnalité, leadership, illusion et magie de l'Ombre/Fél.
 
-| Domaine | Spécialités d'exemple |
+| Domaine | Spécialités suggérées |
 |---|---|
 | Persuasion & Diplomatie | Négociation diplomatique, Séduction, Conviction |
 | Commandement & Inspiration | Cris de ralliement, Aura d'inspiration, Charisme de chef de guerre |
-| Magie de l'Ombre & Fél | Démonologie, Magie du Vide, Malédictions, Manipulation mentale |
+| Magie de l'Ombre & Fél | Malédictions, Sorts d'Ombre, Trait du Chaos |
 | Négociation & Commerce | Lois du marché, Évaluation d'objets rares, Troc d'Hôtel des Ventes |
-| Tromperie & Comédie | Déguisement, Usurpation d'identité, Bobards & Bluff |
+| Tromperie & Comédie | Réseau d'informateurs, Musique / Chant |
 
 ## Domaines avancés
 

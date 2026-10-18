@@ -23,6 +23,18 @@ describe('meetsPrerequisite', () => {
     expect(meetsPrerequisite({ ...empty, specialties: [{ name: 'Arcs', level: 3 }] }, p)).toBe(false)
   })
 
+  it('alternatives entre parenthèses et des deux côtés', () => {
+    const tranchant = { kind: 'specialty' as const, name: 'Tranchant (Haches/Épées)', level: 1 }
+    expect(meetsPrerequisite({ ...empty, specialties: [{ name: 'Haches', level: 1 }] }, tranchant)).toBe(true)
+    const lutte = { kind: 'specialty' as const, name: 'Dagues/Lutte', level: 1 }
+    expect(meetsPrerequisite({ ...empty, specialties: [{ name: 'Lutte / Mains nues', level: 1 }] }, lutte)).toBe(true)
+  })
+
+  it('équivalences : « Bouclier » et « Boucliers » sont la même spécialité', () => {
+    const p = { kind: 'specialty' as const, name: 'Bouclier', level: 1 }
+    expect(meetsPrerequisite({ ...empty, specialties: [{ name: 'Boucliers', level: 1 }] }, p)).toBe(true)
+  })
+
   it('titre', () => {
     const p = { kind: 'title' as const, name: 'Archimage' }
     expect(meetsPrerequisite({ ...empty, titles: ['archimage'] }, p)).toBe(true)

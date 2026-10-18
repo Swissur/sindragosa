@@ -11,7 +11,7 @@ import { ABILITIES } from '../../data/sindragosa/abilities'
 import { DOMAINS } from '../../data/sindragosa/domains'
 import type { Ability } from '../../data/sindragosa/types'
 import type { SpecialtyRow } from '../../types/character'
-import { normalizeName } from './prerequisites'
+import { normalizeName, specialtyMatches } from './prerequisites'
 
 /** Noms de spécialités exigés par au moins une compétence. */
 const REQUIRED_SPECIALTIES = new Set(
@@ -19,8 +19,7 @@ const REQUIRED_SPECIALTIES = new Set(
 )
 
 function homeDomain(name: string, ability: Ability): string | null {
-  const n = normalizeName(name)
-  const example = DOMAINS.find((d) => d.specialties.some((s) => normalizeName(s) === n))
+  const example = DOMAINS.find((d) => d.specialties.some((s) => specialtyMatches(s, name)))
   if (example) return example.id
   const first = ability.prerequisites.find((p) => p.kind === 'domain')
   return first && first.kind === 'domain' ? first.id : null
@@ -32,15 +31,14 @@ export function specialtyGrants(
   unlocked: Ability[],
   newId: () => string = () => crypto.randomUUID(),
 ): SpecialtyRow[] {
-  const owned = new Set(specialties.map((s) => normalizeName(s.name)))
+  const owned = specialties.map((s) => s.name)
   const grants: SpecialtyRow[] = []
   for (const a of unlocked) {
-    const n = normalizeName(a.name)
-    if (!REQUIRED_SPECIALTIES.has(n) || owned.has(n)) continue
+    if (!REQUIRED_SPECIALTIES.has(normalizeName(a.name)) || owned.some((o) => specialtyMatches(o, a.name))) continue
     const domainId = homeDomain(a.name, a)
     if (!domainId) continue
     grants.push({ id: newId(), domainId, name: a.name, level: 1, ticks: 0 })
-    owned.add(n)
+    owned.push(a.name)
   }
   return grants
 }

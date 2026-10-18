@@ -3,6 +3,7 @@ import { ABILITIES } from './abilities'
 import { CRAFTS, RECIPES } from './crafts'
 import { DOMAINS, ADVANCED_DOMAINS, STATS } from './domains'
 import { RACES } from './races'
+import { specialtyMatches } from '../../utils/sindragosa/prerequisites'
 
 describe('domaines', () => {
   it('5 domaines par caractéristique', () => {
@@ -43,6 +44,24 @@ describe('compétences', () => {
           expect(p.rank, `#${a.id}`).toBeLessThanOrEqual(5)
         }
       }
+    }
+  })
+})
+
+describe('spécialités d’exemple (2026-10-18)', () => {
+  const required = ABILITIES.flatMap((a) => a.prerequisites.flatMap((p) => (p.kind === 'specialty' ? [p.name] : [])))
+  const examples = DOMAINS.flatMap((d) => d.specialties)
+
+  it('chaque spécialité exigée par une compétence est atteignable en suivant un exemple', () => {
+    for (const name of required) {
+      expect(examples.some((e) => specialtyMatches(e, name)), name).toBe(true)
+    }
+  })
+
+  it('dans un domaine que les compétences citent, chaque exemple mène à au moins une compétence', () => {
+    const touched = DOMAINS.filter((d) => d.specialties.some((e) => required.some((r) => specialtyMatches(e, r))))
+    for (const d of touched) {
+      for (const e of d.specialties) expect(required.some((r) => specialtyMatches(e, r)), `${d.id} : ${e}`).toBe(true)
     }
   })
 })

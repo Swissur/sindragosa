@@ -35,18 +35,13 @@ test('retirer puis remettre une armure change l’AP', async ({ browser }) => {
   }
 })
 
-test('une arme équipée donne une attaque dans les compétences et dans Mes actions', async ({ browser }) => {
+test('une arme équipée donne une attaque dans les compétences', async ({ browser }) => {
   const ctx = await browser.newContext({ storageState: stateFor('nym') })
   const page = await ctx.newPage()
   try {
     await page.goto('/personnage')
     await page.getByRole('tab', { name: 'Compétences' }).click()
     await expect(page.getByTestId('strike-i-dagues')).toContainText('Dagues jumelles')
-
-    await page.goto('/actions')
-    await page.getByRole('tab', { name: 'Combat', exact: true }).click()
-    // Arme légère : 2 dégâts.
-    await expect(page.getByTestId('tile-weapon-i-dagues')).toContainText('2 dégâts')
   } finally {
     await ctx.close()
   }
@@ -73,6 +68,10 @@ test('fabriquer utilise les composants et met l’objet dans l’inventaire', as
     await page.reload()
     await page.getByRole('tab', { name: 'Domaines', exact: true }).click()
     await page.getByText('Forge & Métallurgie').click()
+    // Le patron mis en favori se fabrique depuis l'onglet Favoris.
+    await page.getByTestId('recipe-pin-forge-r1-01').click()
+    await page.getByRole('tab', { name: 'Favoris', exact: true }).click()
+    await expect(page.getByTestId('favorites-recipes')).toBeVisible()
     await page.getByTestId('craft-forge-r1-01').click()
 
     await page.getByTestId('roll-launch').click()

@@ -165,22 +165,22 @@ test('un joueur ne peut pas régler la fiche d’un autre', async ({ browser }) 
   }
 })
 
-test('un domaine mis en favori depuis la fiche arrive dans Mes actions', async ({ browser }) => {
+test('un domaine mis en favori arrive dans l’onglet Favoris de la fiche', async ({ browser }) => {
   const ctx = await browser.newContext({ storageState: stateFor('kaeliss') })
   const page = await ctx.newPage()
   try {
     // Kaeliss a 4 domaines entamés : les favoris par défaut n'en prennent que 3,
     // Acrobatie & Furtivité (rang 1, aucune coche) reste dehors.
-    await page.goto('/actions')
+    await page.goto('/personnage')
+    await page.getByRole('tab', { name: 'Favoris', exact: true }).click()
     await expect(page.getByTestId('tile-domain-tir-lancer')).toBeVisible()
     await expect(page.getByTestId('tile-domain-acrobatie-furtivite')).toHaveCount(0)
 
-    await page.goto('/personnage')
     await page.getByRole('tab', { name: 'Domaines', exact: true }).click()
     await page.getByTestId('domains-agi').click()
     await page.getByTestId('domain-pin-acrobatie-furtivite').click()
 
-    await page.goto('/actions')
+    await page.getByRole('tab', { name: 'Favoris', exact: true }).click()
     await expect(page.getByTestId('tile-domain-acrobatie-furtivite')).toBeVisible()
   } finally {
     await ctx.close()

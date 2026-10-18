@@ -180,8 +180,9 @@ test('le log de campagne du MJ montre la réserve et le palier', async ({ browse
     await expect(pageMj.getByTestId('roll-log')).toBeVisible()
     const avant = await pageMj.getByTestId('roll-log-entry').count()
 
-    await pageJoueur.goto('/actions')
+    await pageJoueur.goto('/personnage')
     // Sans épingle choisie, les domaines les plus hauts sont en favoris.
+    await pageJoueur.getByRole('tab', { name: 'Favoris', exact: true }).click()
     await pageJoueur.getByTestId('tile-domain-combat-precision').click()
     const jet = await lancer(pageJoueur)
 

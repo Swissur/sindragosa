@@ -1,36 +1,32 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, ref } from 'vue'
 import { Swords, Star, Tent, Dices } from 'lucide-vue-next'
-import AppPageLayout from '../components/ui/AppPageLayout.vue'
-import AppPageHead from '../components/ui/AppPageHead.vue'
-import AppTabs from '../components/ui/AppTabs.vue'
-import AppEmptyState from '../components/ui/AppEmptyState.vue'
-import AppButton from '../components/ui/AppButton.vue'
-import AppBottomSheet from '../components/ui/AppBottomSheet.vue'
-import AgonieModal from '../components/AgonieModal.vue'
-import VitalsCard from '../components/character-sheet/VitalsCard.vue'
-import ActionTile from '../components/actions/ActionTile.vue'
-import AbilityCard from '../components/abilities/AbilityCard.vue'
-import { ACTION_TYPES, COMBAT_ACTION_TYPES } from '../components/abilities/actionTypes'
-import { useCharacter, loadCharacter } from '../composables/useCharacter'
-import { openRollSheet } from '../composables/useRollSheet'
-import { usePins } from '../composables/usePins'
-import { DOMAINS, domainById } from '../data/sindragosa/domains'
-import { raceAbility, raceById } from '../data/sindragosa/races'
-import { rollSetup } from '../utils/sindragosa/rollSetup'
-import { USES_PER_LABELS } from '../utils/sindragosa/abilityUses'
-import { equippedWeapons, weaponDamage } from '../utils/sindragosa/equipment'
-import type { Ability } from '../data/sindragosa/types'
-import type { Pin } from '../utils/sindragosa/pins'
+import AppTabs from '../ui/AppTabs.vue'
+import AppEmptyState from '../ui/AppEmptyState.vue'
+import AppButton from '../ui/AppButton.vue'
+import AppBottomSheet from '../ui/AppBottomSheet.vue'
+import AgonieWatch from '../AgonieWatch.vue'
+import VitalsCard from '../character-sheet/VitalsCard.vue'
+import ActionTile from './ActionTile.vue'
+import AbilityCard from '../abilities/AbilityCard.vue'
+import { ACTION_TYPES, COMBAT_ACTION_TYPES } from '../abilities/actionTypes'
+import { useCharacter, loadCharacter } from '../../composables/useCharacter'
+import { openRollSheet } from '../../composables/useRollSheet'
+import { usePins } from '../../composables/usePins'
+import { DOMAINS, domainById } from '../../data/sindragosa/domains'
+import { raceAbility, raceById } from '../../data/sindragosa/races'
+import { rollSetup } from '../../utils/sindragosa/rollSetup'
+import { USES_PER_LABELS } from '../../utils/sindragosa/abilityUses'
+import { equippedWeapons, weaponDamage } from '../../utils/sindragosa/equipment'
+import type { Ability } from '../../data/sindragosa/types'
+import type { Pin } from '../../utils/sindragosa/pins'
 
 /**
- * Mes actions (plans/32) : des tuiles prêtes à lancer. Favoris épinglés,
+ * Mes actions, onglet du combat (plans/32) : des tuiles prêtes à lancer. Favoris épinglés,
  * Combat (armes et compétences d'action), Hors combat (domaines et le reste).
+ * Hors combat, les favoris vivent dans l'onglet Favoris de la fiche.
  */
-const props = withDefaults(defineProps<{ embedded?: boolean }>(), { embedded: false })
-
 const { character, loading, loadError, computedHp, computedInitiative, unlocked, unlockedAdvanced } = useCharacter()
-if (!props.embedded) loadCharacter()
 
 const { pins, toggle, isPinned } = usePins(character)
 
@@ -99,46 +95,11 @@ const abilitySheetOpen = computed({
 })
 
 const rollDomain = (domainId: string) => openRollSheet({ domainId, context: 'actions' })
-
-// ── Agonie : à 0 PV, les jets de mort s'ouvrent d'eux-mêmes ─────────────────
-const showAgonie = ref(false)
-const isStabilised = ref(false)
-
-watch(
-  () => character.value.hpCurrent,
-  (hp) => {
-    if (loading.value) return
-    if (hp === 0 && !isStabilised.value) showAgonie.value = true
-    if (hp > 0) {
-      isStabilised.value = false
-      showAgonie.value = false
-    }
-  },
-  { immediate: true },
-)
-
-function onStabilise() {
-  showAgonie.value = false
-  isStabilised.value = true
-}
 </script>
 
 <template>
-  <component :is="embedded ? 'div' : AppPageLayout">
-    <template v-if="!embedded" #top-bar>
-      <AppPageHead>
-        <Swords :size="22" />
-        Mes actions
-      </AppPageHead>
-    </template>
-
-    <AgonieModal
-      v-if="showAgonie"
-      :character-name="character.name"
-      @stabilise="onStabilise"
-      @death="showAgonie = false"
-      @close="showAgonie = false"
-    />
+  <div data-testid="actions-panel">
+    <AgonieWatch />
 
     <AppEmptyState v-if="loading" variant="loading">Chargement…</AppEmptyState>
     <AppEmptyState v-else-if="loadError" variant="error">
@@ -259,7 +220,7 @@ function onStabilise() {
         />
       </AppBottomSheet>
     </template>
-  </component>
+  </div>
 </template>
 
 <style scoped>

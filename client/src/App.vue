@@ -112,9 +112,6 @@ if (savedStyle) {
         <RouterLink to="/personnage" class="nav-link" title="Personnage"
           ><ScrollText :size="20"
         /></RouterLink>
-        <RouterLink to="/actions" class="nav-link" title="Mes actions"
-          ><Swords :size="20"
-        /></RouterLink>
         <RouterLink to="/inventaire" class="nav-link" title="Inventaire"
           ><Backpack :size="20"
         /></RouterLink>

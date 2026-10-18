@@ -1,19 +1,23 @@
 <script setup lang="ts">
-import { Dices } from 'lucide-vue-next'
+import { toRef } from 'vue'
+import { Dices, Star } from 'lucide-vue-next'
 import AppIconBtn from '../ui/AppIconBtn.vue'
 import { componentNeeds, craftDomainId, hasComponents } from '../../utils/sindragosa/crafting'
 import { openRollSheet } from '../../composables/useRollSheet'
+import { usePins } from '../../composables/usePins'
 import type { Craft, Recipe } from '../../data/sindragosa/types'
 import type { Character } from '../../types/character'
 
-/** Patrons avec leurs composants (possédés / requis) et le bouton pour fabriquer. */
-defineProps<{
+/** Patrons avec leurs composants (possédés / requis), l'étoile de favori et le bouton pour fabriquer. */
+const props = defineProps<{
   character: Character
   recipes: { recipe: Recipe; craft: Craft }[]
   readonly?: boolean
   /** Affiche le rang de chaque patron de métier de base (liste qui mélange les rangs). */
   showRank?: boolean
 }>()
+
+const { isPinned, toggle } = usePins(toRef(props, 'character'))
 
 function craft(c: Craft, recipe: Recipe) {
   const domainId = craftDomainId(c)
@@ -36,6 +40,15 @@ function craft(c: Craft, recipe: Recipe) {
         </span>
         <span class="recipe-effect">{{ r.effect }}</span>
       </div>
+      <AppIconBtn
+        v-if="!readonly"
+        :title="isPinned(`recipe:${r.id}`) ? 'Retirer des favoris' : 'Ajouter aux favoris'"
+        variant="bare"
+        :data-testid="`recipe-pin-${r.id}`"
+        @click="toggle(`recipe:${r.id}`)"
+      >
+        <Star :size="16" :class="{ 'recipe-star--on': isPinned(`recipe:${r.id}`) }" />
+      </AppIconBtn>
       <AppIconBtn
         v-if="!readonly"
         :title="hasComponents(character.items, r) ? 'Fabriquer' : 'Composants manquants'"
@@ -89,5 +102,10 @@ function craft(c: Craft, recipe: Recipe) {
 
 .recipe-effect {
   font-size: 0.82rem;
+}
+
+.recipe-star--on {
+  color: var(--accent);
+  fill: currentColor;
 }
 </style>

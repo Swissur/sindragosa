@@ -23,7 +23,7 @@ const props = defineProps<{
   readonly?: boolean
   /** Fiche d'un joueur vue par le MJ : lui seul peut retirer une spécialité. */
   canRemoveSpecialty?: boolean
-  /** Favori dans « Mes actions ». Absent = pas de bouton (fiche d'un autre joueur). */
+  /** Favori de la fiche. Absent = pas de bouton (fiche d'un autre joueur). */
   pinned?: boolean
   /** Ids des spécialités épinglées. Absent = pas de bouton. */
   pinnedSpecialties?: string[]

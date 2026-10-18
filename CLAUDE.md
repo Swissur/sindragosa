@@ -64,8 +64,7 @@ client/src/
 ├── views/                      # One file per route
 │   ├── LoginView.vue
 │   ├── CharacterListView.vue
-│   ├── CharacterSheetView.vue  # Main character sheet (tabs)
-│   └── ActionsView.vue         # Combat actions reference
+│   └── CharacterSheetView.vue  # Main character sheet (tabs, incl. Favoris)
 ├── components/
 │   ├── ui/                     # Shared primitives (AppCard, AppBadge…) — see below
 │   ├── character-sheet/        # Cards rendered inside CharacterSheetView
@@ -89,7 +88,7 @@ Routes (defined in `client/src/router/index.ts`):
 | `/login` | `LoginView` | Public |
 | `/personnage` | `CharacterSheetView` | Default redirect from `/` |
 | `/personnages` | `CharacterListView` | |
-| `/actions` | `ActionsView` | |
+| `/actions` | — | Redirects to `/personnage` (favorites are the sheet's Favoris tab) |
 
 ---
 

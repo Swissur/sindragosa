@@ -1,7 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import CharacterSheetView from '../views/CharacterSheetView.vue'
 import CharacterListView from '../views/CharacterListView.vue'
-import ActionsView from '../views/ActionsView.vue'
 import LoginView from '../views/LoginView.vue'
 import JetsView from '../views/JetsView.vue'
 import InventaireView from '../views/InventaireView.vue'
@@ -39,7 +38,8 @@ export const router = createRouter({
     { path: '/', component: CampaignListView, beforeEnter: entryRedirect },
     { path: '/personnages', name: 'characters', component: CharacterListView },
     { path: '/personnage', name: 'character', component: CharacterSheetView },
-    { path: '/actions', name: 'actions', component: ActionsView },
+    // L'ancienne page Mes actions : ses favoris sont devenus un onglet de la fiche.
+    { path: '/actions', redirect: '/personnage' },
     { path: '/inventaire', name: 'inventaire', component: InventaireView },
     { path: '/jets', name: 'jets', component: JetsView },
     { path: '/journal', name: 'journal', component: JournalView },

@@ -17,7 +17,7 @@ const props = defineProps<{
   character: Character
   domain: AdvancedDomain
   readonly?: boolean
-  /** Favori dans « Mes actions ». Absent = pas de bouton (fiche d'un autre joueur). */
+  /** Favori de la fiche. Absent = pas de bouton (fiche d'un autre joueur). */
   pinned?: boolean
 }>()
 

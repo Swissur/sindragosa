@@ -39,6 +39,12 @@ test('le MJ lance un combat et le joueur suit le même tour', async ({ browser }
     const tourSuivant = await idDuTour(pageMj)
     await expect(tourEnCours(pageJoueur)).toHaveAttribute('data-participant-id', tourSuivant!)
 
+    // ── Son onglet Mes actions donne l'attaque de son arme équipée ──
+    await pageJoueur.getByRole('tab', { name: 'Mes actions' }).click()
+    const actions = pageJoueur.getByTestId('actions-panel')
+    await actions.getByRole('tab', { name: 'Combat', exact: true }).click()
+    await expect(actions.getByTestId('tile-weapon-i-hache')).toContainText("Hache d'armes")
+
     // On ne laisse pas un combat actif derrière nous : les autres specs le verraient.
     await pageMj.getByRole('button', { name: 'Terminer' }).click()
     await pageMj.getByRole('dialog').getByRole('button', { name: 'Terminer' }).click()

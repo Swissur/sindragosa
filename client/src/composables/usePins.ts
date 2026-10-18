@@ -3,7 +3,7 @@ import type { Character } from '../types/character'
 import { defaultPins, migrateLegacyPins, togglePin, type Pin } from '../utils/sindragosa/pins'
 
 /**
- * Épingles de « Mes actions », gardées dans le navigateur, par personnage.
+ * Favoris de la fiche, gardés dans le navigateur, par personnage.
  * Tant que le joueur n'a rien épinglé : le pouvoir racial et les 3 domaines les plus hauts.
  */
 const key = (id: string) => `sindragosa-pins-v2-${id}`
@@ -21,7 +21,7 @@ function read(id: string): Pin[] | null {
   }
 }
 
-/** Partagé entre la fiche et « Mes actions » : épingler d'un côté se voit de l'autre. */
+/** Partagé entre les onglets de la fiche et le combat : épingler d’un côté se voit de l’autre. */
 const storedById = ref<Record<string, Pin[] | null>>({})
 
 export function usePins(character: Ref<Character>) {

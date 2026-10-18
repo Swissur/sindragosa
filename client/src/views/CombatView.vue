@@ -47,7 +47,7 @@ import EtatsRow from "../components/etats/EtatsRow.vue";
 import EtatsSheet from "../components/etats/EtatsSheet.vue";
 import { sortEtats, type Etat, type EtatId } from "../data/etats";
 import BattleMapTab from "../components/battle/BattleMapTab.vue";
-import ActionsView from "./ActionsView.vue";
+import ActionsPanel from "../components/actions/ActionsPanel.vue";
 import type { CombatParticipant } from "../api/combats";
 import { showToast } from "../composables/useToast";
 
@@ -444,7 +444,7 @@ function goBack() {
 
         <!-- Tab: Actions (player only) -->
         <div v-if="activeTab === 'actions' && !isGm" class="actions-tab">
-          <ActionsView :embedded="true" />
+          <ActionsPanel />
         </div>
 
         <!-- Timeline -->

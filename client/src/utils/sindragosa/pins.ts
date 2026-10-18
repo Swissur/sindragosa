@@ -1,9 +1,9 @@
-/** Épingles de « Mes actions » : des domaines, des spécialités et des compétences, par personnage. */
+/** Favoris de la fiche : des domaines, des spécialités, des compétences et des patrons, par personnage. */
 import type { Character } from '../../types/character'
 import { DOMAINS } from '../../data/sindragosa/domains'
 import { RACE_ABILITY_ID } from '../../data/sindragosa/races'
 
-export type Pin = `domain:${string}` | `specialty:${string}` | `ability:${number}`
+export type Pin = `domain:${string}` | `specialty:${string}` | `ability:${number}` | `recipe:${string}`
 
 /** Le pouvoir racial, favori par défaut. */
 export const RACE_PIN: Pin = `ability:${RACE_ABILITY_ID}`
@@ -29,4 +29,13 @@ export function migrateLegacyPins(pins: Pin[]): Pin[] {
 
 export function togglePin(pins: Pin[], pin: Pin): Pin[] {
   return pins.includes(pin) ? pins.filter((p) => p !== pin) : [...pins, pin]
+}
+
+/**
+ * Les éléments épinglés, dans l'ordre de leur liste. Ce qui a disparu depuis
+ * (spécialité supprimée, compétence ou métier perdu) n'y est plus.
+ */
+export function pinnedOf<T>(pins: Pin[], items: T[], pinOf: (item: T) => Pin): T[] {
+  const set = new Set(pins)
+  return items.filter((item) => set.has(pinOf(item)))
 }

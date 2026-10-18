@@ -3,7 +3,7 @@ import { stateFor } from '../fixtures/auth'
 
 test.use({ storageState: stateFor('bracco') })
 
-const ROUTES = ['/personnage', '/inventaire', '/actions', '/journal', '/campagnes']
+const ROUTES = ['/personnage', '/inventaire', '/journal', '/campagnes']
 
 // Un écran qui plante à l'ouverture, ça se voit dans la console avant de se voir à l'écran.
 for (const route of ROUTES) {
@@ -20,3 +20,8 @@ for (const route of ROUTES) {
     expect(errors).toEqual([])
   })
 }
+
+test('l’ancienne page Mes actions renvoie sur la fiche', async ({ page }) => {
+  await page.goto('/actions')
+  await expect(page).toHaveURL(/\/personnage$/)
+})

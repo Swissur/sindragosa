@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import { ScrollText, BookOpen, Sparkles, Hammer, Pencil, PencilOff } from 'lucide-vue-next'
+import { ScrollText, Star, BookOpen, Sparkles, Hammer, Pencil, PencilOff } from 'lucide-vue-next'
 import AppPageLayout from '../components/ui/AppPageLayout.vue'
 import AppPageHead from '../components/ui/AppPageHead.vue'
 import AppEmptyState from '../components/ui/AppEmptyState.vue'
@@ -11,11 +11,14 @@ import AppTabs from '../components/ui/AppTabs.vue'
 import { useCharacter, loadCharacter } from '../composables/useCharacter'
 import { showToast, type ToastDetail } from '../composables/useToast'
 import { usePins } from '../composables/usePins'
+import { useFavorites } from '../composables/useFavorites'
 import { abilityDetail, advancedDetail } from '../utils/sindragosa/unlockDetails'
 import type { Pin } from '../utils/sindragosa/pins'
 import { effectiveCrafts } from '../utils/sindragosa/crafting'
 
+import AgonieWatch from '../components/AgonieWatch.vue'
 import HeroCard from '../components/character-sheet/HeroCard.vue'
+import FavoritesCard from '../components/character-sheet/FavoritesCard.vue'
 import VitalsCard from '../components/character-sheet/VitalsCard.vue'
 import StatsCard from '../components/character-sheet/StatsCard.vue'
 import ResourcesCard from '../components/character-sheet/ResourcesCard.vue'
@@ -31,7 +34,7 @@ const route = useRoute()
 const id = route.query.id ? Number(route.query.id) : undefined
 loadCharacter(id)
 
-type TabId = 'heros' | 'domaines' | 'competences' | 'artisanat'
+type TabId = 'heros' | 'favoris' | 'domaines' | 'competences' | 'artisanat'
 const activeTab = ref<TabId>('heros')
 const editing = ref(false)
 /** Pastille « du nouveau ici » sur un onglet. */
@@ -39,6 +42,7 @@ const news = ref<Partial<Record<TabId, boolean>>>({})
 
 const TABS = [
   { value: 'heros', label: 'Héros', icon: ScrollText },
+  { value: 'favoris', label: 'Favoris', icon: Star },
   { value: 'domaines', label: 'Domaines', icon: BookOpen },
   { value: 'competences', label: 'Compétences', icon: Sparkles },
   { value: 'artisanat', label: 'Artisanat', icon: Hammer },
@@ -48,10 +52,14 @@ const TABS = [
 // (appris, ou par un rang dans un domaine d'artisanat ou un artisanat avancé)
 const crafts = computed(() => effectiveCrafts(character.value.crafts, character.value.domains, character.value.advancedDomains))
 const crafter = computed(() => Object.keys(crafts.value).length > 0)
+// L'onglet Favoris n'existe que s'il y a au moins un favori
+const { favorites, hasFavorites } = useFavorites(character, unlocked, unlockedAdvanced, crafts)
 const tabs = computed(() => TABS
   .filter((t) => t.value !== 'artisanat' || crafter.value)
+  .filter((t) => t.value !== 'favoris' || hasFavorites.value)
   .map((t) => ({ ...t, dot: !!news.value[t.value as TabId] })))
 watch(crafter, (has) => { if (!has && activeTab.value === 'artisanat') activeTab.value = 'heros' })
+watch(hasFavorites, (has) => { if (!has && activeTab.value === 'favoris') activeTab.value = 'heros' })
 
 // Un domaine qui monte peut débloquer des compétences ou ouvrir un domaine avancé :
 // toast qui reste, avec la fiche de chaque nouveauté, et pastille sur l'onglet.
@@ -67,7 +75,7 @@ function onAdded<T extends { id: string | number }>(list: () => T[], tab: TabId,
   })
 }
 
-// L'étoile du toast épingle la nouveauté dans « Mes actions »
+// L'étoile du toast met la nouveauté en favori
 const { isPinned, toggle } = usePins(character)
 const pinnable = (detail: ToastDetail, pin: Pin): ToastDetail => ({
   ...detail,
@@ -117,6 +125,8 @@ watch(activeTab, (tab) => { news.value[tab] = false })
     </AppEmptyState>
 
     <template v-else>
+      <AgonieWatch />
+
       <AppTabs
         v-model="activeTab"
         class="sheet-tabs"
@@ -129,6 +139,10 @@ watch(activeTab, (tab) => { news.value[tab] = false })
         <VitalsCard :character="character" :hp-max="computedHp" :initiative="computedInitiative" :editing="editing" />
         <StatsCard :character="character" :editing="editing" />
         <ResourcesCard :character="character" :editing="editing" />
+      </template>
+
+      <template v-if="activeTab === 'favoris'">
+        <FavoritesCard :character="character" :favorites="favorites" />
       </template>
 
       <template v-if="activeTab === 'domaines'">

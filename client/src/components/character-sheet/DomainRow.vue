@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { ChevronDown, Plus, Trash2 } from 'lucide-vue-next'
+import { ChevronDown, Plus, Trash2, Star } from 'lucide-vue-next'
 import AppTickGauge from '../ui/AppTickGauge.vue'
 import AppIconBtn from '../ui/AppIconBtn.vue'
 import AppInput from '../ui/AppInput.vue'
@@ -17,7 +17,16 @@ import type { Character } from '../../types/character'
  * Un domaine : taper la ligne ouvre le jet, le chevron déplie les spécialités
  * (au plus autant que le rang du domaine).
  */
-const props = defineProps<{ character: Character; domain: Domain; editing?: boolean; readonly?: boolean }>()
+const props = defineProps<{
+  character: Character
+  domain: Domain
+  editing?: boolean
+  readonly?: boolean
+  /** Favori dans « Mes actions ». Absent = pas de bouton (fiche d'un autre joueur). */
+  pinned?: boolean
+}>()
+
+const emit = defineEmits<{ (e: 'toggle-pin'): void }>()
 
 const expanded = ref(false)
 const newName = ref('')
@@ -60,6 +69,14 @@ function remove(id: string) {
           :maxed="progress.rank >= MAX_DOMAIN_RANK"
         />
       </button>
+      <AppIconBtn
+        v-if="pinned !== undefined"
+        :title="pinned ? 'Retirer des favoris' : 'Ajouter aux favoris'"
+        :data-testid="`domain-pin-${domain.id}`"
+        @click="emit('toggle-pin')"
+      >
+        <Star :size="16" :class="{ 'domain-star--on': pinned }" />
+      </AppIconBtn>
       <AppIconBtn
         :title="expanded ? 'Replier' : 'Spécialités'"
         :data-testid="`domain-expand-${domain.id}`"
@@ -146,6 +163,11 @@ function remove(id: string) {
 
 .domain-name {
   font-weight: 600;
+}
+
+.domain-star--on {
+  color: var(--accent);
+  fill: currentColor;
 }
 
 .domain-chevron {

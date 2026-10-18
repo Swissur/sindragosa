@@ -69,7 +69,7 @@ test('un mage se concentre : puissante monte les dés de l’effet', async ({ br
 
   try {
     await page.goto('/personnage')
-    await page.getByRole('tab', { name: 'Pouvoirs' }).click()
+    await page.getByRole('tab', { name: 'Domaines avancés' }).click()
     const carte = page.getByTestId('ability-46')
     await carte.getByTestId('ability-toggle').click()
     await expect(carte.getByTestId('ability-effect')).toContainText('+1d6')
@@ -104,7 +104,7 @@ test('un jet de domaine lance carac + rang, la spécialité et l’avantage ajou
 
   try {
     await page.goto('/personnage')
-    await page.getByRole('tab', { name: 'Savoirs' }).click()
+    await page.getByRole('tab', { name: 'Domaines', exact: true }).click()
     await page.getByTestId('domain-roll-combat-precision').click()
 
     // AGI 3 + rang 3
@@ -136,7 +136,7 @@ test('un point de chance ajoute un dé et se dépense', async ({ browser }) => {
     const avant = Number(await chance.innerText())
     expect(avant).toBeGreaterThan(0)
 
-    await page.getByRole('tab', { name: 'Savoirs' }).click()
+    await page.getByRole('tab', { name: 'Domaines', exact: true }).click()
     await page.getByTestId('domain-roll-tir-lancer').click()
     await expect(page.getByTestId('roll-formula')).toContainText('= 6d6')
     await page.getByTestId('roll-luck-plus').click()

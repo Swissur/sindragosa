@@ -17,17 +17,22 @@ function read(id: string): Pin[] | null {
   }
 }
 
+/** Partagé entre la fiche et « Mes actions » : épingler d'un côté se voit de l'autre. */
+const storedById = ref<Record<string, Pin[] | null>>({})
+
 export function usePins(character: Ref<Character>) {
-  const stored = ref<Pin[] | null>(null)
+  watch(() => character.value.id, (id) => {
+    if (id && !(id in storedById.value)) storedById.value[id] = read(id)
+  }, { immediate: true })
 
-  watch(() => character.value.id, (id) => { stored.value = id ? read(id) : null }, { immediate: true })
-
-  const pins = computed(() => stored.value ?? defaultPins(character.value))
+  const pins = computed(() => storedById.value[character.value.id] ?? defaultPins(character.value))
 
   function toggle(pin: Pin) {
-    stored.value = togglePin(pins.value, pin)
+    const id = character.value.id
+    const next = togglePin(pins.value, pin)
+    storedById.value[id] = next
     try {
-      localStorage.setItem(key(character.value.id), JSON.stringify(stored.value))
+      localStorage.setItem(key(id), JSON.stringify(next))
     } catch { /* quota ou navigation privée : l'épingle reste pour la session */ }
   }
 

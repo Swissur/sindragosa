@@ -48,10 +48,15 @@ Sindragosa n’est plus un outil pour les Terres d’Arran (Chroniques Oubliées
 
 ### TODO — retours du 2026-10-17
 
-- [ ] **Favoris depuis la fiche** : pouvoir épingler un savoir (domaine, spécialité) comme favori directement depuis la fiche, et pas seulement depuis Mes actions.
-- [ ] **Pouvoirs cachés aux joueurs** : seul le MJ voit les pouvoirs (compétences). Les joueurs avancent à l'aveugle : ni catalogue, ni compétences verrouillées.
-- [ ] **Vérifier les prérequis des pouvoirs déblocables** : chacun doit reposer sur d'autres pouvoirs ou sur des domaines de base. Aucun prérequis ne doit renvoyer à une notion qui n'existe pas.
-- [ ] **Renommer les onglets de la fiche** : « Savoirs » devient « Domaines », « Pouvoirs » devient « Domaines avancés ». À préciser : aujourd'hui les domaines avancés sont affichés dans l'onglet Savoirs, et l'onglet Pouvoirs liste les compétences.
+- [x] **Favoris depuis la fiche** : une étoile sur chaque domaine (onglet Domaines) et sur chaque compétence débloquée. Les favoris sont partagés avec Mes actions. Fait le 2026-10-18.
+- [x] **Compétences à l'aveugle** : le joueur ne voit que ses compétences débloquées, dans l'onglet Domaines avancés, section « Compétences ». Le catalogue complet (verrouillées, prérequis) reste visible du MJ dans la fiche d'un membre. Fait le 2026-10-18.
+- [x] **Onglets de la fiche** : Héros / Domaines / Domaines avancés. Le dernier regroupe domaines avancés, titres et compétences. Fait le 2026-10-18.
+- [ ] **Prérequis des compétences** : audit fait le 2026-10-18, décisions à prendre.
+  - Toutes les compétences (490) demandent au moins un domaine de base ; aucune n'est débloquée d'office. 281 ne demandent que des domaines de base.
+  - **121 compétences exigent un domaine avancé**, or aucune règle n'ouvre encore les domaines avancés : seul le MJ peut les donner (« forcer un rang »). Lié aux prérequis à valider du plan 31 § 7.
+  - **Aucun prérequis ne pointe vers une autre compétence** : le modèle ne connaît que domaines, domaines avancés, spécialités et titres. Mais des noms se recoupent et suggèrent des chaînes voulues : le domaine avancé « Ivresse du Combat » porte le nom de la compétence #8, « Danse des Lames » celui de la #111. Les spécialités exigées « Analyse des failles » et « Second souffle » portent le nom des compétences #60 et #26. À trancher : un domaine avancé (ou une spécialité) s'ouvre-t-il en obtenant la compétence du même nom ?
+  - **30 spécialités exigées ne figurent pas dans les exemples** des domaines (ex. Analyse des failles, Forme animale, Lutte / Mains nues, Sorts de Feu, Armes à deux mains). Comme les joueurs avancent à l'aveugle, ils ne peuvent pas les deviner : faut-il les ajouter aux exemples, ou les révéler autrement ?
+  - **22 titres** sont exigés (26 compétences), sans liste officielle : le MJ les tape à la main dans ses outils, au risque d'une faute de frappe. Une liste de titres dans les outils du MJ éviterait ça.
 - [ ] **Prérequis des domaines avancés** : à proposer (déduits des compétences), puis à valider.
 
 ### TODO — termes utilisés par les règles mais pas encore définis

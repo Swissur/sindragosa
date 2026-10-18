@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, toRef } from 'vue'
 import AppCard from '../ui/AppCard.vue'
 import AppAccordion from '../ui/AppAccordion.vue'
 import AppButton from '../ui/AppButton.vue'
 import DomainRow from './DomainRow.vue'
 import { DOMAINS, STATS, type StatId } from '../../data/sindragosa/domains'
+import { usePins } from '../../composables/usePins'
 import type { Character } from '../../types/character'
 
 /**
@@ -14,6 +15,7 @@ import type { Character } from '../../types/character'
 const props = defineProps<{ character: Character; editing?: boolean; readonly?: boolean }>()
 
 const showAll = ref<Partial<Record<StatId, boolean>>>({})
+const { isPinned, toggle } = usePins(toRef(props, 'character'))
 
 const started = (id: string) => {
   const p = props.character.domains[id]
@@ -43,6 +45,8 @@ function domainsOf(stat: StatId) {
         :domain="d"
         :editing="editing"
         :readonly="readonly"
+        :pinned="readonly ? undefined : isPinned(`domain:${d.id}`)"
+        @toggle-pin="toggle(`domain:${d.id}`)"
       />
       <AppButton
         v-if="domainsOf(s.id).hidden && !showAll[s.id]"

@@ -26,6 +26,7 @@ import DomainsCard from '../components/character-sheet/DomainsCard.vue'
 import DistinctionsCard from '../components/character-sheet/DistinctionsCard.vue'
 import CraftsCard from '../components/character-sheet/CraftsCard.vue'
 import AbilitiesPanel from '../components/abilities/AbilitiesPanel.vue'
+import UnlockedAbilitiesCard from '../components/abilities/UnlockedAbilitiesCard.vue'
 import GmToolsSheet from '../components/character-sheet/GmToolsSheet.vue'
 
 /** Fiche d'un membre, en lecture. Le MJ y règle caracs, récompenses, rangs et titres. */
@@ -64,12 +65,12 @@ const hpMax = computed(() => (character.value ? computeMaxHp(character.value) : 
 const init = computed(() => (character.value ? initiative(character.value.stats, domainRanks(character.value)) : 0))
 const unlocked = computed(() => (character.value ? unlockedAbilities(progressState(character.value)) : []))
 
-type TabId = 'heros' | 'savoirs' | 'pouvoirs'
+type TabId = 'heros' | 'domaines' | 'avances'
 const activeTab = ref<TabId>('heros')
 const TABS = [
   { value: 'heros', label: 'Héros', icon: ScrollText },
-  { value: 'savoirs', label: 'Savoirs', icon: BookOpen },
-  { value: 'pouvoirs', label: 'Pouvoirs', icon: Sparkles },
+  { value: 'domaines', label: 'Domaines', icon: BookOpen },
+  { value: 'avances', label: 'Domaines avancés', icon: Sparkles },
 ]
 </script>
 
@@ -109,14 +110,18 @@ const TABS = [
         <ResourcesCard :character="character" readonly />
       </template>
 
-      <template v-if="activeTab === 'savoirs'">
+      <template v-if="activeTab === 'domaines'">
         <SessionTicksBanner :session-ticks="character.sessionTicks" />
         <DomainsCard :character="character" readonly />
-        <DistinctionsCard :character="character" />
         <CraftsCard :character="character" readonly />
       </template>
 
-      <AbilitiesPanel v-if="activeTab === 'pouvoirs'" :character="character" :unlocked="unlocked" readonly />
+      <template v-if="activeTab === 'avances'">
+        <DistinctionsCard :character="character" />
+        <!-- Le MJ voit tout le catalogue, verrouillées comprises ; un autre joueur, seulement ce qui est débloqué. -->
+        <AbilitiesPanel v-if="isGm" :character="character" :unlocked="unlocked" readonly />
+        <UnlockedAbilitiesCard v-else :character="character" :unlocked="unlocked" readonly />
+      </template>
 
       <GmToolsSheet
         v-if="isGm"

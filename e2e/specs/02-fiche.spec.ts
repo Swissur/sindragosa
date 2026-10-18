@@ -48,7 +48,7 @@ test.describe('fiche de personnage', () => {
     const bracco = await activeCharacter(page)
     try {
       await page.goto('/personnage')
-      await page.getByRole('tab', { name: 'Savoirs' }).click()
+      await page.getByRole('tab', { name: 'Domaines', exact: true }).click()
       // Athlétisme rang 1, aucune spécialité : une place est libre.
       await page.getByTestId('domain-expand-athletisme').click()
       await page.getByTestId('specialty-input').fill('Escalade e2e')
@@ -57,7 +57,7 @@ test.describe('fiche de personnage', () => {
       await saved
 
       await page.reload()
-      await page.getByRole('tab', { name: 'Savoirs' }).click()
+      await page.getByRole('tab', { name: 'Domaines', exact: true }).click()
       await page.getByTestId('domain-expand-athletisme').click()
       await expect(page.getByTestId('domain-athletisme').getByText('Escalade e2e')).toBeVisible()
     } finally {
@@ -116,5 +116,53 @@ test('un joueur ne peut pas régler la fiche d’un autre', async ({ browser }) 
     expect(res.status()).toBe(403)
   } finally {
     await ctx.close()
+  }
+})
+
+test('un domaine mis en favori depuis la fiche arrive dans Mes actions', async ({ browser }) => {
+  const ctx = await browser.newContext({ storageState: stateFor('kaeliss') })
+  const page = await ctx.newPage()
+  try {
+    // Kaeliss a 4 domaines entamés : les favoris par défaut n'en prennent que 3,
+    // Acrobatie & Furtivité (rang 1, aucune coche) reste dehors.
+    await page.goto('/actions')
+    await expect(page.getByTestId('tile-domain-tir-lancer')).toBeVisible()
+    await expect(page.getByTestId('tile-domain-acrobatie-furtivite')).toHaveCount(0)
+
+    await page.goto('/personnage')
+    await page.getByRole('tab', { name: 'Domaines', exact: true }).click()
+    await page.getByTestId('domain-pin-acrobatie-furtivite').click()
+
+    await page.goto('/actions')
+    await expect(page.getByTestId('tile-domain-acrobatie-furtivite')).toBeVisible()
+  } finally {
+    await ctx.close()
+  }
+})
+
+test('le joueur ne voit que ses compétences débloquées, le MJ voit tout le catalogue', async ({ browser }) => {
+  const joueur = await browser.newContext({ storageState: stateFor('orlane') })
+  const mj = await browser.newContext({ storageState: stateFor('mj-dev') })
+  const pageJoueur = await joueur.newPage()
+  const pageMj = await mj.newPage()
+  try {
+    await pageJoueur.goto('/personnage')
+    await pageJoueur.getByRole('tab', { name: 'Domaines avancés' }).click()
+    // Déflagration d'Arcane (#46) est débloquée, Attaque sournoise (#1) ne l'est pas.
+    await expect(pageJoueur.getByTestId('ability-46')).toBeVisible()
+    await expect(pageJoueur.getByTestId('ability-1')).toHaveCount(0)
+    await expect(pageJoueur.getByTestId('abilities-locked')).toHaveCount(0)
+
+    const campaigns = await (await pageMj.request.get('/api/campaigns')).json()
+    const sandbox = campaigns.find((c: { name: string }) => c.name === 'Bac à sable')
+    const detail = await (await pageMj.request.get(`/api/campaigns/${sandbox.id}`)).json()
+    const orlane = detail.members.find((m: { username: string }) => m.username === 'orlane')
+    await pageMj.goto(`/campagnes/${sandbox.id}/personnage/${orlane.userId}`)
+    await pageMj.getByRole('tab', { name: 'Domaines avancés' }).click()
+    await pageMj.getByTestId('abilities-locked').click()
+    await expect(pageMj.getByTestId('ability-1')).toBeVisible()
+  } finally {
+    await joueur.close()
+    await mj.close()
   }
 })

@@ -64,6 +64,12 @@ Chacun sera ajouté au catalogue de `CLAUDE.md` et à `/component-library`.
 
 `VoiesCard`, `VoiePickerModal`, `LevelUpModal`, `HpGrowthModal`, `CompetencesCard`, `PassifsCard`, `AbilitiesCard`, `AbilityInitModal`, `MartialFormationsCard`, `CombatCard`, l'ancienne `ActionsView`, ainsi que les données et utilitaires de CO (`voies.ts`, `profilesCatalog.ts`, `armorsCatalog.ts`, `characterStats.ts`…).
 
+## Mise à jour (2026-10-18)
+
+- Onglets : **Héros / Domaines / Domaines avancés**. « Domaines avancés » regroupe domaines avancés, titres et une section « Compétences ».
+- Le joueur ne voit que ses compétences débloquées. Le catalogue complet (recherche, filtres, verrouillées) est réservé au MJ, dans la fiche d'un membre.
+- Favoris (étoile) sur les domaines et les compétences depuis la fiche, partagés avec Mes actions.
+
 ## Décisions (2026-10-17)
 
 - **Jets partagés comme aujourd'hui** : un jet part dans le journal de la campagne, les dés 3D roulent chez les autres et les jets cachés du MJ sont conservés. Le journal et le rendu 3D passent au d6.

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Component } from 'vue'
-import { Pin, PinOff } from 'lucide-vue-next'
+import { Star } from 'lucide-vue-next'
 import AppIconBtn from '../ui/AppIconBtn.vue'
 
 /** Une tuile de « Mes actions » : un tap lance (ou ouvre), l'épingle la garde en favori. */
@@ -28,12 +28,11 @@ const emit = defineEmits<{ (e: 'activate'): void; (e: 'toggle-pin'): void }>()
     </button>
     <AppIconBtn
       v-if="pinned !== undefined"
-      :title="pinned ? 'Désépingler' : 'Épingler'"
+      :title="pinned ? 'Retirer des favoris' : 'Ajouter aux favoris'"
       :data-testid="testid && `${testid}-pin`"
       @click="emit('toggle-pin')"
     >
-      <PinOff v-if="pinned" :size="15" />
-      <Pin v-else :size="15" />
+      <Star :size="15" :class="{ 'tile-star--on': pinned }" />
     </AppIconBtn>
   </div>
 </template>
@@ -63,6 +62,11 @@ const emit = defineEmits<{ (e: 'activate'): void; (e: 'toggle-pin'): void }>()
   font: inherit;
   text-align: left;
   cursor: pointer;
+}
+
+.tile-star--on {
+  color: var(--accent);
+  fill: currentColor;
 }
 
 .tile-icon {

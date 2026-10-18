@@ -212,7 +212,7 @@ function onStabilise() {
           @toggle-pin="toggle(abilityPin(a.id))"
         />
         <AppEmptyState v-if="!startedDomains.length && !otherAbilities.length">
-          Aucun domaine entamé : lance-les depuis l'onglet Savoirs de ta fiche.
+          Aucun domaine entamé : lance-les depuis l'onglet Domaines de ta fiche.
         </AppEmptyState>
       </div>
 

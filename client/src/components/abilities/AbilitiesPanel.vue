@@ -13,7 +13,7 @@ import { normalizeName } from '../../utils/sindragosa/prerequisites'
 import type { Ability, ActionType } from '../../data/sindragosa/types'
 import type { Character } from '../../types/character'
 
-/** Onglet Pouvoirs : recherche, filtre Débloquées / Verrouillées / Toutes, type d'action. */
+/** Catalogue complet des compétences, pour le MJ : recherche, filtre Débloquées / Verrouillées / Toutes, type d'action. */
 const props = defineProps<{ character: Character; unlocked: Ability[]; readonly?: boolean }>()
 
 const search = ref('')

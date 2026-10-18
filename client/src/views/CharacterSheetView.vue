@@ -20,7 +20,7 @@ import SessionTicksBanner from '../components/character-sheet/SessionTicksBanner
 import DomainsCard from '../components/character-sheet/DomainsCard.vue'
 import DistinctionsCard from '../components/character-sheet/DistinctionsCard.vue'
 import CraftsCard from '../components/character-sheet/CraftsCard.vue'
-import AbilitiesPanel from '../components/abilities/AbilitiesPanel.vue'
+import UnlockedAbilitiesCard from '../components/abilities/UnlockedAbilitiesCard.vue'
 
 const { character, loading, loadError, saveStatus, computedHp, computedInitiative, unlocked } = useCharacter()
 const route = useRoute()
@@ -28,25 +28,25 @@ const route = useRoute()
 const id = route.query.id ? Number(route.query.id) : undefined
 loadCharacter(id)
 
-type TabId = 'heros' | 'savoirs' | 'pouvoirs'
+type TabId = 'heros' | 'domaines' | 'avances'
 const activeTab = ref<TabId>('heros')
 const editing = ref(false)
 const newPowers = ref(false)
 
 const TABS = [
   { value: 'heros', label: 'Héros', icon: ScrollText },
-  { value: 'savoirs', label: 'Savoirs', icon: BookOpen },
-  { value: 'pouvoirs', label: 'Pouvoirs', icon: Sparkles },
+  { value: 'domaines', label: 'Domaines', icon: BookOpen },
+  { value: 'avances', label: 'Domaines avancés', icon: Sparkles },
 ]
 
-// Un domaine qui monte peut débloquer des compétences : pastille sur l'onglet Pouvoirs.
+// Un domaine qui monte peut débloquer des compétences : pastille sur l'onglet Domaines avancés.
 watch(() => unlocked.value.length, (now, before) => {
   if (loading.value || before === undefined || now <= before) return
   showToast(now - before > 1 ? `${now - before} nouvelles compétences !` : 'Nouvelle compétence débloquée !')
-  if (activeTab.value !== 'pouvoirs') newPowers.value = true
+  if (activeTab.value !== 'avances') newPowers.value = true
 })
 
-watch(activeTab, (tab) => { if (tab === 'pouvoirs') newPowers.value = false })
+watch(activeTab, (tab) => { if (tab === 'avances') newPowers.value = false })
 </script>
 
 <template>
@@ -82,7 +82,7 @@ watch(activeTab, (tab) => { if (tab === 'pouvoirs') newPowers.value = false })
       <AppTabs
         v-model="activeTab"
         class="sheet-tabs"
-        :tabs="TABS.map((t) => ({ ...t, dot: t.value === 'pouvoirs' && newPowers }))"
+        :tabs="TABS.map((t) => ({ ...t, dot: t.value === 'avances' && newPowers }))"
         icon-only-mobile
       />
 
@@ -94,14 +94,16 @@ watch(activeTab, (tab) => { if (tab === 'pouvoirs') newPowers.value = false })
         <ResourcesCard :character="character" :editing="editing" />
       </template>
 
-      <template v-if="activeTab === 'savoirs'">
+      <template v-if="activeTab === 'domaines'">
         <SessionTicksBanner :session-ticks="character.sessionTicks" />
         <DomainsCard :character="character" :editing="editing" />
-        <DistinctionsCard :character="character" />
         <CraftsCard :character="character" :editing="editing" />
       </template>
 
-      <AbilitiesPanel v-if="activeTab === 'pouvoirs'" :character="character" :unlocked="unlocked" />
+      <template v-if="activeTab === 'avances'">
+        <DistinctionsCard :character="character" />
+        <UnlockedAbilitiesCard :character="character" :unlocked="unlocked" />
+      </template>
     </template>
   </AppPageLayout>
 </template>

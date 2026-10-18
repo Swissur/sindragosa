@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { Check, X, Pin, PinOff, Coins, Expand, Flame } from 'lucide-vue-next'
+import { Check, X, Star, Coins, Expand, Flame } from 'lucide-vue-next'
 import AppIconBtn from '../ui/AppIconBtn.vue'
 import AppToggleGroup, { type AppToggleItem } from '../ui/AppToggleGroup.vue'
 import { ACTION_TYPES } from './actionTypes'
@@ -75,12 +75,11 @@ function use() {
       </button>
       <AppIconBtn
         v-if="pinned !== undefined && unlocked"
-        :title="pinned ? 'Désépingler' : 'Épingler dans Mes actions'"
+        :title="pinned ? 'Retirer des favoris' : 'Ajouter aux favoris'"
         :data-testid="`ability-pin-${ability.id}`"
         @click="emit('toggle-pin')"
       >
-        <PinOff v-if="pinned" :size="15" />
-        <Pin v-else :size="15" />
+        <Star :size="15" :class="{ 'ability-star--on': pinned }" />
       </AppIconBtn>
     </div>
     <p v-if="ability.condition && ability.condition !== '—'" class="ability-condition">{{ ability.condition }}</p>
@@ -172,6 +171,11 @@ function use() {
   border-color: var(--border);
   color: var(--muted);
   text-decoration: line-through;
+}
+
+.ability-star--on {
+  color: var(--accent);
+  fill: currentColor;
 }
 
 .ability-condition {

@@ -124,6 +124,7 @@ function forceRoll(value: number) {
         <AppIconBtn title="Éditer"><Pencil :size="18" /></AppIconBtn>
         <AppIconBtn variant="primary" title="Ajouter"><Plus :size="18" /></AppIconBtn>
         <AppIconBtn variant="danger" title="Supprimer"><Trash2 :size="18" /></AppIconBtn>
+        <AppIconBtn variant="bare" title="Sans cadre"><Heart :size="18" /></AppIconBtn>
         <AppIconBtn :size="34" title="Petit (34px)"><Heart :size="16" /></AppIconBtn>
       </div>
     </AppCard>

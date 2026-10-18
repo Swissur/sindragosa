@@ -1,8 +1,8 @@
-/** Épingles de « Mes actions » : des domaines et des compétences, par personnage. */
+/** Épingles de « Mes actions » : des domaines, des spécialités et des compétences, par personnage. */
 import type { Character } from '../../types/character'
 import { DOMAINS } from '../../data/sindragosa/domains'
 
-export type Pin = `domain:${string}` | `ability:${number}`
+export type Pin = `domain:${string}` | `specialty:${string}` | `ability:${number}`
 
 /** Sans épingle choisie : les 3 domaines les plus hauts (à égalité, le plus avancé en coches). */
 export function defaultPins(c: Character): Pin[] {

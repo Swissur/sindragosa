@@ -20,6 +20,9 @@ export function ticksForRank(rank: number): number {
   return rank + 1
 }
 
+/** Place de la plus longue jauge (domaine au rang max − 1) : pastilles alignées d'une ligne à l'autre. */
+export const DOMAIN_GAUGE_SLOTS = ticksForRank(MAX_DOMAIN_RANK)
+
 export interface Track {
   /** Rang (domaine) ou niveau (spécialité). */
   rank: number

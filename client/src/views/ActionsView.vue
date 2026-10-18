@@ -43,9 +43,10 @@ const TABS = [
 
 const domainPin = (id: string): Pin => `domain:${id}`
 const abilityPin = (id: number): Pin => `ability:${id}`
+const specialtyPin = (id: string): Pin => `specialty:${id}`
 
-function poolLabel(domainId: string): string {
-  const s = rollSetup(character.value, { domainId, specialtyId: '', mode: 'normal', luck: 0 })
+function poolLabel(domainId: string, specialtyId = ''): string {
+  const s = rollSetup(character.value, { domainId, specialtyId, mode: 'normal', luck: 0 })
   return s ? `${s.count}d6` : ''
 }
 
@@ -70,6 +71,10 @@ const pinnedDomains = computed(() =>
     .filter((p) => p.startsWith('domain:'))
     .map((p) => domainById(p.slice(7)) ?? unlockedAdvanced.value.find((d) => d.id === p.slice(7)))
     .filter((d) => !!d),
+)
+// Une spécialité épinglée puis supprimée ne s'affiche plus
+const pinnedSpecialties = computed(() =>
+  character.value.specialties.filter((s) => pins.value.includes(specialtyPin(s.id))),
 )
 const pinnedAbilities = computed(() => {
   const ids = new Set(pins.value.filter((p) => p.startsWith('ability:')).map((p) => Number(p.slice(8))))
@@ -156,6 +161,17 @@ function onStabilise() {
           @toggle-pin="toggle(domainPin(d.id))"
         />
         <ActionTile
+          v-for="s in pinnedSpecialties"
+          :key="s.id"
+          :icon="Dices"
+          :label="s.name"
+          :detail="`${domainById(s.domainId)?.label ?? ''} · ${poolLabel(s.domainId, s.id)}`"
+          :pinned="true"
+          :testid="`tile-specialty-${s.id}`"
+          @activate="openRollSheet({ domainId: s.domainId, specialtyId: s.id, context: 'actions' })"
+          @toggle-pin="toggle(specialtyPin(s.id))"
+        />
+        <ActionTile
           v-for="a in pinnedAbilities"
           :key="a.id"
           :icon="ACTION_TYPES[a.actionType].icon"
@@ -166,7 +182,7 @@ function onStabilise() {
           @activate="openedAbility = a"
           @toggle-pin="toggle(abilityPin(a.id))"
         />
-        <AppEmptyState v-if="!pinnedDomains.length && !pinnedAbilities.length">
+        <AppEmptyState v-if="!pinnedDomains.length && !pinnedSpecialties.length && !pinnedAbilities.length">
           Épingle tes domaines et compétences préférés depuis les autres onglets.
         </AppEmptyState>
       </div>

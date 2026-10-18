@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { Upload, Trash2, Shield } from 'lucide-vue-next'
+import { Upload, Trash2, ChevronDown, Award } from 'lucide-vue-next'
 import AppCard from '../ui/AppCard.vue'
 import AppInput from '../ui/AppInput.vue'
 import AppSelect from '../ui/AppSelect.vue'
 import AppTextarea from '../ui/AppTextarea.vue'
 import AppBadge from '../ui/AppBadge.vue'
 import AppAccordion from '../ui/AppAccordion.vue'
+import AppTooltip from '../ui/AppTooltip.vue'
 import { RACES, raceById } from '../../data/sindragosa/races'
 import { withRace } from '../../utils/sindragosa/sheet'
 import type { Character } from '../../types/character'
@@ -105,20 +106,32 @@ async function removePortrait() {
         </AppSelect>
         <p v-else class="hero-race" data-testid="hero-race">
           <template v-if="race">
-            {{ race.label }}
+            <AppBadge variant="info">{{ race.label }}</AppBadge>
             <AppBadge :variant="race.faction === 'alliance' ? 'info' : 'attaque'">
               {{ race.faction === 'alliance' ? 'Alliance' : 'Horde' }}
             </AppBadge>
           </template>
           <template v-else>Race à choisir</template>
         </p>
+        <p v-if="character.titles.length" class="hero-titles">
+          <AppBadge v-for="t in character.titles" :key="t" variant="active" data-testid="title">
+            <Award :size="12" /> {{ t }}
+          </AppBadge>
+        </p>
+        <p v-if="race" class="hero-trait">
+          <span>Trait racial :</span>
+          <AppTooltip :label="race.power.name" side="bottom">
+            <template #trigger>
+              <span class="hero-trait-name" data-testid="hero-trait">
+                {{ race.power.name }} <ChevronDown :size="14" />
+              </span>
+            </template>
+            <strong class="hero-trait-action">{{ race.power.actionLabel }}</strong>
+            {{ race.power.effect }}
+          </AppTooltip>
+        </p>
       </div>
     </div>
-
-    <AppAccordion v-if="race" :title="race.power.name" :hint="race.power.actionLabel">
-      <template #icon><Shield :size="15" /></template>
-      <p class="hero-text">{{ race.power.effect }}</p>
-    </AppAccordion>
 
     <AppAccordion title="Histoire" :default-open="editing">
       <AppTextarea v-if="editing && !readonly" v-model="character.histoire" :rows="5" placeholder="D'où vient ton héros ?" />
@@ -211,6 +224,35 @@ async function removePortrait() {
   align-items: center;
   gap: var(--space-sm);
   color: var(--muted);
+}
+
+.hero-titles {
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+}
+
+.hero-trait {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.hero-trait-name {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  font-weight: 600;
+}
+
+/* Le contenu du popover est teleporte dans <body>, hors du scope */
+:global(.hero-trait-action) {
+  display: block;
 }
 
 .hero-text {

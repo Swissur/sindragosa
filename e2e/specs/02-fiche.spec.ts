@@ -102,6 +102,47 @@ test('le MJ récompense un joueur : la coche arrive sur sa fiche', async ({ brow
   }
 })
 
+// Retirer une spécialité est définitif (elle perd ses rangs) : le MJ seul, après confirmation.
+test('seul le MJ retire une spécialité, après confirmation', async ({ browser }) => {
+  const mj = await browser.newContext({ storageState: stateFor('mj-dev') })
+  const joueur = await browser.newContext({ storageState: stateFor('bracco') })
+  const pageMj = await mj.newPage()
+  const pageJoueur = await joueur.newPage()
+
+  const bracco = await activeCharacter(pageJoueur)
+  try {
+    await pageJoueur.goto('/personnage')
+    await pageJoueur.getByTestId('sheet-edit').click()
+    await pageJoueur.getByRole('tab', { name: 'Domaines', exact: true }).click()
+    await pageJoueur.getByTestId('domain-expand-melee-bourrine').click()
+    await expect(pageJoueur.getByTestId('domain-melee-bourrine').getByText('Boucliers', { exact: true })).toBeVisible()
+    await expect(pageJoueur.getByTestId('specialty-remove-s-boucliers')).toHaveCount(0)
+
+    const campaigns = await (await pageMj.request.get('/api/campaigns')).json()
+    const sandbox = campaigns.find((c: { name: string }) => c.name === 'Bac à sable')
+    const detail = await (await pageMj.request.get(`/api/campaigns/${sandbox.id}`)).json()
+    const member = detail.members.find((m: { username: string }) => m.username === 'bracco')
+
+    await pageMj.goto(`/campagnes/${sandbox.id}/personnage/${member.userId}`)
+    await pageMj.getByRole('tab', { name: 'Domaines', exact: true }).click()
+    await pageMj.getByTestId('domain-expand-melee-bourrine').click()
+    await pageMj.getByTestId('specialty-remove-s-boucliers').click()
+    const patched = pageMj.waitForResponse(
+      (r) => r.url().endsWith(`/members/${member.userId}/character`) && r.request().method() === 'PATCH' && r.ok(),
+    )
+    await pageMj.getByTestId('specialty-remove-confirm').click()
+    await patched
+    await expect(pageMj.getByTestId('specialty-remove-s-boucliers')).toHaveCount(0)
+
+    const after = await activeCharacter(pageJoueur)
+    expect(after.specialties.map((x: { id: string }) => x.id)).toEqual(['s-haches'])
+  } finally {
+    await pageJoueur.request.put(`/api/characters/${bracco.id}`, { data: { specialties: bracco.specialties } })
+    await mj.close()
+    await joueur.close()
+  }
+})
+
 test('un joueur ne peut pas régler la fiche d’un autre', async ({ browser }) => {
   const ctx = await browser.newContext({ storageState: stateFor('bracco') })
   const page = await ctx.newPage()
@@ -148,7 +189,9 @@ test('le joueur ne voit que ses compétences débloquées, le MJ voit tout le ca
   const pageMj = await mj.newPage()
   try {
     await pageJoueur.goto('/personnage')
-    await pageJoueur.getByRole('tab', { name: 'Domaines avancés' }).click()
+    await pageJoueur.getByRole('tab', { name: 'Compétences' }).click()
+    // Sections repliées par défaut : Déflagration d'Arcane est sous Intelligence
+    await pageJoueur.getByTestId('abilities-int').click()
     // Déflagration d'Arcane (#46) est débloquée, Attaque sournoise (#1) ne l'est pas.
     await expect(pageJoueur.getByTestId('ability-46')).toBeVisible()
     await expect(pageJoueur.getByTestId('ability-1')).toHaveCount(0)
@@ -159,12 +202,33 @@ test('le joueur ne voit que ses compétences débloquées, le MJ voit tout le ca
     const detail = await (await pageMj.request.get(`/api/campaigns/${sandbox.id}`)).json()
     const orlane = detail.members.find((m: { username: string }) => m.username === 'orlane')
     await pageMj.goto(`/campagnes/${sandbox.id}/personnage/${orlane.userId}`)
-    await pageMj.getByRole('tab', { name: 'Domaines avancés' }).click()
+    await pageMj.getByRole('tab', { name: 'Compétences' }).click()
     await pageMj.getByTestId('abilities-locked').click()
     await expect(pageMj.getByTestId('ability-1')).toBeVisible()
   } finally {
     await joueur.close()
     await mj.close()
+  }
+})
+
+test('le joueur retrouve une compétence débloquée par recherche et par type', async ({ browser }) => {
+  const ctx = await browser.newContext({ storageState: stateFor('orlane') })
+  const page = await ctx.newPage()
+  try {
+    await page.goto('/personnage')
+    await page.getByRole('tab', { name: 'Compétences' }).click()
+    // Sections repliées : rien de visible tant qu'on ne cherche pas.
+    await expect(page.getByTestId('ability-46')).toHaveCount(0)
+
+    // La recherche ignore casse et accents, et ouvre la section qui contient le résultat.
+    await page.getByTestId('abilities-search').fill('deflagration')
+    await expect(page.getByTestId('ability-46').first()).toBeVisible()
+
+    // Déflagration d'Arcane n'est pas un passif.
+    await page.getByTestId('abilities-type').selectOption('passif')
+    await expect(page.getByTestId('ability-46')).toHaveCount(0)
+  } finally {
+    await ctx.close()
   }
 })
 
@@ -175,7 +239,7 @@ test('un domaine avancé s’ouvre par ses prérequis et se lance', async ({ bro
   const page = await ctx.newPage()
   try {
     await page.goto('/personnage')
-    await page.getByRole('tab', { name: 'Domaines avancés' }).click()
+    await page.getByRole('tab', { name: 'Domaines', exact: true }).click()
     // Chronomancie : Magie profane & Arcanes 3 + Histoire & Géographie 1 → Orlane y est.
     await expect(page.getByTestId('advanced-chronomancie')).toBeVisible()
     // Démonologie demande Magie de l'Ombre & Fél 2 : fermé, donc invisible.

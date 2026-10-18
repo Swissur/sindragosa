@@ -40,7 +40,7 @@ test('une arme équipée donne une attaque dans les compétences et dans Mes act
   const page = await ctx.newPage()
   try {
     await page.goto('/personnage')
-    await page.getByRole('tab', { name: 'Domaines avancés' }).click()
+    await page.getByRole('tab', { name: 'Compétences' }).click()
     await expect(page.getByTestId('strike-i-dagues')).toContainText('Dagues jumelles')
 
     await page.goto('/actions')

@@ -69,7 +69,9 @@ test('un mage se concentre : puissante monte les dés de l’effet', async ({ br
 
   try {
     await page.goto('/personnage')
-    await page.getByRole('tab', { name: 'Domaines avancés' }).click()
+    await page.getByRole('tab', { name: 'Compétences' }).click()
+    // Sections repliées par défaut : Déflagration d'Arcane est sous Intelligence
+    await page.getByTestId('abilities-int').click()
     const carte = page.getByTestId('ability-46')
     await carte.getByTestId('ability-toggle').click()
     await expect(carte.getByTestId('ability-effect')).toContainText('+1d6')

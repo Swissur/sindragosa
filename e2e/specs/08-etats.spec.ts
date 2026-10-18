@@ -51,7 +51,7 @@ test("le MJ pose un état sur un PJ, le joueur le voit sur sa fiche", async ({ b
 
     // ── La joueuse voit le même état sur sa fiche ──
     await pageJoueur.goto('/personnage')
-    await expect(pageJoueur.getByTestId(`etat-badge-${ETAT}`)).toBeVisible()
+    await expect(pageJoueur.getByTestId(`etat-toggle-${ETAT}`)).toHaveAttribute('aria-pressed', 'true')
 
     // ── On repart propre : l'état retiré, le combat terminé ──
     await pageMj.getByTestId(`open-etats-${participantId}`).click()

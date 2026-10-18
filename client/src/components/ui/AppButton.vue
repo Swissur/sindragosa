@@ -5,7 +5,7 @@ import { cn } from '@/utils/cn'
 import type { HTMLAttributes } from 'vue'
 
 interface Props extends PrimitiveProps {
-  variant?: 'primary' | 'ghost' | 'danger'
+  variant?: 'primary' | 'ghost' | 'danger' | 'bare'
   size?: 'normal' | 'small'
   type?: 'button' | 'submit'
   disabled?: boolean
@@ -37,6 +37,8 @@ const buttonVariants = cva(
           'bg-card text-destructive ' +
           'border-[color-mix(in_srgb,var(--danger)_55%,var(--border))] ' +
           'hover:border-[var(--danger)] hover:bg-[color-mix(in_srgb,var(--danger)_16%,transparent)]',
+        // Sans cadre ni fond : l'icône seule (étoile de favori…)
+        bare: 'bg-transparent text-foreground hover:bg-[var(--accent-soft)]',
       },
       size: {
         normal: 'min-h-10 px-[0.85rem] py-[0.5rem] text-[0.95rem]',
@@ -54,6 +56,7 @@ const buttonVariants = cva(
     Les classes `btn` / `primary` / `ghost` / `small` restent : les 3 themes
     ciblent `html[data-style=...] .btn.primary`. Les regles de base ont ete
     retirees de style.css, donc plus de conflit avec Tailwind.
+    `bare` ne porte pas `btn` : les themes y redessineraient un cadre.
   -->
   <Primitive
     :as="as"
@@ -63,7 +66,7 @@ const buttonVariants = cva(
     :class="
       cn(
         buttonVariants({ variant: variant ?? 'ghost', size: size ?? 'normal', block }),
-        'btn',
+        variant !== 'bare' && 'btn',
         variant ?? 'ghost',
         variant === 'danger' && 'ghost',
         size === 'small' && 'small',

@@ -9,7 +9,10 @@ import AppButton from '../components/ui/AppButton.vue'
 import AppIconBtn from '../components/ui/AppIconBtn.vue'
 import AppTabs from '../components/ui/AppTabs.vue'
 import { useCharacter, loadCharacter } from '../composables/useCharacter'
-import { showToast } from '../composables/useToast'
+import { showToast, type ToastDetail } from '../composables/useToast'
+import { usePins } from '../composables/usePins'
+import { abilityDetail, advancedDetail } from '../utils/sindragosa/unlockDetails'
+import type { Pin } from '../utils/sindragosa/pins'
 
 import HeroCard from '../components/character-sheet/HeroCard.vue'
 import VitalsCard from '../components/character-sheet/VitalsCard.vue'
@@ -17,7 +20,6 @@ import StatsCard from '../components/character-sheet/StatsCard.vue'
 import ResourcesCard from '../components/character-sheet/ResourcesCard.vue'
 import SessionTicksBanner from '../components/character-sheet/SessionTicksBanner.vue'
 import DomainsCard from '../components/character-sheet/DomainsCard.vue'
-import DistinctionsCard from '../components/character-sheet/DistinctionsCard.vue'
 import CraftsCard from '../components/character-sheet/CraftsCard.vue'
 import UnlockedAbilitiesCard from '../components/abilities/UnlockedAbilitiesCard.vue'
 
@@ -27,32 +29,50 @@ const route = useRoute()
 const id = route.query.id ? Number(route.query.id) : undefined
 loadCharacter(id)
 
-type TabId = 'heros' | 'domaines' | 'avances'
+type TabId = 'heros' | 'domaines' | 'competences'
 const activeTab = ref<TabId>('heros')
 const editing = ref(false)
-const newPowers = ref(false)
+/** Pastille « du nouveau ici » sur un onglet. */
+const news = ref<Partial<Record<TabId, boolean>>>({})
 
 const TABS = [
   { value: 'heros', label: 'Héros', icon: ScrollText },
   { value: 'domaines', label: 'Domaines', icon: BookOpen },
-  { value: 'avances', label: 'Domaines avancés', icon: Sparkles },
+  { value: 'competences', label: 'Compétences', icon: Sparkles },
 ]
 
 // Un domaine qui monte peut débloquer des compétences ou ouvrir un domaine avancé :
-// pastille sur l'onglet Domaines avancés.
-watch(() => unlocked.value.length, (now, before) => {
-  if (loading.value || before === undefined || now <= before) return
-  showToast(now - before > 1 ? `${now - before} nouvelles compétences !` : 'Nouvelle compétence débloquée !')
-  if (activeTab.value !== 'avances') newPowers.value = true
+// toast qui reste, avec la fiche de chaque nouveauté, et pastille sur l'onglet.
+// On ne compare que deux états du même perso : un chargement n'est pas un déblocage.
+function onAdded<T extends { id: string | number }>(list: () => T[], tab: TabId, announce: (added: T[]) => void) {
+  watch(() => ({ owner: character.value.id, list: list() }), (now, before) => {
+    if (loading.value || now.owner !== before.owner) return
+    const known = new Set(before.list.map((x) => x.id))
+    const added = now.list.filter((x) => !known.has(x.id))
+    if (!added.length) return
+    announce(added)
+    if (activeTab.value !== tab) news.value[tab] = true
+  })
+}
+
+// L'étoile du toast épingle la nouveauté dans « Mes actions »
+const { isPinned, toggle } = usePins(character)
+const pinnable = (detail: ToastDetail, pin: Pin): ToastDetail => ({
+  ...detail,
+  pin: { isPinned: () => isPinned(pin), toggle: () => toggle(pin) },
 })
 
-watch(() => unlockedAdvanced.value.length, (now, before) => {
-  if (loading.value || before === undefined || now <= before) return
-  showToast(now - before > 1 ? `${now - before} domaines avancés s'ouvrent !` : 'Un domaine avancé s’ouvre !')
-  if (activeTab.value !== 'avances') newPowers.value = true
-})
+onAdded(() => unlocked.value, 'competences', (added) => showToast(
+  added.length > 1 ? `${added.length} nouvelles compétences !` : 'Nouvelle compétence débloquée !',
+  { persistent: true, details: added.map((a) => pinnable(abilityDetail(a), `ability:${a.id}`)) },
+))
 
-watch(activeTab, (tab) => { if (tab === 'avances') newPowers.value = false })
+onAdded(() => unlockedAdvanced.value, 'domaines', (added) => showToast(
+  added.length > 1 ? `${added.length} domaines avancés s'ouvrent !` : 'Un domaine avancé s’ouvre !',
+  { persistent: true, details: added.map((d) => pinnable(advancedDetail(d), `domain:${d.id}`)) },
+))
+
+watch(activeTab, (tab) => { news.value[tab] = false })
 </script>
 
 <template>
@@ -88,7 +108,7 @@ watch(activeTab, (tab) => { if (tab === 'avances') newPowers.value = false })
       <AppTabs
         v-model="activeTab"
         class="sheet-tabs"
-        :tabs="TABS.map((t) => ({ ...t, dot: t.value === 'avances' && newPowers }))"
+        :tabs="TABS.map((t) => ({ ...t, dot: !!news[t.value as TabId] }))"
         icon-only-mobile
       />
 
@@ -101,12 +121,11 @@ watch(activeTab, (tab) => { if (tab === 'avances') newPowers.value = false })
 
       <template v-if="activeTab === 'domaines'">
         <SessionTicksBanner :session-ticks="character.sessionTicks" />
-        <DomainsCard :character="character" :editing="editing" />
+        <DomainsCard :character="character" :advanced="unlockedAdvanced" />
         <CraftsCard :character="character" :editing="editing" />
       </template>
 
-      <template v-if="activeTab === 'avances'">
-        <DistinctionsCard :character="character" :advanced="unlockedAdvanced" />
+      <template v-if="activeTab === 'competences'">
         <UnlockedAbilitiesCard :character="character" :unlocked="unlocked" />
       </template>
     </template>

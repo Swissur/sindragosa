@@ -1,21 +1,34 @@
 <script setup lang="ts">
-import { ref, toRef } from 'vue'
+import { computed, ref, toRef } from 'vue'
 import AppCard from '../ui/AppCard.vue'
 import AppAccordion from '../ui/AppAccordion.vue'
 import AppButton from '../ui/AppButton.vue'
 import DomainRow from './DomainRow.vue'
-import { DOMAINS, STATS, type StatId } from '../../data/sindragosa/domains'
+import AdvancedDomainRow from './AdvancedDomainRow.vue'
+import { DOMAINS, STATS, type AdvancedDomain, type StatId } from '../../data/sindragosa/domains'
 import { usePins } from '../../composables/usePins'
+import { advancedStats } from '../../utils/sindragosa/advanced'
+import { byStat } from '../../utils/sindragosa/statGroups'
 import type { Character } from '../../types/character'
 
 /**
  * Les 30 domaines, en 6 accordéons (un par carac). Seuls les domaines entamés
  * (rang > 0 ou coches en cours) sont visibles ; les autres se déplient à la demande.
+ * Suivent les domaines avancés ouverts, sous chaque carac de leurs prérequis.
  */
-const props = defineProps<{ character: Character; editing?: boolean; readonly?: boolean }>()
+const props = defineProps<{
+  character: Character
+  advanced: AdvancedDomain[]
+  readonly?: boolean
+  canRemoveSpecialty?: boolean
+}>()
+
+const emit = defineEmits<{ (e: 'remove-specialty', specialty: Character['specialties'][number]): void }>()
 
 const showAll = ref<Partial<Record<StatId, boolean>>>({})
-const { isPinned, toggle } = usePins(toRef(props, 'character'))
+const { pins, isPinned, toggle } = usePins(toRef(props, 'character'))
+const advancedByStat = computed(() => byStat(props.advanced, (d) => advancedStats(d.id)))
+const pinnedSpecialties = computed(() => pins.value.filter((p) => p.startsWith('specialty:')).map((p) => p.slice(10)))
 
 const started = (id: string) => {
   const p = props.character.domains[id]
@@ -34,7 +47,6 @@ function domainsOf(stat: StatId) {
       v-for="s in STATS"
       :key="s.id"
       :title="`${s.label} ${character.stats[s.id]}`"
-      :hint="`${domainsOf(s.id).visible.filter((d) => started(d.id)).length} / 5`"
       :default-open="true"
       :testid="`domains-${s.id}`"
     >
@@ -43,7 +55,19 @@ function domainsOf(stat: StatId) {
         :key="d.id"
         :character="character"
         :domain="d"
-        :editing="editing"
+        :readonly="readonly"
+        :can-remove-specialty="canRemoveSpecialty"
+        :pinned="readonly ? undefined : isPinned(`domain:${d.id}`)"
+        :pinned-specialties="readonly ? undefined : pinnedSpecialties"
+        @toggle-pin="toggle(`domain:${d.id}`)"
+        @toggle-specialty-pin="(id) => toggle(`specialty:${id}`)"
+        @remove-specialty="(s) => emit('remove-specialty', s)"
+      />
+      <AdvancedDomainRow
+        v-for="d in advancedByStat[s.id]"
+        :key="`advanced-${d.id}`"
+        :character="character"
+        :domain="d"
         :readonly="readonly"
         :pinned="readonly ? undefined : isPinned(`domain:${d.id}`)"
         @toggle-pin="toggle(`domain:${d.id}`)"

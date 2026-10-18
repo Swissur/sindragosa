@@ -10,15 +10,27 @@ defineProps<{
   total: number
   /** Rang maximal atteint : la jauge est remplacée par une étoile. */
   maxed?: boolean
+  /**
+   * Réserve la place de N coches : des jauges empilées gardent leurs pastilles
+   * alignées à droite, quel que soit leur nombre de coches.
+   */
+  slots?: number
 }>()
 </script>
 
 <template>
   <span class="gauge" :aria-label="maxed ? `Rang ${rank}, maximum` : `Rang ${rank ?? ''}, ${ticks} coches sur ${total}`">
     <span v-if="rank !== undefined" class="gauge-rank">{{ rank }}</span>
-    <span v-if="maxed" class="gauge-max" aria-hidden="true">★</span>
-    <span v-else class="gauge-dots" aria-hidden="true">
-      <span v-for="i in total" :key="i" class="gauge-dot" :class="{ 'gauge-dot--on': i <= ticks }" />
+    <span v-if="maxed && !slots" class="gauge-max" aria-hidden="true">★</span>
+    <span v-else class="gauge-dots" :style="{ gridTemplateColumns: `repeat(${Math.max(total, slots ?? 0)}, auto)` }" aria-hidden="true">
+      <span v-if="maxed" class="gauge-max gauge-max--slots">★</span>
+      <span
+        v-for="i in Math.max(total, slots ?? 0)"
+        :key="i"
+        class="gauge-dot"
+        :class="{ 'gauge-dot--on': !maxed && i <= ticks, 'gauge-dot--empty': maxed || i > total }"
+        :style="{ gridColumn: i }"
+      />
     </span>
   </span>
 </template>
@@ -45,11 +57,26 @@ defineProps<{
 }
 
 .gauge-dots {
-  display: inline-flex;
+  display: inline-grid;
+  grid-template-rows: auto;
+  align-items: center;
   gap: 3px;
 }
 
+/* Place réservée par `slots` : la coche existe pour la largeur, invisible */
+.gauge-dot--empty {
+  visibility: hidden;
+}
+
+/* L'étoile prend la largeur des coches réservées, à gauche */
+.gauge-max--slots {
+  grid-row: 1;
+  grid-column: 1 / -1;
+  line-height: 1;
+}
+
 .gauge-dot {
+  grid-row: 1;
   width: 0.55rem;
   height: 0.55rem;
   border-radius: 50%;

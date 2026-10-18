@@ -32,8 +32,8 @@ defineProps<{ character: Character; editing?: boolean; readonly?: boolean }>()
 <style scoped>
 .stats {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: var(--space-sm);
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: var(--space-xs);
 }
 
 .stat {
@@ -41,25 +41,31 @@ defineProps<{ character: Character; editing?: boolean; readonly?: boolean }>()
   flex-direction: column;
   align-items: center;
   gap: var(--space-xs);
-  padding: var(--space-sm) var(--space-xs);
+  padding: var(--space-xs);
   border-radius: var(--radius-md);
   background: var(--surface-2);
 }
 
 .stat-abbr {
-  font-size: 0.78rem;
+  font-size: 0.7rem;
   font-weight: 700;
   letter-spacing: 0.05em;
   color: var(--muted);
 }
 
 .stat-value {
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   font-weight: 700;
+  line-height: 1.2;
   color: var(--accent-strong);
 }
 
-/* En édition, le stepper (3 × 40px) ne tient pas à 3 colonnes sur téléphone */
+/* En édition, le stepper (3 × 40px) ne tient pas à 6 colonnes */
+.stats:has(.stepper) {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+/* … ni à 3 colonnes sur téléphone */
 @media (max-width: 420px) {
   .stats:has(.stepper) {
     grid-template-columns: repeat(2, 1fr);

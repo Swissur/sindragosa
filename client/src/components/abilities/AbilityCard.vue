@@ -76,6 +76,7 @@ function use() {
       </button>
       <AppIconBtn
         v-if="pinned !== undefined && unlocked"
+        variant="bare"
         :title="pinned ? 'Retirer des favoris' : 'Ajouter aux favoris'"
         :data-testid="`ability-pin-${ability.id}`"
         @click="emit('toggle-pin')"

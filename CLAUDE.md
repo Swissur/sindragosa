@@ -148,8 +148,8 @@ Add a shadcn component with `npx shadcn-vue@latest add <name> -y -o` (writes int
 | Component | Usage |
 |---|---|
 | `AppInput` | All `<input>` fields (text, number, password). Fixed `font-size: 0.92rem` for consistent height. Props: `modelValue`, `type`, `placeholder`, `min`, `max`, `step`, `required`, `autofocus`, `autocomplete`, `disabled`, `textAlign` (`left`/`center`), `id`. Emits numbers automatically for `type="number"`. Layout sizing (width, flex) is controlled by the parent via `class`. |
-| `AppButton` | All text buttons. Props: `variant` (`ghost` (default), `primary`, `danger`), `size` (`normal`/`small`), `type` (`button`/`submit`), `disabled`, `block` (full-width), `as` (render as another tag/component, e.g. `RouterLink`). |
-| `AppIconBtn` | 40×40 px icon-only button. Variants: `ghost` (default), `primary`, `danger`. Use `size` prop to override dimensions. |
+| `AppButton` | All text buttons. Props: `variant` (`ghost` (default), `primary`, `danger`, `bare` — sans cadre ni fond), `size` (`normal`/`small`), `type` (`button`/`submit`), `disabled`, `block` (full-width), `as` (render as another tag/component, e.g. `RouterLink`). |
+| `AppIconBtn` | 40×40 px icon-only button. Variants: `ghost` (default), `primary`, `danger`, `bare` (sans cadre ni fond, ex. étoile de favori). Use `size` prop to override dimensions. |
 | `AppPageLayout` | **Every page wrapper.** Provides consistent layout with 3 slots: `#top-bar` (header), default (main content), `#bottom-bar` (optional footer). Props: `mode` (`scroll` (default) / `full` — full-height viewport), `width` (`default` (640px) / `wide` (800px) / `full` (1400px, écrans à deux colonnes)). All views except LoginView must use this. |
 | `AppPageHead` | Every page header with an `<h1>`. Slot `#actions` for buttons on the right. Goes inside `AppPageLayout`'s `#top-bar` slot. |
 | `AppCard` | Any bordered surface card. Use `title` prop for a simple heading, `#titleActions` slot for buttons next to the title, or place a manual `.card-head` div in the default slot for complex headers. |
@@ -163,7 +163,7 @@ Add a shadcn component with `npx shadcn-vue@latest add <name> -y -o` (writes int
 | `AppTextarea` | All `<textarea>` fields. `v-model`, `rows`, `placeholder`. Same look as AppInput. |
 | `AppTooltip` | **Toute infobulle tapable** (detail d'un calcul, source d'un bonus). Props : `label` (nom accessible du declencheur), `side`. Slot `#trigger` = la marque cliquable, slot par defaut = le contenu. Built on reka-ui `Popover` (et pas `Tooltip`) : sur telephone il n'y a pas de survol, il faut un tap. Clic dehors, Echap et repositionnement inclus. |
 | `AppStepper` | **Tout compteur − valeur +** (PV, chance, réserves, caracs, monnaie). `v-model` number, props `min` (0 par défaut), `max` (absent = sans plafond), `label` (nom accessible), `testid` (donne `<testid>-minus/-value/-plus`), `disabled`. Slot par défaut pour remplacer l'affichage de la valeur (ex. `12/20`). |
-| `AppTickGauge` | Rang en pastille + jauge de coches. Props `rank?` (nombre ou texte, ex. `Exp.`), `ticks`, `total`, `maxed` (remplace la jauge par une étoile). |
+| `AppTickGauge` | Rang en pastille + jauge de coches. Props `rank?` (nombre ou texte, ex. `Exp.`), `ticks`, `total`, `maxed` (remplace la jauge par une étoile), `slots?` (réserve la place de N coches pour aligner les pastilles de jauges empilées). |
 | `AppAccordion` | **Toute section repliable.** Props `title`, `hint?` (texte discret à droite), `defaultOpen`, `testid`; `v-model:open` optionnel. Slot `#icon`. Built on reka-ui `Collapsible`. |
 | `AppToast` | Global toasts — never instantiate; call `showToast(message, options?)` from `composables/useToast.ts`. |
 

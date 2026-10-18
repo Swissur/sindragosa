@@ -7,9 +7,8 @@ import AppInput from '../ui/AppInput.vue'
 import AppButton from '../ui/AppButton.vue'
 import AppModal from '../ui/AppModal.vue'
 import { openRollSheet } from '../../composables/useRollSheet'
-import { removeWithUndo } from '../../composables/useUndoRemove'
 import { addSpecialty } from '../../utils/sindragosa/sheet'
-import { canAddSpecialty, MAX_DOMAIN_RANK, MAX_SPECIALTY_LEVEL, TICKS_PER_SPECIALTY_LEVEL, ticksForRank } from '../../utils/sindragosa/progression'
+import { canAddSpecialty, DOMAIN_GAUGE_SLOTS, MAX_DOMAIN_RANK, MAX_SPECIALTY_LEVEL, TICKS_PER_SPECIALTY_LEVEL, ticksForRank } from '../../utils/sindragosa/progression'
 import { SPECIALTY_LEVEL_LABELS } from '../../utils/sindragosa/rollSetup'
 import type { Domain } from '../../data/sindragosa/domains'
 import type { Character } from '../../types/character'
@@ -21,13 +20,20 @@ import type { Character } from '../../types/character'
 const props = defineProps<{
   character: Character
   domain: Domain
-  editing?: boolean
   readonly?: boolean
+  /** Fiche d'un joueur vue par le MJ : lui seul peut retirer une spécialité. */
+  canRemoveSpecialty?: boolean
   /** Favori dans « Mes actions ». Absent = pas de bouton (fiche d'un autre joueur). */
   pinned?: boolean
+  /** Ids des spécialités épinglées. Absent = pas de bouton. */
+  pinnedSpecialties?: string[]
 }>()
 
-const emit = defineEmits<{ (e: 'toggle-pin'): void }>()
+const emit = defineEmits<{
+  (e: 'toggle-pin'): void
+  (e: 'toggle-specialty-pin', id: string): void
+  (e: 'remove-specialty', specialty: Character['specialties'][number]): void
+}>()
 
 const expanded = ref(false)
 const newName = ref('')
@@ -53,12 +59,6 @@ function add(name: string) {
   newName.value = ''
   otherOpen.value = false
 }
-
-function remove(id: string) {
-  const i = props.character.specialties.findIndex((s) => s.id === id)
-  const s = props.character.specialties[i]
-  if (s) removeWithUndo(props.character.specialties, i, s.name)
-}
 </script>
 
 <template>
@@ -71,11 +71,13 @@ function remove(id: string) {
           :ticks="progress.ticks"
           :total="ticksForRank(progress.rank + 1)"
           :maxed="progress.rank >= MAX_DOMAIN_RANK"
+          :slots="DOMAIN_GAUGE_SLOTS"
         />
       </button>
       <AppIconBtn
         v-if="pinned !== undefined"
         :title="pinned ? 'Retirer des favoris' : 'Ajouter aux favoris'"
+        variant="bare"
         :data-testid="`domain-pin-${domain.id}`"
         @click="emit('toggle-pin')"
       >
@@ -91,7 +93,10 @@ function remove(id: string) {
     </div>
 
     <div v-if="expanded" class="domain-detail">
-      <p v-if="!specialties.length && !canAdd" class="domain-hint">
+      <p v-if="!specialties.length && readonly" class="domain-hint" data-testid="specialty-none">
+        Aucune spécialité.
+      </p>
+      <p v-else-if="!specialties.length && !canAdd" class="domain-hint">
         Une spécialité par rang : monte ce domaine pour en choisir une.
       </p>
       <div v-for="s in specialties" :key="s.id" class="specialty" data-testid="specialty-row">
@@ -102,11 +107,31 @@ function remove(id: string) {
             :ticks="s.ticks"
             :total="TICKS_PER_SPECIALTY_LEVEL"
             :maxed="s.level >= MAX_SPECIALTY_LEVEL"
+            :slots="DOMAIN_GAUGE_SLOTS"
           />
         </button>
-        <AppIconBtn v-if="editing && !readonly" variant="danger" title="Supprimer" @click="remove(s.id)">
+        <AppIconBtn
+          v-if="pinnedSpecialties"
+          :title="pinnedSpecialties.includes(s.id) ? 'Retirer des favoris' : 'Ajouter aux favoris'"
+          variant="bare"
+          class="specialty-btn"
+          :data-testid="`specialty-pin-${s.id}`"
+          @click="emit('toggle-specialty-pin', s.id)"
+        >
+          <Star :size="16" :class="{ 'domain-star--on': pinnedSpecialties.includes(s.id) }" />
+        </AppIconBtn>
+        <AppIconBtn
+          v-if="canRemoveSpecialty"
+          variant="danger"
+          class="specialty-btn"
+          title="Retirer la spécialité"
+          :data-testid="`specialty-remove-${s.id}`"
+          @click="emit('remove-specialty', s)"
+        >
           <Trash2 :size="16" />
         </AppIconBtn>
+        <!-- Sous le chevron du domaine : garde l'étoile et la jauge alignées -->
+        <span v-else class="specialty-spacer" />
       </div>
 
       <div v-if="canAdd && !readonly" class="specialty-suggestions">
@@ -192,7 +217,6 @@ function remove(id: string) {
 .domain-detail {
   display: flex;
   flex-direction: column;
-  gap: var(--space-xs);
   margin-left: var(--space-md);
   padding-left: var(--space-sm);
   border-left: 2px solid var(--border);
@@ -208,7 +232,25 @@ function remove(id: string) {
   font-size: 0.92rem;
 }
 
+/* Lignes de spécialité plus serrées que celles des domaines : 32px de haut.
+   Les boutons gardent 40px de large pour rester sous ceux du domaine. */
+.specialty-main {
+  min-height: 32px;
+  padding-block: 0;
+}
+
+.specialty-btn {
+  height: 32px;
+  min-height: 32px;
+}
+
+.specialty-spacer {
+  flex-shrink: 0;
+  width: 40px;
+}
+
 .specialty-suggestions {
+  margin-top: var(--space-xs);
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-xs);

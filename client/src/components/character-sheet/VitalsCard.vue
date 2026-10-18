@@ -1,12 +1,9 @@
 <script setup lang="ts">
-import { ref } from 'vue'
 import { Heart, Clover, Shield, Zap, FlaskConical } from 'lucide-vue-next'
 import AppCard from '../ui/AppCard.vue'
 import AppStepper from '../ui/AppStepper.vue'
-import AppIconBtn from '../ui/AppIconBtn.vue'
 import AppTooltip from '../ui/AppTooltip.vue'
-import EtatsRow from '../etats/EtatsRow.vue'
-import EtatsSheet from '../etats/EtatsSheet.vue'
+import EtatsTags from '../etats/EtatsTags.vue'
 import { hpGradientColor } from '../../utils/hpGradientColor'
 import type { Character } from '../../types/character'
 
@@ -18,24 +15,24 @@ defineProps<{
   editing?: boolean
   readonly?: boolean
 }>()
-
-const showEtats = ref(false)
 </script>
 
 <template>
   <AppCard class="vitals">
     <div class="vital vital--hp">
-      <span class="vital-label"><Heart :size="15" /> PV</span>
+      <span class="vital-label">
+        <Heart :size="15" /> PV
+        <AppTooltip label="Calcul des PV max">
+          <template #trigger><span class="vital-help">?</span></template>
+          20 + 2 par rang dans un domaine de Force ou d'Endurance (5 pour Résistance physique)
+          + 8 par point d'Endurance gagné depuis la création + bonus.
+        </AppTooltip>
+      </span>
       <AppStepper v-if="!readonly" v-model="character.hpCurrent" :max="hpMax" label="Points de vie" testid="hp">
         <span :style="{ color: hpGradientColor(character.hpCurrent, hpMax) }" data-testid="hp-current">{{ character.hpCurrent }}</span>
         <span class="vital-max">/{{ hpMax }}</span>
       </AppStepper>
       <span v-else class="vital-value">{{ character.hpCurrent }}<span class="vital-max">/{{ hpMax }}</span></span>
-      <AppTooltip label="Calcul des PV max">
-        <template #trigger><span class="vital-help">?</span></template>
-        20 + 2 par rang dans un domaine de Force ou d'Endurance (5 pour Résistance physique)
-        + 8 par point d'Endurance gagné depuis la création + bonus.
-      </AppTooltip>
     </div>
 
     <div class="vital">
@@ -46,15 +43,24 @@ const showEtats = ref(false)
 
     <div class="vital-row">
       <div class="vital vital--small">
-        <span class="vital-label"><Shield :size="15" /> Armure</span>
+        <span class="vital-label">
+          <Shield :size="15" /> Armure
+          <AppTooltip label="Calcul de l'armure">
+            <template #trigger><span class="vital-help">?</span></template>
+            Armure Physique (AP) = armures équipées dans l'inventaire + bonus des compétences ({{ character.armorBonus }}).
+          </AppTooltip>
+        </span>
         <span class="vital-value" data-testid="armor-value">{{ character.armor }}</span>
-        <AppTooltip label="Calcul de l'armure">
-          <template #trigger><span class="vital-help">?</span></template>
-          Armure Physique (AP) = armures équipées dans l'inventaire + bonus des compétences ({{ character.armorBonus }}).
-        </AppTooltip>
       </div>
       <div class="vital vital--small">
-        <span class="vital-label"><Zap :size="15" /> Initiative</span>
+        <span class="vital-label">
+          <Zap :size="15" /> Initiative
+          <AppTooltip label="Calcul de l'initiative">
+            <template #trigger><span class="vital-help">?</span></template>
+            Agilité ({{ character.stats.agi }}) + Sagesse ({{ character.stats.wis }})
+            + rang en Perception &amp; Sens ({{ character.domains['perception-sens']?.rank ?? 0 }}).
+          </AppTooltip>
+        </span>
         <span class="vital-value" data-testid="initiative">{{ initiative }}</span>
       </div>
     </div>
@@ -69,16 +75,11 @@ const showEtats = ref(false)
       <AppStepper v-model="character.hpBonus" :min="-99" label="Bonus de PV" testid="hp-bonus" />
     </div>
 
-    <div class="vital">
-      <EtatsRow :states="character.states" size="sm" />
-      <AppIconBtn v-if="!readonly" title="États" data-testid="open-etats" @click="showEtats = true">
-        <FlaskConical :size="16" />
-      </AppIconBtn>
-      <EtatsSheet
-        v-if="!readonly"
-        v-model="showEtats"
-        :name="character.name"
+    <div class="vital-status">
+      <span class="vital-label"><FlaskConical :size="15" /> Statut</span>
+      <EtatsTags
         :states="character.states"
+        :readonly="readonly"
         @update:states="(states) => (character.states = states)"
       />
     </div>
@@ -100,6 +101,13 @@ const showEtats = ref(false)
   gap: var(--space-md);
 }
 
+.vital-status {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  padding-top: var(--space-xs);
+}
+
 .vital-label {
   display: inline-flex;
   align-items: center;
@@ -108,7 +116,14 @@ const showEtats = ref(false)
   color: var(--accent-strong);
 }
 
-.vital--hp .vital-label {
+.vital--hp .vital-status {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  padding-top: var(--space-xs);
+}
+
+.vital-label {
   flex: 1;
 }
 

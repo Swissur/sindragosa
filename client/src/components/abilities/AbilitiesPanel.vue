@@ -2,14 +2,12 @@
 import { computed, ref } from 'vue'
 import { Unlock, Lock } from 'lucide-vue-next'
 import AppCard from '../ui/AppCard.vue'
-import AppInput from '../ui/AppInput.vue'
-import AppSelect from '../ui/AppSelect.vue'
 import AppToggleGroup, { type AppToggleItem } from '../ui/AppToggleGroup.vue'
 import AppEmptyState from '../ui/AppEmptyState.vue'
 import AbilityCard from './AbilityCard.vue'
-import { ACTION_TYPES } from './actionTypes'
+import AbilityFilters from './AbilityFilters.vue'
 import { ABILITIES } from '../../data/sindragosa/abilities'
-import { normalizeName } from '../../utils/sindragosa/prerequisites'
+import { matchesAbilityFilter } from '../../utils/sindragosa/abilityFilter'
 import type { Ability, ActionType } from '../../data/sindragosa/types'
 import type { Character } from '../../types/character'
 
@@ -32,13 +30,11 @@ const unlockedIds = computed(() => new Set((props.unlocked ?? []).map((a) => a.i
 const lockActive = computed(() => (props.character ? lockFilter.value : ''))
 
 const groups = computed(() => {
-  const q = normalizeName(search.value)
   const list = ABILITIES.filter((a) => {
     const isUnlocked = unlockedIds.value.has(a.id)
     if (lockActive.value === 'unlocked' && !isUnlocked) return false
     if (lockActive.value === 'locked' && isUnlocked) return false
-    if (actionType.value && a.actionType !== actionType.value) return false
-    return !q || normalizeName(a.name).includes(q)
+    return matchesAbilityFilter(a, { search: search.value, actionType: actionType.value })
   })
   const byCategory = new Map<string, Ability[]>()
   for (const a of list) byCategory.set(a.category, [...(byCategory.get(a.category) ?? []), a])
@@ -48,16 +44,9 @@ const groups = computed(() => {
 
 <template>
   <div class="abilities">
-    <div class="abilities-filters">
-      <AppInput v-model="search" placeholder="Chercher une compétence" class="abilities-search" data-testid="abilities-search" />
-      <div class="abilities-filters-line">
-        <AppToggleGroup v-if="character" v-model="lockFilter" :items="LOCK_ITEMS" />
-        <AppSelect v-model="actionType" class="abilities-type">
-          <option value="">Tous les types</option>
-          <option v-for="(meta, id) in ACTION_TYPES" :key="id" :value="id">{{ meta.label }}</option>
-        </AppSelect>
-      </div>
-    </div>
+    <AbilityFilters v-model:search="search" v-model:action-type="actionType">
+      <AppToggleGroup v-if="character" v-model="lockFilter" :items="LOCK_ITEMS" />
+    </AbilityFilters>
 
     <AppEmptyState v-if="!groups.length">
       {{ lockActive === 'unlocked' && !search
@@ -78,22 +67,3 @@ const groups = computed(() => {
   </div>
 </template>
 
-<style scoped>
-.abilities-filters {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-sm);
-  margin-bottom: var(--space-md);
-}
-
-.abilities-filters-line {
-  display: flex;
-  gap: var(--space-sm);
-  align-items: center;
-}
-
-.abilities-type {
-  flex: 1;
-  min-width: 0;
-}
-</style>

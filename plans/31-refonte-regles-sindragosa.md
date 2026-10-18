@@ -137,7 +137,8 @@ On reste sur le modèle actuel : un personnage est une ligne, avec ses listes en
   - Jets en réserve de d6 de bout en bout : feuille de jet, journal de campagne, dés 3D. La colonne `roll_event.pool` (migration 048) garde le palier, l'échec critique et le seuil de critique.
   - Route `PATCH /api/campaigns/:id/members/:userId/character` réservée au MJ. Le joueur reçoit le réglage par SSE (`character`), pour que sa sauvegarde auto ne l'écrase pas.
   - Repos court, repos long et fin de séance lancés par le MJ depuis la page Campagne.
-- Étape 7 : en partie. L'initiative est calculée selon Sindragosa. Le jet des monstres reste un d20 en attendant le bestiaire converti (étape 8).
+- Étape 7 : faite le 2026-10-18. L'initiative suit Sindragosa ; les monstres attaquent et se défendent en réserve de d6.
+- Étape 8 : faite le 2026-10-18, voir `plans/33-bestiaire-sindragosa.md`. 211 monstres convertis, une seule capacité reste à relire (« L'hallali » du Worg).
 - L'agonie garde le jet de mort d'Arran (d20 ≥ 11) tant que les règles ne la décrivent pas.
 
 ## 6. Décisions (tranchées le 2026-10-17)

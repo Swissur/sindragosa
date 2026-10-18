@@ -78,7 +78,7 @@ export async function createPresetCombat(campaignId: number, preset: PresetId): 
       initiative: preset === 'egalites' ? 12 : computeInitiative(char),
       hpMax: null,
       hpCurrent: null,
-      def: char.armor,
+      armor: char.armor,
       ...startingPosition('player', playerSlot++),
     }).returning({ id: combatParticipants.id })
     firstPlayerId ??= row.id
@@ -96,9 +96,10 @@ export async function createPresetCombat(campaignId: number, preset: PresetId): 
       initiative: preset === 'egalites' ? 12 : monster.init,
       hpMax: monster.pv,
       hpCurrent: monster.pv,
-      def: monster.def,
-      nc: monster.nc,
-      statFor: monster.statFor, statDex: monster.statDex, statCon: monster.statCon,
+      armor: monster.armor,
+      threat: monster.threat,
+      defense: monster.defense,
+      statFor: monster.statFor, statAgi: monster.statAgi, statEnd: monster.statEnd,
       statInt: monster.statInt, statSag: monster.statSag, statCha: monster.statCha,
       attacks: monster.attacks,
       abilities: monster.abilities,

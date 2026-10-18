@@ -1,69 +1,42 @@
 import { describe, it, expect } from 'vitest'
 import {
-  formatMod,
+  catalogMonsterFields,
   hpPercent,
   hpColor,
   findCatalogMonster,
   filterCatalog,
 } from './monsterSession'
-import type { Monster } from '../data/monstersCatalog'
+import type { Monster } from './sindragosa/bestiary'
 
 // ── Fixtures ─────────────────────────────────────────────────────────────────
 
+const base: Omit<Monster, 'name'> = {
+  size: 'grande', threat: 2,
+  stats: { str: 5, agi: 3, end: 5, int: 1, wis: 3, cha: 2 },
+  hp: 25, armor: 1, armorKind: 'cuir', defense: 7, initiative: 8,
+  attacks: [{ name: 'Morsure', pool: 7, damage: 7 }],
+  abilities: [{ name: 'Vol rapide', description: 'action de mouvement supplementaire en vol' }],
+}
+
 const FAKE_CATALOG: Monster[] = [
-  {
-    name: 'GRIFFON',
-    nc: 4,
-    size: 'grande',
-    stats: { for: 6, dex: 3, con: 6, int: -2, sag: 2, cha: 0 },
-    def: 18,
-    pv: 50,
-    init: 16,
-    attacks: [{ name: 'Morsures et griffes', bonus: 10, damage: '2d6+8' }],
-    abilities: [{ name: 'Vol rapide', description: 'action de mouvement supplementaire en vol' }],
-    description: 'Un griffon majestueux.',
-  },
-  {
-    name: 'Araignee geante',
-    nc: 2,
-    size: 'grande',
-    stats: { for: 4, dex: 2, con: 4, int: -4, sag: 2, cha: -2 },
-    def: 14,
-    pv: 20,
-    init: 12,
-    attacks: [{ name: 'Morsure', bonus: 6, damage: '1d8+3' }],
-    abilities: [
-      { name: 'Toile', description: 'immobilise la cible' },
-      { name: 'Venin', description: 'inflige du poison' },
-    ],
-  },
-  {
-    name: 'Ours brun',
-    nc: 4,
-    size: 'grande',
-    stats: { for: 6, dex: 1, con: 6, int: -4, sag: 2, cha: -2 },
-    def: 18,
-    pv: 50,
-    init: 12,
-    rd: '10',
-    attacks: [{ name: 'Morsure et griffes', bonus: 10, damage: '2d6+10' }],
-    abilities: [{ name: 'Charge', description: 'charge puissante' }],
-  },
+  { ...base, name: 'GRIFFON', description: 'Un griffon majestueux.' },
+  { ...base, name: 'Araignee geante' },
+  { ...base, name: 'Ours brun' },
 ]
 
-// ── formatMod ────────────────────────────────────────────────────────────────
+// ── catalogMonsterFields ─────────────────────────────────────────────────────
 
-describe('formatMod', () => {
-  it("modificateur positif affiche le signe +", () => {
-    expect(formatMod(6)).toBe('+6')
+describe('catalogMonsterFields', () => {
+  it('passe un monstre du bestiaire au format des API rencontre et combat', () => {
+    expect(catalogMonsterFields(FAKE_CATALOG[0])).toEqual({
+      name: 'GRIFFON', size: 'grande', threat: 2, armor: 1, defense: 7, pv: 25, init: 8,
+      statFor: 5, statAgi: 3, statEnd: 5, statInt: 1, statSag: 3, statCha: 2,
+      attacks: base.attacks, abilities: base.abilities, description: 'Un griffon majestueux.',
+    })
   })
 
-  it("modificateur negatif affiche le signe -", () => {
-    expect(formatMod(-3)).toBe('-3')
-  })
-
-  it("zero affiche +0", () => {
-    expect(formatMod(0)).toBe('+0')
+  it('une description absente devient null', () => {
+    expect(catalogMonsterFields(FAKE_CATALOG[1]).description).toBeNull()
   })
 })
 

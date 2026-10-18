@@ -1,4 +1,4 @@
-// Auto-generated from scripts/extract-bestiary.ts — do not edit by hand
+// Catalogue Chroniques Oubliées d'origine : source de scripts/convert-bestiary.ts. Ne plus modifier.
 
 export interface Monster {
   name: string

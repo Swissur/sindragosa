@@ -97,3 +97,37 @@ test('le MJ fait entrer en cours de combat un PJ resté dehors', async ({ browse
     await joueur.close()
   }
 })
+
+// Bestiaire converti (plans/33) : un monstre attaque avec une réserve de d6.
+test('le MJ lance l’attaque d’un monstre en réserve de d6', async ({ browser }) => {
+  const mj = await browser.newContext({ storageState: stateFor('mj-dev') })
+  const pageMj = await mj.newPage()
+
+  try {
+    await pageMj.goto('/campagnes')
+    await pageMj.getByText('Bac à sable').first().click()
+    await pageMj.getByRole('tab', { name: 'Rencontres' }).click()
+    await pageMj.getByRole('button', { name: 'Jouer' }).click()
+    await pageMj.locator('select').selectOption({ index: 1 })
+    await pageMj.getByRole('button', { name: 'Lancer !' }).click()
+    await expect(pageMj).toHaveURL(/\/combat\/\d+$/)
+
+    // Gobelin fouisseur : Dague rouillée, 4d6, 2 dégâts (dev/bestiary.ts).
+    const gobelin = pageMj.locator('[data-participant-name="Gobelin fouisseur"]')
+    const id = await gobelin.getAttribute('data-participant-id')
+    await gobelin.click()
+    await pageMj.getByTestId(`monster-attack-${id}-0`).click()
+
+    const resultat = pageMj.getByTestId(`monster-roll-${id}-0`)
+    await expect(resultat).toBeVisible({ timeout: 20_000 })
+    await expect(resultat).toContainText('succès')
+    const des = ((await resultat.textContent()) ?? '').match(/\(([\d ]+)\)/)?.[1].trim().split(' ') ?? []
+    expect(des).toHaveLength(4)
+
+    await pageMj.getByRole('button', { name: 'Terminer' }).click()
+    await pageMj.getByRole('dialog').getByRole('button', { name: 'Terminer' }).click()
+    await expect(pageMj.getByTestId('active-participant')).toHaveCount(0)
+  } finally {
+    await mj.close()
+  }
+})

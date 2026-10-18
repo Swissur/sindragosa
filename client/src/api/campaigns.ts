@@ -1,6 +1,7 @@
 import type { ServerCharacter } from './characters'
 import type { EtatId } from '../data/etats'
 import type { RollPool } from '../utils/rollOutcome'
+import type { MonsterAbility, MonsterAttack } from '../utils/sindragosa/bestiary'
 
 const BASE = '/api/campaigns'
 
@@ -98,31 +99,25 @@ export interface CharacterPatchEvent {
 
 // ── Encounters ──────────────────────────────────────────────────────────────
 
-export interface EncounterMonsterAttack {
-  name: string
-  bonus: number
-  damage: string
-  range?: number
-}
-
-export interface EncounterMonsterAbility {
-  name: string
-  description: string
-}
+/** Réserve d'attaque en d6 et dégâts fixes (plans/33). */
+export type EncounterMonsterAttack = MonsterAttack
+export type EncounterMonsterAbility = MonsterAbility
 
 export interface EncounterMonster {
   id: number
   encounterId: number
   name: string
-  nc: number
+  /** Rang de menace R (0 à 5). */
+  threat: number
   size: string
-  def: number
+  armor: number
+  /** Réserve de défense, en d6. */
+  defense: number
   pv: number
   init: number
-  rd: string | null
   statFor: number
-  statDex: number
-  statCon: number
+  statAgi: number
+  statEnd: number
   statInt: number
   statSag: number
   statCha: number

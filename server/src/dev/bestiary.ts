@@ -1,69 +1,73 @@
 /**
- * Petit bestiaire de dev, autonome. Le vrai catalogue vit côté client
- * (`client/src/data/monstersCatalog.ts`) ; le dupliquer entièrement ici n'aurait
- * aucun intérêt — on veut juste de quoi remplir un combat bidon.
+ * Petit bestiaire de dev, autonome, au format Sindragosa (plans/33). Le vrai
+ * catalogue vit côté client (`client/src/data/sindragosa/monsters.ts`) ; le
+ * dupliquer ici n'aurait aucun intérêt — on veut juste de quoi remplir un combat
+ * bidon. Valeurs obtenues avec le convertisseur du plan 33.
  */
 export interface DevMonster {
   name: string
-  nc: number
-  def: number
+  /** Rang de menace R. */
+  threat: number
+  armor: number
+  /** Réserve de défense, en d6. */
+  defense: number
   pv: number
   init: number
   statFor: number
-  statDex: number
-  statCon: number
+  statAgi: number
+  statEnd: number
   statInt: number
   statSag: number
   statCha: number
-  attacks: { name: string; bonus: number; damage: string; range?: number }[]
+  attacks: { name: string; pool: number; damage: number; range?: number }[]
   abilities: { name: string; description: string }[]
   description: string
 }
 
 export const DEV_BESTIARY: DevMonster[] = [
   {
-    name: 'Gobelin fouisseur', nc: 0.5, def: 13, pv: 7, init: 12,
-    statFor: -1, statDex: 2, statCon: 0, statInt: 0, statSag: 0, statCha: -1,
-    attacks: [{ name: 'Dague rouillée', bonus: 3, damage: '1d4+1' }],
+    name: 'Gobelin fouisseur', threat: 1, armor: 0, defense: 4, pv: 4, init: 6,
+    statFor: 2, statAgi: 3, statEnd: 2, statInt: 2, statSag: 2, statCha: 2,
+    attacks: [{ name: 'Dague rouillée', pool: 4, damage: 2 }],
     abilities: [{ name: 'Lâche', description: 'Fuit dès que la moitié du groupe est tombée.' }],
     description: 'Petit, sale, et beaucoup trop confiant.',
   },
   {
-    name: 'Loup des landes', nc: 1, def: 14, pv: 13, init: 14,
-    statFor: 1, statDex: 3, statCon: 1, statInt: -3, statSag: 1, statCha: -2,
-    attacks: [{ name: 'Morsure', bonus: 4, damage: '1d6+2' }],
-    abilities: [{ name: 'Meute', description: '+2 en attaque si un allié est au contact de la même cible.' }],
+    name: 'Loup des landes', threat: 1, armor: 0, defense: 5, pv: 7, init: 8,
+    statFor: 3, statAgi: 4, statEnd: 3, statInt: 1, statSag: 3, statCha: 1,
+    attacks: [{ name: 'Morsure', pool: 5, damage: 3 }],
+    abilities: [{ name: 'Meute', description: '+1d6 en attaque si un allié est au contact de la même cible.' }],
     description: 'Maigre, gris, et il n\'est jamais seul.',
   },
   {
-    name: 'Archer squelette', nc: 1, def: 12, pv: 10, init: 9,
-    statFor: 0, statDex: 2, statCon: 0, statInt: -4, statSag: 0, statCha: -4,
-    attacks: [{ name: 'Arc court', bonus: 3, damage: '1d6', range: 30 }],
+    name: 'Archer squelette', threat: 1, armor: 0, defense: 4, pv: 5, init: 6,
+    statFor: 2, statAgi: 3, statEnd: 2, statInt: 1, statSag: 2, statCha: 1,
+    attacks: [{ name: 'Arc court', pool: 4, damage: 2, range: 30 }],
     abilities: [{ name: 'Os secs', description: 'Immunisé au poison, vulnérable aux dégâts contondants.' }],
     description: 'Il visait déjà mal de son vivant.',
   },
   {
-    name: 'Ogre bilieux', nc: 3, def: 15, pv: 34, init: 6,
-    statFor: 4, statDex: -1, statCon: 3, statInt: -2, statSag: 0, statCha: -2,
-    attacks: [{ name: 'Gourdin clouté', bonus: 6, damage: '2d6+4' }],
-    abilities: [{ name: 'Coup ample', description: 'Touche deux cibles adjacentes sur un jet réussi de 5+.' }],
+    name: 'Ogre bilieux', threat: 1, armor: 1, defense: 5, pv: 17, init: 5,
+    statFor: 4, statAgi: 2, statEnd: 4, statInt: 1, statSag: 2, statCha: 1,
+    attacks: [{ name: 'Gourdin clouté', pool: 5, damage: 6 }],
+    abilities: [{ name: 'Coup ample', description: 'Touche deux cibles adjacentes sur un jet d\'au moins 2 succès.' }],
     description: 'Lent, mais on ne le rate pas deux fois.',
   },
   {
-    name: 'Sorcière des tourbes', nc: 4, def: 14, pv: 26, init: 11,
-    statFor: 0, statDex: 1, statCon: 1, statInt: 3, statSag: 2, statCha: 2,
-    attacks: [{ name: 'Trait putride', bonus: 5, damage: '2d6', range: 20 }],
-    abilities: [{ name: 'Brume', description: 'Une fois par combat : -4 aux attaques à distance visant ses alliés.' }],
+    name: 'Sorcière des tourbes', threat: 2, armor: 0, defense: 5, pv: 13, init: 8,
+    statFor: 2, statAgi: 3, statEnd: 3, statInt: 4, statSag: 3, statCha: 3,
+    attacks: [{ name: 'Trait putride', pool: 5, damage: 4, range: 20 }],
+    abilities: [{ name: 'Brume', description: 'Une fois par combat : −1d6 aux attaques à distance visant ses alliés.' }],
     description: 'Elle parle à la boue, et la boue répond.',
   },
   {
-    name: 'Chef de guerre orque', nc: 5, def: 17, pv: 45, init: 10,
-    statFor: 4, statDex: 1, statCon: 3, statInt: 0, statSag: 1, statCha: 2,
+    name: 'Chef de guerre orque', threat: 2, armor: 1, defense: 6, pv: 23, init: 8,
+    statFor: 4, statAgi: 3, statEnd: 4, statInt: 2, statSag: 3, statCha: 3,
     attacks: [
-      { name: 'Hache à deux mains', bonus: 8, damage: '1d12+4' },
-      { name: 'Javelot', bonus: 6, damage: '1d6+4', range: 15 },
+      { name: 'Hache à deux mains', pool: 6, damage: 5 },
+      { name: 'Javelot', pool: 6, damage: 4, range: 15 },
     ],
-    abilities: [{ name: 'Cri de guerre', description: 'Ses alliés gagnent +2 en attaque pendant un round.' }],
+    abilities: [{ name: 'Cri de guerre', description: 'Ses alliés gagnent +1d6 en attaque pendant un round.' }],
     description: 'Il porte les dents de ses prédécesseurs en collier.',
   },
 ]

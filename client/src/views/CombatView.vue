@@ -26,13 +26,13 @@ import { useCombat } from "../composables/useCombat";
 import { user } from "../composables/useAuth";
 import { setParticipantStates } from "../api/combats";
 import { postCampaignRoll, fetchCampaign, type CampaignMember } from "../api/campaigns";
-import { MONSTERS_CATALOG, type Monster } from "../data/monstersCatalog";
-import { filterCatalog, formatMod } from "../utils/monsterSession";
+import { MONSTERS } from "../data/sindragosa/monsters";
+import type { Monster } from "../utils/sindragosa/bestiary";
+import { catalogMonsterFields, filterCatalog } from "../utils/monsterSession";
+import { rollPool, DIFFICULTY_LABELS, type Difficulty } from "../utils/sindragosa/pool";
 import { membresAbsents } from "../utils/combatRoster";
 import { hpGradientColor } from "../utils/hpGradientColor";
-import { rollDie, rollDiceNotation } from "../utils/dice";
-import { signedNum } from "../utils/formatBonus";
-import { dice, revealAfterDice } from "../composables/useDice3D";
+import { playDiceRoll } from "../composables/useDice3D";
 import { celebrate } from "../composables/useCriticalMoment";
 import AppPageLayout from "../components/ui/AppPageLayout.vue";
 import AppPageHead from "../components/ui/AppPageHead.vue";
@@ -173,19 +173,19 @@ async function toggleVisibility(p: CombatParticipant, hidden: boolean) {
 }
 const monsterSearchQuery = ref("");
 const filteredMonsters = computed(() =>
-  filterCatalog(monsterSearchQuery.value, MONSTERS_CATALOG),
+  filterCatalog(monsterSearchQuery.value, MONSTERS),
 );
 
 // Custom monster form
-const STAT_KEYS = ['For', 'Dex', 'Con', 'Int', 'Sag', 'Cha'] as const
+const STAT_KEYS = ['For', 'Agi', 'End', 'Int', 'Sag', 'Cha'] as const
 interface CustomMonsterForm {
-  name: string; init: number; pv: number; def: number; nc: number;
+  name: string; init: number; pv: number; armor: number; defense: number; threat: number;
   stats: Record<typeof STAT_KEYS[number], number>;
 }
 const showCustomForm = ref(false);
 const defaultCustomForm = (): CustomMonsterForm => ({
-  name: "Nouveau monstre", init: 0, pv: 10, def: 10, nc: 0,
-  stats: { For: 0, Dex: 0, Con: 0, Int: 0, Sag: 0, Cha: 0 },
+  name: "Nouveau monstre", init: 5, pv: 10, armor: 0, defense: 3, threat: 1,
+  stats: { For: 2, Agi: 2, End: 2, Int: 2, Sag: 2, Cha: 2 },
 })
 const customForm = ref<CustomMonsterForm>(defaultCustomForm());
 
@@ -286,89 +286,47 @@ function canAdjustHp(p: CombatParticipant): boolean {
   return p.userId === user.value?.id;
 }
 
-// ── Monster attack rolls ──────────────────────────────────────────────────
-interface MonsterAttackRoll {
-  attackDie: number
-  attackBonus: number
-  attackTotal: number
-  fixedDamage: number | null
-  damageRolls: number[]
-  damageModifier: number
-  damageTotal: number
+// ── Jets des monstres : réserves de d6 (plans/33) ─────────────────────────
+interface MonsterPoolRoll {
+  dice: number[]
+  successes: number
+  reached: Difficulty
+  critFail: boolean
+  /** Dégâts fixes de l'attaque ; absent pour un jet de défense. */
+  damage?: number
 }
 
-const monsterRolls = ref<Record<string, MonsterAttackRoll>>({});
+const monsterRolls = ref<Record<string, MonsterPoolRoll>>({});
 
-function parseDamage(damage: string): { notation: string | null; modifier: number; fixed: number | null } {
-  const m = damage.trim().match(/^(\d+d\d+)\s*([+-]\s*\d+)?$/i);
-  if (!m) {
-    const n = parseInt(damage.trim(), 10);
-    if (!isNaN(n)) return { notation: null, modifier: 0, fixed: n };
-    return { notation: null, modifier: 0, fixed: 0 };
-  }
-  const mod = m[2] ? parseInt(m[2].replace(/\s/g, ""), 10) : 0;
-  return { notation: m[1], modifier: mod, fixed: null };
-}
-
-function rollMonsterAttack(participant: CombatParticipant, atkIndex: number, bonus: number, damage: string, attackName: string) {
-  const key = `${participant.id}-${atkIndex}`;
-  const attackDie = rollDie(20);
-  const { notation, modifier, fixed } = parseDamage(damage);
-  const dmg = fixed !== null ? null : rollDiceNotation(notation!, modifier);
-  const roll = {
-    attackDie,
-    attackBonus: bonus,
-    attackTotal: attackDie + bonus,
-    fixedDamage: fixed,
-    damageRolls: dmg?.rolls ?? [],
-    damageModifier: dmg?.modifier ?? 0,
-    damageTotal: dmg ? dmg.total : fixed!,
-  };
-
-  revealAfterDice(dice(20, [attackDie]), () => {
-    monsterRolls.value[key] = roll;
-    // Le MJ n'a pas de log local : sa fanfare part d'ici. Les joueurs, eux,
-    // reçoivent l'event `critical` allégé (sans le chiffre) par le SSE.
-    if (attackDie === 20) celebrate("critical", participant.name);
-    else if (attackDie === 1) celebrate("fumble", participant.name);
-    // Relais vers le log de la campagne — visible MJ uniquement (asMonster)
-    postCampaignRoll(campaignId, {
-      kind: "weapon",
-      label: attackName,
-      context: "combat",
-      die: attackDie,
-      sides: 20,
-      bonus,
-      total: roll.attackTotal,
-      damage: {
-        total: attackDie === 20 && roll.fixedDamage === null ? roll.damageTotal * 2 : roll.damageTotal,
-        critical: attackDie === 20,
-        fumble: attackDie === 1,
-      },
-      asMonster: participant.name,
-    }).catch(() => { /* silencieux */ });
-  });
+/**
+ * Lance une réserve pour un monstre : attaque (avec ses dégâts) ou défense.
+ * Le jet part dans le journal, caché aux joueurs (asMonster).
+ */
+async function rollMonsterPool(participant: CombatParticipant, key: string, label: string, pool: number, damage?: number) {
+  const r = rollPool(pool);
+  await playDiceRoll(r.dice.map((value) => ({ sides: 6, value, kind: "domaine", critFrom: 6 })));
+  monsterRolls.value[key] = { dice: r.dice, successes: r.successes, reached: r.reached, critFail: r.isCriticalFailure, damage };
+  // Le MJ n'a pas de log local : sa fanfare part d'ici. Les joueurs, eux,
+  // reçoivent l'event `critical` allégé (sans le chiffre) par le SSE.
+  if (r.isCriticalFailure) celebrate("fumble", participant.name);
+  else if (r.reached === "exploit") celebrate("critical", participant.name);
+  postCampaignRoll(campaignId, {
+    kind: damage === undefined ? "domaine" : "weapon",
+    label,
+    context: "combat",
+    die: 0,
+    sides: 6,
+    bonus: 0,
+    total: r.successes,
+    rolls: r.dice,
+    pool: { critFrom: 6, reached: r.reached, critFail: r.isCriticalFailure },
+    asMonster: participant.name,
+  }).catch(() => { /* silencieux */ });
 }
 
 
 async function handleAddFromCatalog(m: Monster) {
-  await addMonster({
-    name: m.name,
-    init: m.init,
-    pv: m.pv,
-    def: m.def,
-    nc: m.nc,
-    statFor: m.stats.for,
-    statDex: m.stats.dex,
-    statCon: m.stats.con,
-    statInt: m.stats.int,
-    statSag: m.stats.sag,
-    statCha: m.stats.cha,
-    attacks: m.attacks,
-    abilities: m.abilities,
-    description: m.description ?? null,
-    hidden: addHidden.value,
-  });
+  await addMonster({ ...catalogMonsterFields(m), hidden: addHidden.value });
   monsterSearchQuery.value = "";
   showAddMonster.value = false;
 }
@@ -389,11 +347,12 @@ async function handleSubmitCustomMonster() {
     name: f.name,
     init: f.init,
     pv: f.pv,
-    def: f.def,
-    nc: f.nc,
+    armor: f.armor,
+    defense: f.defense,
+    threat: f.threat,
     statFor: f.stats.For,
-    statDex: f.stats.Dex,
-    statCon: f.stats.Con,
+    statAgi: f.stats.Agi,
+    statEnd: f.stats.End,
     statInt: f.stats.Int,
     statSag: f.stats.Sag,
     statCha: f.stats.Cha,
@@ -528,7 +487,7 @@ function goBack() {
                 <span v-if="isGm || p.kind === 'player'" class="card-init"><Zap :size="13" /> {{
                   p.initiative
                 }}</span>
-                <span v-if="p.def && (isGm || p.kind === 'player')" class="card-def"><Shield :size="13" /> {{ p.def }}</span>
+                <span v-if="p.armor && (isGm || p.kind === 'player')" class="card-def" title="Armure"><Shield :size="13" /> {{ p.armor }}</span>
                 <button v-if="isGm && p.kind === 'monster'" class="trash-btn" title="Mettre en réserve" @click.stop="toggleVisibility(p, true)"><EyeOff :size="13" /></button>
                 <button v-if="isGm && p.kind === 'monster'" class="trash-btn" title="Supprimer" @click.stop="confirmDeleteId = p.id"><Trash2 :size="13" /></button>
                 <!-- Inline HP controls (GM monsters) -->
@@ -595,55 +554,65 @@ function goBack() {
               @click.stop
             >
               <div class="detail-row">
-                <span class="detail-label">DEF</span> {{ p.def }}
+                <span class="detail-label">Armure</span> {{ p.armor }}
                 <span class="detail-sep">·</span>
-                <span class="detail-label">NC</span> {{ p.nc }}
+                <span class="detail-label">Menace</span> {{ p.threat }}
+                <span class="detail-sep">·</span>
+                <span class="detail-label">Défense</span> {{ p.defense }}d6
+                <button
+                  v-if="p.defense"
+                  class="roll-atk-btn"
+                  title="Lancer la défense"
+                  :data-testid="`monster-defense-${p.id}`"
+                  @click.stop="rollMonsterPool(p, `${p.id}-def`, `${p.name} · défense`, p.defense)"
+                >
+                  <Dices :size="14" />
+                </button>
+              </div>
+              <div v-if="monsterRolls[`${p.id}-def`]" class="monster-roll-result">
+                <span class="monster-roll-atk">
+                  Déf : <strong>{{ monsterRolls[`${p.id}-def`].successes }}</strong> succès
+                  <span class="monster-roll-detail">({{ monsterRolls[`${p.id}-def`].dice.join(' ') }})</span>
+                </span>
               </div>
               <div
-                v-if="p.attacks && (p.attacks as unknown[]).length > 0"
+                v-if="p.attacks && p.attacks.length > 0"
                 class="detail-section"
               >
                 <span class="detail-heading">Attaques</span>
                 <div
-                  v-for="(atk, ai) in p.attacks as {
-                    name: string;
-                    bonus: number;
-                    damage: string;
-                    range?: number;
-                  }[]"
+                  v-for="(atk, ai) in p.attacks"
                   :key="ai"
                   class="detail-atk"
                 >
                   <div class="detail-atk-row">
-                    <span>{{ atk.name }} {{ formatMod(atk.bonus) }} · {{ atk.damage
-                    }}{{ atk.range ? ` · ${atk.range}m` : "" }}</span>
-                    <button class="roll-atk-btn" title="Lancer les dés" @click.stop="rollMonsterAttack(p, ai, atk.bonus, atk.damage, atk.name)">
+                    <span>{{ atk.name }} {{ atk.pool }}d6 · {{ atk.damage }} dégâts{{ atk.note ? ` ${atk.note}` : "" }}{{ atk.range ? ` · ${atk.range}m` : "" }}</span>
+                    <button
+                      class="roll-atk-btn"
+                      title="Lancer l'attaque"
+                      :data-testid="`monster-attack-${p.id}-${ai}`"
+                      @click.stop="rollMonsterPool(p, `${p.id}-${ai}`, atk.name, atk.pool, atk.damage)"
+                    >
                       <Dices :size="14" />
                     </button>
                   </div>
                   <div
                     v-if="monsterRolls[`${p.id}-${ai}`]"
                     class="monster-roll-result"
+                    :data-testid="`monster-roll-${p.id}-${ai}`"
                     :class="{
-                      'monster-roll-result--fumble': monsterRolls[`${p.id}-${ai}`].attackDie === 1,
-                      'monster-roll-result--critical': monsterRolls[`${p.id}-${ai}`].attackDie === 20,
+                      'monster-roll-result--fumble': monsterRolls[`${p.id}-${ai}`].critFail,
+                      'monster-roll-result--critical': monsterRolls[`${p.id}-${ai}`].reached === 'exploit',
                     }"
                   >
                     <span class="monster-roll-atk">
-                      Att : <strong>{{ monsterRolls[`${p.id}-${ai}`].attackTotal }}</strong>
-                      <span class="monster-roll-detail">({{ monsterRolls[`${p.id}-${ai}`].attackDie }} {{ signedNum(monsterRolls[`${p.id}-${ai}`].attackBonus) }})</span>
+                      Att : <strong>{{ monsterRolls[`${p.id}-${ai}`].successes }}</strong> succès
+                      · {{ DIFFICULTY_LABELS[monsterRolls[`${p.id}-${ai}`].reached] }}
+                      <span class="monster-roll-detail">({{ monsterRolls[`${p.id}-${ai}`].dice.join(' ') }})</span>
                     </span>
-                    <span v-if="monsterRolls[`${p.id}-${ai}`].attackDie === 1" class="monster-roll-crit">Échec critique</span>
-                    <template v-else-if="monsterRolls[`${p.id}-${ai}`].attackDie === 20">
-                      <span class="monster-roll-crit">Critique !</span>
-                      <span class="monster-roll-dmg">
-                        Dég : <strong>{{ monsterRolls[`${p.id}-${ai}`].fixedDamage !== null ? monsterRolls[`${p.id}-${ai}`].fixedDamage : monsterRolls[`${p.id}-${ai}`].damageTotal * 2 }}</strong>
-                        <span v-if="monsterRolls[`${p.id}-${ai}`].fixedDamage === null" class="monster-roll-detail">({{ monsterRolls[`${p.id}-${ai}`].damageRolls.join('+') }}{{ monsterRolls[`${p.id}-${ai}`].damageModifier !== 0 ? ' ' + signedNum(monsterRolls[`${p.id}-${ai}`].damageModifier) : '' }} ×2)</span>
-                      </span>
-                    </template>
+                    <span v-if="monsterRolls[`${p.id}-${ai}`].critFail" class="monster-roll-crit">Échec critique</span>
                     <span v-else class="monster-roll-dmg">
-                      Dég : <strong>{{ monsterRolls[`${p.id}-${ai}`].damageTotal }}</strong>
-                      <span v-if="monsterRolls[`${p.id}-${ai}`].fixedDamage === null" class="monster-roll-detail">({{ monsterRolls[`${p.id}-${ai}`].damageRolls.join('+') }}{{ monsterRolls[`${p.id}-${ai}`].damageModifier !== 0 ? ' ' + signedNum(monsterRolls[`${p.id}-${ai}`].damageModifier) : '' }})</span>
+                      Dég : <strong>{{ monsterRolls[`${p.id}-${ai}`].damage }}</strong> + marge − armure
                     </span>
                   </div>
                 </div>
@@ -654,10 +623,7 @@ function goBack() {
               >
                 <span class="detail-heading">Capacités</span>
                 <div
-                  v-for="(ab, i) in p.abilities as {
-                    name: string;
-                    description: string;
-                  }[]"
+                  v-for="(ab, i) in p.abilities"
                   :key="i"
                   class="detail-ability"
                 >
@@ -786,16 +752,20 @@ function goBack() {
                 <AppInput v-model="customForm.name" placeholder="Nom du monstre" />
               </div>
               <div class="custom-field">
-                <label>NC</label>
-                <AppInput v-model="customForm.nc" type="number" :min="0" :step="0.5" text-align="center" />
+                <label>Menace (R)</label>
+                <AppInput v-model="customForm.threat" type="number" :min="0" :max="5" text-align="center" />
               </div>
               <div class="custom-field">
                 <label>PV</label>
                 <AppInput v-model="customForm.pv" type="number" :min="1" text-align="center" />
               </div>
               <div class="custom-field">
-                <label>DEF</label>
-                <AppInput v-model="customForm.def" type="number" text-align="center" />
+                <label>Armure</label>
+                <AppInput v-model="customForm.armor" type="number" :min="0" text-align="center" />
+              </div>
+              <div class="custom-field">
+                <label>Défense (d6)</label>
+                <AppInput v-model="customForm.defense" type="number" :min="0" text-align="center" />
               </div>
               <div class="custom-field">
                 <label>Init</label>
@@ -825,7 +795,7 @@ function goBack() {
                 @click="handleAddFromCatalog(m)"
               >
                 <span class="bestiary-name">{{ m.name }}</span>
-                <span class="bestiary-meta">NC {{ m.nc }} · {{ m.pv }} PV · DEF {{ m.def }}</span>
+                <span class="bestiary-meta">R {{ m.threat }} · {{ m.hp }} PV · armure {{ m.armor }}</span>
               </div>
             </div>
             <AppButton variant="ghost" block @click="openCustomForm">

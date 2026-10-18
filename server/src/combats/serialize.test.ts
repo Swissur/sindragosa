@@ -32,10 +32,11 @@ function monster(overrides: Partial<ParticipantRow> = {}): ParticipantRow {
     initiative: 6,
     hpMax: 34,
     hpCurrent: 34,
-    def: 15,
-    nc: 3,
-    statFor: 4, statDex: -1, statCon: 3, statInt: -2, statSag: 0, statCha: -2,
-    attacks: [{ name: 'Gourdin', bonus: 6, damage: '2d6+4' }],
+    armor: 1,
+    threat: 1,
+    defense: 5,
+    statFor: 4, statAgi: 2, statEnd: 4, statInt: 1, statSag: 2, statCha: 1,
+    attacks: [{ name: 'Gourdin', pool: 5, damage: 6 }],
     abilities: [{ name: 'Coup ample', description: 'Touche deux cibles.' }],
     monsterDescription: 'Lent, mais on ne le rate pas deux fois.',
     posX: 2,
@@ -54,7 +55,8 @@ function player(overrides: Partial<ParticipantRow> = {}): ParticipantRow {
     initiative: 18,
     hpMax: 30,
     hpCurrent: 30,
-    nc: null,
+    threat: null,
+    defense: null,
     attacks: null,
     abilities: null,
     monsterDescription: null,
@@ -109,18 +111,18 @@ describe('serializeCombat — ce qu\'un joueur a le droit de voir', () => {
     expect(m.hpCurrent).toBeNull()
     expect(m.hpMax).toBeNull()
     expect(m.hpStatus).toBe('mal_en_point')
-    for (const secret of ['nc', 'statFor', 'statDex', 'statCon', 'statInt', 'statSag', 'statCha', 'attacks', 'abilities', 'monsterDescription']) {
+    for (const secret of ['threat', 'defense', 'statFor', 'statAgi', 'statEnd', 'statInt', 'statSag', 'statCha', 'attacks', 'abilities', 'monsterDescription']) {
       expect(m[secret], `${secret} ne doit pas fuiter`).toBeNull()
     }
   })
 
-  it('laisse passer nom, initiative, défense et position', () => {
+  it('laisse passer nom, initiative, armure et position', () => {
     const out = serializeCombat(combat(), [monster()], false)
     const m = out.participants[0] as Record<string, unknown>
 
     expect(m.name).toBe('Ogre bilieux')
     expect(m.initiative).toBe(6)
-    expect(m.def).toBe(15)
+    expect(m.armor).toBe(1)
     // Sans la position, les joueurs ne verraient pas les monstres sur la carte.
     expect(m.posX).toBe(2)
     expect(m.posY).toBe(-1)
@@ -142,7 +144,8 @@ describe('serializeCombat — ce qu\'un joueur a le droit de voir', () => {
     const m = out.participants[0] as Record<string, unknown>
 
     expect(m.hpCurrent).toBe(12)
-    expect(m.nc).toBe(3)
+    expect(m.threat).toBe(1)
+    expect(m.defense).toBe(5)
     expect(m.attacks).not.toBeNull()
     expect(m.hpStatus).toBeUndefined()
   })

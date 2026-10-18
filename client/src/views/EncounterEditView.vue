@@ -14,8 +14,9 @@ import {
   type EncounterMonsterAttack,
   type EncounterMonsterAbility,
 } from '../api/campaigns'
-import { MONSTERS_CATALOG, type Monster } from '../data/monstersCatalog'
-import { filterCatalog, formatMod } from '../utils/monsterSession'
+import { MONSTERS } from '../data/sindragosa/monsters'
+import type { Monster } from '../utils/sindragosa/bestiary'
+import { catalogMonsterFields, filterCatalog } from '../utils/monsterSession'
 import AppPageLayout from '../components/ui/AppPageLayout.vue'
 import AppPageHead from '../components/ui/AppPageHead.vue'
 import AppIconBtn from '../components/ui/AppIconBtn.vue'
@@ -65,7 +66,7 @@ watch(descValue, (val) => {
 // Bestiary search
 const searchQuery = ref('')
 const showBestiary = ref(false)
-const filteredMonsters = computed(() => filterCatalog(searchQuery.value, MONSTERS_CATALOG))
+const filteredMonsters = computed(() => filterCatalog(searchQuery.value, MONSTERS))
 
 // Editing a monster
 const editingMonsterId = ref<number | null>(null)
@@ -87,25 +88,7 @@ async function load() {
 }
 
 function catalogToMonsterData(m: Monster): Omit<EncounterMonster, 'id' | 'encounterId'> {
-  return {
-    name: m.name,
-    nc: m.nc,
-    size: m.size,
-    def: m.def,
-    pv: m.pv,
-    init: m.init,
-    rd: m.rd ?? null,
-    statFor: m.stats.for,
-    statDex: m.stats.dex,
-    statCon: m.stats.con,
-    statInt: m.stats.int,
-    statSag: m.stats.sag,
-    statCha: m.stats.cha,
-    attacks: m.attacks,
-    abilities: m.abilities,
-    description: m.description ?? null,
-    hidden: false,
-  }
+  return { ...catalogMonsterFields(m), hidden: false }
 }
 
 async function handleAddFromCatalog(m: Monster) {
@@ -125,8 +108,8 @@ async function handleAddCustom() {
   try {
     const created = await addEncounterMonster(campaignId, encounterId, {
       name: 'Nouveau monstre',
-      nc: 0, size: 'moyenne', def: 10, pv: 10, init: 10, rd: null,
-      statFor: 0, statDex: 0, statCon: 0, statInt: 0, statSag: 0, statCha: 0,
+      threat: 1, size: 'moyenne', armor: 0, defense: 3, pv: 10, init: 5,
+      statFor: 2, statAgi: 2, statEnd: 2, statInt: 2, statSag: 2, statCha: 2,
       attacks: [], abilities: [], description: null, hidden: false,
     })
     encounter.value.monsters.push(created)
@@ -191,7 +174,7 @@ function saveMonsterField(monster: EncounterMonster, field: string, value: unkno
 }
 
 async function addAttack(monster: EncounterMonster) {
-  const newAttack: EncounterMonsterAttack = { name: 'Attaque', bonus: 0, damage: '1d6' }
+  const newAttack: EncounterMonsterAttack = { name: 'Attaque', pool: 3, damage: 2 }
   const attacks = [...monster.attacks, newAttack]
   monster.attacks = attacks
   await updateEncounterMonster(campaignId, encounterId, monster.id, { attacks })
@@ -296,7 +279,7 @@ function goBack() {
             @click="handleAddFromCatalog(m)"
           >
             <span class="bestiary-name">{{ m.name }}</span>
-            <span class="bestiary-meta">NC {{ m.nc }} · {{ m.pv }} PV · DEF {{ m.def }}</span>
+            <span class="bestiary-meta">R {{ m.threat }} · {{ m.hp }} PV · armure {{ m.armor }}</span>
           </div>
           <p v-if="filteredMonsters.length === 0" class="bestiary-empty">Aucun résultat</p>
         </div>
@@ -317,7 +300,7 @@ function goBack() {
                 <span v-if="m.hidden" class="reserve-tag">en réserve</span>
               </span>
               <span class="monster-stats-brief">
-                NC {{ m.nc }} · {{ m.pv }} PV · DEF {{ m.def }} · Init {{ m.init }}
+                R {{ m.threat }} · {{ m.pv }} PV · armure {{ m.armor }} · déf. {{ m.defense }}d6 · init {{ m.init }}
               </span>
             </div>
             <div class="monster-actions">
@@ -345,16 +328,20 @@ function goBack() {
                 <AppInput :model-value="m.name" @update:model-value="saveMonsterField(m, 'name', $event)" />
               </div>
               <div class="edit-field">
-                <label>NC</label>
-                <AppInput type="number" :model-value="m.nc" :step="0.5" :min="0" @update:model-value="saveMonsterField(m, 'nc', $event)" />
+                <label>Menace (R)</label>
+                <AppInput type="number" :model-value="m.threat" :min="0" :max="5" @update:model-value="saveMonsterField(m, 'threat', $event)" />
               </div>
               <div class="edit-field">
                 <label>PV</label>
                 <AppInput type="number" :model-value="m.pv" :min="1" @update:model-value="saveMonsterField(m, 'pv', $event)" />
               </div>
               <div class="edit-field">
-                <label>DEF</label>
-                <AppInput type="number" :model-value="m.def" @update:model-value="saveMonsterField(m, 'def', $event)" />
+                <label>Armure</label>
+                <AppInput type="number" :model-value="m.armor" :min="0" @update:model-value="saveMonsterField(m, 'armor', $event)" />
+              </div>
+              <div class="edit-field">
+                <label>Défense (d6)</label>
+                <AppInput type="number" :model-value="m.defense" :min="0" @update:model-value="saveMonsterField(m, 'defense', $event)" />
               </div>
               <div class="edit-field">
                 <label>Init</label>
@@ -364,14 +351,10 @@ function goBack() {
                 <label>Taille</label>
                 <AppInput :model-value="m.size" @update:model-value="saveMonsterField(m, 'size', $event)" />
               </div>
-              <div class="edit-field">
-                <label>RD</label>
-                <AppInput :model-value="m.rd ?? '0'" @update:model-value="saveMonsterField(m, 'rd', $event || null)" />
-              </div>
             </div>
 
             <div class="stats-row">
-              <div v-for="stat in ['For', 'Dex', 'Con', 'Int', 'Sag', 'Cha']" :key="stat" class="stat-cell">
+              <div v-for="stat in ['For', 'Agi', 'End', 'Int', 'Sag', 'Cha']" :key="stat" class="stat-cell">
                 <span class="stat-label">{{ stat }}</span>
                 <div class="stat-box">
                   <div class="stat-score-mod">
@@ -381,7 +364,6 @@ function goBack() {
                       :value="(m as Record<string, unknown>)[`stat${stat}`]"
                       @change="saveMonsterField(m, `stat${stat}`, Number(($event.target as HTMLInputElement).value))"
                     />
-                    <span class="stat-mod">{{ formatMod((m as Record<string, unknown>)[`stat${stat}`] as number) }}</span>
                   </div>
                   <div class="stat-btns">
                     <button type="button" class="stat-btn" @click="saveMonsterField(m, `stat${stat}`, ((m as Record<string, unknown>)[`stat${stat}`] as number) + 1)">
@@ -405,8 +387,8 @@ function goBack() {
               </div>
               <div v-for="(atk, i) in m.attacks" :key="i" class="attack-edit-row">
                 <AppInput :model-value="atk.name" placeholder="Nom" @update:model-value="updateAttack(m, i, 'name', $event as string)" />
-                <AppInput type="number" :model-value="atk.bonus" placeholder="Bonus" text-align="center" @update:model-value="updateAttack(m, i, 'bonus', $event as number)" />
-                <AppInput :model-value="atk.damage" placeholder="Dégâts" @update:model-value="updateAttack(m, i, 'damage', $event as string)" />
+                <AppInput type="number" :model-value="atk.pool" :min="0" placeholder="d6" text-align="center" title="Réserve d'attaque (d6)" @update:model-value="updateAttack(m, i, 'pool', $event as number)" />
+                <AppInput type="number" :model-value="atk.damage" :min="0" placeholder="Dégâts" text-align="center" title="Dégâts fixes (+ marge − armure)" @update:model-value="updateAttack(m, i, 'damage', $event as number)" />
                 <AppIconBtn :size="28" variant="danger" title="Supprimer" @click="removeAttack(m, i)">
                   <X :size="13" />
                 </AppIconBtn>

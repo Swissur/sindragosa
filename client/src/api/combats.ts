@@ -1,4 +1,5 @@
 import type { BattleWall } from '../components/battle/walls'
+import type { MonsterAbility, MonsterAttack } from '../utils/sindragosa/bestiary'
 
 const BASE = '/api/campaigns'
 
@@ -22,16 +23,19 @@ export interface CombatParticipant {
   hpMax: number | null
   hpCurrent: number | null
   hpStatus?: string // 'intact' | 'blesse' | 'mal_en_point' | 'agonisant' | 'mort' — for monsters seen by players
-  def: number
-  nc: number | null
+  /** Armure : celle de la fiche pour un PJ, celle du bestiaire pour un monstre. */
+  armor: number
+  /** Rang de menace et réserve de défense d'un monstre (null pour un PJ, ou masqués aux joueurs). */
+  threat: number | null
+  defense: number | null
   statFor: number | null
-  statDex: number | null
-  statCon: number | null
+  statAgi: number | null
+  statEnd: number | null
   statInt: number | null
   statSag: number | null
   statCha: number | null
-  attacks: { name: string; bonus: number; damage: string; range?: number }[] | null
-  abilities: { name: string; description: string }[] | null
+  attacks: MonsterAttack[] | null
+  abilities: MonsterAbility[] | null
   monsterDescription: string | null
   /** PNJ en réserve : préparé par le MJ, pas encore entré en scène. */
   hidden?: boolean

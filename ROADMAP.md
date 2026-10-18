@@ -42,7 +42,9 @@ Sindragosa n’est plus un outil pour les Terres d’Arran (Chroniques Oubliées
   - personnages existants supprimés.
 - [ ] **Concentration des sorts** (Économe / Étendue / Puissante) : gardée, mais à adapter au système d6. Aujourd'hui, un sélecteur s'affiche sur les compétences de magie actives. « Puissante » monte les dés de l'effet. « Économe » n'a plus d'effet, faute de PM.
 - [x] **Fiche, Mes actions, jets en d6, outils du MJ** (plan 31, étapes 4 à 6 ; plan 32) : faits le 2026-10-17 sur la branche `refonte-sindragosa`.
-- [ ] **Combat** : le jet des monstres reste un d20 jusqu'à la conversion du bestiaire.
+- [x] **Bestiaire et combat** (plan 31, étapes 7 et 8 ; plan 33) : 211 monstres convertis au d6, faits le 2026-10-18.
+- [ ] **Bestiaire à calibrer** après un premier combat test : l'échelle des dégâts (÷ 2) et l'armure par catégorie sont des hypothèses.
+- [ ] **« L'hallali » du Worg** : une plage « 1 à 5 au d20 » sans équivalent d6, à réécrire.
 
 ### TODO — retours du 2026-10-17
 

@@ -16,6 +16,7 @@ import journalRouter from "./routes/journal.js";
 import campaignsRouter from "./routes/campaigns.js";
 import combatsRouter, { activeCombatRouter } from "./routes/combats.js";
 import codexRouter from "./routes/codex.js";
+import gmMessagesRouter from "./routes/gmMessages.js";
 import notesRouter from "./routes/notes.js";
 import revisionsRouter from "./routes/revisions.js";
 import devRouter from "./dev/routes.js";
@@ -54,6 +55,7 @@ app.use("/api/campaigns", campaignsRouter);
 app.use("/api/campaigns", combatsRouter);
 app.use("/api/combats", activeCombatRouter);
 app.use("/api/campaigns", codexRouter);
+app.use("/api/campaigns", gmMessagesRouter);
 app.use("/api/notes", notesRouter);
 
 // Outils de dev : seed, changement d'identité, combats bidon. Contournent

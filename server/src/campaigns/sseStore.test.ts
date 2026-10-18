@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import type express from 'express'
-import { broadcastCampaignRoll, criticalOutcome, getClientsForCampaign, type SseClient } from './sseStore.js'
+import { broadcastCampaignRoll, criticalOutcome, getClientsForCampaign, onlineUserIds, sendToUser, type SseClient } from './sseStore.js'
 
 const CAMPAIGN = 9001
 const GM = 1
@@ -124,5 +124,35 @@ describe('mode table (viewer)', () => {
     expect(data).not.toContain('27')
     expect(data).not.toContain('Gobelin')
     expect(data).toContain('Thorin')
+  })
+})
+
+describe('présence et envoi ciblé', () => {
+  const ID = 9002
+  beforeEach(() => getClientsForCampaign(ID).clear())
+
+  it('compte chaque joueur une fois, sans le mode table', () => {
+    const a = fakeClient(GM)
+    const b = fakeClient(PLAYER)
+    const b2 = fakeClient(PLAYER)
+    const table = fakeClient(3)
+    table.client.viewer = true
+    for (const c of [a, b, b2, table]) getClientsForCampaign(ID).add(c.client)
+    expect(onlineUserIds(ID).sort()).toEqual([GM, PLAYER])
+  })
+
+  it('personne en ligne dans une campagne sans flux', () => {
+    expect(onlineUserIds(424242)).toEqual([])
+  })
+
+  it('n’envoie qu’au joueur visé, sur tous ses onglets', () => {
+    const gm = fakeClient(GM)
+    const p1 = fakeClient(PLAYER)
+    const p2 = fakeClient(PLAYER)
+    for (const c of [gm, p1, p2]) getClientsForCampaign(ID).add(c.client)
+    sendToUser(ID, PLAYER, 'gm-message', { body: 'Salut' })
+    expect(gm.written).toEqual([])
+    expect(p1.written[0]).toBe('event: gm-message\n')
+    expect(p2.written[1]).toContain('Salut')
   })
 })

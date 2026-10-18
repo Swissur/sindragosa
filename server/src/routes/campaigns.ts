@@ -4,10 +4,12 @@ import { db } from '../db/index.js'
 import { campaigns, campaignMembers, characters, users, encounterTemplates, encounterMonsters, combats, rollEvents } from '../db/schema.js'
 import { requireAuth, type AuthRequest } from '../auth/middleware.js'
 import { avatarKind, toAvatarLink } from '../avatarUrl.js'
-import { broadcastCampaignEvent, broadcastCampaignRoll, getClientsForCampaign, isViewerRequest, type SseClient } from '../campaigns/sseStore.js'
+import { broadcastCampaignEvent, broadcastCampaignRoll, getClientsForCampaign, isViewerRequest, onlineUserIds, type SseClient } from '../campaigns/sseStore.js'
 import { parsePool } from '../campaigns/rollPool.js'
 import { pickGmEditable } from '../characters/updatable.js'
-import { applyRest, isRestKind, restDelta, type RestBroadcast } from '../campaigns/rest.js'
+import { isRestKind } from '../campaigns/rest.js'
+import { restCampaign } from '../campaigns/restCampaign.js'
+import { isCampaignSystem } from '../campaigns/systems.js'
 import { dominantColor } from '../campaigns/diceStyle.js'
 import { effectiveDiceStyle } from '../campaigns/diceStyleQuery.js'
 
@@ -59,15 +61,19 @@ router.get('/', async (_req, res) => {
 // POST /api/campaigns — créer une campagne
 router.post('/', async (req, res) => {
   const userId = (req as unknown as AuthRequest).userId
-  const { name } = req.body as { name?: string }
+  const { name, system = 'wow-forever' } = req.body as { name?: string; system?: unknown }
   if (!name?.trim()) {
     res.status(400).json({ error: 'Le nom est requis' })
+    return
+  }
+  if (!isCampaignSystem(system)) {
+    res.status(400).json({ error: 'Système inconnu' })
     return
   }
 
   const [row] = await db
     .insert(campaigns)
-    .values({ name: name.trim(), gmUserId: userId })
+    .values({ name: name.trim(), gmUserId: userId, system })
     .returning()
 
   // Set as active campaign for the GM
@@ -87,6 +93,8 @@ router.get('/:id', async (req, res) => {
       name: campaigns.name,
       gmUserId: campaigns.gmUserId,
       gmUsername: users.username,
+      system: campaigns.system,
+      sessionActive: campaigns.sessionActive,
       createdAt: campaigns.createdAt,
     })
     .from(campaigns)
@@ -114,6 +122,7 @@ router.get('/:id', async (req, res) => {
     .where(eq(campaignMembers.campaignId, id))
     .orderBy(asc(campaignMembers.joinedAt), asc(campaignMembers.id))
 
+  const online = new Set(onlineUserIds(id))
   const membersWithPortrait = members.map((m) => ({
     userId: m.userId,
     username: m.username,
@@ -122,9 +131,48 @@ router.get('/:id', async (req, res) => {
     characterName: m.characterName,
     portraitUrl: m.portraitImageId ? `/api/images/${m.portraitImageId}` : null,
     joinedAt: m.joinedAt,
+    online: online.has(m.userId),
   }))
 
   res.json({ ...campaign, members: membersWithPortrait })
+})
+
+// PATCH /api/campaigns/:id — renommer / changer de système (MJ only)
+router.patch('/:id', async (req, res) => {
+  const userId = (req as unknown as AuthRequest).userId
+  const id = Number(req.params.id)
+
+  const check = await verifyGm(id, userId)
+  if (check === 'not_found') { res.status(404).json({ error: 'Campagne introuvable' }); return }
+  if (check === 'forbidden') { res.status(403).json({ error: 'Réservé au MJ' }); return }
+
+  const { name, system } = req.body as { name?: unknown; system?: unknown }
+  const patch: { name?: string; system?: string } = {}
+  if (name !== undefined) {
+    if (typeof name !== 'string' || !name.trim()) { res.status(400).json({ error: 'Le nom est requis' }); return }
+    patch.name = name.trim()
+  }
+  if (system !== undefined) {
+    if (!isCampaignSystem(system)) { res.status(400).json({ error: 'Système inconnu' }); return }
+    patch.system = system
+  }
+  if (Object.keys(patch).length === 0) { res.status(400).json({ error: 'Rien à modifier' }); return }
+
+  const [row] = await db.update(campaigns).set(patch).where(eq(campaigns.id, id)).returning()
+  res.json(row)
+})
+
+// POST /api/campaigns/:id/activate — entrer dans une campagne (MJ ou membre)
+router.post('/:id/activate', async (req, res) => {
+  const userId = (req as unknown as AuthRequest).userId
+  const id = Number(req.params.id)
+
+  const check = await verifyMember(id, userId)
+  if (check.status === 'not_found') { res.status(404).json({ error: 'Campagne introuvable' }); return }
+  if (check.status === 'forbidden') { res.status(403).json({ error: 'Pas membre de cette campagne' }); return }
+
+  await db.update(users).set({ activeCampaignId: id }).where(eq(users.id, userId))
+  res.json({ ok: true })
 })
 
 // DELETE /api/campaigns/:id — supprimer (GM only)
@@ -788,49 +836,38 @@ router.post('/:id/rest', async (req, res) => {
   const { kind } = req.body as { kind?: unknown }
   if (!isRestKind(kind)) { res.status(400).json({ error: 'Type de repos inconnu' }); return }
 
-  // Les fiches des membres — le MJ n'a pas forcément de personnage.
-  const rows = await db
-    .select({
-      userId: campaignMembers.userId,
-      id: characters.id,
-      name: characters.name,
-      hpCurrent: characters.hpCurrent,
-      hpMax: characters.hpMax,
-      pcCurrent: characters.pcCurrent,
-      states: characters.states,
-      abilityUses: characters.abilityUses,
-      sessionTicks: characters.sessionTicks,
-    })
-    .from(campaignMembers)
-    .innerJoin(characters, eq(characters.id, campaignMembers.characterId))
-    .where(eq(campaignMembers.campaignId, campaignId))
-
-  const deltas: RestBroadcast['deltas'] = []
-  for (const row of rows) {
-    const before = {
-      hpCurrent: row.hpCurrent, hpMax: row.hpMax, pcCurrent: row.pcCurrent,
-      states: row.states, abilityUses: row.abilityUses, sessionTicks: row.sessionTicks,
-    }
-    const after = applyRest(before, kind)
-    const delta = restDelta(before, after)
-    deltas.push({ userId: row.userId, characterName: row.name, delta, after })
-    await db
-      .update(characters)
-      .set({
-        hpCurrent: after.hpCurrent,
-        pcCurrent: after.pcCurrent,
-        states: after.states,
-        abilityUses: after.abilityUses,
-        sessionTicks: after.sessionTicks,
-      })
-      .where(eq(characters.id, row.id))
-  }
-
-  const event: RestBroadcast = { kind, deltas }
-  broadcastCampaignEvent(campaignId, 'rest', event)
-  console.log(`[campaign ${campaignId}] repos ${kind} sur ${rows.length} personnage(s)`)
-  res.json(event)
+  res.json(await restCampaign(campaignId, kind))
 })
+
+// POST /api/campaigns/:id/session — début / fin de session (MJ only).
+// La fin de session fait la « fin de séance » : repos long + chance + coches remises.
+router.post('/:id/session', async (req, res) => {
+  const userId = (req as unknown as AuthRequest).userId
+  const campaignId = Number(req.params.id)
+
+  const check = await verifyGm(campaignId, userId)
+  if (check === 'not_found') { res.status(404).json({ error: 'Campagne introuvable' }); return }
+  if (check === 'forbidden') { res.status(403).json({ error: 'Réservé au MJ' }); return }
+
+  const { active } = req.body as { active?: unknown }
+  if (typeof active !== 'boolean') { res.status(400).json({ error: 'active attendu' }); return }
+
+  const [before] = await db
+    .select({ sessionActive: campaigns.sessionActive })
+    .from(campaigns)
+    .where(eq(campaigns.id, campaignId))
+  if (before.sessionActive === active) { res.json({ sessionActive: active }); return }
+
+  await db.update(campaigns).set({ sessionActive: active }).where(eq(campaigns.id, campaignId))
+  if (!active) await restCampaign(campaignId, 'seance')
+  broadcastCampaignEvent(campaignId, 'session', { sessionActive: active })
+  res.json({ sessionActive: active })
+})
+
+/** Pastille verte de l'écran MJ : qui a un flux ouvert sur la campagne. */
+function broadcastPresence(campaignId: number) {
+  broadcastCampaignEvent(campaignId, 'presence', { online: onlineUserIds(campaignId) })
+}
 
 // GET /api/campaigns/:id/events — flux SSE des jets de la campagne
 router.get('/:id/events', async (req, res) => {
@@ -849,6 +886,7 @@ router.get('/:id/events', async (req, res) => {
   const client: SseClient = { res, userId, viewer: isViewerRequest(req) }
   const clients = getClientsForCampaign(campaignId)
   clients.add(client)
+  broadcastPresence(campaignId)
 
   // Heartbeat : le proxy Fly coupe une connexion inactive (~60s).
   const heartbeat = setInterval(() => { res.write(': ping\n\n') }, 25000)
@@ -856,6 +894,7 @@ router.get('/:id/events', async (req, res) => {
   req.on('close', () => {
     clearInterval(heartbeat)
     clients.delete(client)
+    broadcastPresence(campaignId)
   })
 })
 

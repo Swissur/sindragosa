@@ -1,7 +1,7 @@
 import { and, asc, eq } from 'drizzle-orm'
 import { Router } from 'express'
 import { db } from '../db/index.js'
-import { characters, generatedImages } from '../db/schema.js'
+import { campaignMembers, characters, generatedImages, users } from '../db/schema.js'
 import { requireAuth, type AuthRequest } from '../auth/middleware.js'
 
 function username(req: unknown): string {
@@ -152,6 +152,18 @@ router.post('/:id/activate', async (req, res) => {
       .returning({ id: characters.id })
 
     if (!row) throw new Error('not_found')
+
+    // Le perso choisi devient celui que le joueur joue dans sa campagne active.
+    const [me] = await tx
+      .select({ activeCampaignId: users.activeCampaignId })
+      .from(users)
+      .where(eq(users.id, userId))
+    if (me?.activeCampaignId) {
+      await tx
+        .update(campaignMembers)
+        .set({ characterId: id })
+        .where(and(eq(campaignMembers.campaignId, me.activeCampaignId), eq(campaignMembers.userId, userId)))
+    }
   }).catch((err) => {
     if (err.message === 'not_found') {
       res.status(404).json({ error: 'Personnage introuvable' })

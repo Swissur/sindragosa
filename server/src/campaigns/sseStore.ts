@@ -37,6 +37,30 @@ export function broadcastCampaignEvent(campaignId: number, name: string, payload
   }
 }
 
+/** Envoie un évènement à un seul joueur (tous ses onglets), jamais au mode table. */
+export function sendToUser(campaignId: number, userId: number, name: string, payload: unknown): void {
+  const clients = clientsByCampaign.get(campaignId)
+  if (!clients) return
+  const data = JSON.stringify(payload)
+  for (const client of clients) {
+    if (client.userId !== userId || client.viewer) continue
+    client.res.write(`event: ${name}\n`)
+    client.res.write(`data: ${data}\n\n`)
+  }
+}
+
+/**
+ * Qui est connecté à la campagne : un flux SSE ouvert vaut présence. Le mode
+ * table ne compte pas (c'est une tablette, pas un joueur).
+ */
+export function onlineUserIds(campaignId: number): number[] {
+  const clients = clientsByCampaign.get(campaignId)
+  if (!clients) return []
+  const ids = new Set<number>()
+  for (const client of clients) if (!client.viewer) ids.add(client.userId)
+  return [...ids]
+}
+
 /**
  * Le moment qui fait vibrer la table. Réserve de d6 : un exploit (4 succès ou
  * plus) ou un échec critique. Jet d'un seul dé : un 20 ou un 1 naturel sur un

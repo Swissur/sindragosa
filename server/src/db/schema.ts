@@ -141,6 +141,26 @@ export const campaigns = pgTable('campaign', {
   gmUserId: integer('gm_user_id')
     .notNull()
     .references(() => users.id, { onDelete: 'cascade' }),
+  /** Système de jeu choisi à la création (un seul pour l'instant). */
+  system: varchar('system', { length: 40 }).notNull().default('wow-forever'),
+  /** Une session de jeu est en cours (« Début de la session » / « Fin de session »). */
+  sessionActive: boolean('session_active').notNull().default(false),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+})
+
+/** Message du MJ à un joueur — le journal « Échange avec le MJ ». */
+export const gmMessages = pgTable('gm_message', {
+  id: serial('id').primaryKey(),
+  campaignId: integer('campaign_id')
+    .notNull()
+    .references(() => campaigns.id, { onDelete: 'cascade' }),
+  toUserId: integer('to_user_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  fromUserId: integer('from_user_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  body: text('body').notNull(),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 })
 

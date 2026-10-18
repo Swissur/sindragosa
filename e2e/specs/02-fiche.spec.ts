@@ -49,6 +49,7 @@ test.describe('fiche de personnage', () => {
     try {
       await page.goto('/personnage')
       await page.getByRole('tab', { name: 'Domaines', exact: true }).click()
+      await page.getByTestId('domains-str').click()
       // Athlétisme rang 1, aucune spécialité : une place est libre.
       await page.getByTestId('domain-expand-athletisme').click()
       await page.getByTestId('specialty-other').click()
@@ -59,6 +60,7 @@ test.describe('fiche de personnage', () => {
 
       await page.reload()
       await page.getByRole('tab', { name: 'Domaines', exact: true }).click()
+      await page.getByTestId('domains-str').click()
       await page.getByTestId('domain-expand-athletisme').click()
       await expect(page.getByTestId('domain-athletisme').getByText('Escalade e2e')).toBeVisible()
     } finally {
@@ -114,6 +116,7 @@ test('seul le MJ retire une spécialité, après confirmation', async ({ browser
     await pageJoueur.goto('/personnage')
     await pageJoueur.getByTestId('sheet-edit').click()
     await pageJoueur.getByRole('tab', { name: 'Domaines', exact: true }).click()
+    await pageJoueur.getByTestId('domains-str').click()
     await pageJoueur.getByTestId('domain-expand-melee-bourrine').click()
     await expect(pageJoueur.getByTestId('domain-melee-bourrine').getByText('Boucliers', { exact: true })).toBeVisible()
     await expect(pageJoueur.getByTestId('specialty-remove-s-boucliers')).toHaveCount(0)
@@ -125,6 +128,7 @@ test('seul le MJ retire une spécialité, après confirmation', async ({ browser
 
     await pageMj.goto(`/campagnes/${sandbox.id}/personnage/${member.userId}`)
     await pageMj.getByRole('tab', { name: 'Domaines', exact: true }).click()
+    await pageMj.getByTestId('domains-str').click()
     await pageMj.getByTestId('domain-expand-melee-bourrine').click()
     await pageMj.getByTestId('specialty-remove-s-boucliers').click()
     const patched = pageMj.waitForResponse(
@@ -173,6 +177,7 @@ test('un domaine mis en favori depuis la fiche arrive dans Mes actions', async (
 
     await page.goto('/personnage')
     await page.getByRole('tab', { name: 'Domaines', exact: true }).click()
+    await page.getByTestId('domains-agi').click()
     await page.getByTestId('domain-pin-acrobatie-furtivite').click()
 
     await page.goto('/actions')
@@ -240,6 +245,7 @@ test('un domaine avancé s’ouvre par ses prérequis et se lance', async ({ bro
   try {
     await page.goto('/personnage')
     await page.getByRole('tab', { name: 'Domaines', exact: true }).click()
+    await page.getByTestId('domains-int').click()
     // Chronomancie : Magie profane & Arcanes 3 + Histoire & Géographie 1 → Orlane y est.
     await expect(page.getByTestId('advanced-chronomancie')).toBeVisible()
     // Démonologie demande Magie de l'Ombre & Fél 2 : fermé, donc invisible.

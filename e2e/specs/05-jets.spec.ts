@@ -107,6 +107,7 @@ test('un jet de domaine lance carac + rang, la spécialité et l’avantage ajou
   try {
     await page.goto('/personnage')
     await page.getByRole('tab', { name: 'Domaines', exact: true }).click()
+    await page.getByTestId('domains-agi').click()
     await page.getByTestId('domain-roll-combat-precision').click()
 
     // AGI 3 + rang 3
@@ -139,6 +140,7 @@ test('un point de chance ajoute un dé et se dépense', async ({ browser }) => {
     expect(avant).toBeGreaterThan(0)
 
     await page.getByRole('tab', { name: 'Domaines', exact: true }).click()
+    await page.getByTestId('domains-agi').click()
     await page.getByTestId('domain-roll-tir-lancer').click()
     await expect(page.getByTestId('roll-formula')).toContainText('= 6d6')
     await page.getByTestId('roll-luck-plus').click()

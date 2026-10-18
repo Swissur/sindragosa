@@ -12,7 +12,7 @@ import { byStat } from '../../utils/sindragosa/statGroups'
 import type { Character } from '../../types/character'
 
 /**
- * Les 30 domaines, en 6 accordéons (un par carac). Seuls les domaines entamés
+ * Les 30 domaines, en 6 accordéons (un par carac), repliés par défaut. Seuls les domaines entamés
  * (rang > 0 ou coches en cours) sont visibles ; les autres se déplient à la demande.
  * Suivent les domaines avancés ouverts, sous chaque carac de leurs prérequis.
  */
@@ -47,7 +47,6 @@ function domainsOf(stat: StatId) {
       v-for="s in STATS"
       :key="s.id"
       :title="`${s.label} ${character.stats[s.id]}`"
-      :default-open="true"
       :testid="`domains-${s.id}`"
     >
       <DomainRow

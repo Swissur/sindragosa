@@ -324,6 +324,7 @@ These skills are available via `/skill-name`. They are **not** auto-injected int
 | `/write-tests` | After writing non-trivial logic | Generate Vitest unit tests for the current feature |
 | `/quick-start` | New developer onboarding | Step-by-step guide to run the project locally |
 | `/lance-serveur` | "lance le serveur" | Rebuild the Docker image and run DB + app on `http://localhost:8080` |
+| `/deploie-nas` | "déploie sur le NAS", "comment je publie" | Check the PC side, then give the exact Git Bash commands to publish on the Synology NAS (the user runs them) |
 | `/db-prod` | Production database access | Connect and query the production PostgreSQL database |
 
 ## Subagents

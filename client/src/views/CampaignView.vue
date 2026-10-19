@@ -22,6 +22,7 @@ import AppButton from '../components/ui/AppButton.vue'
 import AppEmptyState from '../components/ui/AppEmptyState.vue'
 import AppBottomSheet from '../components/ui/AppBottomSheet.vue'
 import AppModal from '../components/ui/AppModal.vue'
+import AppCheckbox from '../components/ui/AppCheckbox.vue'
 import MemberGrid from '../components/campaign/MemberGrid.vue'
 import MemberShortcutsSheet from '../components/campaign/MemberShortcutsSheet.vue'
 import CombatPanelSheet from '../components/campaign/CombatPanelSheet.vue'
@@ -57,6 +58,8 @@ const showCombat = ref(false)
 const showRest = ref(false)
 const showOptions = ref(false)
 const confirmEndSession = ref(false)
+/** Décoché par défaut : le MJ peut toujours lancer le repos long à la main. */
+const endWithLongRest = ref(false)
 
 onMounted(load)
 
@@ -121,7 +124,7 @@ async function setSession(active: boolean) {
   sessionBusy.value = true
   confirmEndSession.value = false
   try {
-    const result = await setCampaignSession(campaign.value.id, active)
+    const result = await setCampaignSession(campaign.value.id, active, endWithLongRest.value)
     campaign.value = { ...campaign.value, sessionActive: result.sessionActive }
     if (isLive.value) liveSessionActive.value = result.sessionActive
   } catch (e) {
@@ -210,7 +213,7 @@ async function setSession(active: boolean) {
           block
           :disabled="sessionBusy"
           data-testid="session-end"
-          @click="confirmEndSession = true"
+          @click="endWithLongRest = false; confirmEndSession = true"
         >
           <Sunset :size="16" />
           Fin de session
@@ -252,8 +255,11 @@ async function setSession(active: boolean) {
 
     <AppModal v-model="confirmEndSession" title="Fin de session">
       <p class="confirm">
-        Tout le groupe fait un repos long, récupère 2 points de chance et ses coches de séance sont remises à zéro.
+        Tout le groupe récupère 2 points de chance et ses coches de séance sont remises à zéro.
       </p>
+      <AppCheckbox v-model="endWithLongRest" testid="session-end-long-rest">
+        Le groupe fait aussi un repos long
+      </AppCheckbox>
       <template #footer>
         <AppButton @click="confirmEndSession = false">Annuler</AppButton>
         <AppButton variant="danger" data-testid="session-end-confirm" @click="setSession(false)">Terminer</AppButton>

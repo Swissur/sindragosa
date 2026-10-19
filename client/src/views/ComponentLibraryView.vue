@@ -12,6 +12,7 @@ import AppTextarea from '../components/ui/AppTextarea.vue'
 import AppBadge from '../components/ui/AppBadge.vue'
 import AppTabs from '../components/ui/AppTabs.vue'
 import AppToggleGroup from '../components/ui/AppToggleGroup.vue'
+import AppCheckbox from '../components/ui/AppCheckbox.vue'
 import AppEmptyState from '../components/ui/AppEmptyState.vue'
 import AppModal from '../components/ui/AppModal.vue'
 import AppBottomSheet from '../components/ui/AppBottomSheet.vue'
@@ -44,6 +45,7 @@ const textareaValue = ref('Une note griffonnée dans la marge du grimoire…')
 const tabValue = ref('emoji')
 const lucideTab = ref('sword')
 const toggleValue = ref('')
+const checkboxValue = ref(false)
 const stepperValue = ref(3)
 const demoEtats = ref<EtatId[]>(['renverse', 'affaibli'])
 const showEtatsSheet = ref(false)
@@ -201,6 +203,10 @@ function forceRoll(value: number) {
         />
         <span>{{ toggleValue || 'aucun' }}</span>
       </div>
+    </AppCard>
+
+    <AppCard title="AppCheckbox">
+      <AppCheckbox v-model="checkboxValue">Le groupe fait aussi un repos long</AppCheckbox>
     </AppCard>
 
     <AppCard title="AppStepper / AppTickGauge">

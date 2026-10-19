@@ -3,7 +3,9 @@
  *
  * Chaque repos vide les usages des compétences pour certaines périodes
  * (`abilityUses` est rangé par période, donc pas besoin du catalogue ici).
- * Le repos long et la fin de séance remontent les PV au max (confirmé le 2026-10-18).
+ * Le repos long remonte les PV au max (confirmé le 2026-10-18). La fin de séance
+ * ne rend que la chance, les coches et les usages « séance » : le repos long
+ * qui l'accompagne souvent est une option du MJ (`withLongRest`).
  */
 
 export type RestKind = 'court' | 'long' | 'seance'
@@ -19,7 +21,7 @@ export const LUCK_PER_SESSION = 2
 export const RESET_PERIODS: Record<RestKind, string[]> = {
   court: ['combat', 'repos-court'],
   long: ['combat', 'repos-court', 'repos-long', 'jour'],
-  seance: ['combat', 'repos-court', 'repos-long', 'jour', 'seance'],
+  seance: ['seance'],
 }
 
 /** Ce qu'un repos peut toucher sur une fiche. */
@@ -37,10 +39,13 @@ export function applyRest(state: RestState, kind: RestKind): RestState {
   for (const period of RESET_PERIODS[kind]) delete abilityUses[period]
 
   if (kind === 'court') return { ...state, abilityUses }
+  if (kind === 'long') return { ...state, abilityUses, hpCurrent: state.hpMax, states: [] }
+  return { ...state, abilityUses, pcCurrent: LUCK_PER_SESSION, sessionTicks: { success: 0, critFail: 0 } }
+}
 
-  const rested = { ...state, abilityUses, hpCurrent: state.hpMax, states: [] }
-  if (kind === 'long') return rested
-  return { ...rested, pcCurrent: LUCK_PER_SESSION, sessionTicks: { success: 0, critFail: 0 } }
+/** Fin de séance, précédée d'un repos long si le MJ l'a coché. */
+export function endSession(state: RestState, withLongRest: boolean): RestState {
+  return applyRest(withLongRest ? applyRest(state, 'long') : state, 'seance')
 }
 
 /** Ce qui a bougé, pour la modale du joueur. Une clé absente = rien n'a changé. */

@@ -53,7 +53,7 @@ Lancés par le MJ pour tout le groupe. Chaque repos remet à zéro les usages li
 |---|---|---|
 | Repos court | « combat », « repos court » | — |
 | Repos long | + « repos long », « jour » | PV au maximum, états levés |
-| Fin de séance | + « séance » | comme un repos long, chance remise à 2, coches de séance à zéro |
+| Fin de séance | « séance » | chance remise à 2, coches de séance à zéro ; le MJ y ajoute un repos long s'il le souhaite |
 
 « 1/jour » veut dire une fois par repos long.
 

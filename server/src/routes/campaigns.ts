@@ -840,7 +840,8 @@ router.post('/:id/rest', async (req, res) => {
 })
 
 // POST /api/campaigns/:id/session — début / fin de session (MJ only).
-// La fin de session fait la « fin de séance » : repos long + chance + coches remises.
+// La fin de session fait la « fin de séance » : chance + coches remises,
+// plus un repos long si le MJ l'a coché (`longRest`).
 router.post('/:id/session', async (req, res) => {
   const userId = (req as unknown as AuthRequest).userId
   const campaignId = Number(req.params.id)
@@ -849,7 +850,7 @@ router.post('/:id/session', async (req, res) => {
   if (check === 'not_found') { res.status(404).json({ error: 'Campagne introuvable' }); return }
   if (check === 'forbidden') { res.status(403).json({ error: 'Réservé au MJ' }); return }
 
-  const { active } = req.body as { active?: unknown }
+  const { active, longRest } = req.body as { active?: unknown; longRest?: unknown }
   if (typeof active !== 'boolean') { res.status(400).json({ error: 'active attendu' }); return }
 
   const [before] = await db
@@ -859,7 +860,7 @@ router.post('/:id/session', async (req, res) => {
   if (before.sessionActive === active) { res.json({ sessionActive: active }); return }
 
   await db.update(campaigns).set({ sessionActive: active }).where(eq(campaigns.id, campaignId))
-  if (!active) await restCampaign(campaignId, 'seance')
+  if (!active) await restCampaign(campaignId, 'seance', longRest === true)
   broadcastCampaignEvent(campaignId, 'session', { sessionActive: active })
   res.json({ sessionActive: active })
 })

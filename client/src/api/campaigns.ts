@@ -75,9 +75,9 @@ export function activateCampaign(id: number): Promise<void> {
   return request(`/${id}/activate`, { method: 'POST', body: JSON.stringify({}) })
 }
 
-/** Début / fin de session. La fin applique la fin de séance à tout le groupe. */
-export function setCampaignSession(id: number, active: boolean): Promise<{ sessionActive: boolean }> {
-  return request(`/${id}/session`, { method: 'POST', body: JSON.stringify({ active }) })
+/** Début / fin de session. La fin applique la fin de séance à tout le groupe, avec repos long si `longRest`. */
+export function setCampaignSession(id: number, active: boolean, longRest = false): Promise<{ sessionActive: boolean }> {
+  return request(`/${id}/session`, { method: 'POST', body: JSON.stringify({ active, longRest }) })
 }
 
 // ── Échange avec le MJ ──────────────────────────────────────────────────────

@@ -2,14 +2,18 @@ import { eq } from 'drizzle-orm'
 import { db } from '../db/index.js'
 import { campaignMembers, characters } from '../db/schema.js'
 import { broadcastCampaignEvent } from './sseStore.js'
-import { applyRest, restDelta, type RestBroadcast, type RestKind } from './rest.js'
+import { applyRest, endSession, restDelta, type RestBroadcast, type RestKind } from './rest.js'
 
 /**
  * Fait reposer tout le groupe : écrit chaque fiche de membre et diffuse
  * l'évènement `rest` (feu de camp + modale côté joueurs). Sert au menu repos
- * et à la fin de session.
+ * et à la fin de session (`withLongRest` : la fin de séance inclut un repos long).
  */
-export async function restCampaign(campaignId: number, kind: RestKind): Promise<RestBroadcast> {
+export async function restCampaign(
+  campaignId: number,
+  kind: RestKind,
+  withLongRest = false,
+): Promise<RestBroadcast> {
   // Les fiches des membres — le MJ n'a pas forcément de personnage.
   const rows = await db
     .select({
@@ -33,7 +37,7 @@ export async function restCampaign(campaignId: number, kind: RestKind): Promise<
       hpCurrent: row.hpCurrent, hpMax: row.hpMax, pcCurrent: row.pcCurrent,
       states: row.states, abilityUses: row.abilityUses, sessionTicks: row.sessionTicks,
     }
-    const after = applyRest(before, kind)
+    const after = kind === 'seance' ? endSession(before, withLongRest) : applyRest(before, kind)
     const delta = restDelta(before, after)
     deltas.push({ userId: row.userId, characterName: row.name, delta, after })
     await db

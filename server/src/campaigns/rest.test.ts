@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { applyRest, isRestKind, restDelta, type RestState } from './rest.js'
+import { applyRest, endSession, isRestKind, restDelta, type RestState } from './rest.js'
 
 function state(over: Partial<RestState> = {}): RestState {
   return {
@@ -38,11 +38,21 @@ describe('applyRest — repos long', () => {
   })
 })
 
-describe('applyRest — fin de séance', () => {
-  it('remet tout : usages, PV, chance à 2, coches à 0', () => {
-    const after = applyRest(state(), 'seance')
+describe('endSession — fin de séance', () => {
+  it('sans repos long : chance à 2, coches à 0, usages « séance » rendus, rien d\'autre', () => {
+    const after = endSession(state(), false)
+    expect(Object.keys(after.abilityUses).sort()).toEqual(['combat', 'repos-court', 'repos-long'])
+    expect(after.pcCurrent).toBe(2)
+    expect(after.sessionTicks).toEqual({ success: 0, critFail: 0 })
+    expect(after.hpCurrent).toBe(7)
+    expect(after.states).toEqual(['affaibli'])
+  })
+
+  it('avec repos long : remet tout, PV au max et états levés', () => {
+    const after = endSession(state(), true)
     expect(after.abilityUses).toEqual({})
     expect(after.hpCurrent).toBe(24)
+    expect(after.states).toEqual([])
     expect(after.pcCurrent).toBe(2)
     expect(after.sessionTicks).toEqual({ success: 0, critFail: 0 })
   })
@@ -52,7 +62,7 @@ describe('restDelta', () => {
   it('ne rapporte que ce qui a changé', () => {
     const before = state()
     expect(restDelta(before, applyRest(before, 'court'))).toEqual({})
-    expect(restDelta(before, applyRest(before, 'seance'))).toEqual({
+    expect(restDelta(before, endSession(before, true))).toEqual({
       hp: { before: 7, after: 24 },
       pc: { before: 0, after: 2 },
     })

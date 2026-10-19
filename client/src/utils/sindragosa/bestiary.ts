@@ -224,6 +224,40 @@ export function convertAbilityText(text: string, nc = 0): { text: string; review
   return { text: out, review: D20_LEFTOVERS.test(out) }
 }
 
+/** Un monstre écrit directement au d6 (donjons d'Azeroth) : le reste se calcule. */
+export interface MonsterSpec {
+  name: string
+  size: string
+  threat: number
+  stats: Record<StatId, number>
+  hp: number
+  armorKind: ArmorKind
+  /** Sans `stat`, la réserve est celle du combat ; avec (un sort), carac + R. */
+  attacks: (Omit<MonsterAttack, 'pool'> & { stat?: StatId })[]
+  abilities: MonsterAbility[]
+  description?: string
+}
+
+/** Applique les formules du plan 33 : réserves, défense, initiative et armure. */
+export function buildMonster(spec: MonsterSpec): Monster {
+  const { stats, threat } = spec
+  const fighting = Math.max(stats.str, stats.agi) + threat
+  return {
+    name: spec.name,
+    size: spec.size,
+    threat,
+    stats,
+    hp: spec.hp,
+    armor: convertArmor(spec.armorKind, threat),
+    armorKind: spec.armorKind,
+    defense: fighting,
+    initiative: stats.agi + stats.wis + threat,
+    attacks: spec.attacks.map(({ stat, ...a }) => ({ ...a, pool: stat ? stats[stat] + threat : fighting })),
+    abilities: spec.abilities,
+    ...(spec.description ? { description: spec.description } : {}),
+  }
+}
+
 export function convertMonster(m: CoMonster): Monster {
   const threat = threatRank(m.nc)
   const s = m.stats

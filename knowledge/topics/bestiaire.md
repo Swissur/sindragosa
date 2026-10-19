@@ -1,6 +1,6 @@
 # Bestiaire
 
-Règles telles que l'app les applique. Catalogue : `client/src/data/sindragosa/monsters.ts` (211 monstres). Conversion : `plans/33-bestiaire-sindragosa.md`, `client/src/utils/sindragosa/bestiary.ts`, `scripts/convert-bestiary.ts`.
+Règles telles que l'app les applique. Catalogue : `client/src/data/sindragosa/monsters.ts` (211 monstres), plus les monstres des donjons d'Azeroth (`client/src/data/sindragosa/dungeons/`). Les deux sont réunis dans `BESTIARY` (`client/src/data/sindragosa/bestiary.ts`), où cherchent l'éditeur de rencontre et le combat. Conversion : `plans/33-bestiaire-sindragosa.md`, `client/src/utils/sindragosa/bestiary.ts`, `scripts/convert-bestiary.ts`.
 
 Le bestiaire vient de Chroniques Oubliées, converti au système d6. Les sources CO (catalogue et scans du livre) sont gardées dans `scripts/sources/`.
 
@@ -11,6 +11,7 @@ Un monstre n'a pas les 30 domaines : il a **6 caractéristiques** et un **rang d
 | Valeur | Calcul |
 |---|---|
 | Réserve d'attaque | max(Force, Agilité) + R, en d6 |
+| Réserve d'un sort (monstres des donjons) | caractéristique du sort (Intelligence, Sagesse) + R, en d6 |
 | Réserve de défense (parer ou esquiver) | max(Force, Agilité) + R, en d6 |
 | Jet hors combat (pister, résister…) | caractéristique + R |
 | Initiative | Agilité + Sagesse + R |
@@ -21,6 +22,26 @@ L'attaque et la défense se résolvent comme pour un joueur (`combat.md`). Le MJ
 Le MJ peut aussi créer un monstre sur mesure (R, PV, armure, défense, initiative, caractéristiques), ou retoucher ces valeurs dans une rencontre.
 
 **Ce que voient les joueurs** : le nom, l'initiative, l'armure, les états, la position et un état de santé (intact, blessé, mal en point, agonisant, mort). Ni R, ni la réserve de défense, ni les PV exacts, ni les attaques et capacités.
+
+## Donjons d'Azeroth
+
+Monstres écrits directement au d6 (`buildMonster`, `client/src/utils/sindragosa/bestiary.ts`) : on fixe R, les caractéristiques, les PV, la catégorie d'armure, les dégâts et les capacités ; réserves, défense, initiative et armure suivent les formules ci-dessus.
+
+Chaque donjon fournit aussi ses **combats tout prêts**, dans l'ordre du parcours. Le MJ les importe d'un coup depuis le volet Combat (château « Donjons prêts ») : chaque combat devient une rencontre de la campagne, classée sous la référence **donjon / raid** (le nom du donjon). Le MJ peut aussi poser cette référence à la main sur ses propres rencontres. Les renforts (Sneed dans son déchiqueteur, gardes noirs camouflés) entrent **en réserve**.
+
+Conventions des capacités : les effets forts (étourdir, ralentir) se déclenchent sur une **marge d'au moins 2**, pas sur un critique (un 6 sort trop souvent avec 5 dés). Les seuils de phase d'un boss sont écrits en PV.
+
+| Donjon | Combats | Monstres | Boss |
+|---|---|---|---|
+| Les Mortemines (avant le Cataclysme) | 12 | 23 | Rhahk'Zor, Mineur Johnson (rare), Déchiqueteur de Sneed et Sneed, Gilnid, M. Châtiment, Macaron (optionnel), Capitaine Vertepeau, Edwin VanCleef |
+
+### Butin des boss
+
+Un combat de boss porte une **table de butin** : des objets d'inventaire (arme avec gabarit, bonus de dégâts et domaine ; armure avec sa valeur ; le reste en effet écrit, appliqué à la main) et leur **chance** (le taux de drop du jeu, en %). Le butin est copié dans le combat à son lancement et reste caché aux joueurs.
+
+Quand le MJ termine le combat, le volet **Butin** s'ouvre (et se rouvre par le cadeau) : **Faire tomber** tire un objet parmi ceux pas encore donnés, au prorata des chances ; le MJ peut aussi en taper un. Il le donne ensuite à un héros du combat : l'objet entre dans son inventaire (non équipé) et le joueur reçoit un toast. Chaque objet ne se donne qu'une fois ; combien en tirer est au choix du MJ.
+
+Les Mortemines sont calibrées pour 4 ou 5 personnages débutants (20 à 40 PV, réserves de 4 à 6 d6) : sbires R1, élites R2, M. Châtiment et VanCleef R3.
 
 ## Conversion depuis CO
 

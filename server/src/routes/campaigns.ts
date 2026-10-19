@@ -12,6 +12,7 @@ import { restCampaign } from '../campaigns/restCampaign.js'
 import { isCampaignSystem } from '../campaigns/systems.js'
 import { dominantColor } from '../campaigns/diceStyle.js'
 import { effectiveDiceStyle } from '../campaigns/diceStyleQuery.js'
+import { importEncounters, monsterValues, parseEncounterImport } from '../campaigns/encounterImport.js'
 
 const router = Router()
 router.use(requireAuth)
@@ -384,6 +385,7 @@ router.get('/:id/encounters', async (req, res) => {
       id: encounterTemplates.id,
       name: encounterTemplates.name,
       description: encounterTemplates.description,
+      dungeon: encounterTemplates.dungeon,
       createdAt: encounterTemplates.createdAt,
     })
     .from(encounterTemplates)
@@ -413,15 +415,31 @@ router.post('/:id/encounters', async (req, res) => {
   if (check === 'not_found') { res.status(404).json({ error: 'Campagne introuvable' }); return }
   if (check === 'forbidden') { res.status(403).json({ error: 'Réservé au MJ' }); return }
 
-  const { name, description } = req.body as { name?: string; description?: string }
+  const { name, description, dungeon } = req.body as { name?: string; description?: string; dungeon?: string }
   if (!name?.trim()) { res.status(400).json({ error: 'Le nom est requis' }); return }
 
   const [row] = await db
     .insert(encounterTemplates)
-    .values({ campaignId, name: name.trim(), description: description?.trim() || null })
+    .values({ campaignId, name: name.trim(), description: description?.trim() || null, dungeon: dungeon?.trim() || null })
     .returning()
 
   res.status(201).json(row)
+})
+
+// POST /api/campaigns/:id/encounters/import — crée d'un coup les combats tout prêts d'un donjon
+router.post('/:id/encounters/import', async (req, res) => {
+  const userId = (req as unknown as AuthRequest).userId
+  const campaignId = Number(req.params.id)
+
+  const check = await verifyGm(campaignId, userId)
+  if (check === 'not_found') { res.status(404).json({ error: 'Campagne introuvable' }); return }
+  if (check === 'forbidden') { res.status(403).json({ error: 'Réservé au MJ' }); return }
+
+  const parsed = parseEncounterImport(req.body)
+  if (!parsed) { res.status(400).json({ error: 'Donjon ou rencontres manquants' }); return }
+
+  const count = await importEncounters(campaignId, parsed.dungeon, parsed.encounters)
+  res.status(201).json({ count })
 })
 
 // GET /api/campaigns/:id/encounters/:eid — détail d'une rencontre
@@ -459,13 +477,14 @@ router.put('/:id/encounters/:eid', async (req, res) => {
   if (check === 'not_found') { res.status(404).json({ error: 'Campagne introuvable' }); return }
   if (check === 'forbidden') { res.status(403).json({ error: 'Réservé au MJ' }); return }
 
-  const { name, description } = req.body as { name?: string; description?: string }
+  const { name, description, dungeon } = req.body as { name?: string; description?: string; dungeon?: string }
 
   const [row] = await db
     .update(encounterTemplates)
     .set({
       ...(name !== undefined ? { name: name.trim() } : {}),
       ...(description !== undefined ? { description: description.trim() || null } : {}),
+      ...(dungeon !== undefined ? { dungeon: dungeon.trim() || null } : {}),
     })
     .where(and(eq(encounterTemplates.id, eid), eq(encounterTemplates.campaignId, campaignId)))
     .returning()
@@ -516,26 +535,7 @@ router.post('/:id/encounters/:eid/monsters', async (req, res) => {
 
   const [row] = await db
     .insert(encounterMonsters)
-    .values({
-      encounterId: eid,
-      name: String(body.name ?? 'Monstre'),
-      threat: Number(body.threat ?? 0),
-      size: String(body.size ?? 'moyenne'),
-      armor: Number(body.armor ?? 0),
-      defense: Number(body.defense ?? 2),
-      pv: Number(body.pv ?? 1),
-      init: Number(body.init ?? 0),
-      statFor: Number(body.statFor ?? 2),
-      statAgi: Number(body.statAgi ?? 2),
-      statEnd: Number(body.statEnd ?? 2),
-      statInt: Number(body.statInt ?? 2),
-      statSag: Number(body.statSag ?? 2),
-      statCha: Number(body.statCha ?? 2),
-      attacks: body.attacks ?? [],
-      abilities: body.abilities ?? [],
-      description: body.description ? String(body.description) : null,
-      hidden: body.hidden === true,
-    })
+    .values({ encounterId: eid, ...monsterValues(body) })
     .returning()
 
   res.status(201).json(row)

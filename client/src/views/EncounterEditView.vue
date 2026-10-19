@@ -14,7 +14,7 @@ import {
   type EncounterMonsterAttack,
   type EncounterMonsterAbility,
 } from '../api/campaigns'
-import { MONSTERS } from '../data/sindragosa/monsters'
+import { BESTIARY } from '../data/sindragosa/bestiary'
 import type { Monster } from '../utils/sindragosa/bestiary'
 import { catalogMonsterFields, filterCatalog } from '../utils/monsterSession'
 import AppPageLayout from '../components/ui/AppPageLayout.vue'
@@ -63,10 +63,24 @@ watch(descValue, (val) => {
   }, 800)
 })
 
+// Donjon / raid, même enregistrement différé
+const dungeonValue = ref('')
+let dungeonTimer: ReturnType<typeof setTimeout> | null = null
+
+watch(dungeonValue, (val) => {
+  if (dungeonTimer) clearTimeout(dungeonTimer)
+  dungeonTimer = setTimeout(() => {
+    if (encounter.value && (val.trim() || null) !== encounter.value.dungeon) {
+      updateEncounter(campaignId, encounterId, { dungeon: val.trim() })
+      encounter.value.dungeon = val.trim() || null
+    }
+  }, 800)
+})
+
 // Bestiary search
 const searchQuery = ref('')
 const showBestiary = ref(false)
-const filteredMonsters = computed(() => filterCatalog(searchQuery.value, MONSTERS))
+const filteredMonsters = computed(() => filterCatalog(searchQuery.value, BESTIARY))
 
 // Editing a monster
 const editingMonsterId = ref<number | null>(null)
@@ -80,6 +94,7 @@ async function load() {
     encounter.value = await fetchEncounter(campaignId, encounterId)
     nameValue.value = encounter.value.name
     descValue.value = encounter.value.description ?? ''
+    dungeonValue.value = encounter.value.dungeon ?? ''
   } catch (e) {
     error.value = e instanceof Error ? e.message : 'Erreur'
   } finally {
@@ -247,6 +262,10 @@ function goBack() {
           <div class="field-row">
             <label class="field-label">Description</label>
             <AppTextarea v-model="descValue" placeholder="Description (optionnel)" :rows="2" />
+          </div>
+          <div class="field-row">
+            <label class="field-label">Donjon / raid</label>
+            <AppInput v-model="dungeonValue" placeholder="Ex. Les Mortemines (optionnel)" data-testid="encounter-dungeon" />
           </div>
         </div>
       </AppCard>

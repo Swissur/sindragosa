@@ -3,6 +3,7 @@ import { fetchCampaignRolls, type CharacterPatchEvent, type RestEvent, type Roll
 import { applyServerPatch } from './useCharacter'
 import { user } from './useAuth'
 import { receiveRest } from './useRest'
+import { showToast } from './useToast'
 import { celebrate } from './useCriticalMoment'
 import { playRemoteDiceRoll, type DieRoll } from './useDice3D'
 import { rollOutcome, type RollOutcome } from '../utils/rollOutcome'
@@ -149,11 +150,14 @@ function connect(campaignId: number, options: { viewer?: boolean } = {}): void {
   // Jets que je n'ai pas le droit de voir (monstres du MJ) : le serveur n'envoie
   // que l'issue et le nom. La table vibre, personne n'apprend le chiffre.
   // Le MJ a fait dormir le groupe : feu de camp pour tout le monde.
-  // Le MJ a réglé une fiche (caracs, rangs, récompense) : si c'est la mienne, je la prends.
+  // Le MJ a réglé une fiche (caracs, rangs, récompense, butin) : si c'est la mienne, je la prends.
   eventSource.addEventListener('character', (e: MessageEvent) => {
     try {
       const event = JSON.parse(e.data as string) as CharacterPatchEvent
-      if (event.userId === user.value?.id) applyServerPatch(event.characterId, event.patch)
+      if (event.userId === user.value?.id) {
+        applyServerPatch(event.characterId, event.patch)
+        if (event.loot) showToast(`🎁 ${event.loot} rejoint ton inventaire !`)
+      }
       resetIdleTimer()
     } catch { /* ignore */ }
   })

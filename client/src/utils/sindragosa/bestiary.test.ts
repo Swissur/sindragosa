@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import {
-  armorKind, averageDamage, convertAbilityText, convertArmor, convertDamage, convertMonster,
+  armorKind, averageDamage, buildMonster, convertAbilityText, convertArmor, convertDamage, convertMonster,
   convertStat, fixedRd, threatRank, type CoMonster,
 } from './bestiary'
 
@@ -140,5 +140,31 @@ describe('convertMonster', () => {
     const m = convertMonster({ ...loup, rd: '6 + (5/magie)' })
     expect(m.abilities[0]).toEqual({ name: 'Résistance', description: "+3 d'armure, sauf contre : magie." })
     expect(m.armor).toBe(3)
+  })
+})
+
+describe('monstre écrit au d6', () => {
+  const spec = {
+    name: 'Évocateur',
+    size: 'moyenne',
+    threat: 2,
+    stats: { str: 2, agi: 3, end: 2, int: 4, wis: 3, cha: 2 },
+    hp: 10,
+    armorKind: 'cuir' as const,
+    attacks: [{ name: 'Dague', damage: 2 }, { name: 'Boule de feu', damage: 4, stat: 'int' as const, range: 30 }],
+    abilities: [],
+  }
+
+  it('calcule défense, initiative et armure avec les formules du bestiaire', () => {
+    const m = buildMonster(spec)
+    expect(m.defense).toBe(5)
+    expect(m.initiative).toBe(8)
+    expect(m.armor).toBe(convertArmor('cuir', 2))
+  })
+
+  it('une attaque sans carac prend la réserve de combat, un sort sa carac + R', () => {
+    const [dague, feu] = buildMonster(spec).attacks
+    expect(dague).toEqual({ name: 'Dague', damage: 2, pool: 5 })
+    expect(feu).toEqual({ name: 'Boule de feu', damage: 4, range: 30, pool: 6 })
   })
 })

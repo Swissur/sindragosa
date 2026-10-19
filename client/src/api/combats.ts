@@ -1,5 +1,6 @@
 import type { BattleWall } from '../components/battle/walls'
 import type { MonsterAbility, MonsterAttack } from '../utils/sindragosa/bestiary'
+import type { LootItem } from '../data/sindragosa/types'
 import type { EtatEntry } from '../data/etats'
 
 const BASE = '/api/campaigns'
@@ -62,6 +63,8 @@ export interface CombatState {
   /** Les murs tracés par le MJ (voir `components/battle/walls.ts`). */
   obstacles: BattleWall[]
   participants: CombatParticipant[]
+  /** Le butin à distribuer. Toujours vide pour un joueur. */
+  loot: CombatLoot[]
   /** Les PNJ en réserve. Toujours vide pour un joueur : il ignore leur existence. */
   reserve: CombatParticipant[]
   createdAt: string
@@ -222,6 +225,17 @@ export function removeCombatParticipant(
 ): Promise<void> {
   return request(`/${campaignId}/combats/${combatId}/participants/${participantId}`, {
     method: 'DELETE',
+  })
+}
+
+/** Un objet du butin d'un combat ; `givenTo` = le héros qui l'a reçu. */
+export type CombatLoot = LootItem & { givenTo?: string }
+
+/** Le MJ donne l'objet `index` du butin à un héros du combat. */
+export function giveLoot(campaignId: number, combatId: number, index: number, userId: number): Promise<{ loot: CombatLoot[] }> {
+  return request(`/${campaignId}/combats/${combatId}/loot/${index}/give`, {
+    method: 'POST',
+    body: JSON.stringify({ userId }),
   })
 }
 

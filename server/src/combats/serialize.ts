@@ -81,5 +81,7 @@ export function serializeCombat(
     // La réserve du MJ. Pour un joueur, elle n'existe pas : pas de nom, pas
     // d'initiative, pas de case grisée qui trahirait l'embuscade.
     reserve: isGm ? participants.filter((p) => p.hidden) : [],
+    // Le butin est la surprise du MJ : les joueurs le découvrent quand il le donne.
+    loot: isGm ? combat.loot : [],
   }
 }

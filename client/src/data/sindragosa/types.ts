@@ -1,4 +1,6 @@
-/** Types des catalogues Sindragosa (compétences, artisanat). */
+/** Types des catalogues Sindragosa (compétences, artisanat, donjons). */
+import type { Monster } from '../../utils/sindragosa/bestiary'
+import type { ItemRow } from '../../types/character'
 
 export type ActionType = 'complete' | 'rapide' | 'gratuite' | 'reaction' | 'passif' | 'hors-combat' | 'dialogue'
 
@@ -51,4 +53,32 @@ export interface Recipe {
   batch: number | null
   components: { qty: number; name: string }[]
   effect: string
+}
+
+/** Un combat tout prêt d'un donjon : le MJ l'importe dans sa campagne. */
+export interface DungeonEncounter {
+  name: string
+  /** Mise en scène et tactique, lues par le MJ. */
+  description: string
+  /** Noms du bestiaire du donjon ; `hidden` = en réserve (renfort, embuscade). */
+  monsters: { name: string; count?: number; hidden?: boolean }[]
+  /** Table de butin des combats de boss, tirée au sort à la fin du combat. */
+  loot?: LootItem[]
+}
+
+/** Un objet de butin : un objet d'inventaire, sans id ni état. */
+export type LootItem = Omit<ItemRow, 'id' | 'quantity' | 'equipped'> & {
+  quantity?: number
+  /** Chance relative au tirage (le taux de drop du jeu, en %) ; 1 par défaut. */
+  chance?: number
+}
+
+export interface Dungeon {
+  /** Référence posée sur les rencontres importées, pour les classer. */
+  name: string
+  kind: 'donjon' | 'raid'
+  description: string
+  monsters: Monster[]
+  /** Dans l'ordre du parcours. */
+  encounters: DungeonEncounter[]
 }

@@ -2,6 +2,7 @@ import type { ServerCharacter } from './characters'
 import type { EtatEntry } from '../data/etats'
 import type { RollPool } from '../utils/rollOutcome'
 import type { MonsterAbility, MonsterAttack } from '../utils/sindragosa/bestiary'
+import type { ImportedEncounter } from '../utils/sindragosa/dungeons'
 
 const BASE = '/api/campaigns'
 
@@ -135,7 +136,9 @@ export function patchMemberCharacter(campaignId: number, userId: number, patch: 
 export interface CharacterPatchEvent {
   userId: number
   characterId: number
-  patch: GmCharacterPatch
+  patch: GmCharacterPatch | Pick<ServerCharacter, 'items'>
+  /** Nom de l'objet reçu quand le patch vient du butin d'un combat. */
+  loot?: string
 }
 
 // ── Encounters ──────────────────────────────────────────────────────────────
@@ -173,6 +176,8 @@ export interface EncounterSummary {
   id: number
   name: string
   description: string | null
+  /** Donjon ou raid qui classe la rencontre ; null = rencontre libre. */
+  dungeon: string | null
   monsterCount: number
   createdAt: string
 }
@@ -182,6 +187,7 @@ export interface EncounterDetail {
   campaignId: number
   name: string
   description: string | null
+  dungeon: string | null
   monsters: EncounterMonster[]
   createdAt: string
 }
@@ -201,10 +207,18 @@ export function fetchEncounter(campaignId: number, eid: number): Promise<Encount
   return request(`/${campaignId}/encounters/${eid}`)
 }
 
-export function updateEncounter(campaignId: number, eid: number, data: { name?: string; description?: string }): Promise<void> {
+export function updateEncounter(campaignId: number, eid: number, data: { name?: string; description?: string; dungeon?: string }): Promise<void> {
   return request(`/${campaignId}/encounters/${eid}`, {
     method: 'PUT',
     body: JSON.stringify(data),
+  })
+}
+
+/** Crée d'un coup les combats tout prêts d'un donjon, classés sous son nom. */
+export function importDungeonEncounters(campaignId: number, dungeon: string, encounters: ImportedEncounter[]): Promise<{ count: number }> {
+  return request(`/${campaignId}/encounters/import`, {
+    method: 'POST',
+    body: JSON.stringify({ dungeon, encounters }),
   })
 }
 

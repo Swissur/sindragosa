@@ -1,4 +1,4 @@
-import { and, eq, desc, asc, or, inArray } from 'drizzle-orm'
+import { and, eq, desc, asc, or, inArray, sql } from 'drizzle-orm'
 import { Router } from 'express'
 import { db } from '../db/index.js'
 import {
@@ -13,6 +13,8 @@ import { startingPosition, clampToBoard } from '../combats/placement.js'
 import { parseEtats, tickEtats } from '../combats/etats.js'
 import { sanitizeObstacles } from '../combats/obstacles.js'
 import { computeInitiative } from '../combats/initiative.js'
+import { markGiven, sanitizeLoot, toInventoryItem } from '../combats/loot.js'
+import { randomUUID } from 'node:crypto'
 
 const router = Router()
 
@@ -107,10 +109,15 @@ router.post('/:id/combats', async (req, res) => {
 
   // Determine combat name
   let combatName = name?.trim() || 'Combat'
+  // Le butin est copié comme les monstres : retoucher la rencontre ne change pas un combat lancé.
+  let loot: unknown = []
   if (encounterId) {
-    const [enc] = await db.select({ name: encounterTemplates.name }).from(encounterTemplates)
+    const [enc] = await db.select({ name: encounterTemplates.name, loot: encounterTemplates.loot }).from(encounterTemplates)
       .where(and(eq(encounterTemplates.id, encounterId), eq(encounterTemplates.campaignId, campaignId)))
-    if (enc) combatName = enc.name
+    if (enc) {
+      combatName = enc.name
+      loot = enc.loot
+    }
   }
 
   // Create combat
@@ -118,6 +125,7 @@ router.post('/:id/combats', async (req, res) => {
     campaignId,
     encounterId: encounterId ?? null,
     name: combatName,
+    loot: sanitizeLoot(loot),
   }).returning()
 
   // Add players
@@ -669,6 +677,57 @@ router.post('/:id/combats/:cid/finish', async (req, res) => {
 
   console.log(`[combat] finished: id=${combatId}`)
   res.json({ ok: true })
+})
+
+// POST /:id/combats/:cid/loot/:index/give — le MJ donne un objet du butin à un héros du combat.
+// L'objet est ajouté à l'inventaire en base (concaténation SQL : pas de course avec
+// la sauvegarde auto du joueur), puis le joueur reçoit son inventaire par SSE.
+router.post('/:id/combats/:cid/loot/:index/give', async (req, res) => {
+  const userId = (req as unknown as AuthRequest).userId
+  const campaignId = Number(req.params.id)
+  const combatId = Number(req.params.cid)
+  const index = Number(req.params.index)
+  const heroUserId = Number((req.body as { userId?: unknown })?.userId)
+
+  const check = await verifyGm(campaignId, userId)
+  if (check.status !== 'ok') { res.status(403).json({ error: 'Réservé au MJ' }); return }
+
+  const combat = await loadCombatInCampaign(combatId, campaignId)
+  if (!combat) { res.status(404).json({ error: 'Combat introuvable' }); return }
+
+  const [hero] = await db.select({ id: combatParticipants.id }).from(combatParticipants)
+    .where(and(
+      eq(combatParticipants.combatId, combatId),
+      eq(combatParticipants.kind, 'player'),
+      eq(combatParticipants.userId, heroUserId),
+    ))
+  if (!hero) { res.status(400).json({ error: 'Ce héros ne participe pas au combat' }); return }
+
+  const [member] = await db.select({ characterId: campaignMembers.characterId }).from(campaignMembers)
+    .where(and(eq(campaignMembers.campaignId, campaignId), eq(campaignMembers.userId, heroUserId)))
+  if (!member?.characterId) { res.status(404).json({ error: 'Personnage introuvable' }); return }
+  const [char] = await db.select({ name: characters.name }).from(characters).where(eq(characters.id, member.characterId))
+  if (!char) { res.status(404).json({ error: 'Personnage introuvable' }); return }
+
+  const loot = sanitizeLoot(combat.loot)
+  const nextLoot = markGiven(loot, index, char.name)
+  if (!nextLoot) { res.status(409).json({ error: 'Objet déjà donné ou introuvable' }); return }
+
+  const item = toInventoryItem(loot[index], randomUUID())
+  const items = await db.transaction(async (tx) => {
+    const [updated] = await tx.update(characters)
+      .set({ items: sql`${characters.items} || ${JSON.stringify([item])}::jsonb`, updatedAt: new Date() })
+      .where(eq(characters.id, member.characterId!))
+      .returning({ items: characters.items })
+    await tx.update(combats).set({ loot: nextLoot }).where(eq(combats.id, combatId))
+    return updated.items
+  })
+
+  await broadcastCombatState(combatId, check.gmUserId)
+  broadcastCampaignEvent(campaignId, 'character', {
+    userId: heroUserId, characterId: member.characterId, patch: { items }, loot: item.name,
+  })
+  res.json({ loot: nextLoot })
 })
 
 // GET /:id/combats/:cid/events — SSE stream

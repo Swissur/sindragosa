@@ -21,12 +21,13 @@ import {
   Trash2,
   FlaskConical,
   UserPlus,
+  Gift,
 } from "lucide-vue-next";
 import { useCombat } from "../composables/useCombat";
 import { user } from "../composables/useAuth";
 import { setParticipantStates } from "../api/combats";
 import { postCampaignRoll, fetchCampaign, type CampaignMember } from "../api/campaigns";
-import { MONSTERS } from "../data/sindragosa/monsters";
+import { BESTIARY } from "../data/sindragosa/bestiary";
 import type { Monster } from "../utils/sindragosa/bestiary";
 import { catalogMonsterFields, filterCatalog } from "../utils/monsterSession";
 import { rollPool, DIFFICULTY_LABELS, type Difficulty } from "../utils/sindragosa/pool";
@@ -48,6 +49,7 @@ import EtatsSheet from "../components/etats/EtatsSheet.vue";
 import { sortEtats, type Etat, type EtatEntry } from "../data/etats";
 import BattleMapTab from "../components/battle/BattleMapTab.vue";
 import ActionsPanel from "../components/actions/ActionsPanel.vue";
+import LootSheet from "../components/loot/LootSheet.vue";
 import type { CombatParticipant } from "../api/combats";
 import { showToast } from "../composables/useToast";
 
@@ -183,7 +185,7 @@ async function toggleVisibility(p: CombatParticipant, hidden: boolean) {
 }
 const monsterSearchQuery = ref("");
 const filteredMonsters = computed(() =>
-  filterCatalog(monsterSearchQuery.value, MONSTERS),
+  filterCatalog(monsterSearchQuery.value, BESTIARY),
 );
 
 // Custom monster form
@@ -204,6 +206,9 @@ const confirmDeleteId = ref<number | null>(null);
 
 // Finish confirmation
 const showFinishConfirm = ref(false);
+/** Butin d'un combat de boss : s'ouvre à la fin du combat, rouvrable par le cadeau. */
+const showLoot = ref(false);
+const hasLoot = computed(() => isGm.value && (combat.value?.loot?.length ?? 0) > 0);
 
 
 // Release the SSE connection when the tab goes to the background (forgotten tab),
@@ -385,6 +390,7 @@ function openFinishConfirm() {
 async function handleFinish() {
   await finish();
   showFinishConfirm.value = false;
+  if (hasLoot.value) showLoot.value = true;
 }
 
 function goBack() {
@@ -397,6 +403,15 @@ function goBack() {
     <template #top-bar>
       <AppPageHead>
         <template #actions>
+          <AppIconBtn
+            v-if="hasLoot && combat?.status === 'finished'"
+            variant="primary"
+            title="Butin"
+            data-testid="loot-open"
+            @click="showLoot = true"
+          >
+            <Gift :size="18" />
+          </AppIconBtn>
           <AppIconBtn title="Retour" @click="goBack">
             <ArrowLeft :size="18" />
           </AppIconBtn>
@@ -857,6 +872,8 @@ function goBack() {
         <AppButton variant="danger" @click="handleConfirmDelete">Supprimer</AppButton>
       </template>
     </AppModal>
+
+    <LootSheet v-if="combat && hasLoot" v-model="showLoot" :campaign-id="campaignId" :combat="combat" />
 
     <!-- Finish confirmation -->
     <AppModal v-model="showFinishConfirm" title="Terminer ce combat ?">

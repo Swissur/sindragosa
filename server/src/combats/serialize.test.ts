@@ -16,6 +16,7 @@ function combat(overrides: Partial<CombatRow> = {}): CombatRow {
     roundNumber: 1,
     environment: 'foret',
     obstacles: [],
+    loot: [],
     createdAt: new Date('2026-01-01'),
     finishedAt: null,
     ...overrides,
@@ -200,5 +201,13 @@ describe('serializeCombat — la réserve du MJ', () => {
     expect(after.currentTurnIndex).toBe(2)
     // …mais c'est toujours le même monstre qui joue.
     expect(after.participants[after.currentTurnIndex].id).toBe(current)
+  })
+})
+
+describe('butin', () => {
+  it('le MJ voit le butin, un joueur jamais', () => {
+    const c = combat({ loot: [{ name: 'Marteau de Rhahk’Zor' }] })
+    expect(serializeCombat(c, [], true).loot).toEqual([{ name: 'Marteau de Rhahk’Zor' }])
+    expect(serializeCombat(c, [], false).loot).toEqual([])
   })
 })

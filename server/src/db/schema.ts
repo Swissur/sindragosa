@@ -195,6 +195,10 @@ export const encounterTemplates = pgTable('encounter_template', {
     .references(() => campaigns.id, { onDelete: 'cascade' }),
   name: varchar('name', { length: 200 }).notNull(),
   description: text('description'),
+  /** Donjon ou raid de la rencontre (« Les Mortemines »), pour les classer. NULL = rencontre libre. */
+  dungeon: varchar('dungeon', { length: 120 }),
+  /** Table de butin (objets d'inventaire sans id), copiée dans le combat au lancement. */
+  loot: jsonb('loot').notNull().default([]),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 })
 
@@ -241,6 +245,8 @@ export const combats = pgTable('combat', {
   environment: varchar('environment', { length: 40 }).notNull().default('foret'),
   /** Murs tracés par le MJ sur la carte (voir `client/src/components/battle/walls.ts`). */
   obstacles: jsonb('obstacles').notNull().default([]),
+  /** Butin à distribuer (`combats/loot.ts`) : réservé au MJ, chaque objet garde `givenTo`. */
+  loot: jsonb('loot').notNull().default([]),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   finishedAt: timestamp('finished_at', { withTimezone: true }),
 })

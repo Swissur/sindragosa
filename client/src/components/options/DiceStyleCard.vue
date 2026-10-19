@@ -147,7 +147,7 @@ function closePicker() {
       <Dices :size="16" />
       Style de dé
     </span>
-    <span class="profile-hint">Ton dé roule dans ce style, chez toi comme chez les autres.</span>
+    <span class="profile-hint">Pour les lancers libres demandés par le MJ. Les jets de compétence ont leurs couleurs : gris carac, bleu domaine, orange spécialité, vert chance, doré avantage.</span>
 
     <DicePreview :style="style" />
 

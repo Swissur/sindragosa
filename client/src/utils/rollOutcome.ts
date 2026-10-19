@@ -14,7 +14,15 @@ export interface RollPool {
   critFrom: 5 | 6
   reached: 'echec' | 'facile' | 'moyenne' | 'difficile' | 'exploit'
   critFail: boolean
+  /**
+   * D'où vient chaque dé, dans l'ordre des dés gardés puis des écartés : il
+   * décide de sa couleur à l'écran. Absent sur un jet sans composition (monstre).
+   */
+  sources?: PoolDieSource[]
 }
+
+/** L'origine d'un dé de réserve : la caractéristique, le domaine, la spécialité, la chance ou l'avantage. */
+export type PoolDieSource = 'stat' | 'domaine' | 'specialite' | 'chance' | 'avantage'
 
 /**
  * Le minimum pour noter un jet. Satisfait aussi bien par les jets locaux

@@ -10,6 +10,7 @@ import { character, unlockedAdvanced } from '../../composables/useCharacter'
 import { rollRequest, closeRollSheet } from '../../composables/useRollSheet'
 import { useRollHistory } from '../../composables/useRollHistory'
 import { playDiceRoll } from '../../composables/useDice3D'
+import { POOL_DICE_STYLES } from '../../data/poolDiceStyles'
 import { showToast } from '../../composables/useToast'
 import { DOMAINS, STATS, advancedDomainById, domainById } from '../../data/sindragosa/domains'
 import { rollPool, DIFFICULTY_LABELS, type PoolResult } from '../../utils/sindragosa/pool'
@@ -89,11 +90,12 @@ async function roll() {
   character.value.pcCurrent -= spent
   luck.value = 0
 
-  const summary = poolSummary(r, s.specialtyLevel)
+  const summary = poolSummary(r, s.specialtyLevel, s.sources)
   const dropped = r.rerolledFrom !== null ? [r.rerolledFrom] : []
+  const styleAt = (i: number) => POOL_DICE_STYLES[summary.sources![i]]
   await playDiceRoll([
-    ...r.dice.map((value) => ({ sides: 6, value, kind: 'domaine', critFrom: summary.critFrom })),
-    ...dropped.map((value) => ({ sides: 6, value, kind: 'domaine', dropped: true })),
+    ...r.dice.map((value, i) => ({ sides: 6, value, kind: 'domaine', critFrom: summary.critFrom, style: styleAt(i) })),
+    ...dropped.map((value, i) => ({ sides: 6, value, kind: 'domaine', dropped: true, style: styleAt(r.dice.length + i) })),
   ])
 
   result.value = r

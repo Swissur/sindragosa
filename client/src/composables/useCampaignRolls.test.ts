@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { filterRolls, remoteDiceFor } from './useCampaignRolls'
 import type { RollEvent } from '../api/campaigns'
+import { POOL_DICE_STYLES } from '../data/poolDiceStyles'
 
 function roll(over: Partial<RollEvent>): RollEvent {
   return {
@@ -62,6 +63,14 @@ describe('remoteDiceFor', () => {
       { sides: 20, value: 17, kind: 'weapon' },
       { sides: 20, value: 4, kind: 'weapon', dropped: true },
     ])
+  })
+
+  it("un jet de compétence colore chaque dé selon son origine", () => {
+    const dice = remoteDiceFor(roll({
+      die: 0, sides: 6, kind: 'domaine', rolls: [5, 2], dropped: [1],
+      pool: { critFrom: 6, reached: 'facile', critFail: false, sources: ['stat', 'chance', 'chance'] },
+    }))
+    expect(dice.map((d) => d.style)).toEqual([POOL_DICE_STYLES.stat, POOL_DICE_STYLES.chance, POOL_DICE_STYLES.chance])
   })
 
   it('sans dé écarté, rien ne change', () => {

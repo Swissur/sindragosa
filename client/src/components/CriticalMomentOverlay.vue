@@ -25,7 +25,8 @@ import { activeMoment } from "../composables/useCriticalMoment";
 .critical-moment {
   position: fixed;
   inset: 0;
-  z-index: 61;
+  /* Juste au-dessus des dés (1050), donc des dialogues : un critique se lance souvent depuis la feuille de jet. */
+  z-index: 1051;
   pointer-events: none;
   display: flex;
   align-items: center;

@@ -7,6 +7,7 @@ import { celebrate } from './useCriticalMoment'
 import { playRemoteDiceRoll, type DieRoll } from './useDice3D'
 import { rollOutcome, type RollOutcome } from '../utils/rollOutcome'
 import { parseDiceStyle } from '../data/diceStyle'
+import { POOL_DICE_STYLES } from '../data/poolDiceStyles'
 import { refreshActiveCombat } from './useActiveCombat'
 import { appendFeed, clearFeed, feedLineFor, secretLineFor } from './useViewerFeed'
 import { incomingGmMessage, liveSessionActive, onlineUserIds, resetCampaignLive, type IncomingGmMessage } from './useCampaignLive'
@@ -87,9 +88,12 @@ function appendRoll(roll: RollEvent): void {
 export function remoteDiceFor(roll: RollEvent): DieRoll[] {
   const values = roll.rolls?.length ? roll.rolls : [roll.die]
   const critFrom = roll.pool?.critFrom
+  // Jet de compétence : chaque dé garde la couleur de son origine, chez les autres aussi.
+  const sources = roll.pool?.sources
+  const styleAt = (i: number) => (sources?.[i] ? POOL_DICE_STYLES[sources[i]] : undefined)
   return [
-    ...values.map((value) => ({ sides: roll.sides, value, kind: roll.kind, critFrom })),
-    ...(roll.dropped ?? []).map((value) => ({ sides: roll.sides, value, kind: roll.kind, dropped: true })),
+    ...values.map((value, i) => ({ sides: roll.sides, value, kind: roll.kind, critFrom, style: styleAt(i) })),
+    ...(roll.dropped ?? []).map((value, i) => ({ sides: roll.sides, value, kind: roll.kind, dropped: true, style: styleAt(values.length + i) })),
   ]
 }
 

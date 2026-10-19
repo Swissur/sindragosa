@@ -7,6 +7,13 @@ describe('parsePool', () => {
       .toEqual({ critFrom: 5, reached: 'exploit', critFail: false })
   })
 
+  it("garde l'origine des dés, et l'oublie si elle est mal formée", () => {
+    expect(parsePool({ critFrom: 6, reached: 'facile', sources: ['stat', 'domaine', 'chance'] })?.sources)
+      .toEqual(['stat', 'domaine', 'chance'])
+    expect(parsePool({ critFrom: 6, reached: 'facile', sources: ['stat', 'feu'] })).toEqual({ critFrom: 6, reached: 'facile', critFail: false })
+    expect(parsePool({ critFrom: 6, reached: 'facile', sources: 'stat' })?.sources).toBeUndefined()
+  })
+
   it('rejette ce qui ne colle pas', () => {
     expect(parsePool(null)).toBeNull()
     expect(parsePool({ critFrom: 4, reached: 'facile' })).toBeNull()

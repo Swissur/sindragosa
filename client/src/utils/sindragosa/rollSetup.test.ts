@@ -36,6 +36,22 @@ describe('rollSetup', () => {
     expect(s.specialtyLevel).toBe(2)
   })
 
+  it("chaque dé connaît son origine, dans l'ordre carac, domaine, spécialité, avantage, chance", () => {
+    const s = rollSetup(char(), { ...base, specialtyId: 'dag', mode: 'avantage', luck: 2 })!
+    expect(s.sources).toEqual(['stat', 'stat', 'stat', 'domaine', 'domaine', 'specialite', 'avantage', 'chance', 'chance'])
+  })
+
+  it('le désavantage retire un dé de caractéristique', () => {
+    const s = rollSetup(char(), { ...base, mode: 'desavantage' })!
+    expect(s.sources).toEqual(['stat', 'stat', 'domaine', 'domaine'])
+    expect(s.sources).toHaveLength(s.count)
+  })
+
+  it('sans caractéristique, le désavantage entame le domaine', () => {
+    const s = rollSetup(char({ stats: { str: 2, agi: 0, end: 2, int: 2, wis: 2, cha: 2 } }), { ...base, mode: 'desavantage' })!
+    expect(s.sources).toEqual(['domaine'])
+  })
+
   it("ignore une spécialité d'un autre domaine et la chance qu'on n'a pas", () => {
     const s = rollSetup(char({ pcCurrent: 1 }), { ...base, specialtyId: 'hach', luck: 3 })!
     expect(s.specialtyLevel).toBe(0)
@@ -64,6 +80,11 @@ describe('poolSummary', () => {
   it('Maître : critique dès 5', () => {
     expect(poolSummary({ ...readPool([5, 2], 3), rerolledIndex: null, rerolledFrom: null }, 3))
       .toEqual({ critFrom: 5, reached: 'facile', critFail: false })
+  })
+
+  it('le dé relancé et son écarté gardent leur origine', () => {
+    const r = { ...readPool([5, 6]), rerolledIndex: 1, rerolledFrom: 1 }
+    expect(poolSummary(r, 1, ['stat', 'chance']).sources).toEqual(['stat', 'chance', 'chance'])
   })
 })
 

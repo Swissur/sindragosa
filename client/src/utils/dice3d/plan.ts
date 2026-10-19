@@ -1,5 +1,6 @@
 import { SUPPORTED_SIDES } from './polyhedra'
 import { rollOutcome, type RollOutcome } from '../rollOutcome'
+import type { DiceStyle } from '../../data/diceStyle'
 
 /** Un dé physique à afficher : sa forme et la face à présenter. */
 export interface DieInstance {
@@ -15,6 +16,8 @@ export interface DieInstance {
    * `planDice` le remplit toujours ; facultatif pour qui monte un dé à la main.
    */
   dropped?: boolean
+  /** Couleur propre à ce dé ; absente, il prend celle du jet. */
+  style?: DiceStyle
 }
 
 /** Un dé lancé : sa taille et la valeur déjà tirée par le code. */
@@ -37,6 +40,8 @@ export interface DieRoll {
    * spécialité Maître). Remplace la règle du d20 ; un 1 seul n'est pas un échec.
    */
   critFrom?: number
+  /** Couleur propre à ce dé (origine dans un jet de compétence) ; absente, celle du jet. */
+  style?: DiceStyle
 }
 
 /** Au-delà, l'écran est illisible et le rendu commence à coûter. Une grosse réserve tient en 3 rangées. */
@@ -65,13 +70,13 @@ export function isAnimatable(sides: number): boolean {
 export function planDice(rolls: DieRoll[]): DieInstance[] {
   const dice: DieInstance[] = []
 
-  for (const { sides, value, kind = 'weapon', dropped = false, critFrom } of rolls) {
+  for (const { sides, value, kind = 'weapon', dropped = false, critFrom, style } of rolls) {
     if (!isAnimatable(sides)) continue
     if (sides === 100) {
       // Le d100 ne critique pas : ses deux dés ne portent aucune marque. Écarté,
       // il l'est des deux côtés : c'est un seul jet, pas deux.
-      dice.push({ sides: 10, kind: 'tens', faceIndex: Math.floor((value - 1) / 10), outcome: null, dropped })
-      dice.push({ sides: 10, kind: 'normal', faceIndex: (value - 1) % 10, outcome: null, dropped })
+      dice.push({ sides: 10, kind: 'tens', faceIndex: Math.floor((value - 1) / 10), outcome: null, dropped, style })
+      dice.push({ sides: 10, kind: 'normal', faceIndex: (value - 1) % 10, outcome: null, dropped, style })
     } else {
       dice.push({
         sides,
@@ -85,6 +90,7 @@ export function planDice(rolls: DieRoll[]): DieInstance[] {
             ? (value >= critFrom ? 'critical' : null)
             : rollOutcome({ kind, die: value, sides }),
         dropped,
+        style,
       })
     }
   }
@@ -203,4 +209,19 @@ export function landingLayout(count: number): { positions: { x: number; y: numbe
   })
 
   return { positions, scale }
+}
+
+/**
+ * Où poser mes dés quand un dialogue est ouvert : au milieu de la plus grande
+ * bande d'écran qu'il laisse libre, au-dessus ou en dessous. Sans dialogue, au
+ * centre. Renvoie l'ordonnée en pixels.
+ *
+ * Le dé passe devant le dialogue, mais posé dessus il cacherait le résultat
+ * qu'on attend juste à côté.
+ */
+export function landingCenterY(blocked: { top: number; bottom: number } | null, screenHeight: number): number {
+  if (!blocked) return screenHeight / 2
+  const above = Math.max(0, blocked.top)
+  const below = Math.max(0, screenHeight - blocked.bottom)
+  return below >= above ? screenHeight - below / 2 : above / 2
 }

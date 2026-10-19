@@ -7,7 +7,7 @@ import { STATS, advancedDomainById, domainById, type StatId } from '../../data/s
 import { bestAdvancedStat } from './advanced'
 import { poolSize, type PoolResult, type SpecialtyLevel } from './pool'
 import { canTick, type TickReason } from './progression'
-import type { RollPool } from '../rollOutcome'
+import type { PoolDieSource, RollPool } from '../rollOutcome'
 
 export type RollMode = 'desavantage' | 'normal' | 'avantage'
 
@@ -27,6 +27,8 @@ export interface RollSetup {
   specialtyLevel: SpecialtyLevel
   /** « AGI 3 + rang 2 + Expert 1 + chance 1 = 7d6 » en morceaux, pour l'affichage. */
   parts: { label: string; value: number }[]
+  /** L'origine de chacun des `count` dés, pour les colorer. */
+  sources: PoolDieSource[]
 }
 
 export const SPECIALTY_LEVEL_LABELS = ['', 'Apprenti', 'Expert', 'Maître'] as const
@@ -64,21 +66,36 @@ export function rollSetup(c: Character, choice: RollChoice): RollSetup | null {
   if (disadvantages) parts.push({ label: 'désavantage', value: -1 })
   if (luck) parts.push({ label: 'chance', value: luck })
 
-  return {
-    kind: target.kind,
-    count: poolSize({ stat, domainRank: rank, specialtyLevel, advantages, disadvantages, luck }),
-    specialtyLevel,
-    parts,
-  }
+  const count = poolSize({ stat, domainRank: rank, specialtyLevel, advantages, disadvantages, luck })
+  return { kind: target.kind, count, specialtyLevel, parts, sources: poolSources(stat, rank, specialtyLevel, advantages, luck, count) }
+}
+
+/**
+ * La couleur de chaque dé suit son origine. Le désavantage retire un dé de
+ * caractéristique (puis de domaine, s'il n'en reste plus) : c'est la base de la
+ * réserve qui est entamée, pas un bonus.
+ */
+function poolSources(stat: number, rank: number, specialtyLevel: SpecialtyLevel, advantages: number, luck: number, count: number): PoolDieSource[] {
+  const sources: PoolDieSource[] = [
+    ...Array<PoolDieSource>(Math.max(0, stat)).fill('stat'),
+    ...Array<PoolDieSource>(Math.max(0, rank)).fill('domaine'),
+    ...(specialtyLevel >= 2 ? ['specialite' as const] : []),
+    ...Array<PoolDieSource>(advantages).fill('avantage'),
+    ...Array<PoolDieSource>(luck).fill('chance'),
+  ]
+  return sources.slice(sources.length - count)
 }
 
 /** Ce que le journal garde d'une réserve, en plus des dés. */
-export function poolSummary(result: PoolResult, specialtyLevel: SpecialtyLevel): RollPool {
-  return {
+export function poolSummary(result: PoolResult, specialtyLevel: SpecialtyLevel, sources?: PoolDieSource[]): RollPool {
+  const summary: RollPool = {
     critFrom: specialtyLevel >= 3 ? 5 : 6,
     reached: result.reached,
     critFail: result.isCriticalFailure,
   }
+  // Le dé relancé garde l'origine de celui qu'il remplace ; l'écarté aussi.
+  if (sources) summary.sources = result.rerolledIndex !== null ? [...sources, sources[result.rerolledIndex]] : sources
+  return summary
 }
 
 /**

@@ -9,6 +9,7 @@ import {
   type RemoteDiceRequest,
 } from '../../composables/useDice3D'
 import {
+  landingCenterY,
   landingLayout,
   planDice,
   remoteSlotLayout,
@@ -136,7 +137,8 @@ let broken = false
  * sien en essaie des dizaines.
  */
 const meshCache = createMeshCache()
-const MESH_CACHE_MAX = 12
+// Un jet de compétence monte déjà jusqu'à 5 couleurs de d6 à lui seul.
+const MESH_CACHE_MAX = 16
 let sparkTexture: import('three').Texture | null = null
 
 let shows: Show[] = []
@@ -395,7 +397,7 @@ async function launch(
 
   for (let i = 0; i < dice.length; i++) {
     const die = dice[i]
-    const mesh = await meshFor(die, request.style)
+    const mesh = await meshFor(die, die.style ?? request.style)
     const normals = await faceNormals(die)
     const landing = new three!.Vector3(positions[i].x, positions[i].y, 0)
     // La face vise la caméra depuis l'endroit où le dé se pose, pas « l'avant »
@@ -441,7 +443,18 @@ async function startOwn(request: DiceRequest) {
   // Un nouveau lancer à moi remplace le précédent, sans attendre son fondu
   for (const show of shows.filter((s) => !s.remote)) release(show)
   resize()
-  await launch(request, dice, false, -1, landingLayout(dice.length))
+  await launch(request, dice, false, -1, besideOpenDialog(landingLayout(dice.length)))
+}
+
+/** Décale la rangée de dés hors du dialogue ouvert (la feuille de jet, souvent). */
+function besideOpenDialog(layout: { positions: { x: number; y: number }[]; scale: number }) {
+  const dialog = document.querySelector('[role="dialog"][data-state="open"]')
+  if (!dialog) return layout
+  const { top, bottom } = dialog.getBoundingClientRect()
+  const { halfHeight } = viewport()
+  const py = landingCenterY({ top, bottom }, window.innerHeight)
+  const dy = (1 - (py / window.innerHeight) * 2) * halfHeight
+  return { ...layout, positions: layout.positions.map((p) => ({ x: p.x, y: p.y + dy })) }
 }
 
 async function startRemote(request: RemoteDiceRequest) {
@@ -716,7 +729,8 @@ onBeforeUnmount(() => {
   inset: 0;
   width: 100%;
   height: 100%;
-  z-index: 60;
+  /* Au-dessus des dialogues (1000-1002) : on lance souvent depuis l'un d'eux. Sous les toasts. */
+  z-index: 1050;
   opacity: 0;
   /* Jamais cliquable : le dé est une décoration posée sur l'app, il ne doit
      jamais avaler un clic destiné à un bouton en dessous. C'est la fenêtre qui
@@ -731,7 +745,7 @@ onBeforeUnmount(() => {
 .dice-labels {
   position: fixed;
   inset: 0;
-  z-index: 60;
+  z-index: 1050;
   pointer-events: none;
 }
 

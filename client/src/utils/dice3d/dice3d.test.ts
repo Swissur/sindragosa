@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest'
 import * as THREE from 'three'
 import { buildFaces, buildDieGeometry, faceFitRatio, SUPPORTED_SIDES } from './polyhedra'
 import { fontSizeFor, gradientLine } from './atlas'
-import { landingLayout, planDice, remoteSlotLayout, viewerLayout, MAX_REMOTE_DICE, REMOTE_SCALE, REMOTE_SLOTS, VIEWER_SCALE } from './plan'
+import { landingCenterY, landingLayout, planDice, remoteSlotLayout, viewerLayout, MAX_REMOTE_DICE, REMOTE_SCALE, REMOTE_SLOTS, VIEWER_SCALE } from './plan'
 import { burstOpacity, createSparks, flashIntensity, sampleSpark, shockwave } from './burst'
 import { createMotion, faceTargetQuaternion, sampleMotion } from './motion'
 
@@ -434,5 +434,19 @@ describe('viewerLayout', () => {
     expect(one.scale).toBeGreaterThan(REMOTE_SCALE)
     expect(five.scale).toBeLessThan(one.scale)
     expect(five.positions).toHaveLength(5)
+  })
+})
+
+describe('landingCenterY', () => {
+  it('sans dialogue, au centre', () => {
+    expect(landingCenterY(null, 800)).toBe(400)
+  })
+
+  it('sous un dialogue centré, dans la bande du bas', () => {
+    expect(landingCenterY({ top: 200, bottom: 470 }, 800)).toBe(635)
+  })
+
+  it("au-dessus d'une feuille posée en bas", () => {
+    expect(landingCenterY({ top: 420, bottom: 800 }, 800)).toBe(210)
   })
 })

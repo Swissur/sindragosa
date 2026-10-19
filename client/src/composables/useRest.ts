@@ -59,8 +59,8 @@ export function previewRest(kind: RestKind): void {
       kind === 'seance'
         ? { hp: { before: 7, after: 24 }, pc: { before: 0, after: 2 } }
         : kind === 'long'
-          ? { hp: { before: 7, after: 24 } }
-          : {},
+          ? { hp: { before: 7, after: 24 }, mana: { before: 2, after: 9 } }
+          : { mana: { before: 2, after: 5 } },
     characterName: 'Théos',
   }
 }

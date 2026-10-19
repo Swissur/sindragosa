@@ -1,10 +1,10 @@
 import { describe, it, expect } from 'vitest'
-import { ETAT_IDS, ETATS, ETAT_BY_ID, isEtatId, sortEtats, visibleEtats } from './etats'
+import { ETAT_IDS, ETATS, ETAT_BY_ID, isEtatId, normalizeEtats, sortEtats, visibleEtats } from './etats'
 
 describe('le catalogue', () => {
-  it('a 13 ids uniques', () => {
-    expect(ETAT_IDS).toHaveLength(13)
-    expect(new Set(ETAT_IDS).size).toBe(13)
+  it('a 17 ids uniques', () => {
+    expect(ETAT_IDS).toHaveLength(17)
+    expect(new Set(ETAT_IDS).size).toBe(17)
   })
 
   it('a exactement un état par id, dans le même ordre', () => {
@@ -19,6 +19,10 @@ describe('le catalogue', () => {
     }
   })
 
+  it('ne parle plus en d20', () => {
+    for (const e of ETATS) expect(e.effect, e.id).not.toMatch(/d20|d12|DEF|-5/)
+  })
+
   it('indexe tous les états dans ETAT_BY_ID', () => {
     expect(Object.keys(ETAT_BY_ID).sort()).toEqual([...ETAT_IDS].sort())
     for (const e of ETATS) expect(ETAT_BY_ID[e.id]).toBe(e)
@@ -30,40 +34,52 @@ describe('isEtatId', () => {
     for (const id of ETAT_IDS) expect(isEtatId(id)).toBe(true)
   })
 
-  it('rejette tout le reste', () => {
-    expect(isEtatId('empoisonne')).toBe(false)
-    expect(isEtatId('')).toBe(false)
-    expect(isEtatId(3)).toBe(false)
-    expect(isEtatId(null)).toBe(false)
-    expect(isEtatId(undefined)).toBe(false)
+  it('rejette tout le reste, y compris les états d’Arran retirés', () => {
+    for (const id of ['bloque', 'immobilise', 'repousse', 'diversion', 'menace', '', 3, null, undefined]) {
+      expect(isEtatId(id)).toBe(false)
+    }
+  })
+})
+
+describe('normalizeEtats', () => {
+  it('garde la durée d’un état', () => {
+    expect(normalizeEtats([{ id: 'peur', turns: 2 }, { id: 'renverse' }])).toEqual([{ id: 'peur', turns: 2 }, { id: 'renverse' }])
+  })
+
+  it('lit un id seul comme un état sans durée', () => {
+    expect(normalizeEtats(['renverse'])).toEqual([{ id: 'renverse' }])
+  })
+
+  it('jette les ids inconnus, les doublons et les durées absurdes', () => {
+    expect(normalizeEtats([
+      { id: 'bloque', turns: 1 }, 'nawak', { id: 'peur', turns: 0 }, { id: 'peur', turns: 3 }, { id: 'poison', turns: 1.5 },
+    ])).toEqual([{ id: 'peur' }, { id: 'poison' }])
+  })
+
+  it('rend une liste vide pour ce qui n’est pas une liste', () => {
+    expect(normalizeEtats(null)).toEqual([])
+    expect(normalizeEtats('renverse')).toEqual([])
   })
 })
 
 describe('sortEtats', () => {
   it('remonte les bloquants en tête', () => {
-    const out = sortEtats(['renverse', 'etourdi', 'desarme', 'bloque'])
-    expect(out.map((e) => e.id)).toEqual(['etourdi', 'bloque', 'renverse', 'desarme'])
+    const out = sortEtats(['renverse', 'etourdi', 'desarme', 'sommeil'])
+    expect(out.map((e) => e.id)).toEqual(['etourdi', 'sommeil', 'renverse', 'desarme'])
   })
 
   it("garde l'ordre du catalogue à l'intérieur de chaque groupe", () => {
-    // Ordre catalogue : etourdi < paralyse < surpris < bloque (bloquants),
-    // puis aveugle < ralenti < menace (non bloquants).
-    const out = sortEtats(['menace', 'bloque', 'aveugle', 'surpris', 'ralenti', 'paralyse', 'etourdi'])
-    expect(out.map((e) => e.id)).toEqual([
-      'etourdi', 'paralyse', 'surpris', 'bloque', 'aveugle', 'ralenti', 'menace',
-    ])
+    const out = sortEtats(['poison', 'surpris', 'aveugle', 'paralyse', 'peur'])
+    expect(out.map((e) => e.id)).toEqual(['paralyse', 'surpris', 'peur', 'aveugle', 'poison'])
   })
 
-  it('dédoublonne', () => {
-    expect(sortEtats(['renverse', 'renverse', 'renverse']).map((e) => e.id)).toEqual(['renverse'])
+  it('porte la durée restante', () => {
+    expect(sortEtats([{ id: 'etourdi', turns: 2 }])[0]).toMatchObject({ id: 'etourdi', label: 'Étourdissement', turns: 2 })
+    expect(sortEtats([{ id: 'maladie' }])[0].turns).toBeUndefined()
   })
 
-  it('ignore silencieusement les ids inconnus', () => {
-    expect(sortEtats(['renverse', 'empoisonne', '', 'enflamme']).map((e) => e.id)).toEqual(['renverse'])
-    expect(sortEtats(['nawak'])).toEqual([])
-  })
-
-  it('rend une liste vide pour une entrée vide', () => {
+  it('dédoublonne et ignore les ids inconnus', () => {
+    expect(sortEtats(['renverse', 'renverse', 'enflamme']).map((e) => e.id)).toEqual(['renverse'])
     expect(sortEtats([])).toEqual([])
   })
 })
@@ -79,26 +95,16 @@ describe('visibleEtats', () => {
     expect(overflow).toBe(0)
   })
 
-  it('coupe à max et compte le reste', () => {
-    const { etats, overflow } = visibleEtats(['renverse', 'desarme', 'ralenti', 'aveugle'], 3)
+  it('coupe à 3 par défaut et compte le reste', () => {
+    const { etats, overflow } = visibleEtats([...ETAT_IDS])
     expect(etats).toHaveLength(3)
-    expect(overflow).toBe(1)
-  })
-
-  it('coupe les 13 états à 3 et en compte 10', () => {
-    const { etats, overflow } = visibleEtats([...ETAT_IDS], 3)
-    expect(etats).toHaveLength(3)
-    expect(overflow).toBe(10)
+    expect(overflow).toBe(14)
   })
 
   it('montre les premiers de sortEtats, donc les bloquants', () => {
-    const ids = ['menace', 'renverse', 'etourdi', 'bloque', 'paralyse']
+    const ids = ['poison', 'renverse', 'etourdi', 'sommeil', 'paralyse']
     const { etats } = visibleEtats(ids, 3)
     expect(etats.map((e) => e.id)).toEqual(sortEtats(ids).slice(0, 3).map((e) => e.id))
     expect(etats.every((e) => e.blocking)).toBe(true)
-  })
-
-  it('coupe à 3 par défaut', () => {
-    expect(visibleEtats([...ETAT_IDS]).etats).toHaveLength(3)
   })
 })

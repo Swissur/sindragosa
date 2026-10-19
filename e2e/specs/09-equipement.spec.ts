@@ -53,8 +53,8 @@ test('fabriquer utilise les composants et met l’objet dans l’inventaire', as
   // Tous les dés font 6 : le jet de fabrication réussit à coup sûr.
   await page.addInitScript(() => { Math.random = () => 0.99 })
   const orlane = await activeCharacter(page)
-  // Pointe de lance renforcée (forge, rang 1) : 1 Lingot de Fer brut + 1 Lanière de cuir.
-  const lingots = { id: 'e2e-lingot', name: 'Lingots de fer brut', quantity: 2, type: 'composant' }
+  // Pointe de lance renforcée (forge, rang 1) : 1 Lingot de Fer + 1 Lanière de cuir.
+  const lingots = { id: 'e2e-lingot', name: 'Lingots de fer', quantity: 2, type: 'composant' }
   const laniere = { id: 'e2e-laniere', name: 'Lanière de cuir', quantity: 1, type: 'composant' }
   try {
     await page.request.put(`/api/characters/${orlane.id}`, { data: { crafts: { forge: 1 }, items: [] } })
@@ -82,7 +82,7 @@ test('fabriquer utilise les composants et met l’objet dans l’inventaire', as
       .poll(async () => ((await activeCharacter(page)).items as { name: string; quantity: number }[])
         .map((i) => [i.name, i.quantity]), { timeout: 10_000 })
       .toEqual([
-        ['Lingots de fer brut', 1],
+        ['Lingots de fer', 1],
         ['Pointe de lance renforcée', 1],
       ])
   } finally {

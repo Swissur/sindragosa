@@ -1,0 +1,248 @@
+/* ═══════════════════════════════════════════════════════════════════════
+   ARCANE — Mauve pastel, éclairs et étincelles
+   Applied via [data-style="arcane"] on <html>
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* ── Clair : les flèches de Dalaran au matin ── */
+:root[data-style="arcane"] {
+  --title-font: 'Marcellus SC', 'Cinzel Decorative', Georgia, serif;
+
+  --bg: #ebe5f6;
+  --bg-alt: #e1d9f1;
+  --surface: #faf7ff;
+  --surface-2: #f1ecfb;
+  --surface-3: #e6def6;
+  --text: #251c40;
+  --muted: #675c86;
+  --border: #d6cbee;
+  --border-strong: #b6a6dc;
+  --accent: #7b5ce0;
+  --accent-strong: #5a3dba;
+  --accent-soft: rgba(123, 92, 224, 0.13);
+  --brand: #7652e0;
+  --brand-strong: #5534b8;
+  --on-brand: #ffffff;
+  --danger: #b42357;
+
+  --arc-iris: linear-gradient(120deg, #b9a2ff, #f3a8dc, #9fdcf5, #b9a2ff);
+  --arc-btn: linear-gradient(135deg, #7652e0, #b45cc8);
+  --arc-btn-text: #ffffff;
+  --arc-bar: linear-gradient(90deg, #efe7ff, #fbeaf6, #e8f6fd);
+  --arc-brand-text: linear-gradient(90deg, #7652e0, #d063b0, #3fa6d1);
+
+  --shadow-soft: 0 1px 2px rgba(37, 28, 64, 0.07);
+  --shadow-card: 0 1px 3px rgba(91, 61, 186, 0.1), 0 1px 2px rgba(37, 28, 64, 0.05);
+}
+
+/* ── Sombre : le Nexus sous la voûte étoilée ── */
+:root[data-style="arcane"][data-theme="dark"] {
+  --bg: #100c20;
+  --bg-alt: #140f2a;
+  --surface: #1b1633;
+  --surface-2: #231d40;
+  --surface-3: #2c254f;
+  --text: #eee9ff;
+  --muted: #a99ed0;
+  --border: #322a57;
+  --border-strong: #4a3f7a;
+  --accent: #b9a2ff;
+  --accent-strong: #d7caff;
+  --accent-soft: rgba(185, 162, 255, 0.16);
+  --brand: #a58bff;
+  --brand-strong: #d2c3ff;
+  --on-brand: #160f2c;
+  --danger: #ff7aa8;
+
+  --arc-iris: linear-gradient(120deg, #8a6cf0, #d47ab8, #5fb8db, #8a6cf0);
+  --arc-btn: linear-gradient(135deg, #a58bff, #e39ad6);
+  --arc-btn-text: #160f2c;
+  --arc-bar: linear-gradient(90deg, #1e1840, #2a1838, #14223a);
+  --arc-brand-text: linear-gradient(90deg, #c9b6ff, #f3a8dc, #9fdcf5);
+
+  --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.35), 0 1px 2px rgba(0, 0, 0, 0.25);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   BODY — Étincelles qui scintillent, éclairs qui claquent au loin
+   ═══════════════════════════════════════════════════════════════════════ */
+
+[data-style="arcane"] body {
+  background:
+    radial-gradient(ellipse 70% 45% at 15% 0%, rgba(185, 162, 255, 0.35), transparent 65%),
+    radial-gradient(ellipse 60% 40% at 90% 30%, rgba(243, 168, 220, 0.25), transparent 65%),
+    radial-gradient(ellipse 70% 40% at 40% 100%, rgba(159, 220, 245, 0.3), transparent 65%),
+    linear-gradient(180deg, var(--bg), var(--bg-alt));
+}
+
+[data-style="arcane"][data-theme="dark"] body {
+  background:
+    radial-gradient(ellipse 70% 45% at 15% 0%, rgba(138, 108, 240, 0.25), transparent 65%),
+    radial-gradient(ellipse 60% 40% at 90% 30%, rgba(212, 122, 184, 0.14), transparent 65%),
+    radial-gradient(ellipse 70% 40% at 40% 100%, rgba(95, 184, 219, 0.16), transparent 65%),
+    linear-gradient(180deg, var(--bg), var(--bg-alt));
+}
+
+[data-style="arcane"] #app {
+  position: relative;
+  z-index: 1;
+}
+
+/* Étincelles : étoiles à quatre branches, tuile de 140px */
+[data-style="arcane"] body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 140 140'><g fill='%23a58bff'><path d='M24 14q1 6 6 7-5 1-6 7-1-6-6-7 5-1 6-7z'/><path d='M104 62q.7 4 4 5-3.3 1-4 5-.7-4-4-5 3.3-1 4-5z' fill='%23e39ad6'/><path d='M60 108q.8 5 5 6-4.2 1-5 6-.8-5-5-6 4.2-1 5-6z' fill='%239fdcf5'/><circle cx='122' cy='18' r='1.2'/><circle cx='12' cy='84' r='1' fill='%23e39ad6'/><circle cx='84' cy='130' r='1.1'/></g></svg>") repeat 0 0 / 140px 140px;
+  animation: arcane-twinkle 5s ease-in-out infinite alternate;
+}
+
+@keyframes arcane-twinkle {
+  from { opacity: 0.35; }
+  to { opacity: 0.85; }
+}
+
+/* Éclairs lointains : invisibles la plupart du temps, ils claquent deux fois */
+[data-style="arcane"] body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0;
+  background:
+    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 300' fill='none' stroke-linejoin='bevel' stroke-linecap='round'><path d='M70 0 40 110l22 2-32 118 18 2-28 68' stroke='%23c9b6ff' stroke-opacity='.35' stroke-width='9'/><path d='M70 0 40 110l22 2-32 118 18 2-28 68' stroke='%23ffffff' stroke-width='2.5'/><path d='M40 110 14 150M30 230l-16 22' stroke='%23e39ad6' stroke-width='1.5'/></svg>") no-repeat right 8% top 4% / 90px 270px,
+    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 300' fill='none' stroke-linejoin='bevel' stroke-linecap='round'><path d='M30 0 60 100 38 104 74 210 54 214 80 300' stroke='%239fdcf5' stroke-opacity='.35' stroke-width='9'/><path d='M30 0 60 100 38 104 74 210 54 214 80 300' stroke='%23ffffff' stroke-width='2.5'/></svg>") no-repeat left 5% top 42% / 70px 210px;
+  animation: arcane-flash 11s linear infinite;
+}
+
+@keyframes arcane-flash {
+  0%, 86%, 100% { opacity: 0; }
+  87% { opacity: 0.7; }
+  88% { opacity: 0.1; }
+  89.5% { opacity: 0.55; }
+  93% { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-style="arcane"] body::before { animation: none; }
+  [data-style="arcane"] body::after { display: none; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   BARRES — Voile irisé, nom en dégradé
+   ═══════════════════════════════════════════════════════════════════════ */
+
+html[data-style="arcane"] .top-nav,
+html[data-style="arcane"] .bottom-nav {
+  background: var(--arc-bar);
+  border-color: var(--border-strong);
+}
+
+html[data-style="arcane"] .top-nav .brand {
+  background: var(--arc-brand-text);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+html[data-style="arcane"] :is(.top-nav, .bottom-nav) :is(.nav-link--on, .nav-link.router-link-active):not(.nav-fight) {
+  background: var(--arc-btn);
+  border-color: transparent;
+  color: var(--arc-btn-text);
+  box-shadow: 0 0 12px rgba(165, 139, 255, 0.5);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   CARTES — Bordure irisée, cercle runique en filigrane
+   ═══════════════════════════════════════════════════════════════════════ */
+
+html[data-style="arcane"] .card {
+  border: 1.5px solid transparent;
+  background:
+    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64' fill='none' stroke='%237b5ce0' stroke-opacity='.16'><circle cx='32' cy='32' r='30' stroke-width='1.2'/><circle cx='32' cy='32' r='24' stroke-dasharray='2 3'/><path d='M32 8 52.8 44H11.2Z M32 56 11.2 20h41.6Z'/><circle cx='32' cy='32' r='6'/></svg>") no-repeat right -12px bottom -12px / 76px 76px padding-box,
+    linear-gradient(var(--surface), var(--surface)) padding-box,
+    var(--arc-iris) border-box;
+}
+
+html[data-style="arcane"] .card-head h2 {
+  letter-spacing: 0.04em;
+}
+
+/* Les filets du titre deviennent un trait irisé terminé par une étincelle */
+html[data-style="arcane"] .card-head h2::before,
+html[data-style="arcane"] .card-head h2::after {
+  width: 1.7rem;
+  height: 0.7rem;
+  border-radius: 0;
+  background: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 12'><defs><linearGradient id='l' gradientUnits='userSpaceOnUse' x1='9' y1='0' x2='28' y2='0'><stop offset='0' stop-color='%239fdcf5' stop-opacity='.2'/><stop offset='1' stop-color='%23a58bff'/></linearGradient></defs><path d='M9 6h19' stroke='url(%23l)' stroke-width='2' stroke-linecap='round'/><path d='M5 1q.6 4 4 5-3.4 1-4 5-.6-4-4-5 3.4-1 4-5z' fill='%23e39ad6'/></svg>") center / contain no-repeat;
+}
+
+html[data-style="arcane"] .card-head h2::after {
+  transform: scaleX(-1);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   TITRE DE PAGE — Éclair arcanique
+   ═══════════════════════════════════════════════════════════════════════ */
+
+html[data-style="arcane"] .page-head-title {
+  letter-spacing: 0.03em;
+}
+
+html[data-style="arcane"] .page-head-title::before {
+  content: '';
+  flex-shrink: 0;
+  width: 1.05em;
+  height: 1.05em;
+  filter: drop-shadow(0 0 4px rgba(185, 162, 255, 0.8));
+  background: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%239fdcf5'/><stop offset='.5' stop-color='%23a58bff'/><stop offset='1' stop-color='%23e39ad6'/></linearGradient></defs><path fill='url(%23g)' stroke='%235a3dba' stroke-width='1' stroke-linejoin='round' d='M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z'/></svg>") center / contain no-repeat;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   BOUTONS — Dégradé mauve-rose, halo d'énergie
+   ═══════════════════════════════════════════════════════════════════════ */
+
+html[data-style="arcane"] .btn.primary {
+  background: var(--arc-btn);
+  border-color: rgba(255, 255, 255, 0.3);
+  color: var(--arc-btn-text);
+}
+
+html[data-style="arcane"] .btn.primary:hover:not(:disabled) {
+  box-shadow: 0 0 14px rgba(165, 139, 255, 0.6);
+}
+
+html[data-style="arcane"] .icon-btn.ghost:hover:not(:disabled) {
+  box-shadow: 0 0 10px rgba(165, 139, 255, 0.4);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   ONGLETS, CHAMPS, DIALOGUES
+   ═══════════════════════════════════════════════════════════════════════ */
+
+html[data-style="arcane"] .tab-btn[data-state="active"] {
+  color: var(--accent-strong);
+  box-shadow: 0 0 0 1.5px var(--accent), 0 0 12px rgba(165, 139, 255, 0.45);
+}
+
+html[data-style="arcane"] input:focus-visible,
+html[data-style="arcane"] textarea:focus-visible,
+html[data-style="arcane"] select:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--bg), 0 0 0 3px var(--accent), 0 0 12px rgba(165, 139, 255, 0.45);
+}
+
+html[data-style="arcane"] :is(.modal-box, .sheet) {
+  border-color: var(--accent);
+  box-shadow: 0 0 22px rgba(165, 139, 255, 0.3);
+}
+
+[data-style="arcane"] ::-webkit-scrollbar { width: 8px; }
+[data-style="arcane"] ::-webkit-scrollbar-track { background: var(--surface-2); }
+[data-style="arcane"] ::-webkit-scrollbar-thumb {
+  background: var(--accent);
+  border-radius: var(--radius-xs);
+}

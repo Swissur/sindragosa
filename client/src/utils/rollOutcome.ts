@@ -21,8 +21,8 @@ export interface RollPool {
   sources?: PoolDieSource[]
 }
 
-/** L'origine d'un dé de réserve : la caractéristique, le domaine, la spécialité, la chance ou l'avantage. */
-export type PoolDieSource = 'stat' | 'domaine' | 'specialite' | 'chance' | 'avantage'
+/** L'origine d'un dé de réserve : la caractéristique, le domaine, la spécialité, un sort Puissant, la chance ou l'avantage. */
+export type PoolDieSource = 'stat' | 'domaine' | 'specialite' | 'puissance' | 'chance' | 'avantage'
 
 /**
  * Le minimum pour noter un jet. Satisfait aussi bien par les jets locaux

@@ -84,13 +84,31 @@ describe('texte des capacités', () => {
 
   it('calcule les formules en NC pour ce monstre, à l’échelle d6', () => {
     expect(convertAbilityText('+5 DEF si PV < [NC×5].', 6).text).toBe('+2d6 en défense si PV < 15.')
-    expect(convertAbilityText('Sinon [2d6+NC] DM.', 5).text).toBe('Sinon 6 DM.')
+    expect(convertAbilityText('Sinon [2d6+NC] DM.', 5).text).toBe('Sinon 6 dégâts.')
     expect(convertAbilityText('Impossible si NC mort > NC nécromancien.').text).toBe('Impossible si rang de menace mort > rang de menace nécromancien.')
   })
 
   it('une difficulté en Mod. de FOR devient un palier', () => {
     expect(convertAbilityText('un test de AGI ou de FOR de difficulté [10 + Mod. de FOR] de l’élémentaire').text)
       .toBe('un test de AGI ou de FOR palier difficile de l’élémentaire')
+  })
+
+  it('ramène les valeurs en dur à l’échelle d6 (dégâts, PV, réductions ÷ 2)', () => {
+    expect(convertAbilityText('subit 2d6 DM. Sinon 5 DM, puis 1 point de DM par tour.').text)
+      .toBe('subit 4 dégâts. Sinon 3 dégâts, puis 1 dégât par tour.')
+    expect(convertAbilityText('récupère 5 PV par tour. Même à 0 PV.').text).toBe('récupère 3 PV par tour. Même à 0 PV.')
+    expect(convertAbilityText('RD 5 contre la magie. Réduits de 10 points.').text).toBe("+3 d'armure contre la magie. Réduits de 5 points.")
+    expect(convertAbilityText('Il régénère 1 PV pour 3 points de DM.').text).toBe('Il régénère 1 PV pour 3 points de dégâts.')
+    // Une formule en NC est déjà à l'échelle : elle n'est pas divisée deux fois
+    expect(convertAbilityText('Sinon [2d6+NC] DM.', 5).text).toBe('Sinon 6 dégâts.')
+  })
+
+  it('traduit les abréviations des profils de PNJ', () => {
+    expect(convertAbilityText('Premier tour : SAG 19 ou surpris. +5 discrétion/init.').text)
+      .toBe('Premier tour : SAG palier difficile ou surpris. +2d6 en discrétion, +2 en initiative.')
+    expect(convertAbilityText('+5 attaque, +3d6 DM. AM touche zone. CON [12+BU] ou 5 DM.').text)
+      .toBe("+2d6 à l'attaque, +5 aux dégâts. Attaque magique touche zone. END palier difficile ou 3 dégâts.")
+    expect(convertAbilityText('affaiblie (utiliser 1d12) avec un malus de -5.').text).toBe('affaiblie avec un malus de -2d6.')
   })
 
   it('signale ce qui reste en vocabulaire d20', () => {

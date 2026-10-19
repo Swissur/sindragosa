@@ -11,6 +11,7 @@ import {
   uniqueIndex,
   varchar,
 } from 'drizzle-orm/pg-core'
+import type { EtatEntry } from '../combats/etats.js'
 
 export const users = pgTable('user', {
   id: serial('id').primaryKey(),
@@ -100,8 +101,15 @@ export const characters = pgTable(
     /** Points de chance : 2 par séance, chacun ajoute 1d6 à un jet. */
     pcCurrent: integer('pc_current').notNull().default(2),
 
-    /** États préjudiciables courants : liste d'ids (voir combats/etats.ts). */
-    states: jsonb('states').$type<string[]>().notNull().default([]),
+    /** Mana (plans/40-mana.md) : max calculé par le client, stocké pour le repos. */
+    manaCurrent: integer('mana_current').notNull().default(0),
+    manaMax: integer('mana_max').notNull().default(0),
+
+    /** États préjudiciables courants, avec leur durée (voir combats/etats.ts). */
+    states: jsonb('states').$type<EtatEntry[]>().notNull().default([]),
+
+    /** Transformation prise (forme d'ours…) : son arme naturelle remplace les armes (plans/39). */
+    form: text('form'),
 
     /** ID of the portrait image in generated_images table */
     portraitImageId: integer('portrait_image_id').references(() => generatedImages.id),
@@ -269,7 +277,7 @@ export const combatParticipants = pgTable('combat_participant', {
   /** PNJ en réserve : hors de l'ordre d'initiative, invisible pour les joueurs. */
   hidden: boolean('hidden').notNull().default(false),
   /** États préjudiciables d'un monstre. Pour un PJ, ils vivent sur sa fiche. */
-  states: jsonb('states').$type<string[]>().notNull().default([]),
+  states: jsonb('states').$type<EtatEntry[]>().notNull().default([]),
 })
 
 /**

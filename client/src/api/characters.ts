@@ -35,7 +35,10 @@ export interface ServerCharacter {
   silverCoins: number
   copperCoins: number
   pcCurrent: number
+  manaCurrent: number
+  manaMax: number
   states: Character['states']
+  form: Character['form']
 }
 
 export async function fetchCharacter(id: number): Promise<ServerCharacter> {

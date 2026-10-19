@@ -1,8 +1,11 @@
 import { describe, it, expect } from 'vitest'
 import { ABILITIES } from './abilities'
-import { CRAFTS, RECIPES } from './crafts'
-import { DOMAINS, ADVANCED_DOMAINS, STATS } from './domains'
+import { ABILITY_ATTACKS } from './abilityAttacks'
+import { FORMS } from './forms'
+import { CRAFTS, PDF_RECIPES, RECIPES } from './crafts'
+import { DOMAINS, ADVANCED_DOMAINS, STATS, advancedDomainById, domainById } from './domains'
 import { RACES, RACE_ABILITY_ID, raceAbility } from './races'
+import { MAGIC_ADVANCED_DOMAINS, MAGIC_DOMAINS } from './magic'
 import { specialtyMatches } from '../../utils/sindragosa/prerequisites'
 
 describe('domaines', () => {
@@ -33,8 +36,10 @@ describe('races', () => {
 })
 
 describe('compétences', () => {
-  it('numérotées de 1 à N sans trou ni doublon', () => {
-    ABILITIES.forEach((a, i) => expect(a.id).toBe(i + 1))
+  it('numérotées de 1 à N sans trou ni doublon (les compétences maison à partir de 1001)', () => {
+    ABILITIES.filter((a) => a.id < 1000).forEach((a, i) => expect(a.id).toBe(i + 1))
+    const ids = ABILITIES.map((a) => a.id)
+    expect(new Set(ids).size).toBe(ids.length)
   })
 
   it('chaque prérequis pointe vers un domaine ou un domaine avancé existant', () => {
@@ -52,6 +57,20 @@ describe('compétences', () => {
           expect(p.rank, `#${a.id}`).toBeLessThanOrEqual(5)
         }
       }
+    }
+  })
+})
+
+describe('mana (plans/40)', () => {
+  it('les domaines magiques existent', () => {
+    for (const id of MAGIC_DOMAINS) expect(domainById(id), id).toBeDefined()
+    for (const id of MAGIC_ADVANCED_DOMAINS) expect(advancedDomainById(id), id).toBeDefined()
+  })
+
+  it('seule une compétence active coûte de la mana, de 1 à 5', () => {
+    for (const a of ABILITIES.filter((x) => x.manaCost != null)) {
+      expect(a.actionType, a.name).not.toBe('passif')
+      expect([1, 2, 3, 4, 5], a.name).toContain(a.manaCost)
     }
   })
 })
@@ -80,9 +99,9 @@ describe('artisanat', () => {
     expect(CRAFTS.filter((c) => c.kind === 'hybrid')).toHaveLength(20)
   })
 
-  it('10 patrons par rang pour chaque métier de base, 5 par métier hybride', () => {
+  it('PDF : 10 patrons par rang pour chaque métier de base, 5 par métier hybride', () => {
     for (const c of CRAFTS) {
-      const mine = RECIPES.filter((r) => r.craft === c.id)
+      const mine = PDF_RECIPES.filter((r) => r.craft === c.id)
       if (c.kind === 'base') {
         for (let rank = 1; rank <= 5; rank++) expect(mine.filter((r) => r.rank === rank), `${c.id} rang ${rank}`).toHaveLength(10)
       } else {
@@ -96,5 +115,25 @@ describe('artisanat', () => {
       expect(r.components.length, r.id).toBeGreaterThan(0)
       expect(r.effect.length, r.id).toBeGreaterThan(0)
     }
+  })
+})
+
+describe('compétences d\'attaque', () => {
+  it('chaque attaque désigne une compétence active du catalogue', () => {
+    for (const id of Object.keys(ABILITY_ATTACKS).map(Number)) {
+      const a = ABILITIES.find((x) => x.id === id)
+      expect(a, `compétence ${id}`).toBeDefined()
+      expect(a!.actionType).not.toBe('passif')
+    }
+  })
+
+  it('un sort se lance avec un domaine qui existe', () => {
+    for (const [id, attack] of Object.entries(ABILITY_ATTACKS)) {
+      if ('domainId' in attack) expect(domainById(attack.domainId) ?? advancedDomainById(attack.domainId), `compétence ${id}`).toBeDefined()
+    }
+  })
+
+  it('l\'arme d\'une forme attaque avec un domaine de base', () => {
+    for (const f of FORMS) expect(domainById(f.domainId), f.id).toBeDefined()
   })
 })

@@ -68,7 +68,7 @@ export function buildTokens(participants: CombatParticipant[]): BattleToken[] {
       // joueur : aucune barre ne s'affiche, exactement ce qu'on veut.
       hp: p.hpCurrent ?? undefined,
       hpMax: p.hpMax ?? undefined,
-      etats: p.states ?? [],
+      etats: (p.states ?? []).map((e) => e.id),
     }
   })
 }

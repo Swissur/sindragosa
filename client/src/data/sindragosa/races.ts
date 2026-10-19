@@ -94,7 +94,7 @@ export const RACES: Race[] = [
     flavor: 'Gabarit massif et connexion profonde avec la Terre-Mère.',
     power: {
       name: 'Choc Martial', actionType: 'complete', actionLabel: 'Action Complète', usesPer: 'repos-court',
-      effect: "Frappe violemment le sol du sabot. Tous les ennemis adjacents (rayon de 3 mètres) doivent réussir un jet d'Athlétisme/Équilibre sous peine d'être assommés (Étourdissement 1 tour) et projetés À terre.",
+      effect: "Frappe violemment le sol du sabot. Tous les ennemis adjacents (rayon de 3 mètres) doivent réussir, au choix, un jet d'Athlétisme (FOR) ou d'Acrobatie & Furtivité (AGI) d'au moins 2 succès, sous peine d'être assommés (Étourdissement 1 tour) et projetés À terre.",
     },
   },
   {

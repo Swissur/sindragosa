@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { ArrowDown, ArrowUp, Clover, Dices, Skull, Check } from 'lucide-vue-next'
+import { ArrowDown, ArrowUp, Clover, Dices, Skull, Check, Droplet } from 'lucide-vue-next'
 import AppBottomSheet from '../ui/AppBottomSheet.vue'
 import AppButton from '../ui/AppButton.vue'
 import AppSelect from '../ui/AppSelect.vue'
@@ -60,7 +60,13 @@ watch(domainId, () => {
 })
 
 const setup = computed(() =>
-  rollSetup(character.value, { domainId: domainId.value, specialtyId: specialtyId.value, mode: mode.value, luck: luck.value }),
+  rollSetup(character.value, {
+    domainId: domainId.value,
+    specialtyId: specialtyId.value,
+    mode: mode.value,
+    luck: luck.value,
+    power: rollRequest.value?.power ? 1 : 0,
+  }),
 )
 
 const MODE_ITEMS: AppToggleItem[] = [
@@ -78,10 +84,16 @@ const missingComponents = computed(() => {
   return !!recipe && !hasComponents(character.value.items, recipe)
 })
 
+/** Sort : la mana qu'il coûte, et s'il en reste assez pour le lancer. */
+const manaCost = computed(() => rollRequest.value?.manaCost ?? 0)
+const missingMana = computed(() => character.value.manaCurrent < manaCost.value)
+
 async function roll() {
   const s = setup.value
-  if (!s || s.count === 0 || rolling.value || missingComponents.value) return
+  if (!s || s.count === 0 || rolling.value || missingComponents.value || missingMana.value) return
   rolling.value = true
+  // Comme les composants, la mana part dès le jet, qu'il réussisse ou non.
+  character.value.manaCurrent -= manaCost.value
   // Les composants sont utilisés dès le jet, qu'il réussisse ou non.
   const recipe = rollRequest.value?.recipe
   if (recipe) character.value.items = consumeComponents(character.value.items, recipe)
@@ -204,13 +216,16 @@ const weaponHint = computed(() => {
         <AppButton
           variant="primary"
           block
-          :disabled="!setup || setup.count === 0 || rolling || missingComponents"
+          :disabled="!setup || setup.count === 0 || rolling || missingComponents || missingMana"
           data-testid="roll-launch"
           @click="roll"
         >
           <Dices :size="18" /> Lancer
         </AppButton>
         <p v-if="missingComponents" class="roll-note" data-testid="roll-missing-components">Il manque des composants.</p>
+        <p v-if="manaCost" class="roll-note" data-testid="roll-mana">
+          <Droplet :size="13" /> {{ missingMana ? `Pas assez de mana (${manaCost} requis).` : `Coûte ${manaCost} mana.` }}
+        </p>
       </template>
 
       <template v-else>

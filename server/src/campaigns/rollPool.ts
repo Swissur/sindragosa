@@ -8,9 +8,9 @@ export interface RollPool {
   sources?: PoolDieSource[]
 }
 
-export type PoolDieSource = 'stat' | 'domaine' | 'specialite' | 'chance' | 'avantage'
+export type PoolDieSource = 'stat' | 'domaine' | 'specialite' | 'puissance' | 'chance' | 'avantage'
 
-const SOURCES = new Set(['stat', 'domaine', 'specialite', 'chance', 'avantage'])
+const SOURCES = new Set(['stat', 'domaine', 'specialite', 'puissance', 'chance', 'avantage'])
 /** Une réserve ne dépasse jamais quelques dizaines de dés ; au-delà, c'est du bruit. */
 const MAX_SOURCES = 40
 

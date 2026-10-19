@@ -5,6 +5,7 @@ import {
   users, characters, campaigns, campaignMembers, encounterTemplates, encounterMonsters,
 } from '../db/schema.js'
 import { DEV_BESTIARY } from './bestiary.js'
+import type { EtatEntry } from '../combats/etats.js'
 
 export const SEED_CAMPAIGN_NAME = 'Bac à sable'
 export const SEED_PASSWORD = 'dev'
@@ -56,7 +57,7 @@ export const SEED_PLAYERS = [
         { id: 's-boucliers', domainId: 'melee-bourrine', name: 'Boucliers', level: 1, ticks: 1 },
       ],
       // Deux états posés d'entrée : de quoi voir les pastilles sans cliquer.
-      states: ['renverse', 'desarme'] as string[],
+      states: [{ id: 'renverse' }, { id: 'desarme', turns: 2 }] as EtatEntry[],
     },
   },
   {
@@ -99,8 +100,9 @@ export const SEED_PLAYERS = [
       specialties: [
         { id: 's-arcane', domainId: 'magie-profane-arcanes', name: "Sorts d'Arcane", level: 1, ticks: 1 },
       ],
-      resources: [{ id: 'r-mana', name: 'Mana', current: 10, max: 12 }],
-      states: ['affaibli'] as string[],
+      // Mana max = INT 3 + Profane 3 + Pyromancie 1 = 7 (plans/40) ; entamée pour tester le repos.
+      manaMax: 7, manaCurrent: 3,
+      states: [{ id: 'affaibli' }] as EtatEntry[],
     },
   },
   {

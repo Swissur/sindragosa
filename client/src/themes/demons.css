@@ -1,0 +1,258 @@
+/* ═══════════════════════════════════════════════════════════════════════
+   DÉMONS — Gangrène verte et mauve, cornes et crânes
+   Applied via [data-style="demons"] on <html>
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* ── Clair : parchemin rongé par la corruption ── */
+:root[data-style="demons"] {
+  font-family: 'Alegreya', 'Iowan Old Style', Georgia, serif;
+  --title-font: 'Pirata One', Georgia, serif;
+
+  --bg: #e2e6d8;
+  --bg-alt: #d6dbc9;
+  --surface: #f2f4eb;
+  --surface-2: #e8ebdf;
+  --surface-3: #dce0d0;
+  --text: #1d1426;
+  --muted: #5a5266;
+  --border: #c2c4b3;
+  --border-strong: #9a8fa6;
+  --accent: #3c8a1e;
+  --accent-strong: #2a6512;
+  --accent-soft: rgba(60, 138, 30, 0.14);
+  --brand: #6b2a94;
+  --brand-strong: #4e1a70;
+  --on-brand: #eefbe2;
+  --danger: #a8231f;
+
+  --dm-fel: #6fd13f;
+  --dm-banner: linear-gradient(180deg, #2a1640, #120b1c);
+  --dm-skull: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 24' stroke-linecap='round' stroke-linejoin='round'><path fill='%236b2a94' d='M10.5 7C6 6.5 3.5 4 3 0c2.5 2.5 5.5 3.5 9 4zM21.5 7C26 6.5 28.5 4 29 0c-2.5 2.5-5.5 3.5-9 4z'/><g transform='translate(4 0)' fill='none' stroke='%232a6512' stroke-width='1.8'><path d='M15 22a1 1 0 0 0 1-1v-1a2 2 0 0 0 1.56-3.25 8 8 0 1 0-11.12 0A2 2 0 0 0 8 20v1a1 1 0 0 0 1 1z'/><path d='m12.5 17-.5-1-.5 1h1z'/><circle cx='15' cy='12' r='1' fill='%232a6512'/><circle cx='9' cy='12' r='1' fill='%232a6512'/></g></svg>");
+
+  --shadow-soft: 0 1px 2px rgba(29, 20, 38, 0.08);
+  --shadow-card: 0 1px 3px rgba(29, 20, 38, 0.1), 0 1px 2px rgba(29, 20, 38, 0.05);
+}
+
+/* ── Sombre : la Légion ardente ── */
+:root[data-style="demons"][data-theme="dark"] {
+  --bg: #0a0710;
+  --bg-alt: #0d0a15;
+  --surface: #151020;
+  --surface-2: #1d162b;
+  --surface-3: #261d37;
+  --text: #e7efdc;
+  --muted: #a497b3;
+  --border: #2c2240;
+  --border-strong: #42345a;
+  --accent: #7ee04a;
+  --accent-strong: #a8f57a;
+  --accent-soft: rgba(126, 224, 74, 0.15);
+  --brand: #8a3ec0;
+  --brand-strong: #c58af0;
+  --on-brand: #f6ecff;
+  --danger: #ff6b6b;
+
+  --dm-skull: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 24' stroke-linecap='round' stroke-linejoin='round'><path fill='%23a05ad8' d='M10.5 7C6 6.5 3.5 4 3 0c2.5 2.5 5.5 3.5 9 4zM21.5 7C26 6.5 28.5 4 29 0c-2.5 2.5-5.5 3.5-9 4z'/><g transform='translate(4 0)' fill='none' stroke='%237ee04a' stroke-width='1.8'><path d='M15 22a1 1 0 0 0 1-1v-1a2 2 0 0 0 1.56-3.25 8 8 0 1 0-11.12 0A2 2 0 0 0 8 20v1a1 1 0 0 0 1 1z'/><path d='m12.5 17-.5-1-.5 1h1z'/><circle cx='15' cy='12' r='1' fill='%237ee04a'/><circle cx='9' cy='12' r='1' fill='%237ee04a'/></g></svg>");
+
+  --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.35);
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   BODY — Brume gangrenée qui rampe au ras du sol
+   ═══════════════════════════════════════════════════════════════════════ */
+
+[data-style="demons"] body {
+  background:
+    radial-gradient(ellipse 90% 40% at 50% 0%, rgba(107, 42, 148, 0.14), transparent 65%),
+    linear-gradient(180deg, var(--bg), var(--bg-alt));
+}
+
+[data-style="demons"][data-theme="dark"] body {
+  background:
+    radial-gradient(ellipse 90% 40% at 50% 0%, rgba(138, 62, 192, 0.2), transparent 65%),
+    linear-gradient(180deg, var(--bg), var(--bg-alt));
+}
+
+[data-style="demons"] #app {
+  position: relative;
+  z-index: 1;
+}
+
+[data-style="demons"] body::before {
+  content: '';
+  position: fixed;
+  inset: -20%;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 40% 22% at 25% 88%, rgba(111, 209, 63, 0.2), transparent 70%),
+    radial-gradient(ellipse 45% 26% at 78% 92%, rgba(155, 79, 208, 0.18), transparent 70%),
+    radial-gradient(ellipse 30% 18% at 55% 80%, rgba(111, 209, 63, 0.1), transparent 70%);
+  animation: demons-mist 16s ease-in-out infinite alternate;
+}
+
+[data-style="demons"][data-theme="dark"] body::before {
+  background:
+    radial-gradient(ellipse 40% 22% at 25% 88%, rgba(126, 224, 74, 0.2), transparent 70%),
+    radial-gradient(ellipse 45% 26% at 78% 92%, rgba(160, 90, 216, 0.22), transparent 70%),
+    radial-gradient(ellipse 30% 18% at 55% 80%, rgba(126, 224, 74, 0.12), transparent 70%);
+}
+
+@keyframes demons-mist {
+  from { transform: translate3d(-4%, 0, 0) scale(1); }
+  to { transform: translate3d(4%, -3%, 0) scale(1.08); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-style="demons"] body::before { animation: none; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   BARRES — Obsidienne violette, liseré gangrené
+   ═══════════════════════════════════════════════════════════════════════ */
+
+html[data-style="demons"] .top-nav,
+html[data-style="demons"] .bottom-nav {
+  background: var(--dm-banner);
+}
+
+html[data-style="demons"] .top-nav {
+  border-bottom: 1px solid var(--dm-fel);
+  box-shadow: 0 1px 10px rgba(111, 209, 63, 0.3);
+}
+
+html[data-style="demons"] .bottom-nav {
+  border-top: 1px solid var(--dm-fel);
+  box-shadow: 0 -1px 10px rgba(111, 209, 63, 0.3);
+}
+
+html[data-style="demons"] .top-nav .brand {
+  color: #8be55a;
+  text-shadow: 0 0 10px rgba(126, 224, 74, 0.55);
+}
+
+html[data-style="demons"] :is(.top-nav, .bottom-nav) .nav-link:not(.nav-fight) {
+  background: rgba(155, 79, 208, 0.14);
+  border-color: rgba(155, 79, 208, 0.55);
+  color: #d8c8ea;
+}
+
+html[data-style="demons"] :is(.top-nav, .bottom-nav) .nav-link:not(.nav-fight):hover {
+  border-color: var(--dm-fel);
+  color: #c9ff9e;
+  background: rgba(111, 209, 63, 0.12);
+}
+
+html[data-style="demons"] :is(.top-nav, .bottom-nav) :is(.nav-link--on, .nav-link.router-link-active):not(.nav-fight) {
+  background: rgba(111, 209, 63, 0.2);
+  border-color: var(--dm-fel);
+  color: #b4ff86;
+  box-shadow: 0 0 10px rgba(111, 209, 63, 0.45);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   CARTES — Liseré gangrené, crâne cornu en filigrane
+   ═══════════════════════════════════════════════════════════════════════ */
+
+html[data-style="demons"] .card {
+  border-top: 2px solid var(--accent);
+  background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 24' stroke-linecap='round' stroke-linejoin='round'><path fill='%239b4fd0' fill-opacity='.14' d='M10.5 7C6 6.5 3.5 4 3 0c2.5 2.5 5.5 3.5 9 4zM21.5 7C26 6.5 28.5 4 29 0c-2.5 2.5-5.5 3.5-9 4z'/><g transform='translate(4 0)' fill='none' stroke='%236fd13f' stroke-opacity='.16' stroke-width='1.4'><path d='M15 22a1 1 0 0 0 1-1v-1a2 2 0 0 0 1.56-3.25 8 8 0 1 0-11.12 0A2 2 0 0 0 8 20v1a1 1 0 0 0 1 1z'/><circle cx='15' cy='12' r='1'/><circle cx='9' cy='12' r='1'/></g></svg>");
+  background-repeat: no-repeat;
+  background-size: 64px 48px;
+  background-position: right 6px bottom 6px;
+}
+
+html[data-style="demons"][data-theme="dark"] .card {
+  box-shadow: inset 0 1px 0 rgba(126, 224, 74, 0.25), 0 0 14px rgba(126, 224, 74, 0.06), var(--shadow-card);
+}
+
+html[data-style="demons"] .card-head h2 {
+  font-weight: 400;
+  letter-spacing: 0.02em;
+}
+
+/* Les filets du titre deviennent deux cornes qui pointent vers l'extérieur */
+html[data-style="demons"] .card-head h2::before,
+html[data-style="demons"] .card-head h2::after {
+  width: 1.6rem;
+  height: 0.7rem;
+  border-radius: 0;
+  background: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 12'><path d='M28 11C18 11 6 9 1 1c6 4 16 6 27 6z' fill='%239b4fd0'/><path d='M28 9.5C20 9.5 10 8 4 3' fill='none' stroke='%236fd13f' stroke-width='.8' stroke-opacity='.8'/></svg>") center / contain no-repeat;
+}
+
+html[data-style="demons"] .card-head h2::after {
+  transform: scaleX(-1);
+}
+
+html[data-style="demons"][data-theme="dark"] .card-head h2 {
+  text-shadow: 0 0 8px rgba(126, 224, 74, 0.35);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   TITRE DE PAGE — Crâne cornu
+   ═══════════════════════════════════════════════════════════════════════ */
+
+html[data-style="demons"] .page-head-title {
+  font-weight: 400;
+  letter-spacing: 0.02em;
+}
+
+html[data-style="demons"] .page-head-title::before {
+  content: '';
+  flex-shrink: 0;
+  width: 1.4em;
+  height: 1.05em;
+  background: var(--dm-skull) center / contain no-repeat;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   BOUTONS — Améthyste maudite, halo gangrené
+   ═══════════════════════════════════════════════════════════════════════ */
+
+html[data-style="demons"] .btn {
+  font-weight: 700;
+}
+
+html[data-style="demons"] .btn.primary {
+  background: linear-gradient(180deg, #8a3ec0, #561f7c);
+  border-color: var(--dm-fel);
+  color: #f0ffe6;
+}
+
+html[data-style="demons"] .btn.primary:hover:not(:disabled) {
+  box-shadow: 0 0 12px rgba(111, 209, 63, 0.5);
+}
+
+html[data-style="demons"] .icon-btn.ghost:hover:not(:disabled) {
+  box-shadow: 0 0 10px rgba(111, 209, 63, 0.35);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   ONGLETS, CHAMPS, DIALOGUES
+   ═══════════════════════════════════════════════════════════════════════ */
+
+html[data-style="demons"] .tab-btn[data-state="active"] {
+  background: linear-gradient(180deg, #7b35a8, #561f7c);
+  color: #c9ff9e;
+  box-shadow: 0 0 10px rgba(111, 209, 63, 0.25);
+}
+
+html[data-style="demons"] input:focus-visible,
+html[data-style="demons"] textarea:focus-visible,
+html[data-style="demons"] select:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--bg), 0 0 0 3px var(--accent), 0 0 12px rgba(111, 209, 63, 0.4);
+}
+
+html[data-style="demons"] :is(.modal-box, .sheet) {
+  border-color: var(--accent);
+  box-shadow: 0 0 18px rgba(111, 209, 63, 0.18);
+}
+
+[data-style="demons"] ::-webkit-scrollbar { width: 8px; }
+[data-style="demons"] ::-webkit-scrollbar-track { background: var(--surface-2); }
+[data-style="demons"] ::-webkit-scrollbar-thumb {
+  background: var(--brand);
+  border-radius: var(--radius-xs);
+}

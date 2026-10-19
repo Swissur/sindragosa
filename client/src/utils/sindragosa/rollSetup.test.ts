@@ -41,6 +41,13 @@ describe('rollSetup', () => {
     expect(s.sources).toEqual(['stat', 'stat', 'stat', 'domaine', 'domaine', 'specialite', 'avantage', 'chance', 'chance'])
   })
 
+  it('un sort Puissant ajoute 1d6, rangé après la spécialité', () => {
+    const s = rollSetup(char(), { ...base, specialtyId: 'dag', power: 1 })!
+    expect(s.count).toBe(7)
+    expect(s.parts).toContainEqual({ label: 'puissante', value: 1 })
+    expect(s.sources).toEqual(['stat', 'stat', 'stat', 'domaine', 'domaine', 'specialite', 'puissance'])
+  })
+
   it('le désavantage retire un dé de caractéristique', () => {
     const s = rollSetup(char(), { ...base, mode: 'desavantage' })!
     expect(s.sources).toEqual(['stat', 'stat', 'domaine', 'domaine'])

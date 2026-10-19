@@ -1,10 +1,11 @@
 /** Fiche de personnage Sindragosa (plans/31-refonte-regles-sindragosa.md § 3). */
 
-import type { EtatId } from '../data/etats'
+import type { EtatEntry } from '../data/etats'
 import type { StatId } from '../data/sindragosa/domains'
+import type { FormId } from '../data/sindragosa/forms'
 
 export type ItemType = 'arme' | 'armure' | 'consommable' | 'composant' | 'divers'
-export type WeaponSize = 'legere' | 'une-main' | 'deux-mains'
+export type WeaponSize = 'naturelle' | 'legere' | 'une-main' | 'deux-mains'
 
 /** Un objet de l'inventaire (plans/35-equipement.md). */
 export interface ItemRow {
@@ -88,6 +89,11 @@ export interface Character {
 
   /** Points de chance : 2 par séance, chacun ajoute 1d6 à un jet. */
   pcCurrent: number
+  /** Mana (plans/40-mana.md). `manaMax` est calculée par `maxMana`, stockée pour le repos. */
+  manaCurrent: number
+  manaMax: number
   /** États préjudiciables en cours (voir `data/etats.ts`). */
-  states: EtatId[]
+  states: EtatEntry[]
+  /** Transformation prise : son arme naturelle remplace les armes équipées (plans/39). */
+  form: FormId | null
 }

@@ -45,7 +45,7 @@ import AppBottomSheet from "../components/ui/AppBottomSheet.vue";
 import AppTabs, { type AppTab } from "../components/ui/AppTabs.vue";
 import EtatsRow from "../components/etats/EtatsRow.vue";
 import EtatsSheet from "../components/etats/EtatsSheet.vue";
-import { sortEtats, type Etat, type EtatId } from "../data/etats";
+import { sortEtats, type Etat, type EtatEntry } from "../data/etats";
 import BattleMapTab from "../components/battle/BattleMapTab.vue";
 import ActionsPanel from "../components/actions/ActionsPanel.vue";
 import type { CombatParticipant } from "../api/combats";
@@ -136,7 +136,7 @@ const etatsBrief = computed(() => {
   return out;
 });
 
-function applyEtats(participantId: number, states: EtatId[]): Promise<void> {
+function applyEtats(participantId: number, states: EtatEntry[]): Promise<void> {
   return setParticipantStates(campaignId, combatId, participantId, states);
 }
 
@@ -686,7 +686,7 @@ function goBack() {
       v-model="showEtats"
       :name="etatsTarget.name"
       :states="etatsTarget.states"
-      :apply="(states: EtatId[]) => applyEtats(etatsTarget!.id, states)"
+      :apply="(states: EtatEntry[]) => applyEtats(etatsTarget!.id, states)"
       @update:states="(states) => { if (etatsTarget) etatsTarget.states = states; }"
     />
 

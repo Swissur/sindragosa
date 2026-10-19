@@ -73,12 +73,12 @@ describe('buildTokens', () => {
     }
   })
 
-  it("recopie les états du participant sur son pion, sans les toucher", () => {
-    const states = ['renverse', 'desarme']
+  it("recopie les ids des états du participant sur son pion, sans les toucher", () => {
+    const states: CombatParticipant['states'] = [{ id: 'renverse' }, { id: 'desarme', turns: 2 }]
     const [t] = buildTokens([p({ id: 4, kind: 'player', states })])
     expect(t.etats).toEqual(['renverse', 'desarme'])
     // Le tri et la coupe à 3 sont le travail du sprite, pas du builder.
-    expect(states).toEqual(['renverse', 'desarme'])
+    expect(states).toEqual([{ id: 'renverse' }, { id: 'desarme', turns: 2 }])
   })
 
   it("donne une liste vide au participant sans état", () => {

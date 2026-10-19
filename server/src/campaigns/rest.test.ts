@@ -6,7 +6,9 @@ function state(over: Partial<RestState> = {}): RestState {
     hpCurrent: 7,
     hpMax: 24,
     pcCurrent: 0,
-    states: ['affaibli'],
+    manaCurrent: 0,
+    manaMax: 0,
+    states: [{ id: 'affaibli' as const }],
     abilityUses: { combat: { 30: 1 }, 'repos-court': { 11: 1 }, 'repos-long': { 40: 1 }, seance: { 123: 1 } },
     sessionTicks: { success: 2, critFail: 1 },
     ...over,
@@ -18,8 +20,30 @@ describe('applyRest — repos court', () => {
     const after = applyRest(state(), 'court')
     expect(Object.keys(after.abilityUses).sort()).toEqual(['repos-long', 'seance'])
     expect(after.hpCurrent).toBe(7)
-    expect(after.states).toEqual(['affaibli'])
+    expect(after.states).toEqual([{ id: 'affaibli' as const }])
     expect(after.pcCurrent).toBe(0)
+  })
+})
+
+describe('applyRest — mana', () => {
+  it('le repos court rend un tiers de la jauge, arrondi au-dessus', () => {
+    expect(applyRest(state({ manaCurrent: 0, manaMax: 10 }), 'court').manaCurrent).toBe(4)
+    expect(applyRest(state({ manaCurrent: 0, manaMax: 4 }), 'court').manaCurrent).toBe(2)
+    expect(applyRest(state({ manaCurrent: 1, manaMax: 2 }), 'court').manaCurrent).toBe(2)
+  })
+
+  it('le repos court ne dépasse pas le max', () => {
+    expect(applyRest(state({ manaCurrent: 9, manaMax: 10 }), 'court').manaCurrent).toBe(10)
+  })
+
+  it('le repos long remplit la jauge, la fin de séance seule n\'y touche pas', () => {
+    expect(applyRest(state({ manaCurrent: 1, manaMax: 11 }), 'long').manaCurrent).toBe(11)
+    expect(endSession(state({ manaCurrent: 1, manaMax: 11 }), false).manaCurrent).toBe(1)
+  })
+
+  it('apparaît dans le delta quand elle bouge', () => {
+    const before = state({ manaCurrent: 1, manaMax: 6 })
+    expect(restDelta(before, applyRest(before, 'court'))).toEqual({ mana: { before: 1, after: 3 } })
   })
 })
 
@@ -45,7 +69,7 @@ describe('endSession — fin de séance', () => {
     expect(after.pcCurrent).toBe(2)
     expect(after.sessionTicks).toEqual({ success: 0, critFail: 0 })
     expect(after.hpCurrent).toBe(7)
-    expect(after.states).toEqual(['affaibli'])
+    expect(after.states).toEqual([{ id: 'affaibli' as const }])
   })
 
   it('avec repos long : remet tout, PV au max et états levés', () => {

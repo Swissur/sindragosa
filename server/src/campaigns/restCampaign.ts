@@ -23,6 +23,8 @@ export async function restCampaign(
       hpCurrent: characters.hpCurrent,
       hpMax: characters.hpMax,
       pcCurrent: characters.pcCurrent,
+      manaCurrent: characters.manaCurrent,
+      manaMax: characters.manaMax,
       states: characters.states,
       abilityUses: characters.abilityUses,
       sessionTicks: characters.sessionTicks,
@@ -35,6 +37,7 @@ export async function restCampaign(
   for (const row of rows) {
     const before = {
       hpCurrent: row.hpCurrent, hpMax: row.hpMax, pcCurrent: row.pcCurrent,
+      manaCurrent: row.manaCurrent, manaMax: row.manaMax,
       states: row.states, abilityUses: row.abilityUses, sessionTicks: row.sessionTicks,
     }
     const after = kind === 'seance' ? endSession(before, withLongRest) : applyRest(before, kind)
@@ -45,6 +48,7 @@ export async function restCampaign(
       .set({
         hpCurrent: after.hpCurrent,
         pcCurrent: after.pcCurrent,
+        manaCurrent: after.manaCurrent,
         states: after.states,
         abilityUses: after.abilityUses,
         sessionTicks: after.sessionTicks,

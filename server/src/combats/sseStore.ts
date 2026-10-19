@@ -3,6 +3,7 @@ import { eq, and, asc, inArray } from 'drizzle-orm'
 import { db } from '../db/index.js'
 import { combats, combatParticipants, campaigns, campaignMembers, characters } from '../db/schema.js'
 import { serializeCombat } from './serialize.js'
+import type { EtatEntry } from './etats.js'
 
 type ParticipantRow = typeof combatParticipants.$inferSelect
 
@@ -66,9 +67,9 @@ export async function enrichParticipantHp(
  * snapshot de combat. On remplace ceux du participant par ceux du personnage.
  * Monstres et joueurs sans fiche sont rendus intacts. Exportée pour le test.
  */
-export function applyCharacterStates<T extends { kind: string; userId: number | null; states: string[] }>(
+export function applyCharacterStates<T extends { kind: string; userId: number | null; states: EtatEntry[] }>(
   participants: T[],
-  statesByUserId: Map<number, string[]>,
+  statesByUserId: Map<number, EtatEntry[]>,
 ): T[] {
   return participants.map((p) => {
     if (p.kind !== 'player' || p.userId == null) return p
@@ -106,7 +107,7 @@ export async function enrichParticipantStates(
     .where(inArray(characters.id, charIds))
   const charById = new Map(chars.map((c) => [c.id, c]))
 
-  const statesByUserId = new Map<number, string[]>()
+  const statesByUserId = new Map<number, EtatEntry[]>()
   for (const [userId, cid] of charIdByUser) {
     const c = charById.get(cid)
     if (c) statesByUserId.set(userId, c.states)

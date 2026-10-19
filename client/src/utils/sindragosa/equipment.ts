@@ -4,11 +4,14 @@
  */
 import type { Character, ItemRow, ItemType, WeaponSize } from '../../types/character'
 import type { Recipe } from '../../data/sindragosa/types'
+import type { WeaponReach } from '../../data/sindragosa/abilityAttacks'
+import { formById, type Form } from '../../data/sindragosa/forms'
 
 /** Dégâts fixes selon le gabarit (à tester en jeu). */
-export const WEAPON_DAMAGE: Record<WeaponSize, number> = { legere: 2, 'une-main': 3, 'deux-mains': 5 }
+export const WEAPON_DAMAGE: Record<WeaponSize, number> = { naturelle: 1, legere: 2, 'une-main': 3, 'deux-mains': 5 }
 
 export const WEAPON_SIZE_LABELS: Record<WeaponSize, string> = {
+  naturelle: 'Naturelle',
   legere: 'Légère',
   'une-main': 'Une main',
   'deux-mains': 'Deux mains',
@@ -30,6 +33,52 @@ export function weaponDamage(item: ItemRow): number {
 
 export function equippedWeapons(c: Character): ItemRow[] {
   return c.items.filter((i) => i.type === 'arme' && i.equipped)
+}
+
+/** Le domaine d'attaque d'une arme ; Mêlée bourrine si elle n'en a pas. */
+export const weaponDomainId = (w: ItemRow): string => w.domainId ?? 'melee-bourrine'
+
+/** Les mains nues : une arme naturelle que tout personnage a d'office, sans objet. */
+export const BARE_HANDS: ItemRow = {
+  id: 'mains-nues', name: 'Mains nues', quantity: 1, type: 'arme', size: 'naturelle', domainId: 'athletisme',
+}
+
+/** L'arme naturelle que donne une transformation. */
+export function formWeapon(form: Form): ItemRow {
+  return {
+    id: `forme-${form.id}`, name: form.weapon, quantity: 1, type: 'arme',
+    size: 'naturelle', damageBonus: form.damageBonus, domainId: form.domainId,
+  }
+}
+
+function activeFormWeapon(c: Character): ItemRow | null {
+  const form = formById(c.form)
+  return form ? formWeapon(form) : null
+}
+
+/** Les attaques « Frapper » : l'arme de la forme prise, sinon les armes équipées, sinon les mains nues. */
+export function strikeWeapons(c: Character): ItemRow[] {
+  const form = activeFormWeapon(c)
+  if (form) return [form]
+  const weapons = equippedWeapons(c)
+  return weapons.length ? weapons : [BARE_HANDS]
+}
+
+/**
+ * L'arme avec laquelle une compétence attaque. Une forme prise impose son arme.
+ * Sans arme (`naturelle`) : l'arme naturelle équipée, sinon les mains nues.
+ * Sinon l'arme de tir pour un tir, une arme de contact pour une frappe (les armes
+ * naturelles en dernier), à défaut la première équipée ; null sans arme équipée.
+ */
+export function weaponFor(c: Character, reach: WeaponReach): ItemRow | null {
+  const form = activeFormWeapon(c)
+  if (form) return form
+  const natural = (w: ItemRow) => w.size === 'naturelle'
+  const equipped = equippedWeapons(c)
+  if (reach === 'naturelle') return equipped.find(natural) ?? BARE_HANDS
+  const weapons = [...equipped.filter((w) => !natural(w)), ...equipped.filter(natural)]
+  const ranged = (w: ItemRow) => weaponDomainId(w) === 'tir-lancer'
+  return weapons.find((w) => ranged(w) === (reach === 'distance')) ?? weapons[0] ?? null
 }
 
 /** AP = armures équipées + bonus des compétences. */

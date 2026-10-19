@@ -4,6 +4,13 @@
 
 Sindragosa is a monorepo with three workspaces. It supports **Sindragosa**, a homebrew d6 tabletop RPG set in World of Warcraft's Azeroth (rules in `docs/regles/`, overhaul in `plans/31-refonte-regles-sindragosa.md`). The app has **no AI feature** (see `plans/30-sindragosa-sans-ia.md`). Run everything from the root with `npm run dev`.
 
+### Source de vérité : l'app, pas les PDF
+
+Les 3 PDF de `docs/regles/` (`Sindragosa.pdf`, `Compétences & Domaines`, `Artisanat`) ont servi au **travail de base** : la transcription initiale des règles et des catalogues. Depuis, **les données de l'app (`client/src/data/sindragosa/`), la base de données et les décisions prises sur l'app (`plans/`) priment toujours sur les PDF.**
+
+- En cas d'écart entre l'app et un PDF, c'est l'app qui a raison. Ne jamais « corriger » une donnée ou une règle pour la remettre conforme au PDF.
+- Le PDF ne sert plus que de source pour ce que l'app ne couvre pas encore.
+
 ```
 sindragosa/
 ├── client/          # Vue 3 SPA (Vite + TypeScript)
@@ -13,7 +20,7 @@ sindragosa/
 
 ### `knowledge/`
 
-Static Markdown files summarising the Sindragosa rules (`docs/regles/*.pdf`) and the Azeroth lore. Nothing reads them at runtime: they are the reference behind the static catalogs in `client/src/data/sindragosa/`.
+Static Markdown files summarising the Sindragosa rules and the Azeroth lore. Nothing reads them at runtime. They describe **the rules as the app implements them** (`client/src/data/sindragosa/`, `client/src/utils/sindragosa/`, decisions in `plans/`), not the PDFs.
 
 ```
 knowledge/
@@ -31,7 +38,7 @@ knowledge/
     └── monde-azeroth.md     # World lore
 ```
 
-- Never edit these files by hand unless correcting a factual error in the game rules.
+- **Always keep them aligned with the app.** Any change to a rule, a catalog or a game mechanic in the app updates the matching topic in the same change. When a topic and the app disagree, the app wins and the topic gets fixed.
 - Use `/add-knowledge` to ingest new rules from a `.txt` source file.
 
 ### `server/`
@@ -119,7 +126,7 @@ If a recurring UI pattern has no component yet, **first create a new `App*` comp
 
 All defined in `client/src/style.css` and overridden by themes. Never hardcode what a token covers:
 - **Colors**: `--bg`, `--surface(-2/-3)`, `--text`, `--muted`, `--border(-strong)`, `--accent(-strong/-soft)`, `--brand(-strong)`, `--on-brand`, `--danger`. No raw hex in scoped CSS unless the color is genuinely unique.
-  - `--on-brand` is the text color to use **on top of** a `--brand` background. Never hardcode a text color on a brand surface — the 3 alternate themes redefine it.
+  - `--on-brand` is the text color to use **on top of** a `--brand` background. Never hardcode a text color on a brand surface — the 4 faction themes (Alliance, Horde, Démons, Arcane — `client/src/themes/`) redefine it.
 - **Radius**: `--radius-xs/sm/md/lg/xl/xxl/pill`. The 7 names map to only **3 real values** (8 / 12 / 16px) + pill. Never hardcode `border-radius` (only `50%` for circles is fine).
 - **Spacing**: `--space-xs/sm/md/lg` for padding/gap.
 - **Shadows**: `--shadow-soft`, `--shadow-card`. Both are deliberately near-invisible (`0 1px 3px`). Don't reintroduce heavy drop shadows.
@@ -134,7 +141,7 @@ Four things that will bite you if you don't know them:
 
 1. **No Tailwind preflight.** `style.css` imports only `theme.css` + `utilities.css`. Consequence: `border-style` defaults to `none`, so a bare `border` class draws nothing — **always add `border-solid`**.
 2. **`--spacing: 4px`.** The root font-size is 17px, not 16px, so Tailwind's rem-based spacing would be off. It's forced to px. `min-h-10` really is 40px.
-3. **Class names are theme hooks.** `.btn`, `.card`, `.card-head`, `.badge`, `.icon-btn`, `.input` are still set on the components because the 3 themes target `html[data-style=...] .btn.primary` etc. **Never remove them.** Their *base* styles live in the component (CVA + Tailwind), not in `style.css`.
+3. **Class names are theme hooks.** `.btn`, `.card`, `.card-head`, `.badge`, `.icon-btn`, `.input` are still set on the components because the 4 themes target `html[data-style=...] .btn.primary` etc. **Never remove them.** Their *base* styles live in the component (CVA + Tailwind), not in `style.css`.
 4. **App CSS is unlayered, so it beats Tailwind utilities.** If a Tailwind class seems ignored, a plain CSS rule is winning. Don't fight it with `!important` — move the base style into the component.
 5. **Never wrap a reka-ui component in Vue's `<Transition>`.** reka controls mounting itself; the two deadlock and the element stays in the DOM forever. Animate with CSS keyframes on `[data-state='open']` instead — and **only on open**: reka doesn't recognise a different exit animation, so a `[data-state='closed']` animation leaks the element too.
 6. **Every dialog needs a `DialogDescription`**, or reka warns on every open. The React `aria-describedby={undefined}` trick does not work in Vue. `AppModal` / `AppBottomSheet` already ship an sr-only one with an optional `description` prop.

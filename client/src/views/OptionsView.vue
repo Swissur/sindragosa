@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, type Component } from "vue";
 import { useRouter } from "vue-router";
 import {
   LogOut,
@@ -9,6 +9,11 @@ import {
   Trash2,
   Upload,
   Palette,
+  ScrollText,
+  Crown,
+  Axe,
+  Skull,
+  Sparkles,
 } from "lucide-vue-next";
 import { user, logout } from "../composables/useAuth";
 import { updateMe } from "../api/auth";
@@ -56,18 +61,22 @@ const themeLabel = computed(() =>
 );
 
 // ─── Style (artistic theme) ──────────────────────────────────────────────────
-type AppStyle = "" | "grimoire" | "vitrail" | "carte-du-monde";
+type AppStyle = "" | "alliance" | "horde" | "demons" | "arcane";
 const STYLE_KEY = "arran-style";
 
-const styleOptions: { value: AppStyle; label: string; desc: string }[] = [
-  { value: "", label: "Classique", desc: "Le style par défaut" },
-  { value: "grimoire", label: "Grimoire Vivant", desc: "Spellbook enchante" },
-  { value: "vitrail", label: "Vitrail", desc: "Cathedrale de verre" },
-  { value: "carte-du-monde", label: "Carte du Monde", desc: "Table de guerre" },
+const styleOptions: { value: AppStyle; label: string; desc: string; icon: Component }[] = [
+  { value: "", label: "Classique", desc: "Le style par défaut", icon: ScrollText },
+  { value: "alliance", label: "Alliance", desc: "Bleu roi et enluminures", icon: Crown },
+  { value: "horde", label: "Horde", desc: "Sang, fer et totems", icon: Axe },
+  { value: "demons", label: "Démons", desc: "Gangrène et crânes", icon: Skull },
+  { value: "arcane", label: "Arcane", desc: "Éclairs et étincelles", icon: Sparkles },
 ];
 
+// Un style retiré (ancien Grimoire, Vitrail…) encore en localStorage n'a plus
+// de CSS : on le traite comme Classique.
+const savedStyle = document.documentElement.dataset.style as AppStyle | undefined;
 const currentStyle = ref<AppStyle>(
-  (document.documentElement.dataset.style as AppStyle) ?? "",
+  styleOptions.some((o) => o.value === savedStyle) ? savedStyle! : "",
 );
 
 function applyStyle(next: AppStyle) {
@@ -305,9 +314,13 @@ onMounted(load);
             type="button"
             class="style-card"
             :class="{ active: currentStyle === opt.value, [opt.value || 'default']: true }"
+            :data-testid="`style-${opt.value || 'default'}`"
             @click="applyStyle(opt.value)"
           >
-            <span class="style-card-name">{{ opt.label }}</span>
+            <span class="style-card-name">
+              <component :is="opt.icon" :size="16" aria-hidden="true" />
+              {{ opt.label }}
+            </span>
             <span class="style-card-desc">{{ opt.desc }}</span>
           </button>
         </div>
@@ -633,13 +646,16 @@ onMounted(load);
   transform: translateY(-1px);
 }
 
+/* La carte active s'entoure d'un halo à la couleur de son thème (--swatch) */
 .style-card.active {
-  border-color: var(--accent-strong);
-  background: var(--accent-soft);
-  box-shadow: 0 0 0 1px var(--accent), 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-color: var(--swatch);
+  box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--swatch), 0 0 14px var(--swatch);
 }
 
 .style-card-name {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
   font-family: var(--title-font);
   font-size: 0.88rem;
   font-weight: 700;
@@ -651,16 +667,48 @@ onMounted(load);
   color: var(--muted);
 }
 
-/* Color swatches per style card */
-.style-card.default { border-top: 3px solid #68492e; }
-.style-card.grimoire { border-top: 3px solid #c9943e; }
-.style-card.vitrail { border-top: 3px solid #2546a8; }
-.style-card.carte-du-monde { border-top: 3px solid #b8860b; }
+/* Chaque carte est un aperçu de son thème, quel que soit le thème actif :
+   ces couleurs sont propres à chaque faction, aucun token ne les couvre. */
+.style-card.default {
+  --swatch: #68492e;
+  grid-column: 1 / -1;
+  border-top: 3px solid #68492e;
+}
 
-.style-card.active.default { border-top-color: #68492e; }
-.style-card.active.grimoire { border-top-color: #c9943e; }
-.style-card.active.vitrail { border-top-color: #2546a8; }
-.style-card.active.carte-du-monde { border-top-color: #b8860b; }
+.style-card.alliance {
+  --swatch: #c9a032;
+  border-color: #c9a032;
+  background: linear-gradient(160deg, #2a4fb3, #122660);
+}
+.style-card.alliance .style-card-name { font-family: 'Cinzel Decorative', serif; color: #f2d27a; }
+.style-card.alliance .style-card-desc { color: #cfd8f5; }
+
+.style-card.horde {
+  --swatch: #e0402f;
+  border-color: #b3221a;
+  background:
+    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 6'><path d='M0 0h16L12 6 8 1 4 6z' fill='%23b3221a'/></svg>") repeat-x left top / 12px 5px,
+    linear-gradient(160deg, #2a110d, #120706);
+}
+.style-card.horde .style-card-name { font-family: 'New Rocker', serif; color: #ff5a3c; }
+.style-card.horde .style-card-desc { color: #d9b8ad; }
+
+.style-card.demons {
+  --swatch: #6fd13f;
+  border-color: #6fd13f;
+  background: linear-gradient(160deg, #3a1a56, #0f1a0c);
+  box-shadow: inset 0 0 12px rgba(111, 209, 63, 0.25);
+}
+.style-card.demons .style-card-name { font-family: 'Pirata One', serif; font-weight: 400; font-size: 1rem; color: #9ef06a; }
+.style-card.demons .style-card-desc { color: #cdb8e0; }
+
+.style-card.arcane {
+  --swatch: #a58bff;
+  border-color: #b9a2ff;
+  background: linear-gradient(135deg, #e9defc, #f9e3f3, #dff3fb);
+}
+.style-card.arcane .style-card-name { font-family: 'Marcellus SC', serif; color: #5a3dba; }
+.style-card.arcane .style-card-desc { color: #675c86; }
 
 /* ── Characters ───────────────────────────────────────────────────────────── */
 .char-list {

@@ -16,6 +16,10 @@ export interface RollRequest {
   weapon?: ItemRow
   /** Fabrication : un jet réussi met l'objet du patron dans l'inventaire. */
   recipe?: Recipe
+  /** Sort : la mana qu'il coûte, payée au lancer (plans/40-mana.md). */
+  manaCost?: number
+  /** Sort en concentration Puissante : +1d6. */
+  power?: boolean
   context: RollContext
 }
 

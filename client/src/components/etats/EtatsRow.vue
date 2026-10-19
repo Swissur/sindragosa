@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import EtatBadge from './EtatBadge.vue'
-import { sortEtats } from '../../data/etats'
+import { sortEtats, type EtatEntry } from '../../data/etats'
 
 const props = withDefaults(
   defineProps<{
-    states: readonly string[]
+    states: readonly EtatEntry[]
     size?: 'sm' | 'md'
   }>(),
   { size: 'md' },

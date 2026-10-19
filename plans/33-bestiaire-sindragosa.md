@@ -49,6 +49,10 @@ Conversions automatiques :
 Ce qui reste en vocabulaire d20 (d20, DEF, NC, Mod.) est marqué `review: true`
 et signalé « à relire » dans l'app.
 
+Complété le 2026-10-19 : valeurs en dur (DM, PV, RD ÷ 2), abréviations des
+profils de PNJ (« SAG 19 », « +5 attaque », « AM », « [10+BU] »), descriptions
+des monstres, et « L'hallali » réécrite à la main. Plus aucun texte à relire.
+
 ## Base (migration 049)
 
 `encounter_monster` et `combat_participant` :

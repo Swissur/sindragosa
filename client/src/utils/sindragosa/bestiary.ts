@@ -59,6 +59,13 @@ export interface Monster {
 
 export const MAX_THREAT = 5
 
+/** Capacités réécrites à la main : leur mécanique d20 n'a pas de traduction automatique. */
+const REWRITTEN_ABILITIES: Record<string, string> = {
+  // 2026-10-19 : au d20, la curée partait d'une attaque ratée ou d'un 1 à 5 ; en d6, de l'attaque ratée seule
+  Hybride: 'Étant un mélange de deux créatures, le centaure est considéré comme une créature humanoïde pour tout ce qui concerne les attaques mentales, mais pas pour les attaques physiques.',
+  "L'hallali": "La curée : chaque fois que sa cible rate une attaque, chaque créature proche dotée de cette capacité lui porte aussitôt une Attaque en traître gratuite.",
+}
+
 /** 2 + mod ÷ 2 : un mod 0 (humain moyen) donne 2, la base d'un joueur. */
 export function convertStat(mod: number): number {
   return Math.max(1, 2 + Math.round(mod / 2))
@@ -142,9 +149,33 @@ export function conditionalResistance(rd: string): string {
     .join(' ; ')
 }
 
+const halve = (n: string) => String(Math.max(1, Math.round(Number(n) / 2)))
+const damageWord = (n: number | string) => `${n} dégât${Number(n) > 1 ? 's' : ''}`
+
+/**
+ * Ramène à l'échelle d6 les valeurs écrites en dur (dégâts, PV et réductions ÷ 2).
+ * Passe avant le calcul des formules en NC, qui sont déjà à la bonne échelle.
+ */
+function scaleD20Numbers(text: string): string {
+  return text
+    .replace(/\+(\d+) en attaque et aux DM/g, (_m, n: string) => `+${plusDice(Number(n))}d6 en attaque et +${halve(n)} aux dégâts`)
+    // Un ratio (« 1 PV pour 3 points de DM ») garde ses deux termes à la même échelle
+    .replace(/pour (\d+) points de DM/g, 'pour $1 points de dégâts')
+    .replace(/(?<![+\d])\[?(\d+d\d+(?:\s*\+\s*\d+)?)\]?\s+(?:points? de )?DM\b/g, (_m, expr: string) => damageWord(convertDamage(expr)))
+    .replace(/(DM (?:de|sont majorés de) )\+(\d+d\d+)/g, (_m, before: string, expr: string) => `${before}+${convertDamage(expr)}`)
+    .replace(/(DM passent à )(\d+d\d+)/g, (_m, before: string, expr: string) => `${before}${convertDamage(expr)}`)
+    .replace(/(?<![\d,.[+-])\b([1-9]\d*) (?:points? de )?DM\b/g, (_m, n: string) => damageWord(halve(n)))
+    .replace(/(?<![\d,.[+-])\b(\d+d\d+\+\d+|[1-9]\d*) PV\b/g, (_m, n: string) => `${/d/.test(n) ? convertDamage(n) : halve(n)} PV`)
+    .replace(/(retranche|de) (\d+) points( \(RD \d+\))?(?! de DM)/g, (_m, verb: string, n: string) => `${verb} ${halve(n)} points`)
+    .replace(/(?:une )?RD (\d+)/g, (_m, n: string) => `+${halve(n)} d'armure`)
+}
+
+/** Vocabulaire d20 qu'un texte converti ne devrait plus contenir. */
+export const D20_LEFTOVERS = /d20|d12|\bDEF\b|\bNC\b|\bDM\b|\bRD\b|\bBU\b|Mod\.|difficulté \d|page \d|\b(FOR|AGI|END|INT|SAG|CHA) \d/
+
 /** Traduit les tournures d20 courantes ; signale celles qui restent. `nc` sert aux formules en NC. */
 export function convertAbilityText(text: string, nc = 0): { text: string; review: boolean } {
-  const out = text
+  const out = scaleD20Numbers(text)
     .replace(/\[([^\]]*\bNC\b[^\]]*)\]/g, (m, expr: string) => {
       const v = evalNcFormula(expr, nc)
       return v === null ? m : String(v)
@@ -168,7 +199,29 @@ export function convertAbilityText(text: string, nc = 0): { text: string; review
     .replace(/\+\s?(\d+d\d+(?:\s*\+\s*\d+)?) (aux )?(DM|dégâts)/gi,
       (_m, expr: string) => `+${convertDamage(expr)} aux dégâts`)
     .replace(/difficulté (\d+)/gi, (_m, n: string) => `palier ${tier(Number(n))}`)
-  return { text: out, review: /d20|\bDEF\b|\bNC\b|Mod\./.test(out) }
+    // Abréviations des profils de PNJ : seuils de carac, bonus nus, attaque magique
+    .replace(/\b(FOR|AGI|END|INT|SAG|CHA) \[\d+\s*\+\s*BU\]/g, '$1 palier difficile')
+    .replace(/\b(FOR|AGI|END|INT|SAG|CHA) (\d+)\b/g, (_m, stat: string, n: string) => `${stat} palier ${tier(Number(n))}`)
+    .replace(/RD élémentaire = BU/g, "+rang de menace d'armure contre les éléments")
+    .replace(/\+2 init\/attaque\/DM/g, "+1d6 à l'attaque, +1 aux dégâts et +1 en initiative")
+    .replace(/Bonus à \+3/g, 'Bonus de Capitaine porté à +2 aux dégâts')
+    .replace(/-(\d+) attaque\/-(\d+) init/g, (_m, a: string, i: string) => `-${plusDice(Number(a))}d6 à l'attaque, -${plusDice(Number(i))} en initiative`)
+    .replace(/\+(\d+) discrétion\/init/g, (_m, n: string) => `+${plusDice(Number(n))}d6 en discrétion, +${plusDice(Number(n))} en initiative`)
+    .replace(/\+(\d+) (?:en )?discrétion/g, (_m, n: string) => `+${plusDice(Number(n))}d6 en discrétion`)
+    .replace(/\+(\d+) attaque\b/g, (_m, n: string) => `+${plusDice(Number(n))}d6 à l'attaque`)
+    .replace(/bonus de \+(\d+) à tous les (?:les )?tests de discrétion( et en Init)?/g,
+      (_m, n: string, init?: string) => `bonus de +${plusDice(Number(n))}d6 à tous les tests de discrétion${init ? ` et de +${plusDice(Number(n))} en initiative` : ''}`)
+    .replace(/augmente de \+(\d+) son score d.attaque au contact et ses DM de \+(\d+)/g,
+      (_m, n: string, dmg: string) => `gagne +${plusDice(Number(n))}d6 à ses attaques au contact et +${dmg} aux dégâts`)
+    .replace(/malus de -(\d+)/g, (_m, n: string) => `malus de -${plusDice(Number(n))}d6`)
+    .replace(/ à -(\d+) \(sous l'eau\)/g, (_m, n: string) => ` à -${plusDice(Number(n))}d6 (sous l'eau)`)
+    .replace(/ Voir page \d+[^.]*\./g, '')
+    .replace(/ et son rang de menace passe à ½/g, '')
+    .replace(/ \((?:utiliser 1d12|utilise un d12 aux tests)\)/g, '')
+    .replace(/Option d12 : /g, "Option : -1d6 à l'attaque pour ")
+    .replace(/\bAM\b/g, 'Attaque magique')
+    .replace(/\bDM\b/g, 'dégâts')
+  return { text: out, review: D20_LEFTOVERS.test(out) }
 }
 
 export function convertMonster(m: CoMonster): Monster {
@@ -186,8 +239,11 @@ export function convertMonster(m: CoMonster): Monster {
   const kind = armorKind(m.name)
 
   const abilities: MonsterAbility[] = m.abilities.map((a) => {
+    const rewritten = REWRITTEN_ABILITIES[a.name]
+    if (rewritten) return { name: a.name, description: rewritten }
     const { text, review } = convertAbilityText(a.description, m.nc)
-    return review ? { name: a.name, description: text, review } : { name: a.name, description: text }
+    const name = a.name.replace(/\bDM\b/g, 'dégâts')
+    return review ? { name, description: text, review } : { name, description: text }
   })
   // La part conditionnelle d'une RD (« 5/magie ») n'entre pas dans l'armure : elle reste lisible ici
   if (m.rd?.includes('/')) abilities.unshift({ name: 'Résistance', description: `${conditionalResistance(m.rd)}.` })
@@ -213,6 +269,6 @@ export function convertMonster(m: CoMonster): Monster {
       }
     }),
     abilities,
-    ...(m.description ? { description: m.description } : {}),
+    ...(m.description ? { description: convertAbilityText(m.description, m.nc).text } : {}),
   }
 }

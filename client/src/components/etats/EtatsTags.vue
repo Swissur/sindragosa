@@ -1,22 +1,23 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { ETATS, sortEtats, type EtatId } from '../../data/etats'
+import { ETATS, normalizeEtats, type EtatEntry, type EtatId } from '../../data/etats'
 
 /**
  * Les états de sa propre fiche, en tags : un tap pose ou retire l'état.
  * En lecture seule, seuls les états actifs s'affichent.
  * Multi-sélection, donc pas AppToggleGroup (mono-sélection), comme EtatsSheet.
+ * Un état posé ici n'a pas de durée : les durées se règlent en combat.
  */
-const props = defineProps<{ states: readonly string[]; readonly?: boolean }>()
+const props = defineProps<{ states: readonly EtatEntry[]; readonly?: boolean }>()
 
-const emit = defineEmits<{ (e: 'update:states', states: EtatId[]): void }>()
+const emit = defineEmits<{ (e: 'update:states', states: EtatEntry[]): void }>()
 
-const active = computed(() => new Set(sortEtats(props.states).map((e) => e.id)))
+const active = computed(() => new Map(normalizeEtats(props.states).map((e) => [e.id, e])))
 const shown = computed(() => (props.readonly ? ETATS.filter((e) => active.value.has(e.id)) : ETATS))
 
 function toggle(id: EtatId) {
-  const next = active.value.has(id) ? [...active.value].filter((x) => x !== id) : [...active.value, id]
-  emit('update:states', next)
+  const current = [...active.value.values()]
+  emit('update:states', active.value.has(id) ? current.filter((e) => e.id !== id) : [...current, { id }])
 }
 </script>
 
@@ -37,6 +38,7 @@ function toggle(id: EtatId) {
       <component :is="e.icon" v-if="e.icon" :size="13" class="etat-tag-icon" />
       <span v-else>{{ e.emoji }}</span>
       {{ e.label }}
+      <span v-if="active.get(e.id)?.turns" class="etat-tag-turns">· {{ active.get(e.id)!.turns }}</span>
     </button>
     <span v-if="readonly && !shown.length" class="etats-none">Aucun</span>
   </div>
@@ -77,13 +79,16 @@ function toggle(id: EtatId) {
   color: var(--etat);
 }
 
-/* Affaibli reste violet : c'est le seul etat qui change une regle de jet. */
 .etat-tag--affaibli {
   --etat: var(--etat-affaibli);
 }
 
 .etat-tag--renverse .etat-tag-icon {
   transform: rotate(90deg);
+}
+
+.etat-tag-turns {
+  font-weight: 700;
 }
 
 .etats-none {

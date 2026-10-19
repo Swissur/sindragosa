@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import AppTooltip from '../ui/AppTooltip.vue'
-import type { Etat } from '../../data/etats'
+import type { ActiveEtat } from '../../data/etats'
 
 withDefaults(
   defineProps<{
-    etat: Etat
+    etat: ActiveEtat
     /** `sm` pour une rangee dense (ligne d'initiative), normal pour la fiche. */
     size?: 'sm' | 'md'
   }>(),
@@ -25,9 +25,11 @@ withDefaults(
       >
         <component :is="etat.icon" v-if="etat.icon" :size="size === 'sm' ? 12 : 15" />
         <span v-else class="etat-badge-emoji">{{ etat.emoji }}</span>
+        <span v-if="etat.turns" class="etat-badge-turns">{{ etat.turns }}</span>
       </span>
     </template>
     <strong class="etat-tip-label">{{ etat.label }}</strong>
+    <span v-if="etat.turns" class="etat-tip-turns">Encore {{ etat.turns }} tour{{ etat.turns > 1 ? 's' : '' }}</span>
     <span class="etat-tip-effect">{{ etat.effect }}</span>
   </AppTooltip>
 </template>
@@ -47,17 +49,26 @@ withDefaults(
 }
 
 .etat-badge--sm {
-  width: 20px;
+  min-width: 20px;
   height: 20px;
 }
 
 .etat-badge--md {
-  width: 26px;
+  min-width: 26px;
   height: 26px;
 }
 
-/* Affaibli garde son violet : c'est le seul etat qui change vraiment une regle
-   de jet (d12 au lieu du d20). */
+/* Avec une duree, la pastille s'allonge en pilule : icone puis tours restants. */
+.etat-badge:has(.etat-badge-turns) {
+  gap: 0.15rem;
+  padding: 0 0.3rem;
+}
+
+.etat-badge-turns {
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
 .etat-badge--affaibli {
   --etat: var(--etat-affaibli);
 }
@@ -81,6 +92,11 @@ withDefaults(
 .etat-tip-label {
   display: block;
   font-weight: 700;
+}
+
+.etat-tip-turns {
+  display: block;
+  font-weight: 600;
 }
 
 .etat-tip-effect {

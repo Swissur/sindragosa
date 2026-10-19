@@ -71,3 +71,44 @@ test("le MJ pose un état sur un PJ, le joueur le voit sur sa fiche", async ({ b
     await joueur.close()
   }
 })
+
+test("un état d'un tour s'efface à la fin du tour de son porteur", async ({ browser }) => {
+  const mj = await browser.newContext({ storageState: stateFor('mj-dev') })
+  const pageMj = await mj.newPage()
+
+  try {
+    await ouvrirLancement(pageMj)
+    await pageMj.getByRole('button', { name: 'Lancer !' }).click()
+    await expect(pageMj).toHaveURL(/\/combat\/\d+$/)
+
+    // ── Le MJ pose Peur, 1 tour (la durée par défaut), sur celui qui joue ──
+    const actif = pageMj.getByTestId('active-participant')
+    const participantId = await actif.getAttribute('data-participant-id')
+    const porteur = pageMj.locator(`[data-participant-id="${participantId}"]`)
+    await actif.click()
+    await pageMj.getByTestId(`open-etats-${participantId}`).click()
+    await expect(pageMj.getByTestId('etat-duration-value')).toHaveText('1 tour')
+
+    const ecriture = pageMj.waitForResponse(
+      (r) => r.url().includes('/states') && r.request().method() === 'PATCH' && r.ok(),
+    )
+    await pageMj.getByTestId('etat-toggle-peur').click()
+    await ecriture
+    await pageMj.keyboard.press('Escape')
+    await expect(porteur.getByTestId('etat-badge-peur')).toContainText('1')
+
+    // ── Son tour s'achève : l'état tombe à 0 et disparaît ──
+    const suivant = pageMj.waitForResponse(
+      (r) => r.url().includes('/next-turn') && r.ok(),
+    )
+    await pageMj.getByRole('button', { name: 'Suivant' }).click()
+    await suivant
+    await expect(porteur.getByTestId('etat-badge-peur')).toHaveCount(0)
+
+    await pageMj.getByRole('button', { name: 'Terminer' }).click()
+    await pageMj.getByRole('dialog').getByRole('button', { name: 'Terminer' }).click()
+    await expect(pageMj.getByTestId('active-participant')).toHaveCount(0)
+  } finally {
+    await mj.close()
+  }
+})

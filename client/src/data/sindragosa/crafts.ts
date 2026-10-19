@@ -1,5 +1,6 @@
-// Généré depuis docs/regles/Artisanat (Sindragosa).pdf par une transcription assistée — ne pas éditer à la main sans relire le PDF.
+// Généré depuis docs/regles/Artisanat (Sindragosa).pdf par une transcription assistée ; le catalogue prime désormais sur le PDF (voir CLAUDE.md).
 import type { Craft, Recipe } from './types'
+import { COMPONENT_RECIPES } from './componentRecipes'
 
 export const CRAFTS: Craft[] = [
   {
@@ -172,7 +173,8 @@ export const CRAFTS: Craft[] = [
   }
 ]
 
-export const RECIPES: Recipe[] = [
+/** Les patrons du PDF. */
+export const PDF_RECIPES: Recipe[] = [
   {
     "id": "forge-r1-01",
     "craft": "forge",
@@ -182,7 +184,7 @@ export const RECIPES: Recipe[] = [
     "components": [
       {
         "qty": 1,
-        "name": "Lingot de Fer brut"
+        "name": "Lingot de Fer"
       },
       {
         "qty": 1,
@@ -200,7 +202,7 @@ export const RECIPES: Recipe[] = [
     "components": [
       {
         "qty": 3,
-        "name": "Lingots de Fer brut"
+        "name": "Lingots de Fer"
       }
     ],
     "effect": "Armure physique +1."
@@ -214,7 +216,7 @@ export const RECIPES: Recipe[] = [
     "components": [
       {
         "qty": 2,
-        "name": "Lingots de Fer brut"
+        "name": "Lingots de Fer"
       },
       {
         "qty": 1,
@@ -232,7 +234,7 @@ export const RECIPES: Recipe[] = [
     "components": [
       {
         "qty": 1,
-        "name": "Lingot de Fer brut"
+        "name": "Lingot de Fer"
       }
     ],
     "effect": "Arme de jet (portée 8m), dégâts légers."
@@ -246,7 +248,7 @@ export const RECIPES: Recipe[] = [
     "components": [
       {
         "qty": 2,
-        "name": "Lingots de Fer brut"
+        "name": "Lingots de Fer"
       }
     ],
     "effect": "Outil de forge ; +1 aux jets de fabrication lourde."
@@ -260,7 +262,7 @@ export const RECIPES: Recipe[] = [
     "components": [
       {
         "qty": 1,
-        "name": "Lingot de Fer brut"
+        "name": "Lingot de Fer"
       }
     ],
     "effect": "Amélioration d'armure : +1 PV max au porteur."
@@ -274,7 +276,7 @@ export const RECIPES: Recipe[] = [
     "components": [
       {
         "qty": 2,
-        "name": "Lingots de Fer brut"
+        "name": "Lingots de Fer"
       }
     ],
     "effect": "Armure physique +1."
@@ -288,7 +290,7 @@ export const RECIPES: Recipe[] = [
     "components": [
       {
         "qty": 2,
-        "name": "Lingots de Fer brut"
+        "name": "Lingots de Fer"
       },
       {
         "qty": 1,
@@ -301,7 +303,7 @@ export const RECIPES: Recipe[] = [
     "id": "forge-r1-09",
     "craft": "forge",
     "rank": 1,
-    "name": "Barre de fer forgé",
+    "name": "Lingot de Fer",
     "batch": null,
     "components": [
       {
@@ -320,7 +322,7 @@ export const RECIPES: Recipe[] = [
     "components": [
       {
         "qty": 1,
-        "name": "Lingot de Fer brut"
+        "name": "Lingot de Fer"
       }
     ],
     "effect": "Amélioration : le bouclier gagne +1 point de solidité."
@@ -338,7 +340,7 @@ export const RECIPES: Recipe[] = [
       },
       {
         "qty": 1,
-        "name": "Cuir raffiné"
+        "name": "Cuir traité"
       }
     ],
     "effect": "Arme tranchante à 1 main ; relance les résultats de 1 sur les dégâts."
@@ -384,7 +386,7 @@ export const RECIPES: Recipe[] = [
       },
       {
         "qty": 1,
-        "name": "Renfort en bois"
+        "name": "Manche renforcé"
       }
     ],
     "effect": "Armure physique +1 en posture défensive ; blocage amélioré."
@@ -420,7 +422,7 @@ export const RECIPES: Recipe[] = [
       },
       {
         "qty": 1,
-        "name": "Doublure en cuir"
+        "name": "Cuir traité"
       }
     ],
     "effect": "Armure physique +1 ; immunise au désarmement léger."
@@ -457,7 +459,7 @@ export const RECIPES: Recipe[] = [
     "id": "forge-r2-09",
     "craft": "forge",
     "rank": 2,
-    "name": "Lingot d'acier raffiné",
+    "name": "Lingot d'Acier",
     "batch": null,
     "components": [
       {
@@ -552,7 +554,7 @@ export const RECIPES: Recipe[] = [
       },
       {
         "qty": 1,
-        "name": "Soie renforcée"
+        "name": "Fil de soie"
       }
     ],
     "effect": "Arme versatile (1 ou 2 mains) ; +1d6 aux dégâts sur cible sous 30 % PV."
@@ -598,7 +600,7 @@ export const RECIPES: Recipe[] = [
       },
       {
         "qty": 1,
-        "name": "Rembourrage épais"
+        "name": "Cuir épais"
       }
     ],
     "effect": "Armure physique +1 ; +5 PV maximaux au porteur."
@@ -607,7 +609,7 @@ export const RECIPES: Recipe[] = [
     "id": "forge-r3-08",
     "craft": "forge",
     "rank": 3,
-    "name": "Lingot de mithril purifié",
+    "name": "Lingot de Mithril",
     "batch": null,
     "components": [
       {
@@ -784,7 +786,7 @@ export const RECIPES: Recipe[] = [
       },
       {
         "qty": 2,
-        "name": "Sangles d'élite"
+        "name": "Sangles de cuir"
       }
     ],
     "effect": "Équipement de monture : +50 % de PV à la monture."
@@ -793,7 +795,7 @@ export const RECIPES: Recipe[] = [
     "id": "forge-r4-09",
     "craft": "forge",
     "rank": 4,
-    "name": "Lingot de thorium forgé au sang",
+    "name": "Lingot de Thorium",
     "batch": null,
     "components": [
       {
@@ -918,7 +920,7 @@ export const RECIPES: Recipe[] = [
       },
       {
         "qty": 2,
-        "name": "Joyaux majeurs"
+        "name": "Gemmes taillées"
       }
     ],
     "effect": "Armure physique +7 ; +20 PV maximaux au porteur."
@@ -987,7 +989,7 @@ export const RECIPES: Recipe[] = [
     "id": "forge-r5-10",
     "craft": "forge",
     "rank": 5,
-    "name": "Lingot d'arcanite béni",
+    "name": "Lingot d'Arcanite",
     "batch": null,
     "components": [
       {
@@ -1129,7 +1131,7 @@ export const RECIPES: Recipe[] = [
     "id": "cuir-r1-09",
     "craft": "cuir",
     "rank": 1,
-    "name": "Lanière de cuir résistant",
+    "name": "Lanière de cuir",
     "batch": null,
     "components": [
       {
@@ -1184,7 +1186,7 @@ export const RECIPES: Recipe[] = [
       },
       {
         "qty": 1,
-        "name": "Teinture sombre"
+        "name": "Teinture"
       }
     ],
     "effect": "+1d6 aux tests de Furtivité nocturne."
@@ -1281,8 +1283,8 @@ export const RECIPES: Recipe[] = [
     "id": "cuir-r2-09",
     "craft": "cuir",
     "rank": 2,
-    "name": "Cuir durci au sel",
-    "batch": null,
+    "name": "Cuir durci",
+    "batch": 2,
     "components": [
       {
         "qty": 2,
@@ -1439,8 +1441,8 @@ export const RECIPES: Recipe[] = [
     "id": "cuir-r3-08",
     "craft": "cuir",
     "rank": 3,
-    "name": "Cuir de bête des neiges traité",
-    "batch": null,
+    "name": "Cuir d'élite",
+    "batch": 3,
     "components": [
       {
         "qty": 3,
@@ -1448,7 +1450,7 @@ export const RECIPES: Recipe[] = [
       },
       {
         "qty": 1,
-        "name": "Huile spéciale"
+        "name": "Huile végétale"
       }
     ],
     "effect": "Composant rare de rang 3."
@@ -1516,7 +1518,7 @@ export const RECIPES: Recipe[] = [
       },
       {
         "qty": 2,
-        "name": "Teintures de sang"
+        "name": "Teintures"
       }
     ],
     "effect": "Armure physique +2 ; +2d6 aux dégâts lors du premier tour de combat depuis la Furtivité."
@@ -1611,8 +1613,8 @@ export const RECIPES: Recipe[] = [
     "id": "cuir-r4-08",
     "craft": "cuir",
     "rank": 4,
-    "name": "Cuir d'élite tannée au feu",
-    "batch": null,
+    "name": "Cuir légendaire",
+    "batch": 3,
     "components": [
       {
         "qty": 3,
@@ -1864,11 +1866,11 @@ export const RECIPES: Recipe[] = [
     "components": [
       {
         "qty": 2,
-        "name": "Verres polis"
+        "name": "Verres"
       },
       {
         "qty": 1,
-        "name": "Laiton"
+        "name": "Lingot de Bronze"
       }
     ],
     "effect": "Élimine le malus d'obscurité légère."
@@ -1904,7 +1906,7 @@ export const RECIPES: Recipe[] = [
       },
       {
         "qty": 1,
-        "name": "Ressort lourd"
+        "name": "Ressort"
       }
     ],
     "effect": "+2m sur la distance d'un saut. Risque de dysfonctionnement (1 sur 6)."
@@ -1936,7 +1938,7 @@ export const RECIPES: Recipe[] = [
     "components": [
       {
         "qty": 1,
-        "name": "Poudre"
+        "name": "Poudre noire"
       },
       {
         "qty": 1,
@@ -1949,7 +1951,7 @@ export const RECIPES: Recipe[] = [
     "id": "ingenierie-r1-07",
     "craft": "ingenierie",
     "rank": 1,
-    "name": "Ressort en bronze trempé",
+    "name": "Ressort",
     "batch": null,
     "components": [
       {
@@ -1990,7 +1992,7 @@ export const RECIPES: Recipe[] = [
       },
       {
         "qty": 1,
-        "name": "Cuivre"
+        "name": "Lingot de Cuivre"
       }
     ],
     "effect": "Outil : allume un feu instantanément même sous la pluie."
@@ -2026,7 +2028,7 @@ export const RECIPES: Recipe[] = [
       },
       {
         "qty": 2,
-        "name": "Roulages de bronze"
+        "name": "Engrenages"
       }
     ],
     "effect": "Zone (4m) ; dégâts de feu et éclats métalliques."
@@ -2048,7 +2050,7 @@ export const RECIPES: Recipe[] = [
       },
       {
         "qty": 1,
-        "name": "Huile"
+        "name": "Huile végétale"
       }
     ],
     "effect": "Action Rapide : +10m de déplacement instantané. (Risque de brûlure sur un 1)."
@@ -2070,7 +2072,7 @@ export const RECIPES: Recipe[] = [
       },
       {
         "qty": 1,
-        "name": "Mini-canon"
+        "name": "Canon"
       }
     ],
     "effect": "Tourelle posée au sol ; tire 1 projectile par tour pendant 2 tours."
@@ -2084,7 +2086,7 @@ export const RECIPES: Recipe[] = [
     "components": [
       {
         "qty": 2,
-        "name": "Verres teintés"
+        "name": "Verres"
       },
       {
         "qty": 2,
@@ -2155,7 +2157,7 @@ export const RECIPES: Recipe[] = [
     "id": "ingenierie-r2-08",
     "craft": "ingenierie",
     "rank": 2,
-    "name": "Engrenage de précision en bronze",
+    "name": "Engrenage de précision",
     "batch": null,
     "components": [
       {
@@ -2196,7 +2198,7 @@ export const RECIPES: Recipe[] = [
       },
       {
         "qty": 1,
-        "name": "Boîtier"
+        "name": "Boîtier de fer"
       }
     ],
     "effect": "Fait sauter les serrures de portes non-magiques."
@@ -2218,7 +2220,7 @@ export const RECIPES: Recipe[] = [
       },
       {
         "qty": 1,
-        "name": "Detonateur"
+        "name": "Détonateur à poussoir mécanique"
       }
     ],
     "effect": "Zone (5m) ; dégâts lourds et assomme (Étourdissement 1 tour)."
@@ -2240,7 +2242,7 @@ export const RECIPES: Recipe[] = [
       },
       {
         "qty": 1,
-        "name": "Antenne"
+        "name": "Émetteur"
       }
     ],
     "effect": "Force un humanoïde à obéir pendant 1 tour (Risque d'inversion 1 sur 6)."
@@ -2276,7 +2278,7 @@ export const RECIPES: Recipe[] = [
     "components": [
       {
         "qty": 2,
-        "name": "Lentilles de haute qualité"
+        "name": "Lentilles"
       },
       {
         "qty": 2,
@@ -2298,11 +2300,11 @@ export const RECIPES: Recipe[] = [
       },
       {
         "qty": 2,
-        "name": "Ressorts lourds"
+        "name": "Ressorts"
       },
       {
         "qty": 2,
-        "name": "Poudres"
+        "name": "Poudres noires"
       }
     ],
     "effect": "Permet d'effectuer un bond de 12m par-dessus des obstacles."
@@ -2320,7 +2322,7 @@ export const RECIPES: Recipe[] = [
       },
       {
         "qty": 1,
-        "name": "Canon long"
+        "name": "Canon"
       }
     ],
     "effect": "Arme à 2 mains ; inflige de lourds dégâts en cône à bout portant (3m)."
@@ -2338,11 +2340,11 @@ export const RECIPES: Recipe[] = [
       },
       {
         "qty": 1,
-        "name": "Lentille prismatique"
+        "name": "Lentille"
       },
       {
         "qty": 1,
-        "name": "Cristal"
+        "name": "Quartz"
       }
     ],
     "effect": "Réduit la taille et les dégâts d'un ennemi de 50 % pendant 2 tours."
@@ -2351,7 +2353,7 @@ export const RECIPES: Recipe[] = [
     "id": "ingenierie-r3-08",
     "craft": "ingenierie",
     "rank": 3,
-    "name": "Pile à vapeur haute pression",
+    "name": "Pile à vapeur",
     "batch": null,
     "components": [
       {
@@ -2360,7 +2362,7 @@ export const RECIPES: Recipe[] = [
       },
       {
         "qty": 1,
-        "name": "Eau bénite/élémentaire"
+        "name": "Essence d'eau"
       }
     ],
     "effect": "Source d'énergie pour appareils de rang 3+."
@@ -2374,7 +2376,7 @@ export const RECIPES: Recipe[] = [
     "components": [
       {
         "qty": 3,
-        "name": "Poudres"
+        "name": "Poudres noires"
       },
       {
         "qty": 2,
@@ -2392,7 +2394,7 @@ export const RECIPES: Recipe[] = [
     "components": [
       {
         "qty": 3,
-        "name": "Miroirs miniatures"
+        "name": "Lentilles"
       },
       {
         "qty": 2,
@@ -2414,7 +2416,7 @@ export const RECIPES: Recipe[] = [
     "components": [
       {
         "qty": 5,
-        "name": "Poudres noires lourdes"
+        "name": "Poudres lourdes"
       },
       {
         "qty": 4,
@@ -2440,7 +2442,7 @@ export const RECIPES: Recipe[] = [
       },
       {
         "qty": 4,
-        "name": "Pistolets hydrauliques"
+        "name": "Pistons hydrauliques"
       },
       {
         "qty": 2,
@@ -2484,11 +2486,11 @@ export const RECIPES: Recipe[] = [
       },
       {
         "qty": 2,
-        "name": "Miroirs d'arcanite"
+        "name": "Lentilles d'arcanite"
       },
       {
         "qty": 1,
-        "name": "Cristal"
+        "name": "Quartz"
       }
     ],
     "effect": "Réaction : renvoie un sort magique hostile à son lanceur."
@@ -2506,7 +2508,7 @@ export const RECIPES: Recipe[] = [
       },
       {
         "qty": 3,
-        "name": "Quartz d'élite"
+        "name": "Quartz arcaniques"
       }
     ],
     "effect": "Permet de voir les formes de vie derrière des cloisons de bois ou de pierre fine."
@@ -2560,7 +2562,7 @@ export const RECIPES: Recipe[] = [
       },
       {
         "qty": 2,
-        "name": "Huiles noires"
+        "name": "Huiles incendiaires"
       },
       {
         "qty": 1,
@@ -2578,7 +2580,7 @@ export const RECIPES: Recipe[] = [
     "components": [
       {
         "qty": 4,
-        "name": "Poudres"
+        "name": "Poudres noires"
       },
       {
         "qty": 2,
@@ -2622,7 +2624,7 @@ export const RECIPES: Recipe[] = [
       },
       {
         "qty": 2,
-        "name": "Détonateurs de maître"
+        "name": "Détonateurs à fréquence éloignée"
       },
       {
         "qty": 1,
@@ -2648,7 +2650,7 @@ export const RECIPES: Recipe[] = [
       },
       {
         "qty": 4,
-        "name": "Piles à vapeur primordiales"
+        "name": "Piles d'élite"
       }
     ],
     "effect": "Vous pilotez un mecha géant pendant 3 tours : Armure +6, PV temporaires +30, attaques dévastatrices."
@@ -2670,7 +2672,7 @@ export const RECIPES: Recipe[] = [
       },
       {
         "qty": 2,
-        "name": "Cerveaux méca-organiques"
+        "name": "Micro-processeurs méca"
       }
     ],
     "effect": "Invoque un robot permanent qui répare les armures du groupe et sert de banque mobile."
@@ -2688,7 +2690,7 @@ export const RECIPES: Recipe[] = [
       },
       {
         "qty": 3,
-        "name": "Lentilles de cristal pur"
+        "name": "Lentilles d'arcanite"
       },
       {
         "qty": 1,
@@ -2732,7 +2734,7 @@ export const RECIPES: Recipe[] = [
       },
       {
         "qty": 3,
-        "name": "Piles d'antigravité"
+        "name": "Piles d'élite"
       }
     ],
     "effect": "Permet de voler librement dans les airs pendant 2 tours complets par combat."
@@ -2750,7 +2752,7 @@ export const RECIPES: Recipe[] = [
       },
       {
         "qty": 2,
-        "name": "Émetteurs télépathiques"
+        "name": "Émetteurs"
       }
     ],
     "effect": "Soumet jusqu'à 3 ennemis humanoïdes proches à vos ordres pendant 1 tour."
@@ -2768,7 +2770,7 @@ export const RECIPES: Recipe[] = [
       },
       {
         "qty": 3,
-        "name": "Lentilles noires"
+        "name": "Lentilles d'arcanite"
       }
     ],
     "effect": "Détruit instantanément un objet non-magique, une porte blindée ou un bouclier ennemi."
@@ -2786,7 +2788,7 @@ export const RECIPES: Recipe[] = [
       },
       {
         "qty": 2,
-        "name": "Cœurs de plasma"
+        "name": "Cœurs d'énergie"
       }
     ],
     "effect": "Tourelle suprême : tire des orbes de plasma explosifs chaque tour pendant 3 tours."
@@ -2795,7 +2797,7 @@ export const RECIPES: Recipe[] = [
     "id": "ingenierie-r5-10",
     "craft": "ingenierie",
     "rank": 5,
-    "name": "Noyau d'énergie à réacteur d'Azérite",
+    "name": "Cœur d'énergie",
     "batch": null,
     "components": [
       {
@@ -3050,7 +3052,7 @@ export const RECIPES: Recipe[] = [
     "components": [
       {
         "qty": 2,
-        "name": "Graisses de loup"
+        "name": "Graisses animales"
       },
       {
         "qty": 1,
@@ -3394,7 +3396,7 @@ export const RECIPES: Recipe[] = [
       },
       {
         "qty": 1,
-        "name": "Acide pur"
+        "name": "Fiole d'acide"
       }
     ],
     "effect": "Enduit sur arme : perfore l'armure et détruit 3 PV maximaux par coup porté."
@@ -3448,7 +3450,7 @@ export const RECIPES: Recipe[] = [
       },
       {
         "qty": 1,
-        "name": "Poudre concentrée"
+        "name": "Poudre Nitro"
       }
     ],
     "effect": "Zone (5m) : inflige d'immenses dégâts d'acide et aveugle toutes les victimes (2 tours)."
@@ -3712,7 +3714,7 @@ export const RECIPES: Recipe[] = [
       },
       {
         "qty": 1,
-        "name": "Glyphe de protection"
+        "name": "Encre arcanique"
       }
     ],
     "effect": "Absorbe le premier sort magique direct reçu lors de chaque combat."
@@ -3748,7 +3750,7 @@ export const RECIPES: Recipe[] = [
       },
       {
         "qty": 1,
-        "name": "Prisme arcanique"
+        "name": "Lentille d'arcanite"
       }
     ],
     "effect": "Réfléchit les projectiles magiques vers leurs lanceurs sur un blocage réussi."
@@ -3784,7 +3786,7 @@ export const RECIPES: Recipe[] = [
       },
       {
         "qty": 2,
-        "name": "Fioles de venin concentré"
+        "name": "Venins concentrés"
       }
     ],
     "effect": "Tout ennemi vous attaquant en mêlée subit un empoisonnement continu pendant 2 tours."
@@ -3802,7 +3804,7 @@ export const RECIPES: Recipe[] = [
       },
       {
         "qty": 2,
-        "name": "Fioles d'acide fluorhydrique"
+        "name": "Fioles d'acide"
       }
     ],
     "effect": "Armure +3 ; immunise totalement aux projections d'acides et de toxines."
@@ -3820,7 +3822,7 @@ export const RECIPES: Recipe[] = [
       },
       {
         "qty": 1,
-        "name": "Fiole d'acide marin"
+        "name": "Fiole d'acide"
       }
     ],
     "effect": "Vos pas laissent des mares d'acide au sol qui blessent les poursuivants."
@@ -3838,7 +3840,7 @@ export const RECIPES: Recipe[] = [
       },
       {
         "qty": 2,
-        "name": "Toxines de paralyse"
+        "name": "Poisons paralytiques mortels"
       }
     ],
     "effect": "Vos attaques à mains nues appliquent un ralentissement de 50 % à la cible."
@@ -3852,7 +3854,7 @@ export const RECIPES: Recipe[] = [
     "components": [
       {
         "qty": 2,
-        "name": "Cuirs souples"
+        "name": "Cuirs fins"
       },
       {
         "qty": 1,
@@ -3870,7 +3872,7 @@ export const RECIPES: Recipe[] = [
     "components": [
       {
         "qty": 2,
-        "name": "Boîtiers d'ingénieur"
+        "name": "Boîtiers de fer"
       },
       {
         "qty": 3,
@@ -3946,7 +3948,7 @@ export const RECIPES: Recipe[] = [
       },
       {
         "qty": 1,
-        "name": "Écorce d'arbre-fer"
+        "name": "Écorce de Bois-fer"
       }
     ],
     "effect": "Explosif dissimulable en milieu naturel ; détonation indétectable."
@@ -3986,11 +3988,11 @@ export const RECIPES: Recipe[] = [
       },
       {
         "qty": 2,
-        "name": "Filins d'acier"
+        "name": "Fils d'acier"
       },
       {
         "qty": 1,
-        "name": "Batterie chargée"
+        "name": "Pile à vapeur"
       }
     ],
     "effect": "Piège au sol : paralyse et étourdit la cible (Étourdissement 2 tours)."
@@ -4170,7 +4172,7 @@ export const RECIPES: Recipe[] = [
     "components": [
       {
         "qty": 3,
-        "name": "Lingots d'Argent pur"
+        "name": "Lingots d'Argent"
       },
       {
         "qty": 1,
@@ -4246,7 +4248,7 @@ export const RECIPES: Recipe[] = [
       },
       {
         "qty": 2,
-        "name": "Engrenages en bronze"
+        "name": "Engrenages"
       },
       {
         "qty": 1,
@@ -4286,7 +4288,7 @@ export const RECIPES: Recipe[] = [
       },
       {
         "qty": 2,
-        "name": "Poulies d'acier"
+        "name": "Engrenages"
       }
     ],
     "effect": "Arme à distance ; réduit le score de Force requis pour tirer au maximum de puissance."
@@ -4304,7 +4306,7 @@ export const RECIPES: Recipe[] = [
       },
       {
         "qty": 1,
-        "name": "Fil de soie d'araignée"
+        "name": "Fil de soie"
       }
     ],
     "effect": "Piège au sol : inflige de lourds dégâts et applique un saignement béant."
@@ -4322,7 +4324,7 @@ export const RECIPES: Recipe[] = [
       },
       {
         "qty": 1,
-        "name": "Sangle ajustée"
+        "name": "Sangle de cuir"
       }
     ],
     "effect": "Offre 1 attaque à distance gratuite lors du premier tour de combat."
@@ -4336,7 +4338,7 @@ export const RECIPES: Recipe[] = [
     "components": [
       {
         "qty": 4,
-        "name": "Rouages de précision"
+        "name": "Engrenages de précision"
       },
       {
         "qty": 1,
@@ -4362,7 +4364,7 @@ export const RECIPES: Recipe[] = [
       },
       {
         "qty": 1,
-        "name": "Ressort haute pression"
+        "name": "Ressort"
       }
     ],
     "effect": "Action Rapide : accorde +1 action supplémentaire pendant le tour en cours."
@@ -4376,7 +4378,7 @@ export const RECIPES: Recipe[] = [
     "components": [
       {
         "qty": 2,
-        "name": "Verres renforcés"
+        "name": "Verres"
       },
       {
         "qty": 1,
@@ -4398,7 +4400,7 @@ export const RECIPES: Recipe[] = [
       },
       {
         "qty": 2,
-        "name": "Engrenages de temps"
+        "name": "Engrenages de précision"
       }
     ],
     "effect": "Double votre vitesse de déplacement pendant 2 tours."
@@ -4416,7 +4418,7 @@ export const RECIPES: Recipe[] = [
       },
       {
         "qty": 1,
-        "name": "Cristal de quartz"
+        "name": "Quartz"
       }
     ],
     "effect": "Rayon à distance : augmente le temps d'incantation du sort ennemi en cours de 1 tour."
@@ -4506,7 +4508,7 @@ export const RECIPES: Recipe[] = [
       },
       {
         "qty": 1,
-        "name": "Cuir ignifugé"
+        "name": "Cuir légendaire"
       }
     ],
     "effect": "Armure +2 ; permet de saisir des objets incandescents à mains nues sans dégâts."
@@ -4556,11 +4558,11 @@ export const RECIPES: Recipe[] = [
     "components": [
       {
         "qty": 3,
-        "name": "Écorces souples"
+        "name": "Écorces"
       },
       {
         "qty": 2,
-        "name": "Feutres de mousse"
+        "name": "Feutres"
       }
     ],
     "effect": "Armure +1 ; aucun bruit de pas sur les feuilles mortes ou branches."
@@ -4636,7 +4638,7 @@ export const RECIPES: Recipe[] = [
       },
       {
         "qty": 1,
-        "name": "Sertissage en or"
+        "name": "Monture en or"
       }
     ],
     "effect": "Amélioration d'armure : +10 PV maximaux au porteur."
@@ -4654,7 +4656,7 @@ export const RECIPES: Recipe[] = [
       },
       {
         "qty": 1,
-        "name": "Sertissage en argent"
+        "name": "Monture en argent"
       }
     ],
     "effect": "Amélioration d'arme : réduit le coût en mana des sorts de 10 %."
@@ -4690,7 +4692,7 @@ export const RECIPES: Recipe[] = [
       },
       {
         "qty": 1,
-        "name": "Cadre en laiton"
+        "name": "Monture en bronze"
       }
     ],
     "effect": "Monocle : permet de voir à travers les métamorphoses et illusions."
@@ -4730,7 +4732,7 @@ export const RECIPES: Recipe[] = [
       },
       {
         "qty": 3,
-        "name": "Têtes d'arcanite"
+        "name": "Pièces d'Arcanite"
       }
     ],
     "effect": "Munitions de mortier ; ignorent 100 % de l'armure physique des véhicules/portes."
@@ -4798,11 +4800,11 @@ export const RECIPES: Recipe[] = [
     "components": [
       {
         "qty": 3,
-        "name": "Cuirs souples"
+        "name": "Cuirs fins"
       },
       {
         "qty": 2,
-        "name": "Feutres de nuit"
+        "name": "Feutres"
       }
     ],
     "effect": "Armure +1 ; annule totalement le bruit de vos déplacements sur n'importe quel sol."
@@ -4838,7 +4840,7 @@ export const RECIPES: Recipe[] = [
       },
       {
         "qty": 2,
-        "name": "Ressorts en acier"
+        "name": "Ressorts"
       }
     ],
     "effect": "Armure +1 ; réduit de 80 % les dégâts subis lors d'une chute verticale."
@@ -4852,11 +4854,11 @@ export const RECIPES: Recipe[] = [
     "components": [
       {
         "qty": 2,
-        "name": "Cuirs souples"
+        "name": "Cuirs fins"
       },
       {
         "qty": 1,
-        "name": "Sangle d'équilibre"
+        "name": "Sangle de cuir"
       }
     ],
     "effect": "+2d6 aux jets d'Acrobatie sur les surfaces très étroites ou glissantes."
@@ -4874,7 +4876,7 @@ export const RECIPES: Recipe[] = [
       },
       {
         "qty": 1,
-        "name": "Piston miniature"
+        "name": "Piston hydraulique"
       }
     ],
     "effect": "Action Rapide : franchit un obstacle ou un fossé de 4m sans test de dé."
@@ -4914,7 +4916,7 @@ export const RECIPES: Recipe[] = [
       },
       {
         "qty": 2,
-        "name": "Ressorts cinétiques"
+        "name": "Ressorts"
       }
     ],
     "effect": "Amélioration de plastron : emmagasine les coups subis pour relâcher une onde de choc au bout de 5 impacts."
@@ -4932,7 +4934,7 @@ export const RECIPES: Recipe[] = [
       },
       {
         "qty": 1,
-        "name": "Piston de percussion"
+        "name": "Piston hydraulique"
       }
     ],
     "effect": "Attaque à mains nues qui démolit les boucliers et assomme la cible (Étourdissement 1 tour)."
@@ -4950,7 +4952,7 @@ export const RECIPES: Recipe[] = [
       },
       {
         "qty": 2,
-        "name": "Vérins"
+        "name": "Pistons hydrauliques"
       }
     ],
     "effect": "Armure +3 ; annule totalement les pénalités de charge d'inventaire excessive."
@@ -4986,7 +4988,7 @@ export const RECIPES: Recipe[] = [
       },
       {
         "qty": 1,
-        "name": "Encre arcanique purifiée"
+        "name": "Encre arcanique"
       }
     ],
     "effect": "Consommable : lance le sort Bouclier d'Arcane gratuitement sans consommer de mana."
@@ -5000,7 +5002,7 @@ export const RECIPES: Recipe[] = [
     "components": [
       {
         "qty": 2,
-        "name": "Plaques de fer fins"
+        "name": "Plaques de fer"
       },
       {
         "qty": 1,
@@ -5036,7 +5038,7 @@ export const RECIPES: Recipe[] = [
     "components": [
       {
         "qty": 2,
-        "name": "Encres rares"
+        "name": "Encres arcaniques"
       },
       {
         "qty": 1,
@@ -5076,11 +5078,11 @@ export const RECIPES: Recipe[] = [
       },
       {
         "qty": 2,
-        "name": "Nerfs de câble d'argent"
+        "name": "Fils d'argent"
       },
       {
         "qty": 1,
-        "name": "Articulation"
+        "name": "Engrenage"
       }
     ],
     "effect": "Remplace un bras perdu : accorde +1 permanent en Force et ne ressent pas la douleur."
@@ -5098,7 +5100,7 @@ export const RECIPES: Recipe[] = [
       },
       {
         "qty": 2,
-        "name": "Ressorts de précision"
+        "name": "Ressorts"
       }
     ],
     "effect": "Remplace une jambe perdue : conserve 100 % de la vitesse de marche normale."
@@ -5120,7 +5122,7 @@ export const RECIPES: Recipe[] = [
       },
       {
         "qty": 1,
-        "name": "Potion de soins"
+        "name": "Potion de soins mineure"
       }
     ],
     "effect": "Accessoire : injecte automatiquement la potion lorsque le porteur tombe sous 20 % PV."
@@ -5134,11 +5136,11 @@ export const RECIPES: Recipe[] = [
     "components": [
       {
         "qty": 2,
-        "name": "Plaques de fer fins"
+        "name": "Plaques de fer"
       },
       {
         "qty": 1,
-        "name": "Suture stérile"
+        "name": "Fil de soie"
       }
     ],
     "effect": "Prothèse crânienne : immunise aux coups assommants à la tête."
@@ -5152,11 +5154,11 @@ export const RECIPES: Recipe[] = [
     "components": [
       {
         "qty": 1,
-        "name": "Lentille en verre"
+        "name": "Lentille"
       },
       {
         "qty": 1,
-        "name": "Boîtier de laiton"
+        "name": "Boîtier de fer"
       },
       {
         "qty": 1,
@@ -5174,7 +5176,7 @@ export const RECIPES: Recipe[] = [
     "components": [
       {
         "qty": 2,
-        "name": "Poudres fines"
+        "name": "Poudres noires"
       },
       {
         "qty": 1,
@@ -5200,7 +5202,7 @@ export const RECIPES: Recipe[] = [
       },
       {
         "qty": 2,
-        "name": "Liquides d'huile incendiaire"
+        "name": "Huiles incendiaires"
       }
     ],
     "effect": "Piège au sol : explose en une marre de feu continu pendant 3 tours."
@@ -5218,7 +5220,7 @@ export const RECIPES: Recipe[] = [
       },
       {
         "qty": 1,
-        "name": "Poudre"
+        "name": "Poudre noire"
       }
     ],
     "effect": "Munition : réduit la valeur d'armure de la cible de 1 point."
@@ -5236,7 +5238,7 @@ export const RECIPES: Recipe[] = [
       },
       {
         "qty": 1,
-        "name": "Boîtier métallique"
+        "name": "Boîtier de fer"
       }
     ],
     "effect": "Zone (5m) : aveugle toutes les victimes et bloque la ligne de vue pendant 2 tours."
@@ -5250,7 +5252,7 @@ export const RECIPES: Recipe[] = [
     "components": [
       {
         "qty": 2,
-        "name": "Nitros lyophilisés"
+        "name": "Poudres Nitro"
       },
       {
         "qty": 1,
@@ -5268,11 +5270,11 @@ export const RECIPES: Recipe[] = [
     "components": [
       {
         "qty": 4,
-        "name": "Pièces de bois-fer"
+        "name": "Bois-fer"
       },
       {
         "qty": 2,
-        "name": "Piquets d'acier"
+        "name": "Crochets de fer"
       }
     ],
     "effect": "Déploie un couvert total contre les tirs à distance pour 2 personnes en 1 tour."
@@ -5286,7 +5288,7 @@ export const RECIPES: Recipe[] = [
     "components": [
       {
         "qty": 6,
-        "name": "Tronc d'arbres renforcés"
+        "name": "Bois durs"
       },
       {
         "qty": 2,
@@ -5294,7 +5296,7 @@ export const RECIPES: Recipe[] = [
       },
       {
         "qty": 4,
-        "name": "Poignées"
+        "name": "Manches en bois"
       }
     ],
     "effect": "Outil de siège : enfonce les portes de donjon renforcées en 1 coup."
@@ -5312,7 +5314,7 @@ export const RECIPES: Recipe[] = [
       },
       {
         "qty": 2,
-        "name": "Vérins de fer"
+        "name": "Pistons hydrauliques"
       }
     ],
     "effect": "Empêche un navire ou chariot de chavirer lors de tempêtes ou chocs."
@@ -5380,7 +5382,7 @@ export const RECIPES: Recipe[] = [
       },
       {
         "qty": 2,
-        "name": "Fils d'acier fins"
+        "name": "Fils d'acier"
       }
     ],
     "effect": "Consommable de jet : incoupable par des armes tranchantes simples (Enracinement 2 tours)."
@@ -5416,7 +5418,7 @@ export const RECIPES: Recipe[] = [
       },
       {
         "qty": 1,
-        "name": "Résine d'ambre"
+        "name": "Larmes d'ambre"
       }
     ],
     "effect": "Armure +1 ; empêche de lâcher ses armes ou de glisser sur les surfaces gelées."
@@ -5434,7 +5436,7 @@ export const RECIPES: Recipe[] = [
       },
       {
         "qty": 1,
-        "name": "Baume curatif"
+        "name": "Baume anti-saignement"
       }
     ],
     "effect": "Consommable : enveloppe un allié au repos pour doubler sa vitesse de régénération."
@@ -5478,7 +5480,7 @@ export const RECIPES: Recipe[] = [
       },
       {
         "qty": 1,
-        "name": "Essence de flamme"
+        "name": "Essence de feu"
       }
     ],
     "effect": "Épée à 1 main ; déclenche des Succès Critiques sur un résultat de 5 ou 6."
@@ -5538,3 +5540,6 @@ export const RECIPES: Recipe[] = [
     "effect": "Armure +4 ; immunise à la Peur provoquée par les monstres géants et dragons."
   }
 ]
+
+/** Le PDF, plus les patrons de composants maison. */
+export const RECIPES: Recipe[] = [...PDF_RECIPES, ...COMPONENT_RECIPES]

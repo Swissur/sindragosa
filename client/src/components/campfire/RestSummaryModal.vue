@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { Heart, Clover, Coffee, Moon, Sunrise } from 'lucide-vue-next'
+import { Heart, Clover, Coffee, Moon, Sunrise, Droplet } from 'lucide-vue-next'
 import AppModal from '../ui/AppModal.vue'
 import AppButton from '../ui/AppButton.vue'
 import { restSummary, closeRestSummary } from '../../composables/useRest'
@@ -23,6 +23,7 @@ const lines = computed(() => {
   if (!delta) return []
   const rows: { key: string; label: string; icon: typeof Heart; change: RestChange }[] = []
   if (delta.hp) rows.push({ key: 'hp', label: 'Points de vie', icon: Heart, change: delta.hp })
+  if (delta.mana) rows.push({ key: 'mana', label: 'Mana', icon: Droplet, change: delta.mana })
   if (delta.pc) rows.push({ key: 'pc', label: 'Points de chance', icon: Clover, change: delta.pc })
   return rows
 })

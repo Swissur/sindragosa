@@ -23,7 +23,7 @@ import AppAccordion from '../components/ui/AppAccordion.vue'
 import EtatBadge from '../components/etats/EtatBadge.vue'
 import EtatsRow from '../components/etats/EtatsRow.vue'
 import EtatsSheet from '../components/etats/EtatsSheet.vue'
-import { ETATS, type EtatId } from '../data/etats'
+import { ETATS, type EtatEntry } from '../data/etats'
 import { showToast } from '../composables/useToast'
 import { dice, revealAfterDice } from '../composables/useDice3D'
 import { fakeRemoteRoll } from '../components/dev/fakeRemoteRoll'
@@ -47,7 +47,7 @@ const lucideTab = ref('sword')
 const toggleValue = ref('')
 const checkboxValue = ref(false)
 const stepperValue = ref(3)
-const demoEtats = ref<EtatId[]>(['renverse', 'affaibli'])
+const demoEtats = ref<EtatEntry[]>([{ id: 'renverse', turns: 2 }, { id: 'affaibli' }])
 const showEtatsSheet = ref(false)
 const modalOpen = ref(false)
 const wideModalOpen = ref(false)

@@ -1,0 +1,253 @@
+/* ═══════════════════════════════════════════════════════════════════════
+   HORDE — Rouge et noir, motifs tribaux
+   Applied via [data-style="horde"] on <html>
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* ── Clair : peau tannée et peinture de guerre ── */
+:root[data-style="horde"] {
+  font-family: 'Lora', 'Iowan Old Style', Georgia, serif;
+  --title-font: 'New Rocker', 'Pirata One', Georgia, serif;
+
+  --bg: #e9dfd0;
+  --bg-alt: #ddcfbb;
+  --surface: #f6efe4;
+  --surface-2: #ede3d4;
+  --surface-3: #e1d4c1;
+  --text: #1c1210;
+  --muted: #5f4b42;
+  --border: #cdb8a2;
+  --border-strong: #a58670;
+  --accent: #b23a12;
+  --accent-strong: #8a2a0b;
+  --accent-soft: rgba(178, 58, 18, 0.13);
+  --brand: #a5170f;
+  --brand-strong: #7a0f09;
+  --on-brand: #fff1e6;
+  --danger: #8f1010;
+
+  --hd-red: #b3221a;
+  --hd-banner: linear-gradient(180deg, #2a110d, #140907);
+
+  --shadow-soft: 0 1px 2px rgba(28, 18, 16, 0.1);
+  --shadow-card: 0 1px 3px rgba(28, 18, 16, 0.12), 0 1px 2px rgba(28, 18, 16, 0.06);
+}
+
+/* ── Sombre : feu de camp à Orgrimmar ── */
+:root[data-style="horde"][data-theme="dark"] {
+  --bg: #0b0605;
+  --bg-alt: #120807;
+  --surface: #1a0e0c;
+  --surface-2: #231311;
+  --surface-3: #2e1815;
+  --text: #f1e3d6;
+  --muted: #b59a8c;
+  --border: #3a1d18;
+  --border-strong: #5a2a22;
+  --accent: #f0642c;
+  --accent-strong: #ff8a4f;
+  --accent-soft: rgba(240, 100, 44, 0.16);
+  --brand: #c4231a;
+  --brand-strong: #ff4e3a;
+  --on-brand: #fff3ec;
+  --danger: #ff6b5a;
+
+  --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.35);
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   BODY — Tapis de chevrons, braises qui montent (sombre)
+   ═══════════════════════════════════════════════════════════════════════ */
+
+[data-style="horde"] body {
+  background:
+    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48' fill='none' stroke='%23b3221a' stroke-width='2' stroke-linejoin='bevel'><path d='M0 18 12 6l12 12L36 6l12 12' stroke-opacity='.09'/><path d='M0 42 12 30l12 12 12-12 12 12' stroke='%231c1210' stroke-opacity='.06'/></svg>") repeat 0 0 / 48px 48px,
+    radial-gradient(ellipse 100% 40% at 50% 100%, rgba(179, 34, 26, 0.16), transparent 70%),
+    linear-gradient(180deg, var(--bg), var(--bg-alt));
+}
+
+[data-style="horde"][data-theme="dark"] body {
+  background:
+    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48' fill='none' stroke='%23c4231a' stroke-width='2' stroke-linejoin='bevel'><path d='M0 18 12 6l12 12L36 6l12 12' stroke-opacity='.12'/><path d='M0 42 12 30l12 12 12-12 12 12' stroke-opacity='.06'/></svg>") repeat 0 0 / 48px 48px,
+    radial-gradient(ellipse 110% 45% at 50% 100%, rgba(240, 100, 44, 0.2), transparent 70%),
+    linear-gradient(180deg, var(--bg), var(--bg-alt));
+}
+
+[data-style="horde"][data-theme="dark"] #app {
+  position: relative;
+  z-index: 1;
+}
+
+/* Braises : un voile fixe derrière l'app, qui monte en boucle.
+   La tuile fait 320px de haut, le voile glisse de 320px : boucle sans saut. */
+[data-style="horde"][data-theme="dark"] body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: calc(100% + 320px);
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    radial-gradient(circle, rgba(255, 140, 60, 0.6) 0 1.5px, transparent 2.5px),
+    radial-gradient(circle, rgba(255, 90, 40, 0.45) 0 1px, transparent 2px),
+    radial-gradient(circle, rgba(255, 190, 100, 0.35) 0 1px, transparent 2px);
+  background-size: 180px 320px, 130px 320px, 240px 320px;
+  background-position: 20px 40px, 90px 200px, 160px 120px;
+  animation: horde-embers 16s linear infinite;
+}
+
+@keyframes horde-embers {
+  to { transform: translateY(-320px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-style="horde"] body::before { animation: none; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   BARRES — Bois noirci, crocs rouges sur la bordure
+   ═══════════════════════════════════════════════════════════════════════ */
+
+html[data-style="horde"] .top-nav {
+  background:
+    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 6'><path d='M0 6h16L12 0 8 5 4 0z' fill='%23b3221a'/></svg>") repeat-x left bottom / 14px 5px,
+    var(--hd-banner);
+  border-bottom: 2px solid var(--hd-red);
+}
+
+html[data-style="horde"] .bottom-nav {
+  background:
+    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 6'><path d='M0 0h16L12 6 8 1 4 6z' fill='%23b3221a'/></svg>") repeat-x left top / 14px 5px,
+    var(--hd-banner);
+  border-top: 2px solid var(--hd-red);
+}
+
+html[data-style="horde"] .top-nav .brand {
+  color: #ff5a3c;
+  text-shadow: 0 2px 0 #000, 0 0 12px rgba(255, 90, 60, 0.35);
+}
+
+html[data-style="horde"] :is(.top-nav, .bottom-nav) .nav-link:not(.nav-fight) {
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(179, 34, 26, 0.6);
+  color: #e9d0c0;
+}
+
+html[data-style="horde"] :is(.top-nav, .bottom-nav) .nav-link:not(.nav-fight):hover {
+  background: rgba(179, 34, 26, 0.25);
+  border-color: #e0402f;
+  color: #fff;
+}
+
+html[data-style="horde"] :is(.top-nav, .bottom-nav) :is(.nav-link--on, .nav-link.router-link-active):not(.nav-fight) {
+  background: linear-gradient(180deg, #d22c20, #8a140d);
+  border-color: #ff5a3c;
+  color: #fff;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   CARTES — Bannière de guerre : crocs en haut, trait de peinture à gauche
+   ═══════════════════════════════════════════════════════════════════════ */
+
+html[data-style="horde"] .card {
+  border-radius: var(--radius-sm);
+  border-left: 4px solid var(--brand);
+  padding-top: calc(var(--space-md) + 4px);
+  background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 6'><path d='M0 0h16L12 6 8 1 4 6z' fill='%23b3221a'/></svg>");
+  background-repeat: repeat-x;
+  background-size: 14px 5px;
+  background-position: left top;
+}
+
+html[data-style="horde"] .card-head h2 {
+  letter-spacing: 0.04em;
+}
+
+/* Les filets du titre deviennent une rangée de crocs */
+html[data-style="horde"] .card-head h2::before,
+html[data-style="horde"] .card-head h2::after {
+  width: 1.6rem;
+  height: 6px;
+  border-radius: 0;
+  background: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 6'><path d='M0 0h16L12 6 8 1 4 6z' fill='%23b3221a'/></svg>") repeat-x left center / 10px 6px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   TITRE DE PAGE — Hache de guerre
+   ═══════════════════════════════════════════════════════════════════════ */
+
+html[data-style="horde"] .page-head-title {
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+html[data-style="horde"] .page-head-title::before {
+  content: '';
+  flex-shrink: 0;
+  width: 1.05em;
+  height: 1.05em;
+  background: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23b3221a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='m14 12-8.381 8.38a1 1 0 0 1-3.001-3L11 9'/><path fill='%23b3221a' fill-opacity='.35' d='M15 15.5a.5.5 0 0 0 .5.5A6.5 6.5 0 0 0 22 9.5a.5.5 0 0 0-.5-.5h-1.672a2 2 0 0 1-1.414-.586l-5.062-5.062a1.205 1.205 0 0 0-1.704 0L9.352 5.648a1.205 1.205 0 0 0 0 1.704l5.062 5.062A2 2 0 0 1 15 13.828z'/></svg>") center / contain no-repeat;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   BOUTONS — Rouge sang cerclé de noir, angles plus vifs
+   ═══════════════════════════════════════════════════════════════════════ */
+
+html[data-style="horde"] .btn {
+  border-radius: var(--radius-sm);
+  font-weight: 700;
+}
+
+html[data-style="horde"] .btn.primary {
+  background: linear-gradient(180deg, #c42a1f, #8a140d);
+  border-color: #160c0a;
+  color: #fff1e6;
+  box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.28), var(--shadow-soft);
+}
+
+html[data-style="horde"] .btn.primary:hover:not(:disabled) {
+  box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.28), 0 0 10px rgba(240, 100, 44, 0.45);
+}
+
+html[data-style="horde"] .badge {
+  border-radius: var(--radius-xs);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   ONGLETS, CHAMPS, DIALOGUES
+   ═══════════════════════════════════════════════════════════════════════ */
+
+html[data-style="horde"] .tab-bar {
+  border-radius: var(--radius-sm);
+}
+
+html[data-style="horde"] .tab-btn {
+  border-radius: var(--radius-xs);
+}
+
+html[data-style="horde"] .tab-btn[data-state="active"] {
+  background: linear-gradient(180deg, #c42a1f, #8a140d);
+  color: #fff1e6;
+}
+
+html[data-style="horde"] input:focus-visible,
+html[data-style="horde"] textarea:focus-visible,
+html[data-style="horde"] select:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--bg), 0 0 0 3px var(--accent), 0 0 10px rgba(240, 100, 44, 0.3);
+}
+
+html[data-style="horde"] :is(.modal-box, .sheet) {
+  border-color: var(--hd-red);
+  border-top-width: 3px;
+}
+
+[data-style="horde"] ::-webkit-scrollbar { width: 8px; }
+[data-style="horde"] ::-webkit-scrollbar-track { background: var(--surface-2); }
+[data-style="horde"] ::-webkit-scrollbar-thumb {
+  background: var(--hd-red);
+  border-radius: var(--radius-xs);
+}

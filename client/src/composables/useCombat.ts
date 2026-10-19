@@ -4,7 +4,7 @@ import { applyServerHp, applyServerStates } from './useCharacter'
 import * as api from '../api/combats'
 import type { CombatState, CombatParticipant } from '../api/combats'
 import { setActiveCombat, clearActiveCombat } from './useActiveCombat'
-import { isEtatId } from '../data/etats'
+import { normalizeEtats } from '../data/etats'
 import type { BattleWall } from '../components/battle/walls'
 
 const combat = ref<CombatState | null>(null)
@@ -75,7 +75,7 @@ function connect(campaignId: number, combatId: number, options: { viewer?: boole
       }
       // Idem pour mes états : le MJ peut les poser depuis le combat.
       if (mine) {
-        applyServerStates((mine.states ?? []).filter(isEtatId))
+        applyServerStates(normalizeEtats(mine.states))
       }
       if (state.status === 'active') {
         setActiveCombat({

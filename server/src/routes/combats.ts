@@ -10,7 +10,7 @@ import { serializeCombat } from '../combats/serialize.js'
 import { broadcastCampaignEvent, isViewerRequest } from '../campaigns/sseStore.js'
 import { turnOrder, firstActiveId, step } from '../combats/turnOrder.js'
 import { startingPosition, clampToBoard } from '../combats/placement.js'
-import { isEtatId } from '../combats/etats.js'
+import { parseEtats, tickEtats } from '../combats/etats.js'
 import { sanitizeObstacles } from '../combats/obstacles.js'
 import { computeInitiative } from '../combats/initiative.js'
 
@@ -45,6 +45,24 @@ async function loadCombatInCampaign(combatId: number, campaignId: number) {
   const [combat] = await db.select().from(combats).where(eq(combats.id, combatId))
   if (!combat || combat.campaignId !== campaignId) return null
   return combat
+}
+
+// Helper: fin du tour d'un participant, ses états perdent un tour (plans/42).
+// Ceux d'un PJ vivent sur sa fiche, ceux d'un monstre sur le participant.
+async function endTurnEtats(campaignId: number, participant: typeof combatParticipants.$inferSelect) {
+  if (participant.kind === 'player' && participant.userId != null) {
+    const [member] = await db
+      .select({ characterId: campaignMembers.characterId })
+      .from(campaignMembers)
+      .where(and(eq(campaignMembers.campaignId, campaignId), eq(campaignMembers.userId, participant.userId)))
+    if (member?.characterId == null) return
+    const [char] = await db.select({ states: characters.states }).from(characters).where(eq(characters.id, member.characterId))
+    if (!char?.states.some((e) => e.turns !== undefined)) return
+    await db.update(characters).set({ states: tickEtats(char.states), updatedAt: new Date() }).where(eq(characters.id, member.characterId))
+    return
+  }
+  if (!participant.states.some((e) => e.turns !== undefined)) return
+  await db.update(combatParticipants).set({ states: tickEtats(participant.states) }).where(eq(combatParticipants.id, participant.id))
 }
 
 // Helper: insère un PJ dans un combat. Partagé par la création du combat et
@@ -235,6 +253,7 @@ router.post('/:id/combats/:cid/next-turn', async (req, res) => {
   const next = step(sorted, combat.currentParticipantId, 1)
   if (!next) { res.status(400).json({ error: 'Aucun participant actif' }); return }
 
+  if (currentParticipant) await endTurnEtats(campaignId, currentParticipant)
   await db.update(combats)
     .set({ currentParticipantId: next.participantId, roundNumber: combat.roundNumber + next.wrapped })
     .where(eq(combats.id, combatId))
@@ -352,11 +371,10 @@ router.patch('/:id/combats/:cid/participants/:pid/states', async (req, res) => {
     res.status(403).json({ error: 'Tu ne peux modifier que tes propres états' }); return
   }
 
-  const { states } = req.body as { states?: unknown }
-  if (!Array.isArray(states) || !states.every(isEtatId)) {
+  const cleaned = parseEtats((req.body as { states?: unknown }).states)
+  if (!cleaned) {
     res.status(400).json({ error: 'États inconnus' }); return
   }
-  const cleaned = [...new Set(states)]
 
   if (participant.kind === 'player' && participant.userId != null) {
     // Les états d'un PJ vivent sur sa fiche — on écrit là, pas sur le snapshot.

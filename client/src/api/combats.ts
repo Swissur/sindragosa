@@ -1,5 +1,6 @@
 import type { BattleWall } from '../components/battle/walls'
 import type { MonsterAbility, MonsterAttack } from '../utils/sindragosa/bestiary'
+import type { EtatEntry } from '../data/etats'
 
 const BASE = '/api/campaigns'
 
@@ -40,8 +41,8 @@ export interface CombatParticipant {
   monsterDescription: string | null
   /** PNJ en réserve : préparé par le MJ, pas encore entré en scène. */
   hidden?: boolean
-  /** États préjudiciables en cours (voir `data/etats.ts`). */
-  states: string[]
+  /** États préjudiciables en cours, avec leur durée (voir `data/etats.ts`). */
+  states: EtatEntry[]
   /** Position sur le champ de bataille, en cases (centre = 0,0). null = jamais placé. */
   posX: number | null
   posY: number | null
@@ -128,7 +129,7 @@ export function setParticipantStates(
   campaignId: number,
   combatId: number,
   participantId: number,
-  states: string[],
+  states: EtatEntry[],
 ): Promise<void> {
   return request(`/${campaignId}/combats/${combatId}/participants/${participantId}/states`, {
     method: 'PATCH',

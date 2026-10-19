@@ -14,6 +14,7 @@ import { ADVANCED_DOMAINS, DOMAINS, STATS } from '../../data/sindragosa/domains'
 import { TITLES } from '../../data/sindragosa/titles'
 import { applyTick, computeMaxHp, type TickTarget } from '../../utils/sindragosa/sheet'
 import { MAX_DOMAIN_RANK } from '../../utils/sindragosa/progression'
+import { maxMana } from '../../utils/sindragosa/mana'
 import type { Character } from '../../types/character'
 import type { ServerCharacter } from '../../api/characters'
 
@@ -89,6 +90,7 @@ async function save() {
     advancedDomains: d.advancedDomains,
     titles: d.titles,
     hpMax: computeMaxHp(d),
+    manaMax: maxMana(d),
   }
   try {
     emit('saved', await patchMemberCharacter(props.campaignId, props.userId, patch))

@@ -1,4 +1,4 @@
-// Généré depuis docs/regles/Compétences & Domaines (Sindragosa).pdf par une transcription assistée — ne pas éditer à la main sans relire le PDF.
+// Généré depuis docs/regles/Compétences & Domaines (Sindragosa).pdf par une transcription assistée ; le catalogue prime désormais sur le PDF (voir CLAUDE.md).
 import type { Ability } from './types'
 
 export const ABILITIES: Ability[] = [
@@ -722,6 +722,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Temps de recharge : 3 tours.",
     "cooldownTurns": 3,
     "usesPer": null,
+    "manaCost": 1,
     "effect": "Endurcit la chair d'un allié ou de vous-même. Réduit tous les dégâts subis de 20 % et empêche les attaques d'interrompre le lancement de sorts pendant 2 tours."
   },
   {
@@ -808,6 +809,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Utilisable 1 fois par repos court.",
     "cooldownTurns": null,
     "usesPer": "repos-court",
+    "manaCost": 1,
     "effect": "Vous vous enveloppez d'un voile d'ombre. Dissipe instantanément tous les effets magiques, malédictions et poisons néfastes qui vous affectent et vous rend inciblable par les sorts pendant 1 tour."
   },
   {
@@ -858,6 +860,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Consomme 10 % de vos PV actuels.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 1,
     "effect": "Sacrifie une portion de votre vitalité pour recharger immédiatement votre ressource principale (Mana, Énergie ou Rage)."
   },
   {
@@ -958,6 +961,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Planté au sol (portée fixe de 8 mètres autour du totem).",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 1,
     "effect": "Invoque un totem de terre qui augmente l'armure physique de tous les alliés situés dans la zone d'effet d'un montant fixe."
   },
   {
@@ -983,6 +987,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Vous devez vous tenir au centre de la zone d'activation.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 1,
     "effect": "Sanctifie le sol sous vos pieds sur 3 mètres de rayon pendant 2 tours. Tous les ennemis dans la zone subissent des dégâts du Sacré continus et vous gagnez +1d6 en défense tant que vous y restez."
   },
   {
@@ -1008,6 +1013,7 @@ export const ABILITIES: Ability[] = [
     "condition": "La cible doit être sous la barre des 50 % de PV. Temps de recharge : 2 tours.",
     "cooldownTurns": 2,
     "usesPer": null,
+    "manaCost": 1,
     "effect": "Entoure la cible d'un bouclier de Lumière qui absorbe un montant fixe de dégâts lors de la prochaine attaque subie."
   },
   {
@@ -1083,7 +1089,16 @@ export const ABILITIES: Ability[] = [
     "condition": "Nécessite d'avoir les mains libres de tout objet magique lourd.",
     "cooldownTurns": null,
     "usesPer": null,
-    "effect": "Vous vous métamorphosez en ours. Augmente vos PV maximaux et votre armure de +50 %, mais vous empêche d'utiliser des outils ou de lancer des sorts humains."
+    "manaCost": 1,
+    "effect": "Vous vous métamorphosez en ours. Augmente vos PV maximaux et votre armure de +50 %, mais vous empêche d'utiliser des outils ou de lancer des sorts humains.",
+    "alternatePrerequisites": [
+      {
+        "kind": "specialty",
+        "name": "Forme animale",
+        "level": 1
+      }
+    ],
+    "notes": "Débloquée aussi par la spécialité Forme animale, qui donne en même temps la Forme de félin (décidé le 2026-10-19, plans/39)."
   },
   {
     "id": 43,
@@ -1163,6 +1178,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Temps de recharge : 3 tours.",
     "cooldownTurns": 3,
     "usesPer": null,
+    "manaCost": 1,
     "effect": "Amplifie votre système sanguin. Augmente tous les soins que vous recevez de 50 % pendant 2 tours."
   },
   {
@@ -1188,6 +1204,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Chaque lancer consécutif augmente son coût en mana de 50 %.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 1,
     "effect": "Frappe la cible avec de la magie brute. Chaque lancer consécutif réussi ajoute +1d6 de dégâts supplémentaires (cumulable jusqu'à 3 fois)."
   },
   {
@@ -1213,6 +1230,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Doit être utilisé dans les 2 tours suivant le lancement du sort Transfert.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 1,
     "effect": "Vous re-téléporte instantanément à la position exacte où vous vous trouviez avant de lancer votre dernier Transfert."
   },
   {
@@ -1238,6 +1256,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Temps de recharge : 2 tours.",
     "cooldownTurns": 2,
     "usesPer": null,
+    "manaCost": 1,
     "effect": "Invoque un bouclier de givre qui absorbe un montant fixe de dégâts. Tant que le bouclier est actif, les attaquants en mêlée sont ralentis de 30 %."
   },
   {
@@ -1338,6 +1357,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Temps de recharge : 2 tours.",
     "cooldownTurns": 2,
     "usesPer": null,
+    "manaCost": 1,
     "effect": "Une onde de froid éclate autour de vous (3m de rayon). Tous les ennemis proches sont Enracinés sur place par la glace pendant 1 tour."
   },
   {
@@ -1363,6 +1383,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Utilisable 1 fois par repos court.",
     "cooldownTurns": null,
     "usesPer": "repos-court",
+    "manaCost": 1,
     "effect": "Le sang froid coule dans vos veines. Vos temps d'incantation sont réduits de moitié et vous devenez totalement immunisé aux retards d'incantation causés par les coups subis pendant 2 tours."
   },
   {
@@ -1393,6 +1414,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Temps de recharge : 3 tours.",
     "cooldownTurns": 3,
     "usesPer": null,
+    "manaCost": 1,
     "effect": "Vous vous enflammez de puissance. Pendant 1 tour, tous vos sorts de dégâts de Feu réussis déclenchent automatiquement des Succès Critiques."
   },
   {
@@ -1418,6 +1440,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Nécessite une canalisation d'un tour complet ou un déclenchement préparé.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 1,
     "effect": "Fait surgir une colonne de feu au sol. Inflige des dégâts de feu de zone et laisse une zone brûlante au sol qui blesse quiconque y pénètre pendant 2 tours."
   },
   {
@@ -1443,6 +1466,7 @@ export const ABILITIES: Ability[] = [
     "condition": "La cible doit être affectée à la fois par une brûlure et une malédiction.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 1,
     "effect": "Fait exploser les afflictions sur la cible. Consomme les effets négatifs pour infliger des dégâts hybrides Ombre/Feu extrêmement violents."
   },
   {
@@ -1518,6 +1542,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Nécessite un laboratoire d'alchimie ou des composants rares.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 1,
     "effect": "Convertit un minerai ou un composant classique en une version de qualité supérieure (ex: Fer en Or, ou Fleur commune en Lotus d'Arthanas)."
   },
   {
@@ -1573,6 +1598,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Marque votre état physique à l'instant T. Utilisable 1 fois par combat.",
     "cooldownTurns": null,
     "usesPer": "combat",
+    "manaCost": 1,
     "effect": "Vous enregistrez vos PV et votre position actuelle. Si vous réactivez le sort dans les 2 tours, vous retournez instantanément à cet état exact, effaçant les dégâts subis entre-temps."
   },
   {
@@ -1673,6 +1699,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Nécessite la présence de runes Titans, Elfiques ou Démoniaques.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 1,
     "effect": "Vous déchiffrez les lignes de pouvoir d'un glyphe ou d'un portail, permettant de désactiver ou d'activer le mécanisme sans déclencher son piège magique."
   },
   {
@@ -1698,6 +1725,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Demande un temps d'incantation ininterrompu.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 1,
     "effect": "Canalyse la Lumière pour prodiguer un soin massif sur une cible unique à portée de vue."
   },
   {
@@ -1723,6 +1751,7 @@ export const ABILITIES: Ability[] = [
     "condition": "La cible ne doit pas être déjà sous l'effet de la Lassitude de l'Âme (2 tours d'attente par cible).",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 1,
     "effect": "Absorbe instantanément un montant fixe de dégâts sur un allié. L'allié gagne +2 mètres de déplacement tant que le bouclier persiste."
   },
   {
@@ -1748,6 +1777,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Cibler un ennemi.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 1,
     "effect": "Inflige des dégâts du Sacré à l'ennemi et réduit les dégâts infligés par la prochaine attaque de cet ennemi d'un montant fixe."
   },
   {
@@ -1773,6 +1803,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Posé au sol (portée de 5 mètres).",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 1,
     "effect": "Infuse les armes des alliés proches de la fureur du vent. Chaque attaque de mêlée réussie a 20 % de chances de déclencher immédiatement une seconde attaque gratuite."
   },
   {
@@ -1798,6 +1829,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Temps de recharge : 1 tour.",
     "cooldownTurns": 1,
     "usesPer": null,
+    "manaCost": 1,
     "effect": "Brûle l'ennemi avec des éléments incandescents. Inflige des dégâts de feu légers instantanés et applique une brûlure continue pour 3 tours."
   },
   {
@@ -1823,6 +1855,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Temps de recharge : 1 tour.",
     "cooldownTurns": 1,
     "usesPer": null,
+    "manaCost": 1,
     "effect": "Glace le sang de l'ennemi. Inflige des dégâts de givre instantanés et réduit la vitesse de déplacement de la cible de 50 % pendant 2 tours."
   },
   {
@@ -1848,6 +1881,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Utilisable uniquement sous Forme Humanoïde ou d'Abo-lunaire (Satyre/Chouette).",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 1,
     "effect": "Un rayon de lumière lunaire frappe la cible d'en haut. Inflige des dégâts d'Arcane/Nature instantanés et révèle les cibles camouflées."
   },
   {
@@ -1873,6 +1907,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Ne peut pas être relancé sur une cible bénéficiant déjà de son effet de soin continu.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 1,
     "effect": "Prodige un soin instantané moyen, suivi d'une régénération de PV au début des 3 prochains tours de la cible."
   },
   {
@@ -1898,6 +1933,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Nécessite d'être au contact de la cible.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 1,
     "effect": "Éradique totalement 1 maladie ou infection magique (ex: Peste de la Non-mort) du corps d'un personnage."
   },
   {
@@ -1928,6 +1964,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Vide intégralement votre réserve de mana/ressource divine. 1 fois par repos long.",
     "cooldownTurns": null,
     "usesPer": "repos-long",
+    "manaCost": 1,
     "effect": "Touche un allié au bord de la mort et restaure instantanément la totalité de ses Points de Vie maximaux."
   },
   {
@@ -1953,6 +1990,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Cibler un allié souffrant d'une malédiction ou d'un envoûtement.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 1,
     "effect": "Dissipe 1 effet de malédiction ou 1 altération d'esprit élémentaire affectant la cible."
   },
   {
@@ -1978,6 +2016,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Utilisable uniquement hors de combat ou en extérieur.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 1,
     "effect": "Vous vous métamorphosez en loup spectral. Votre vitesse de déplacement est augmentée de 30 % et votre vitesse ne peut pas être réduite sous sa valeur normale."
   },
   {
@@ -2003,6 +2042,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Temps de recharge : 3 tours.",
     "cooldownTurns": 3,
     "usesPer": null,
+    "manaCost": 1,
     "effect": "Vous vous liez aux esprits ancêtres. Pendant 1 tour, vous pouvez lancer des sorts nécessitant une incantation tout en continuant à vous déplacer librement."
   },
   {
@@ -2028,6 +2068,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Nécessite une ligne de vue directe sur l'ennemi.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 1,
     "effect": "Projette une boule d'énergie solaire/naturelle. Inflige des dégâts de nature et augmente les dégâts de votre prochain sort de Feu stellaire."
   },
   {
@@ -2053,6 +2094,7 @@ export const ABILITIES: Ability[] = [
     "condition": "La cible doit toucher le sol (inopérant sur les cibles volantes).",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 1,
     "effect": "Fait surgir des ronces du sol qui immobilisent (Enracinement) la cible et lui infligent des dégâts de nature légers chaque tour. Tout dégât direct important reçu brise les sarments."
   },
   {
@@ -2083,6 +2125,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Vous devez rester immobile pendant toute la durée de la canalisation. 1 fois par combat.",
     "cooldownTurns": null,
     "usesPer": "combat",
+    "manaCost": 1,
     "effect": "Une pluie de lumière naturelle régénère massivement les PV de tous les alliés dans un rayon de 10 mètres à la fin de votre tour."
   },
   {
@@ -2108,6 +2151,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Temps de recharge : 1 tour.",
     "cooldownTurns": 1,
     "usesPer": null,
+    "manaCost": 1,
     "effect": "Un éclair de lumière instantané. S'il vise un ennemi, inflige des dégâts du Sacré ; s'il vise un allié, soigne instantanément la cible."
   },
   {
@@ -2133,6 +2177,7 @@ export const ABILITIES: Ability[] = [
     "condition": "L'allié doit être entravé par un ralentissement ou un enracinement.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 1,
     "effect": "Accorde à la cible une immunité totale contre tous les effets de ralentissement et d'entrave au déplacement pendant 2 tours."
   },
   {
@@ -2158,6 +2203,7 @@ export const ABILITIES: Ability[] = [
     "condition": "1 fois par repos court.",
     "cooldownTurns": null,
     "usesPer": "repos-court",
+    "manaCost": 1,
     "effect": "Place un bouclier de Lumière physique sur un allié. La cible devient totalement immunisée à tous les dégâts physiques pendant 1 tour, mais ne peut pas porter d'attaques physiques pendant cette durée."
   },
   {
@@ -2183,6 +2229,7 @@ export const ABILITIES: Ability[] = [
     "condition": "La cible doit être sous l'effet d'un état de Rage ou de Fureur.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 1,
     "effect": "Calme instantanément les esprits d'une bête ou d'un monstre furieux, annulant ses bonus d'attaque furieuse et stoppant sa charge."
   },
   {
@@ -2208,6 +2255,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Nécessite une canalisation courte.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 1,
     "effect": "Projette une volée de magie du Vide. Inflige des dégâts d'Ombre et applique une marque qui augmente de +1 les dégâts de vos prochains sorts de malédiction."
   },
   {
@@ -2233,6 +2281,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Limité à 3 cibles simultanées maximum.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 1,
     "effect": "Murmure des mots d'agonie dans l'esprit de l'ennemi. Inflige des dégâts d'Ombre instantanés légers, puis des dégâts mentaux continus au début des 3 prochains tours de la cible."
   },
   {
@@ -2258,6 +2307,7 @@ export const ABILITIES: Ability[] = [
     "condition": "La cible doit avoir un niveau mental/volonté inférieur au vôtre.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 1,
     "effect": "Inculque une terreur absolue. La cible s'enfuit en hurlant (Peur) dans une direction aléatoire pendant 1 tour. Tout dégât direct réveille la cible."
   },
   {
@@ -2333,6 +2383,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Nécessite de maintenir la canalisation sans subir de contrôle.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 1,
     "effect": "Siphon la vitalité de l'ennemi. Inflige des dégâts d'Ombre chaque tour et vous soigne d'un montant égal à 50 % des dégâts infligés."
   },
   {
@@ -2358,6 +2409,7 @@ export const ABILITIES: Ability[] = [
     "condition": "La cible doit être sous la barre des 20 % de PV.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 1,
     "effect": "Tord l'esprit d'une cible agonisante. Si la cible meurt pendant la canalisation, vous générez un Éclat d'Âme (composant magique rare)."
   },
   {
@@ -2383,6 +2435,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Temps de recharge : 3 tours.",
     "cooldownTurns": 3,
     "usesPer": null,
+    "manaCost": 1,
     "effect": "Émet une onde de choc mentale terrifiante autour de vous. Fait fuir de terreur (Peur) jusqu'à 3 ennemis proches pendant 1 tour."
   },
   {
@@ -2463,6 +2516,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Cibler uniquement un Démon, un Élémentaire ou une Aberration.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 1,
     "effect": "Expulse temporairement la cible dans une poche dimensionnelle. La cible est totalement Invulnérable mais Incapable d'agir pendant 2 tours."
   },
   {
@@ -2568,6 +2622,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Invoque un sacrifice sur un familier ou réduit votre propre réserve de PV de 20 %. Utilisable 1 fois par combat.",
     "cooldownTurns": null,
     "usesPer": "combat",
+    "manaCost": 1,
     "effect": "Convertit immédiatement la santé sacrifiée en un bouclier impénétrable d'Ombre égal à 200 % des PV sacrifiés pendant 2 tours."
   },
   {
@@ -2628,6 +2683,7 @@ export const ABILITIES: Ability[] = [
     "condition": "La cible doit être sous les 35 % de PV. Temps de recharge : 2 tours.",
     "cooldownTurns": 2,
     "usesPer": null,
+    "manaCost": 4,
     "effect": "Inflige de lourds dégâts physiques et applique une marque d'Ombre. Si la cible ne meurt pas dans le tour, la marque éclate au tour suivant, infligeant d'immenses dégâts d'Ombre supplémentaires et vous octroyant +30 % de vitesse de déplacement."
   },
   {
@@ -2688,6 +2744,7 @@ export const ABILITIES: Ability[] = [
     "condition": "La cible doit se trouver entre 6 et 15 mètres. Temps de recharge : 2 tours.",
     "cooldownTurns": 2,
     "usesPer": null,
+    "manaCost": 4,
     "effect": "Des chaînes spectrales surgissent de vos mains pour harponner la cible et l'attirer instantanément à vos pieds en mêlée. La cible subit un léger dégât d'Ombre et est forcée de vous cibler pendant 1 tour."
   },
   {
@@ -3037,6 +3094,7 @@ export const ABILITIES: Ability[] = [
     "condition": "1 fois par combat.",
     "cooldownTurns": null,
     "usesPer": "combat",
+    "manaCost": 2,
     "effect": "Gravez un sceau de mort sur la cible. Tous les saignements et poisons appliqués sur la cible pendant les 2 prochains tours sont dupliqués et infligent le double de leurs dégâts."
   },
   {
@@ -3187,6 +3245,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Nécessite d'être en Furtivité ou sous Pas de l'ombre.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 2,
     "effect": "Vous franchissez les ombres pour frapper la cible jusqu'à 10 mètres de distance. Inflige d'immenses dégâts hybrides physique/Ombre et génère +2 Points de Combo."
   },
   {
@@ -3217,6 +3276,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Lancer une fiole de Peste. Temps de recharge : 3 tours.",
     "cooldownTurns": 3,
     "usesPer": null,
+    "manaCost": 4,
     "effect": "Libère un nuage de Peste verdâtre de 5 mètres de rayon. Tous les êtres vivants dans le nuage subissent des dégâts d'Ombre/Nature chaque tour et voient leurs soins reçus réduits de 70 %."
   },
   {
@@ -3246,6 +3306,7 @@ export const ABILITIES: Ability[] = [
     "condition": "1 fois par séance de jeu / repos long.",
     "cooldownTurns": null,
     "usesPer": "seance",
+    "manaCost": 5,
     "effect": "Vous frottez votre lame au sol et invoquez une goule du néant par dé de votre réserve. L'armée de goules déferle sur le champ de bataille, provoquant tous les ennemis et infligeant des dégâts physiques continus pendant 3 tours."
   },
   {
@@ -3331,6 +3392,7 @@ export const ABILITIES: Ability[] = [
     "condition": "S'active après avoir paré une attaque.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 3,
     "effect": "Inscrit une rune d'énergie sur la lame. Inflige des dégâts physiques et fait exploser la rune, infligeant des dégâts d'Arcane supplémentaires qui traversent l'armure."
   },
   {
@@ -3361,6 +3423,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Toucher au moins 2 cibles saignantes ou pestiférées.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 4,
     "effect": "Balaye largement. Convertit les effets de Peste en dégâts instantanés et vous soigne d'un montant fixe par ennemi touché."
   },
   {
@@ -3391,6 +3454,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Nécessite d'avoir subi des dégâts dans les 2 derniers tours.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 4,
     "effect": "Une frappe impitoyable qui inflige des dégâts physiques et de Givre et vous soigne à hauteur de 25 % de tous les dégâts subis durant les 2 derniers tours."
   },
   {
@@ -3446,6 +3510,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Temps de recharge : 1 tour.",
     "cooldownTurns": 1,
     "usesPer": null,
+    "manaCost": 4,
     "effect": "Fait bouillir le sang de tous les ennemis à moins de 5 mètres. Inflige des dégâts d'Ombre de zone et propage les maladies présentes sur votre cible principale à tous les autres ennemis touchés."
   },
   {
@@ -3476,6 +3541,7 @@ export const ABILITIES: Ability[] = [
     "condition": "1 fois par séance de jeu / repos long.",
     "cooldownTurns": null,
     "usesPer": "seance",
+    "manaCost": 2,
     "effect": "Un rugissement ancestral traverse le groupe. Pendant 3 tours, tous les alliés gagnent +40 % de vitesse d'attaque et de lancer de sorts et relancent leurs résultats de 1 sur tous leurs d6 de dégâts."
   },
   {
@@ -3506,6 +3572,7 @@ export const ABILITIES: Ability[] = [
     "condition": "La cible doit être infectée par au moins 1 maladie.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 4,
     "effect": "Une frappe impie qui inflige à la fois des dégâts physiques et des dégâts d'Ombre. Pour chaque maladie présente sur la cible, les dégâts d'Ombre augmentent de +1d6."
   },
   {
@@ -3531,6 +3598,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Consomme de la Puissance Runique ou de la Mana d'Ombre.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 4,
     "effect": "Projette une masse d'énergie impie à portée moyenne. Inflige des dégâts d'Ombre à un ennemi OU soigne un serviteur mort-vivant allié du double de ce montant."
   },
   {
@@ -3561,6 +3629,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Temps de recharge : 3 tours.",
     "cooldownTurns": 3,
     "usesPer": null,
+    "manaCost": 4,
     "effect": "Vous vous entourez d'une barrière impie. Absorbe 80 % de tous les dégâts magiques subis pendant 2 tours, vous immunise aux applications de nouveaux effets magiques néfastes et convertit les dégâts absorbés en ressource."
   },
   {
@@ -3591,6 +3660,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Temps de recharge : 3 tours.",
     "cooldownTurns": 3,
     "usesPer": null,
+    "manaCost": 4,
     "effect": "Déclenche une tempête de neige glaciale autour de vous (5m de rayon) pendant 2 tours. Les ennemis dans la zone subissent des dégâts de Givre chaque tour, ont leur vitesse réduite de 50 % et sont gelés sur place (Enracinement) au bout du 2e tour."
   },
   {
@@ -3676,6 +3746,7 @@ export const ABILITIES: Ability[] = [
     "condition": "1 fois par combat.",
     "cooldownTurns": null,
     "usesPer": "combat",
+    "manaCost": 2,
     "effect": "Infuse vos lames d'énergie du Vide. Pendant 2 tours, toutes vos attaques de mêlée infligent des dégâts d'Ombre à la place des dégâts physiques (ignorant l'armure) et génèrent +1 Point de Combo supplémentaire par coup."
   },
   {
@@ -3846,6 +3917,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Utiliser un arc ou arbalète.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 1,
     "effect": "Tire un projectile infusé de venin de cobra. Inflige des dégâts de Nature et prolonge la durée de votre Serpent Sting actif sur la cible de 2 tours."
   },
   {
@@ -3991,6 +4063,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Temps de recharge : 2 tours.",
     "cooldownTurns": 2,
     "usesPer": null,
+    "manaCost": 3,
     "effect": "Invoque un esprit de bête sauvage locale (ours, rapace, basilic) qui déferle sur la cible, lui inflige des dégâts physiques et vous restaure immédiatement de l'Énergie/Focalisation."
   },
   {
@@ -4021,6 +4094,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Votre compagnon animal doit être en mêlée avec la cible.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 2,
     "effect": "Vous donnez l'ordre d'exécution. Votre compagnon animal bondit sur la gorge de la cible, infligeant des dégâts physiques massifs basés sur vos caractéristiques combinées."
   },
   {
@@ -4046,6 +4120,7 @@ export const ABILITIES: Ability[] = [
     "condition": "1 fois par repos court.",
     "cooldownTurns": null,
     "usesPer": "repos-court",
+    "manaCost": 4,
     "effect": "Vous canalisez l'énergie profane pure. Pendant 2 tours, tous vos sorts magiques infligent +30 % de dégâts supplémentaires et leur coût en mana est réduit de 30 %."
   },
   {
@@ -4076,6 +4151,7 @@ export const ABILITIES: Ability[] = [
     "condition": "1 fois par combat.",
     "cooldownTurns": null,
     "usesPer": "combat",
+    "manaCost": 4,
     "effect": "Une vague de froid réinitialise instantanément les temps de recharge de tous vos sorts de Givre (Bloc de glace, Barrière de glace, Nova de givre) et vous soigne de 10 % de vos PV."
   },
   {
@@ -4101,6 +4177,7 @@ export const ABILITIES: Ability[] = [
     "condition": "1 fois par repos long.",
     "cooldownTurns": null,
     "usesPer": "repos-long",
+    "manaCost": 4,
     "effect": "Vous vous enfermez dans un bloc de glace stygienne incassable pendant 2 tours. Vous devenez totalement invulnérable à tous les dégâts et dissipez tous les effets néfastes, mais vous ne pouvez effectuer aucune action."
   },
   {
@@ -4131,6 +4208,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Temps de recharge : 2 tours.",
     "cooldownTurns": 2,
     "usesPer": null,
+    "manaCost": 4,
     "effect": "Projette un cône de flammes dévastateur à bout portant (4m devant vous). Tous les ennemis touchés subissent des dégâts de Feu et sont désorientés (Désorientation 1 tour)."
   },
   {
@@ -4156,6 +4234,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Peut être lancée instantanément après un double critique de Feu.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 5,
     "effect": "Projette un gigantesque rocher de feu incandescent. Inflige des dégâts de Feu colossaux à la cible et des dégâts de zone résiduels autour d'elle."
   },
   {
@@ -4186,6 +4265,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Temps de recharge : 2 tours.",
     "cooldownTurns": 2,
     "usesPer": null,
+    "manaCost": 3,
     "effect": "Un rayon de flammes violettes s'échappe de vos mains en cône. Inflige des dégâts d'Ombre/Feu et réduit la vitesse de déplacement de tous les ennemis touchés de 70 % pendant 1 tour."
   },
   {
@@ -4211,6 +4291,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Temps de recharge : 3 tours.",
     "cooldownTurns": 3,
     "usesPer": null,
+    "manaCost": 4,
     "effect": "Lance un orbe de glace tournoyant qui avance lentement en ligne droite (10m). L'orbe inflige des dégâts de Givre chaque seconde à tous les ennemis proches et vous octroie des charges de Doigts de Givre."
   },
   {
@@ -4265,6 +4346,7 @@ export const ABILITIES: Ability[] = [
     "condition": "1 fois par séance de jeu / repos long.",
     "cooldownTurns": null,
     "usesPer": "seance",
+    "manaCost": 4,
     "effect": "Vous altérez l'écoulement du temps pour tout le groupe. Tous les alliés à portée voient leur vitesse d'action augmentée de 30 % pendant 3 tours. Partage le même temps de recharge global que Furie sanguinaire."
   },
   {
@@ -4290,6 +4372,7 @@ export const ABILITIES: Ability[] = [
     "condition": "La cible doit posséder au moins 1 effet magique bénéfique actif.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 3,
     "effect": "Vous volez un effet magique bénéfique sur l'ennemi (Bouclier, Hâte, Soin continu). L'effet est retiré à l'ennemi et s'applique immédiatement sur vous pour sa durée restante."
   },
   {
@@ -4315,6 +4398,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Consomme toutes vos charges de Charges Arcaniques.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 3,
     "effect": "Projette des orbes d'énergie pure sur plusieurs cibles. Les dégâts et le nombre de cibles secondaires touchées augmentent par charge arcanique consommée."
   },
   {
@@ -4340,6 +4424,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Doit rester immobile. 1 fois par repos court.",
     "cooldownTurns": null,
     "usesPer": "repos-court",
+    "manaCost": 3,
     "effect": "Vous canalisez le flux ley d'Azeroth. Restaure 100 % de votre réserve de Mana en 1 tour complet."
   },
   {
@@ -4370,6 +4455,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Temps de recharge : 3 tours.",
     "cooldownTurns": 3,
     "usesPer": null,
+    "manaCost": 3,
     "effect": "Invoque un rayon de lumière solaire intense sur une zone au sol (3m de rayon). Tous les ennemis dans le rayon sont immédiatement Réduits au silence tant qu'ils restent dans la zone."
   },
   {
@@ -4395,6 +4481,7 @@ export const ABILITIES: Ability[] = [
     "condition": "1 fois par repos court.",
     "cooldownTurns": null,
     "usesPer": "repos-court",
+    "manaCost": 5,
     "effect": "Fait tomber un météore en fusion du ciel sur une zone ciblée. Inflige des dégâts de Feu monstrueux répartis équitablement entre tous les ennemis présents dans la zone d'impact et enflamme le sol."
   },
   {
@@ -4425,6 +4512,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Doit y avoir au moins 2 ennemis à moins de 5 mètres les uns des autres.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 3,
     "effect": "Projette un éclair foudroyant qui bondit sur jusqu'à 4 cibles consécutives. Chaque rebond inflige 20 % de dégâts de moins que le précédent."
   },
   {
@@ -4450,6 +4538,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Consomme votre réserve d'Énergie élémentaire/Bouclier de foudre.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 3,
     "effect": "Secoue la terre sous les pieds de l'ennemi à distance. Inflige d'immenses dégâts de Nature instantanés basés sur la quantité de ressource consommée."
   },
   {
@@ -4475,6 +4564,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Planté au sol (5m de rayon). Temps de recharge : 2 tours.",
     "cooldownTurns": 2,
     "usesPer": null,
+    "manaCost": 2,
     "effect": "Invoque un totem de pierre. Ancre immédiatement tous les ennemis dans la zone au sol (Enracinement 1 tour), puis ralentit leur vitesse de déplacement de 50 %."
   },
   {
@@ -4500,6 +4590,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Temps de recharge : 3 tours.",
     "cooldownTurns": 3,
     "usesPer": null,
+    "manaCost": 3,
     "effect": "Invoque un totem paratonnerre. Le totem draine et détruit le prochain sort magique ciblé lancé par un ennemi contre vous ou vos alliés proches."
   },
   {
@@ -4525,6 +4616,7 @@ export const ABILITIES: Ability[] = [
     "condition": "1 fois par repos court.",
     "cooldownTurns": null,
     "usesPer": "repos-court",
+    "manaCost": 4,
     "effect": "Vous levez votre arme vers les cieux pour charger la foudre. Vos 2 prochains sorts d'Éclair ou de Chaîne d'éclairs sont instantannés et déclenchent obligatoirement une Surcharge Élémentaire."
   },
   {
@@ -4554,6 +4646,7 @@ export const ABILITIES: Ability[] = [
     "condition": "1 fois par repos long.",
     "cooldownTurns": null,
     "usesPer": "repos-long",
+    "manaCost": 5,
     "effect": "Vous vous transformez en un élémentaire d'eau, de feu ou d'air pur pendant 2 tours. Vos attaques de mêlée deviennent des frappes de vent à distance (15m) ou vos sorts de soins sont dupliqués sur tous les alliés."
   },
   {
@@ -4579,6 +4672,7 @@ export const ABILITIES: Ability[] = [
     "condition": "S'active lorsque votre Bouclier de foudre atteint 20 charges ou après avoir été frappé 3 fois en mêlée.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 2,
     "effect": "Libère une décharge foudroyante qui repousse tous les ennemis adjacents à 3 mètres et leur inflige des dégâts de Nature."
   },
   {
@@ -4604,6 +4698,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Cibler une zone au sol (5m de rayon).",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 3,
     "effect": "Invoque une pluie curative sur la zone ciblée pendant 2 tours. Tous les alliés se tenant dans la pluie récupèrent des PV au début de leur tour."
   },
   {
@@ -4629,6 +4724,7 @@ export const ABILITIES: Ability[] = [
     "condition": "1 fois par repos long.",
     "cooldownTurns": null,
     "usesPer": "repos-long",
+    "manaCost": 3,
     "effect": "Invoque un totem d'eau puissant. Émet une onde de soins majeurs toutes les secondes pour tous les membres du groupe situés à moins de 15 mètres pendant 2 tours."
   },
   {
@@ -4654,6 +4750,7 @@ export const ABILITIES: Ability[] = [
     "condition": "1 fois par combat.",
     "cooldownTurns": null,
     "usesPer": "combat",
+    "manaCost": 3,
     "effect": "Invoque un totem qui lie les âmes de tous les alliés dans une zone de 5 mètres. Chaque tour, la santé de tous les alliés dans la zone est égalrisée (pourcentage de PV identique) et les dégâts qu'ils subissent sont réduits de 15 %."
   },
   {
@@ -4679,6 +4776,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Temps de recharge : 2 tours.",
     "cooldownTurns": 2,
     "usesPer": null,
+    "manaCost": 3,
     "effect": "Une déflagration de feu repousse tous les ennemis adjacents à 4 mètres et réduit leur vitesse de déplacement de 70 % pendant 1 tour."
   },
   {
@@ -4704,6 +4802,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Temps de recharge : 2 tours.",
     "cooldownTurns": 2,
     "usesPer": null,
+    "manaCost": 4,
     "effect": "Projette une rafale de glace en cône devant vous. Inflige des dégâts de Givre et ralentit la vitesse des cibles de 80 % pendant 2 tours."
   },
   {
@@ -4729,6 +4828,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Être entouré d'au moins 2 ennemis.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 3,
     "effect": "Une onde de choc d'énergie pure éclate autour de vous (3m). Inflige des dégâts d'Arcane à tous les ennemis et a 30 % de chances de générer une Charge Arcanique."
   },
   {
@@ -4754,6 +4854,7 @@ export const ABILITIES: Ability[] = [
     "condition": "1 fois par repos court.",
     "cooldownTurns": null,
     "usesPer": "repos-court",
+    "manaCost": 3,
     "effect": "Vous créez 3 doubles illusoires de vous-même pendant 2 tours. Les attaques ennemies ont 75 % de chances de frapper une illusion à votre place (détruisant l'illusion). Les copies lancent de petits sorts d'éclair."
   },
   {
@@ -4784,6 +4885,7 @@ export const ABILITIES: Ability[] = [
     "condition": "1 fois par repos long.",
     "cooldownTurns": null,
     "usesPer": "repos-long",
+    "manaCost": 3,
     "effect": "Vous vous effacez progressivement de la réalité. Au bout d'un tour, vous devenez totalement Invisible pendant 3 tours et perdez toute menace générée auprès des monstres."
   },
   {
@@ -4809,6 +4911,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Placer au sol sous vos pieds. Temps de recharge : 3 tours.",
     "cooldownTurns": 3,
     "usesPer": null,
+    "manaCost": 4,
     "effect": "Grave une rune magique brillante au sol. Tant que vous vous tenez sur la rune, tous vos sorts magiques infligent +40 % de dégâts supplémentaires."
   },
   {
@@ -4884,6 +4987,7 @@ export const ABILITIES: Ability[] = [
     "condition": "1 fois par repos court.",
     "cooldownTurns": null,
     "usesPer": "repos-court",
+    "manaCost": 3,
     "effect": "Votre prochain sort d'Arcane nécessitant normalement un temps d'incantation devient instantané."
   },
   {
@@ -4909,6 +5013,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Placé sur un allié (max 1 bouclier actif à la fois).",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 2,
     "effect": "Entoure l'allié de 9 orbes de terre protectrices. Chaque fois que l'allié subit une attaque, une orbe est consommée pour le soigner d'un montant fixe et réduire le temps d'interruption de sort."
   },
   {
@@ -4934,6 +5039,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Coût en mana élevé.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 2,
     "effect": "Un soin d'urgence d'une rapidité extrême qui restaure un montant élevé de PV à une cible unique au bord du K.O."
   },
   {
@@ -4959,6 +5065,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Temps de recharge : 2 tours.",
     "cooldownTurns": 2,
     "usesPer": null,
+    "manaCost": 4,
     "effect": "Projette un orbe arcanique étincelant en ligne droite devant vous. L'orbe traverse les ennemis, infligeant des dégâts d'Arcane et générant 1 Charge Arcanique par ennemi traversé."
   },
   {
@@ -4988,6 +5095,7 @@ export const ABILITIES: Ability[] = [
     "condition": "1 fois par repos long.",
     "cooldownTurns": null,
     "usesPer": "repos-long",
+    "manaCost": 3,
     "effect": "Vous vous métamorphosez en un Arbre de Vie antique pendant 3 tours. Vos soins de zone sont augmentés de 50 %, votre armure augmente de +100 % et vous êtes immunisé au contrôle mental."
   },
   {
@@ -5013,6 +5121,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Cibler un groupe d'ennemis proches.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 2,
     "effect": "Invoque un rayon de chaleur solaire qui brûle la cible et se propage à tous les ennemis situés à moins de 3 mètres, infligeant des dégâts de Feu/Nature continus pour 3 tours."
   },
   {
@@ -5043,6 +5152,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Consomme de la Puissance Céleste/Astrale. Temps de recharge : 2 tours.",
     "cooldownTurns": 2,
     "usesPer": null,
+    "manaCost": 4,
     "effect": "Déclenche une pluie d'étoiles filantes sur un rayon de 8 mètres autour de vous pendant 2 tours. Inflige des dégâts d'Arcane à tous les ennemis dans la zone et vous permet d'incanter en vous déplaçant."
   },
   {
@@ -5073,6 +5183,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Consomme de la Puissance Céleste.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 3,
     "effect": "Projette un rayon d'énergie astrale pure qui combine les pouvoirs du Soleil et de la Lune. Inflige d'immenses dégâts d'Arcane/Nature instantanés et augmente les dégâts de vos prochains Éclat lunaire et Éclat solaire."
   },
   {
@@ -5098,6 +5209,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Temps de recharge : 2 tours.",
     "cooldownTurns": 2,
     "usesPer": null,
+    "manaCost": 2,
     "effect": "Invoque une rafale de vent violent en cône devant vous (5m). Repousse violemment tous les ennemis touchés à 5 mètres et réduit leur vitesse de déplacement de 50 % pendant 1 tour."
   },
   {
@@ -5123,6 +5235,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Utilisable sous n'importe quelle forme druidique. 1 fois par repos court.",
     "cooldownTurns": null,
     "usesPer": "repos-court",
+    "manaCost": 2,
     "effect": "Un afflux de sève vitale vous soigne instantanément de 30 % de vos Points de Vie maximaux."
   },
   {
@@ -5148,6 +5261,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Active un bouclier de ronces réactif. 1 fois par combat.",
     "cooldownTurns": null,
     "usesPer": "combat",
+    "manaCost": 2,
     "effect": "Pendant 2 tours, le prochain ennemi qui vous frappe en mêlée est automatiquement immobilisé au sol par des sarments (Enracinement 2 tours)."
   },
   {
@@ -5178,6 +5292,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Forme de Félide active. Temps de recharge : 2 tours.",
     "cooldownTurns": 2,
     "usesPer": null,
+    "manaCost": 2,
     "effect": "Augmente votre vitesse de déplacement de +200 % pendant 1 tour, diminuant progressivement sur 2 tours. Vous pouvez franchir les précipices sans test de dé."
   },
   {
@@ -5208,6 +5323,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Forme de Félide active. Consomme 3 à 5 Points de Combo.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 2,
     "effect": "Une morsure sauvage qui transperce les os. Inflige d'immenses dégâts physiques et convertit les dégâts excédentaires en dégâts d'Ombre/Saignement si la cible est sous les 25 % de PV."
   },
   {
@@ -5268,6 +5384,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Temps de recharge : 3 tours.",
     "cooldownTurns": 3,
     "usesPer": null,
+    "manaCost": 4,
     "effect": "Fait surgir de la lave sous les pieds de la cible. Projette l'ennemi en l'air (Incapacité 1 tour) et lui inflige d'immenses dégâts de Feu."
   },
   {
@@ -5293,6 +5410,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Planté au sol. 1 fois par repos court.",
     "cooldownTurns": null,
     "usesPer": "repos-court",
+    "manaCost": 2,
     "effect": "Crée un couloir de vent de 10 mètres de long. Tous les alliés traversant le couloir voient leur vitesse de déplacement augmentée de +60 % pendant 2 tours."
   },
   {
@@ -5347,6 +5465,7 @@ export const ABILITIES: Ability[] = [
     "condition": "S'active uniquement lors de votre mort. 1 fois par séance de jeu.",
     "cooldownTurns": null,
     "usesPer": "seance",
+    "manaCost": 3,
     "effect": "Lorsque votre personnage meurt et tombe à 0 PV, les esprits vous ramènent immédiatement à la vie avec 40 % de vos Points de Vie et Mana maximaux, effaçant tous les effets néfastes. (201 à 240)"
   },
   {
@@ -5377,6 +5496,7 @@ export const ABILITIES: Ability[] = [
     "condition": "1 fois par repos court.",
     "cooldownTurns": null,
     "usesPer": "repos-court",
+    "manaCost": 4,
     "effect": "Des ailes de Lumière pure apparaissent dans votre dos. Pendant 2 tours, tous vos soins, dégâts et chances de coups critiques sont augmentés de +30 %."
   },
   {
@@ -5407,6 +5527,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Consomme 3 charges de Puissance Sacrée.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 3,
     "effect": "Vous faites touroyer votre arme infusée de Lumière. Inflige de lourds dégâts du Sacré à tous les ennemis à moins de 4 mètres et soigne tous les alliés proches de 20 % des dégâts infligés."
   },
   {
@@ -5437,6 +5558,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Un allié à moins de 10 mètres est étourdi, effrayé ou réduit au silence.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 2,
     "effect": "Libère immédiatement l'allié de tous les effets de contrôle de foule subis et lui accorde une immunité à ces mêmes effets pendant 1 tour."
   },
   {
@@ -5467,6 +5589,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Temps de recharge : 1 tour.",
     "cooldownTurns": 1,
     "usesPer": null,
+    "manaCost": 2,
     "effect": "Vous pointez votre doigt accusateur sur l'ennemi. Force immédiatement la cible à vous attaquer en mêlée pendant 1 tour et inflige des dégâts du Sacré si la cible n'était pas tournée vers vous."
   },
   {
@@ -5497,6 +5620,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Nécessite un bouclier. Temps de recharge : 2 tours.",
     "cooldownTurns": 2,
     "usesPer": null,
+    "manaCost": 2,
     "effect": "Vous lancez votre bouclier comme un disque de Lumière. Le bouclier rebondit sur jusqu'à 3 cibles consécutives, infligeant des dégâts du Sacré, interrompant leurs incantations et les réduisant au silence pendant 1 tour."
   },
   {
@@ -5527,6 +5651,7 @@ export const ABILITIES: Ability[] = [
     "condition": "La cible doit être sous les 20 % de PV (ou être sous l'effet de Courroux vengeur).",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 3,
     "effect": "Projette un marteau de lumière magique à portée moyenne. Inflige d'immenses dégâts du Sacré garantis."
   },
   {
@@ -5556,6 +5681,7 @@ export const ABILITIES: Ability[] = [
     "condition": "1 fois par repos long.",
     "cooldownTurns": null,
     "usesPer": "repos-long",
+    "manaCost": 3,
     "effect": "Invoque un esprit de gardien angélique géant qui se superpose à vous pendant 2 tours. Réduit tous les dégâts subis de 50 % et double l'efficacité de vos soins reçus."
   },
   {
@@ -5631,6 +5757,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Consomme 3 charges de Puissance Sacrée.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 3,
     "effect": "Une invocation divine qui restaure instantanément d'importants PV à un allié désigné. Les soins sont augmentés de 100 % si la cible est sous les 30 % de PV."
   },
   {
@@ -5661,6 +5788,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Temps de recharge : 1 tour.",
     "cooldownTurns": 1,
     "usesPer": null,
+    "manaCost": 4,
     "effect": "Canalyse une salve de 3 rayons de lumière sacrée. Si vous ciblez un allié, soigne la cible 3 fois. Si vous ciblez un ennemi, inflige 3 décharges de dégâts du Sacré."
   },
   {
@@ -5686,6 +5814,7 @@ export const ABILITIES: Ability[] = [
     "condition": "1 fois par repos court.",
     "cooldownTurns": null,
     "usesPer": "repos-court",
+    "manaCost": 4,
     "effect": "Pendant 2 tours, votre sort Mot de pouvoir : Bouclier n'a plus aucun temps de recharge et absorbe 200 % de dégâts en plus."
   },
   {
@@ -5711,6 +5840,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Temps de recharge : 2 tours.",
     "cooldownTurns": 2,
     "usesPer": null,
+    "manaCost": 2,
     "effect": "Vous vous rendez transparent aux yeux des ennemis pendant 1 tour. Annule temporairement toute la menace accumulée, forçant les ennemis à attaquer vos alliés."
   },
   {
@@ -5736,6 +5866,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Temps d'incantation ininterrompu.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 3,
     "effect": "Émet une onde de soins d'une portée de 10 mètres. Soigne simultanément jusqu'à 5 alliés du groupe."
   },
   {
@@ -5761,6 +5892,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Placée sur un allié.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 3,
     "effect": "Dépose un sceau curatif dormant sur l'allié. La prochaine fois que l'allié subit des dégâts, le sceau le soigne instantanément et bondit sur un autre allié proche (jusqu'à 4 rebonds)."
   },
   {
@@ -5815,6 +5947,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Être entouré d'alliés et d'ennemis proches (3m).",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 2,
     "effect": "Une déflagration de Lumière éclate autour de vous. Inflige des dégâts du Sacré à tous les ennemis proches et soigne tous les alliés adjacents."
   },
   {
@@ -5845,6 +5978,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Cibler un allié situé entre 6 et 18 mètres. Temps de recharge : 2 tours.",
     "cooldownTurns": 2,
     "usesPer": null,
+    "manaCost": 3,
     "effect": "Une grappin de lumière divine attire instantanément l'allié désigné jusqu'à votre position, le sortant d'une zone dangereuse ou d'un piège au sol."
   },
   {
@@ -5870,6 +6004,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Si la cible est un Démon ou un Mort-vivant, le coup est un critique garanti.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 3,
     "effect": "Un rayon céleste transperce la cible. Inflige de lourds dégâts du Sacré et fait brûler la cible pour des dégâts continus pendant 2 tours."
   },
   {
@@ -5895,6 +6030,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Cibler un allié ou un ennemi.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 2,
     "effect": "Dissipe immédiatement 2 effets magiques néfastes sur un allié OR retire 1 effet magique bénéfique sur un ennemi."
   },
   {
@@ -5920,6 +6056,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Temps de recharge : 2 tours.",
     "cooldownTurns": 2,
     "usesPer": null,
+    "manaCost": 2,
     "effect": "Émet un flash de lumière aveuglant autour de vous (4m de rayon). Tous les ennemis proches sont désorientés (Désorientation 1 tour). Tout dégât autre que du Sacré annule l'effet."
   },
   {
@@ -5970,6 +6107,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Temps de recharge : 1 tour.",
     "cooldownTurns": 1,
     "usesPer": null,
+    "manaCost": 2,
     "effect": "Projette un marteau de lumière sur l'ennemi. Inflige des dégâts du Sacré et marque la cible. Les 25 prochaines attaques de vos alliés contre cette cible soignent les attaquants d'un montant fixe."
   },
   {
@@ -6074,6 +6212,7 @@ export const ABILITIES: Ability[] = [
     "condition": "1 fois par repos long.",
     "cooldownTurns": null,
     "usesPer": "repos-long",
+    "manaCost": 3,
     "effect": "Vous devenez l'incarnation vivante de la Lumière pendant 2 tours. Le coût de tous vos sorts de soins est réduit de 100 % et les temps de recharge de vos mots de soins sont réinitialisés."
   },
   {
@@ -6099,6 +6238,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Temps de recharge : 3 tours.",
     "cooldownTurns": 3,
     "usesPer": null,
+    "manaCost": 3,
     "effect": "Crée un anneau de Lumière qui s'étend vers l'extérieur jusqu'à 15 mètres puis revient vers vous. Inflige des dégâts du Sacré à tous les ennemis traversés et soigne tous les alliés traversés."
   },
   {
@@ -6124,6 +6264,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Temps de recharge : 1 tour.",
     "cooldownTurns": 1,
     "usesPer": null,
+    "manaCost": 2,
     "effect": "Projette une étoile de Lumière en ligne droite devant vous (8m) qui revient comme un boomerang. Inflige des dégâts du Sacré à l'aller et soigne les alliés au retour."
   },
   {
@@ -6149,6 +6290,7 @@ export const ABILITIES: Ability[] = [
     "condition": "1 fois par repos court.",
     "cooldownTurns": null,
     "usesPer": "repos-court",
+    "manaCost": 5,
     "effect": "Vous vous élevez dans les airs et projetez une salve de 6 rayons de lumière/ombre en 1 tour, soignant les alliés les plus affaiblis et pilonnant les ennemis proches tout en vous accordant un bouclier impénétrable."
   },
   {
@@ -6174,6 +6316,7 @@ export const ABILITIES: Ability[] = [
     "condition": "S'applique instantanément.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 2,
     "effect": "Remplit le corps de l'allié d'énergie curative. Restaure des PV immédiatement puis offre un soin continu au début des 3 prochains tours de la cible."
   },
   {
@@ -6199,6 +6342,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Invoqué au sol. 1 fois par repos court.",
     "cooldownTurns": null,
     "usesPer": "repos-court",
+    "manaCost": 3,
     "effect": "Crée une fontaine de Lumière au sol. Les alliés blessés situés à moins de 8 mètres consomment automatiquement une charge du puits pour se soigner lorsqu'ils tombent sous les 50 % de PV (6 charges max)."
   },
   {
@@ -6229,6 +6373,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Utilisable même si vous êtes étourdi ou réduit au silence. 1 fois par repos court.",
     "cooldownTurns": null,
     "usesPer": "repos-court",
+    "manaCost": 4,
     "effect": "Réduit instantanément tous les dégâts subis par un allié désigné de 40 % pendant 2 tours et augmente sa résistance aux contrôles de 50 %."
   },
   {
@@ -6259,6 +6404,7 @@ export const ABILITIES: Ability[] = [
     "condition": "1 fois par repos court.",
     "cooldownTurns": null,
     "usesPer": "repos-court",
+    "manaCost": 2,
     "effect": "Tous les alliés situés à moins de 8 mètres réduisent les dégâts qu'ils subissent de 20 % pendant 2 tours, et 20 % des dégâts qu'ils subissent vous sont redirigés."
   },
   {
@@ -6284,6 +6430,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Cibler un ennemi infecté ou maudit.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 3,
     "effect": "Fait calciner les maladies sur la cible. Consomme les effets négatifs pour déclencher une explosion de dégâts du Sacré/Feu."
   },
   {
@@ -6364,6 +6511,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Nécessite une arme à une main et un bouclier.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 2,
     "effect": "Frappe la cible avec un marteau béni. Inflige des dégâts physiques à la cible et émet une onde de choc de Lumière qui touche jusqu'à 3 autres ennemis proches."
   },
   {
@@ -6394,6 +6542,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Consomme 3 charges de Puissance Sacrée.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 2,
     "effect": "Vous frappez l'ennemi avec la face plat de votre bouclier. Inflige des dégâts du Sacré en cône devant vous et augmente votre valeur d'armure de +50 % pendant 1 tour."
   },
   {
@@ -6423,6 +6572,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Lancé sur le groupe avant le combat.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 3,
     "effect": "Accorde une bénédiction royale à tous les membres du groupe. Augmente toutes leurs Caractéristiques principales de +1d6 de base et leur octroie un bouclier d'absorption passif."
   },
   {
@@ -6452,6 +6602,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Consomme la totalité de votre Fureur démoniaque. 1 fois par repos long.",
     "cooldownTurns": null,
     "usesPer": "repos-long",
+    "manaCost": 5,
     "effect": "Vous vous transformez en un Démon majeur cornu pendant 2 tours. Votre armure augmente de +200 %, vos attaques deviennent des décharges de Feu du Fél à distance et vous débloquez des compétences physiques démoniaques."
   },
   {
@@ -6477,6 +6628,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Consomme 1 Éclat d'Âme.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 4,
     "effect": "Invoque un Chasseur corrompu du Fél. Le serviteur possède des capacités passives de détection de l'invisibilité et peut dévorer 1 effet magique bénéfique sur l'ennemi toutes les 2 tours."
   },
   {
@@ -6507,6 +6659,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Consomme 1 Éclat d'Âme. 1 fois par repos long.",
     "cooldownTurns": null,
     "usesPer": "repos-long",
+    "manaCost": 4,
     "effect": "Fait tomber une météorite verdoyante du ciel sur une zone ciblée. Inflige d'immenses dégâts de Feu du Fél, étourdit tous les ennemis dans la zone (Étourdissement 1 tour) et fait surgir un Infernale géant de pierre de feu pendant 2 tours."
   },
   {
@@ -6532,6 +6685,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Cibler un ennemi à portée moyenne.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 3,
     "effect": "Enflamme la chair de l'ennemi. Inflige des dégâts de Feu instantanés et applique une brûlure continue de Feu du Fél pour 3 tours, générant des fragments d'Éclat d'Âme."
   },
   {
@@ -6557,6 +6711,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Consomme 3 Éclats d'Âme.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 4,
     "effect": "Fait pleuvoir des braises infernales sur une zone circulaire au sol (6m de rayon) pendant 2 tours. Inflige de lourds dégâts de Feu du Fél à tous les ennemis présents dans la zone."
   },
   {
@@ -6587,6 +6742,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Consomme 2 Éclats d'Âme.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 5,
     "effect": "Lance un dragon de flammes du Fél guidé. Touche automatiquement, ignore l'armure et les boucliers, inflige un coup critique garanti et réduit la santé maximale de la cible de 15 %."
   },
   {
@@ -6612,6 +6768,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Sacrifie 15 % de vos PV actuels.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 2,
     "effect": "Convertit immédiatement votre propre sang en énergie magique, restaurant 20 % de votre réserve de Mana maximale ou générant 1 Éclat d'Âme."
   },
   {
@@ -6662,6 +6819,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Consomme 1 Éclat d'Âme. (1 seule affliction instable active par cible).",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 4,
     "effect": "Place une malédiction noire sur l'ennemi infligeant de lourds dégâts d'Ombre continus sur 3 tours. Si un soigneur ennemi tente de dissiper ce sort, la malédiction éclate au visage du soigneur, lui infligeant de monstrueux dégâts d'Ombre et le réduisant au silence pendant 2 tours."
   },
   {
@@ -6687,6 +6845,7 @@ export const ABILITIES: Ability[] = [
     "condition": "S'applique instantanément.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 3,
     "effect": "Torture la cible avec une douleur grandissante. Inflige de faibles dégâts d'Ombre au début, mais les dégâts augmentent à chaque tour (jusqu'à 10 piles) pendant 4 tours."
   },
   {
@@ -6712,6 +6871,7 @@ export const ABILITIES: Ability[] = [
     "condition": "S'applique instantanément.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 3,
     "effect": "Infecte le sang de l'ennemi. Inflige des dégâts d'Ombre continus à chaque tour pendant 3 tours. Si la cible meurt sous Corruption, vous générez 1 Éclat d'Âme."
   },
   {
@@ -6737,6 +6897,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Consomme 1 Éclat d'Âme.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 4,
     "effect": "Implante une graine du Néant dans la chair de l'ennemi. Dès que la cible subit un montant fixe de dégâts de n'importe quelle source, la graine éclate, infligeant des dégâts d'Ombre à tous les ennemis à moins de 5 mètres et leur appliquant le sort Corruption."
   },
   {
@@ -6762,6 +6923,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Un ennemi ne peut porter qu'une seule malédiction de Démoniste à la fois.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 2,
     "effect": "Accable le corps de l'ennemi d'une lourdeur extrême. Réduit sa vitesse de déplacement de 50 % pendant 2 tours."
   },
   {
@@ -6787,6 +6949,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Cibler un lanceur de sorts.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 2,
     "effect": "Force la cible à parler en démoniaque. Augmente le temps d'incantation de tous ses sorts de 30 % pendant 2 tours."
   },
   {
@@ -6812,6 +6975,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Cibler un attaquant physique.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 2,
     "effect": "Draine la force musculaire de l'ennemi. Réduit les dégâts physiques de ses attaques de mêlée de 20 % et l'empêche de porter des coups critiques pendant 2 tours."
   },
   {
@@ -6837,6 +7001,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Fabriquée avant le combat (max 3 pierres dans l'inventaire).",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 2,
     "effect": "Façonne une pierre verte de sang infusé. Consommer la pierre en combat restaure instantanément 25 % de vos PV maximaux sans consommer d'action principale."
   },
   {
@@ -6867,6 +7032,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Place 2 portails démoniaques au sol reliés entre 10 et 25 mètres.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 3,
     "effect": "Crée un passage abyssal. Tout allié marchant sur le premier portail est immédiatement téléporté au second portail, distançant les ennemis."
   },
   {
@@ -6892,6 +7058,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Un cercle doit avoir été tracé au sol auparavant à moins de 20 mètres.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 2,
     "effect": "Vous vous téléportez instantanément sur votre cercle tracé, brisant tous les effets de ralentissement, d'enracinement et d'étourdissement qui vous affectaient."
   },
   {
@@ -6917,6 +7084,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Temps de recharge : 3 tours.",
     "cooldownTurns": 3,
     "usesPer": null,
+    "manaCost": 4,
     "effect": "Invoque un mini trou noir au-dessus de la cible. La singularité attire tous les ennemis situés à moins de 8 mètres vers son centre, leur inflige des dégâts d'Ombre et vous soigne de 20 % des dégâts infligés."
   },
   {
@@ -6946,6 +7114,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Atteindre 100 points d'Insalubrité / Énergie du Vide.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 5,
     "effect": "Vous entrez en Forme du Vide. Libère une explosion d'Ombre de zone, transforme votre Trait d'Ombre en Fouet mental instantané et augmente tous vos dégâts d'Ombre de +20 % tant que l'énergie ne tombe pas à zéro."
   },
   {
@@ -6976,6 +7145,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Temps de recharge : 1 tour.",
     "cooldownTurns": 1,
     "usesPer": null,
+    "manaCost": 3,
     "effect": "Envoie une décharge de démence directement dans le cerveau de l'ennemi. Inflige de lourds dégâts d'Ombre et absorbe une partie des prochains soins reçus par la cible."
   },
   {
@@ -7001,6 +7171,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Maintenir la canalisation sans bouger.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 3,
     "effect": "Un rayon d'énergie ténébreuse relie votre main au cerveau de la cible. Inflige des dégâts d'Ombre répétés à chaque seconde et ralentit la vitesse de déplacement de la cible de 50 %."
   },
   {
@@ -7026,6 +7197,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Sacrifie votre serviteur démon actif. 1 fois par combat.",
     "cooldownTurns": null,
     "usesPer": "combat",
+    "manaCost": 4,
     "effect": "Vous tuez votre démon pour absorber son essence. Vous gagnez la capacité spéciale du démon sacrifié (Silence, Bouclier, Invisibilité) et vos sorts infligent +15 % de dégâts supplémentaires pendant 3 tours."
   },
   {
@@ -7051,6 +7223,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Consomme 1 Éclat d'Âme. (S'éclate au bout de 3 tours).",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 4,
     "effect": "Place une condamnation à mort sur l'ennemi. Au bout de 3 tours, le sort éclate, infligeant des dégâts d'Ombre massifs à la cible et invoquant un Démon Gardien de la Terreur si la cible meurt de l'explosion."
   },
   {
@@ -7076,6 +7249,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Cibler un ennemi entouré d'autres ennemis.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 4,
     "effect": "Fait jaillir des hallucinations terrifiantes du cerveau de la cible. Inflige des dégâts d'Ombre de zone à tous les autres ennemis situés à moins de 5 mètres de la cible principale."
   },
   {
@@ -7106,6 +7280,7 @@ export const ABILITIES: Ability[] = [
     "condition": "1 fois par repos court.",
     "cooldownTurns": null,
     "usesPer": "repos-court",
+    "manaCost": 4,
     "effect": "Vous vous liez à vos alliés par l'Ombre pendant 2 tours. 50 % de tous les dégâts magiques d'Ombre à cible unique que vous infligez soignent automatiquement l'allié le plus affaibli du groupe."
   },
   {
@@ -7161,6 +7336,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Consomme 50 points d'Insalubrité / Énergie du Vide.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 4,
     "effect": "Infecte la cible avec une maladie ténébreuse instantanée. Inflige d'immenses dégâts d'Ombre immédiats, puis des dégâts continus sur 2 tours, et vous soigne de 50 % des dégâts infligés."
   },
   {
@@ -7186,6 +7362,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Temps de recharge : 2 tours.",
     "cooldownTurns": 2,
     "usesPer": null,
+    "manaCost": 2,
     "effect": "Vous étouffez la voix de la cible par une onde mentale. Réduit la cible au silence (Silence 2 tours), l'empêchant de lancer le moindre sort magique."
   },
   {
@@ -7211,6 +7388,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Temps de recharge : 3 tours.",
     "cooldownTurns": 3,
     "usesPer": null,
+    "manaCost": 4,
     "effect": "Projette un spectre d'effroi dans l'esprit de l'ennemi. Étourdit la cible (Étourdissement 1 tour) et lui fait lâcher ses armes principales pendant 2 tours."
   },
   {
@@ -7241,6 +7419,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Cibler un Démon non-boss d'un niveau égal ou inférieur au vôtre.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 4,
     "effect": "Tord la volonté d'un démon ennemi. Le démon devient votre serviteur soumis pendant 1 heure, obéissant à vos ordres. (Le démon a 5 % de chances par tour de se libérer)."
   },
   {
@@ -7266,6 +7445,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Nécessite d'effectuer un bond ou une esquive.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 2,
     "effect": "Émet une onde de flammes vertes autour de vous lors de votre réception au sol, infligeant des dégâts de Feu du Fél à tous les ennemis adjacents."
   },
   {
@@ -7291,6 +7471,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Nécessite d'avoir séduit la cible.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 2,
     "effect": "Vous donnez un ordre fatal à un ennemi charmé. La cible effectue immédiatement une attaque physique de mêlée sur l'un de ses propres alliés proches avant de se réveiller du charme."
   },
   {
@@ -7316,6 +7497,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Utilisable uniquement sous Forme du Vide. Temps de recharge : 1 tour.",
     "cooldownTurns": 1,
     "usesPer": null,
+    "manaCost": 5,
     "effect": "Projette une masse de matière noire. Inflige de lourds dégâts d'Ombre et prolonge la durée de vos sorts Douleur maudite et Attaque mentale actifs sur toutes les cibles proches de 2 tours."
   },
   {
@@ -7341,6 +7523,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Consomme 1 à 3 Éclats d'Âme.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 5,
     "effect": "Fait tomber une comète de Feu du Fél qui s'écrase sur la cible. Inflige des dégâts de zone et fait surgir de 1 à 3 sauvagions démoniaques (Imp) qui pilonnent les ennemis proches."
   },
   {
@@ -7366,6 +7549,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Avoir au moins 2 sauvagions démoniaques (Imps) actifs sous vos ordres.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 4,
     "effect": "Vous ordonnez à tous vos sauvagions de se précipiter sur la cible et d'exploser. Chaque sauvagon s'autodétruit, infligeant des dégâts de Feu du Fél de zone à l'impact."
   },
   {
@@ -7391,6 +7575,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Nécessite une ligne de vue.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 3,
     "effect": "Lance une vague de feu ondulante le long du sol vers l'ennemi. Inflige des dégâts de Feu du Fél et génère des fragments d'Éclat d'Âme."
   },
   {
@@ -7445,6 +7630,7 @@ export const ABILITIES: Ability[] = [
     "condition": "1 fois par repos long.",
     "cooldownTurns": null,
     "usesPer": "repos-long",
+    "manaCost": 5,
     "effect": "Vous moissonnez les essences des tourmentés. Pendant 2 tours, votre vitesse de génération d'Éclat d'Âme est triplée et tous vos sorts d'Ombre/Feu infligent +20 % de dégâts."
   },
   {
@@ -7475,6 +7661,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Consomme 1 Éclat d'Âme + Sacrifice rituel. 1 fois par repos long.",
     "cooldownTurns": null,
     "usesPer": "repos-long",
+    "manaCost": 5,
     "effect": "Invoque un Gardien de la Terreur géant ailéarmé d'une grande épée. Le démon pilonne la cible avec des traits de ruine et applique des malédictions d'affaiblissement pendant 3 tours."
   },
   {
@@ -8038,6 +8225,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Nécessite une charge d'Azérite stygienne pure. 1 fois par campagne / événement majeur.",
     "cooldownTurns": null,
     "usesPer": "campagne",
+    "manaCost": 2,
     "effect": "Vous déployez une charge de destruction massive. Éclate au tour suivant, détruisant toutes les structures et fortins dans un rayon de 30 mètres et infligeant d'immenses dégâts hybrides Feu/Arcane/Physique à tous les êtres présents dans la zone."
   },
   {
@@ -8622,6 +8810,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Regarder la cible dans les yeux lors d'un échange. 1 fois par repos court.",
     "cooldownTurns": null,
     "usesPer": "repos-court",
+    "manaCost": 1,
     "effect": "La cible vous considère comme un ami cher et loyal pendant 1 heure. Elle répondra de manière favorable à vos questions tant que vous ne lui demandez pas de se mettre en danger.",
     "notes": "\"Action Complète (Sociale)\" classée dialogue (règle \"(Sociale)\")."
   },
@@ -9216,6 +9405,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Faire signer un contrat scellé par une goutte de sang à un PNJ.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 2,
     "effect": "Le contrat devient magiquement contraignant. Si le PNJ rompt son engagement commercial ou sa promesse, il subit une malédiction d'Ombre qui réduit sa santé maximale de 50 % jusqu'à ce qu'il honore sa parole."
   },
   {
@@ -9291,6 +9481,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Se déclenche automatiquement si vous subissez une attaque mortelle. 1 fois par repos long.",
     "cooldownTurns": null,
     "usesPer": "repos-long",
+    "manaCost": 4,
     "effect": "Votre corps se pétrifie dans un givre protecteur à 1 PV. Vous devenez totalement inciblable et invulnérable pendant 1 tour tout en régénérant 20 % de vos PV maximaux."
   },
   {
@@ -9490,6 +9681,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Temps de recharge : 3 tours.",
     "cooldownTurns": 3,
     "usesPer": null,
+    "manaCost": 4,
     "effect": "Votre peau prend la consistance de l'obsidienne. Vous devenez totalement immunisé aux dégâts de Feu et de Magma pendant 2 tours et gagnez +50 % d'Armure physique."
   },
   {
@@ -9565,6 +9757,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Sacrifie une portion de vos propres PV.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 2,
     "effect": "Vous déduisez jusqu'à 30 % de vos PV actuels pour les transférer sous forme de bouclier d'absorption pur sur un allié adjacent en danger imminent."
   },
   {
@@ -10244,6 +10437,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Infuser une arme en métal avant le combat.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 2,
     "effect": "L'arme brille d'une lueur bleue. Ses dégâts physiques sont intégralement convertis en dégâts d'Arcane et ignorent la valeur d'armure physique pendant 2 tours."
   },
   {
@@ -10269,6 +10463,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Gravure sur une armure ou un bouclier.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 4,
     "effect": "Grave une rune permanente sur une pièce d'armure. Le porteur gagne +1d6 aux jets de résistance magique."
   },
   {
@@ -10394,6 +10589,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Subir des dégâts de Foudre/Éléments.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 2,
     "effect": "Absorbe les dégâts de Foudre subis et charge votre batterie. Votre prochaine attaque à distance projette un éclair foudroyant gratuit."
   },
   {
@@ -10419,6 +10615,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Posé au sol.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 2,
     "effect": "Lorsqu'un ennemi marche dessus, des arceaux métalliques surgissent et créent un dôme d'éclairs (Étourdissement et Enracinement 2 tours)."
   },
   {
@@ -10519,6 +10716,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Porter une relique en argent façonnée par vos soins.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 2,
     "effect": "Émet un flash de Lumière sacrée qui soigne les alliés proches et repousse les Morts-vivants à 3 mètres."
   },
   {
@@ -10599,6 +10797,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Activer un dispositif d'horlogerie sur votre ceinture. 1 fois par combat.",
     "cooldownTurns": null,
     "usesPer": "combat",
+    "manaCost": 4,
     "effect": "Annule les dégâts ou le changement de position subis lors du tout dernier tour en réinitialisant les rouages du temps sur votre personnage."
   },
   {
@@ -10624,6 +10823,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Activer le cadran. Temps de recharge : 2 tours.",
     "cooldownTurns": 2,
     "usesPer": null,
+    "manaCost": 3,
     "effect": "Vous gagnez +1 action rapide supplémentaire lors de ce tour, mais vous subissez un malus de vitesse de 30 % au tour suivant."
   },
   {
@@ -10649,6 +10849,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Frapper le sol avec une arme de forge.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 4,
     "effect": "L'arme s'enflamme de magma pur. Inflige des dégâts physiques et de Feu massifs et laisse une traînée de lave au sol pendant 1 tour."
   },
   {
@@ -10754,6 +10955,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Porter une gemme prismatique taillée sur votre plastron. 1 fois par repos court.",
     "cooldownTurns": null,
     "usesPer": "repos-court",
+    "manaCost": 1,
     "effect": "Le cristal absorbe un sort magique direct ciblé et le divise en 3 rayons inoffensifs de lumière multicolore."
   },
   {
@@ -10954,6 +11156,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Confection sur du papyrus/cuir fin avec des encres arcaniques.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 2,
     "effect": "Crée un parchemin à usage unique contenant un sort d'Arcane. Utiliser le parchemin en combat permet d'incanter le sort sans consommer de mana."
   },
   {
@@ -11974,6 +12177,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Frapper le sol avec un marteau béni.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 2,
     "effect": "Libère une onde de choc du Sacré qui blesse les dmons/morts-vivants et répare les armures des alliés proches."
   },
   {
@@ -12069,6 +12273,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Sertir une améthyste d'ombre sur une arme.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 2,
     "effect": "L'arme inflige +1d6 dégâts d'Ombre supplémentaires sur chaque coup."
   },
   {
@@ -12144,6 +12349,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Après avoir bloqué un coup avec votre bouclier.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 1,
     "effect": "Le bouclier décharge une étincelle foudroyante qui inflige des dégâts de Nature à l'attaquant."
   },
   {
@@ -12289,6 +12495,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Poser une balise au sol.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 2,
     "effect": "Permet à l'ingénieur de se téléporter instantanément sur la balise posée depuis n'importe où dans la même région."
   },
   {
@@ -12692,6 +12899,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Utilisable 1 fois par jour en ville ou laboratoire.",
     "cooldownTurns": null,
     "usesPer": "jour",
+    "manaCost": 2,
     "effect": "Transforme 5 Minerais de Fer en 2 Minerais de Mithril ou 1 Pierre précieuse."
   },
   {
@@ -12742,6 +12950,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Lancer une fiole de peste au sol.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 4,
     "effect": "Libère un nuage verdâtre de 5m. Les victimes subissent des dégâts de Peste continus et voient leurs soins réduits de 50 %."
   },
   {
@@ -12787,6 +12996,34 @@ export const ABILITIES: Ability[] = [
     "condition": "Boire la fiole.",
     "cooldownTurns": null,
     "usesPer": null,
+    "manaCost": 1,
     "effect": "Régénère 3 PV par tour pendant 3 tours et permet de faire repousser des blessures légères."
+  },
+  {
+    "id": 1001,
+    "name": "Forme de félin",
+    "nameEn": "Cat Form",
+    "category": "Voies défensives, survie & endurance",
+    "prerequisites": [
+      {
+        "kind": "domain",
+        "id": "communion-naturelle-chamanisme",
+        "rank": 1
+      },
+      {
+        "kind": "specialty",
+        "name": "Forme animale",
+        "level": 1
+      }
+    ],
+    "prerequisitesRaw": "Sagesse (Communion naturelle) + Spécialité Forme animale (Lvl 1)",
+    "actionType": "rapide",
+    "actionLabel": "Action Rapide",
+    "condition": "Nécessite d'avoir les mains libres de tout objet magique lourd.",
+    "cooldownTurns": null,
+    "usesPer": null,
+    "manaCost": 1,
+    "effect": "Vous vous métamorphosez en grand félin. Vos griffes remplacent vos armes, et vous accédez aux techniques de la Forme de Félide (Griffe d'ombre, Célérité céleste, Instinct de survie).",
+    "notes": "Compétence maison, absente du PDF : la Forme de Félide y est exigée mais rien ne la donnait (décidé le 2026-10-19, plans/39)."
   }
 ]

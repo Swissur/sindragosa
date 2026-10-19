@@ -1,20 +1,30 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { Check, X, Star, Coins, Expand, Flame } from 'lucide-vue-next'
+import { Check, X, Star, Coins, Expand, Flame, Swords, PawPrint, Droplet, Sparkles } from 'lucide-vue-next'
 import AppIconBtn from '../ui/AppIconBtn.vue'
 import AppToggleGroup, { type AppToggleItem } from '../ui/AppToggleGroup.vue'
 import { ACTION_TYPES } from './actionTypes'
 import { isUsed, toggleUse, USES_PER_LABELS } from '../../utils/sindragosa/abilityUses'
 import { meetsPrerequisite, prerequisiteLabel } from '../../utils/sindragosa/prerequisites'
 import { progressState } from '../../utils/sindragosa/sheet'
-import { allowedModes, CONCENTRATION_LABELS, upgradeDiceInText, type ConcentrationMode } from '../../utils/concentration'
+import { abilityAttackRoll, isAttack } from '../../utils/sindragosa/abilityAttack'
+import { WEAPON_DAMAGE } from '../../utils/sindragosa/equipment'
+import { openRollSheet } from '../../composables/useRollSheet'
+import type { RollContext } from '../../composables/useRollHistory'
+import { formOfAbility } from '../../data/sindragosa/forms'
+import { allowedModes, CONCENTRATION_LABELS, type ConcentrationMode } from '../../utils/concentration'
+import { spellCost } from '../../utils/sindragosa/mana'
+import { showToast } from '../../composables/useToast'
 import type { Ability } from '../../data/sindragosa/types'
 import type { Character } from '../../types/character'
 
 /**
  * Une compétence. Repliée : type d'action, nom, limite d'usage, condition.
  * Dépliée : effet, prérequis ✓/✗, concentration pour les sorts.
+ * Un sort affiche son coût en mana, payé au lancer (plans/40-mana.md).
  * Verrouillée : grisée, sans bouton — elle montre un objectif.
+ * Une compétence d'attaque lance son jet (arme équipée, arme naturelle ou domaine du sort) ;
+ * une transformation se prend et se quitte d'un tap (plans/39).
  */
 const props = defineProps<{
   ability: Ability
@@ -27,9 +37,11 @@ const props = defineProps<{
   defaultOpen?: boolean
   /** Sans l'icône du type d'action (le trait racial sur la fiche). */
   hideType?: boolean
+  /** Où ranger le jet d'attaque dans le journal ; « fiche » par défaut. */
+  rollContext?: RollContext
 }>()
 
-const emit = defineEmits<{ (e: 'toggle-pin'): void }>()
+const emit = defineEmits<{ (e: 'toggle-pin'): void; (e: 'attack'): void }>()
 
 const open = ref(props.defaultOpen ?? false)
 const concentration = ref<ConcentrationMode | ''>('')
@@ -44,9 +56,37 @@ const modeItems = computed<AppToggleItem[]>(() =>
   modes.value.map((m) => ({ value: m, icon: MODE_ICONS[m as keyof typeof MODE_ICONS], title: CONCENTRATION_LABELS[m], testid: `concentration-${m}` })),
 )
 
-const effect = computed(() =>
-  concentration.value === 'puissante' ? upgradeDiceInText(props.ability.effect) : props.ability.effect,
-)
+const manaCost = computed(() => spellCost(props.ability, concentration.value === 'econome'))
+const missingMana = computed(() => manaCost.value != null && (props.character?.manaCurrent ?? 0) < manaCost.value)
+
+const attackRoll = computed(() => (props.character ? abilityAttackRoll(props.character, props.ability) : null))
+
+function attack() {
+  if (!attackRoll.value || missingMana.value) return
+  openRollSheet({
+    ...attackRoll.value,
+    manaCost: manaCost.value ?? undefined,
+    power: concentration.value === 'puissante',
+    context: props.rollContext ?? 'fiche',
+  })
+  concentration.value = ''
+  emit('attack')
+}
+
+/** Un sort sans jet (soin, buff, hors combat) : il réussit d'office, on paie et c'est tout. */
+function cast() {
+  if (!props.character || manaCost.value == null || missingMana.value) return
+  props.character.manaCurrent -= manaCost.value
+  showToast(`${props.ability.name} : −${manaCost.value} mana`)
+  concentration.value = ''
+}
+
+const form = computed(() => (props.character ? formOfAbility(props.ability, props.character.race) : undefined))
+const inForm = computed(() => !!form.value && props.character?.form === form.value.id)
+
+function toggleForm() {
+  if (props.character && form.value) props.character.form = inForm.value ? null : form.value.id
+}
 
 function use() {
   if (props.character) props.character.abilityUses = toggleUse(props.character, props.ability)
@@ -63,6 +103,9 @@ function use() {
       <button type="button" class="ability-toggle" :aria-expanded="open" data-testid="ability-toggle" @click="open = !open">
         <component :is="type.icon" v-if="!hideType" :size="16" class="ability-type" :title="type.label" />
         <span class="ability-name">{{ ability.name }}</span>
+        <span v-if="manaCost != null" class="ability-mana" title="Coût en mana" :data-testid="`ability-mana-${ability.id}`">
+          <Droplet :size="12" />{{ manaCost }}
+        </span>
       </button>
       <button
         v-if="ability.usesPer && unlocked && character"
@@ -76,6 +119,41 @@ function use() {
       >
         {{ USES_PER_LABELS[ability.usesPer] }}
       </button>
+      <AppIconBtn
+        v-if="form && unlocked && character"
+        :variant="inForm ? 'primary' : 'ghost'"
+        :disabled="readonly"
+        :aria-pressed="inForm"
+        :title="inForm
+          ? `Quitter : ${form.label}`
+          : `Prendre : ${form.label} (${form.weapon}, ${WEAPON_DAMAGE.naturelle + form.damageBonus} dégâts)`"
+        :data-testid="`ability-form-${ability.id}`"
+        @click="toggleForm"
+      >
+        <PawPrint :size="16" />
+      </AppIconBtn>
+      <AppIconBtn
+        v-if="manaCost != null && !isAttack(ability) && unlocked && character"
+        variant="primary"
+        :disabled="readonly || missingMana"
+        :title="missingMana ? `Pas assez de mana (${manaCost})` : `Lancer (${manaCost} mana)`"
+        :data-testid="`ability-cast-${ability.id}`"
+        @click="cast"
+      >
+        <Sparkles :size="16" />
+      </AppIconBtn>
+      <AppIconBtn
+        v-if="isAttack(ability) && unlocked && character"
+        variant="primary"
+        :disabled="readonly || !attackRoll || missingMana"
+        :title="missingMana
+          ? `Pas assez de mana (${manaCost})`
+          : attackRoll ? `Jet d'attaque : ${attackRoll.label}` : 'Équipe une arme pour attaquer'"
+        :data-testid="`ability-attack-${ability.id}`"
+        @click="attack"
+      >
+        <Swords :size="16" />
+      </AppIconBtn>
       <AppIconBtn
         v-if="pinned !== undefined && unlocked"
         variant="bare"
@@ -95,7 +173,7 @@ function use() {
       </p>
       <AppToggleGroup v-if="modeItems.length" v-model="concentration" :items="modeItems" />
       <p v-if="concentration" class="ability-meta">{{ CONCENTRATION_LABELS[concentration] }}</p>
-      <p class="ability-effect" data-testid="ability-effect">{{ effect }}</p>
+      <p class="ability-effect" data-testid="ability-effect">{{ ability.effect }}</p>
       <ul v-if="ability.prerequisites.length" class="ability-prereqs">
         <li
           v-for="(p, i) in ability.prerequisites"
@@ -156,6 +234,16 @@ function use() {
 
 .ability-name {
   font-weight: 600;
+}
+
+.ability-mana {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--accent-strong);
 }
 
 .ability-use {

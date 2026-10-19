@@ -178,7 +178,7 @@ export const MONSTERS: Monster[] = [
     "abilities": [
       {
         "name": "Charge (L)",
-        "description": "le bison parcourt une distance maximale de 30 mètres et réalise une attaque. avec avantage (+1d6). Si l'attaque est réussie, en plus des DM normaux, une victime de taille inférieure ou égale à la créature doit faire un test opposé de FOR ou être renversée. Dans ce cas, la créature piétine (ou embroche) sa victime et les DM sont doublés."
+        "description": "le bison parcourt une distance maximale de 30 mètres et réalise une attaque. avec avantage (+1d6). Si l'attaque est réussie, en plus des dégâts normaux, une victime de taille inférieure ou égale à la créature doit faire un test opposé de FOR ou être renversée. Dans ce cas, la créature piétine (ou embroche) sa victime et les dégâts sont doublés."
       }
     ],
     "description": "Ce profil correspond à tous les grands herbivores à cornes (taureau, etc.). Les femelles fuient généralement à moins de défendre un petit."
@@ -210,7 +210,7 @@ export const MONSTERS: Monster[] = [
     "abilities": [
       {
         "name": "Charge (L)",
-        "description": "le bison parcourt une distance maximale de 30 mètres et réalise une attaque. avec avantage (+1d6). Si l'attaque est réussie, en plus des DM normaux, une victime de taille inférieure ou égale à la créature doit faire un test opposé de FOR ou être renversée. Dans ce cas, la créature piétine (ou embroche) sa victime et les DM sont doublés."
+        "description": "le bison parcourt une distance maximale de 30 mètres et réalise une attaque. avec avantage (+1d6). Si l'attaque est réussie, en plus des dégâts normaux, une victime de taille inférieure ou égale à la créature doit faire un test opposé de FOR ou être renversée. Dans ce cas, la créature piétine (ou embroche) sa victime et les dégâts sont doublés."
       }
     ],
     "description": "Un grand mâle, d'environ 1,80 m au garrot et pesant une tonne."
@@ -300,11 +300,11 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Charge (L)",
-        "description": "Le centaure parcourt une distance maximale de 30 mètres et réalise une attaque. avec avantage (+1d6). Si l'attaque est réussie, en plus des DM normaux, une victime de taille inférieure ou égale à la créature doit faire un test opposé de FOR ou être renversée. Dans ce cas, la créature piétine (ou embroche) sa victime et les DM sont doublés."
+        "description": "Le centaure parcourt une distance maximale de 30 mètres et réalise une attaque. avec avantage (+1d6). Si l'attaque est réussie, en plus des dégâts normaux, une victime de taille inférieure ou égale à la créature doit faire un test opposé de FOR ou être renversée. Dans ce cas, la créature piétine (ou embroche) sa victime et les dégâts sont doublés."
       },
       {
         "name": "Hybride",
-        "description": "Étant un mélange de deux créatures, le centaure possède des caractéristiques particulières. Sa FOR de +6 fait référence à la puissance globale de la créature mais son buste humain lui octroie seulement un bonus de +3 en combat. Il est considéré comme une créature humanoïde pour tout ce qui concerne les attaques mentales mais pas pour les attaques physiques. Il en va de même pour la END en cas de progression dans un profil de personnage."
+        "description": "Étant un mélange de deux créatures, le centaure est considéré comme une créature humanoïde pour tout ce qui concerne les attaques mentales, mais pas pour les attaques physiques."
       }
     ],
     "description": "Le centaure est une créature pourvue d'un corps de cheval et d'un buste humain. Très rares, la plupart de ses représentants ont été éradiqués des Terres d'Arran. Il survit cependant quelques peuplades dans les prairies reculées à l'est de l'Ourann, en bordure de la Birkanie et au cœur des forêts les plus dépeuplées. Ces centaures sont généralement primitifs et bestiaux."
@@ -350,11 +350,11 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Attaque éclair (L)",
-        "description": "Le centaure peut réaliser une attaque de mêlée avec un bonus de +2d6 en attaque et aux DM. Alternativement, il peut réaliser deux attaques à distance dans le même tour."
+        "description": "Le centaure peut réaliser une attaque de mêlée avec un bonus de +2d6 en attaque et +2 aux dégâts. Alternativement, il peut réaliser deux attaques à distance dans le même tour."
       },
       {
         "name": "Charge (L)",
-        "description": "Le centaure parcourt une distance maximale de 30 mètres et réalise une attaque. avec avantage (+1d6). Si l'attaque est réussie, en plus des DM normaux, une victime de taille inférieure ou égale à la créature doit faire un test opposé de FOR ou être renversée. Dans ce cas, la créature piétine (ou embroche) sa victime et les DM sont doublés."
+        "description": "Le centaure parcourt une distance maximale de 30 mètres et réalise une attaque. avec avantage (+1d6). Si l'attaque est réussie, en plus des dégâts normaux, une victime de taille inférieure ou égale à la créature doit faire un test opposé de FOR ou être renversée. Dans ce cas, la créature piétine (ou embroche) sa victime et les dégâts sont doublés."
       },
       {
         "name": "Forestier",
@@ -393,7 +393,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Natation",
-        "description": "Les raykenns sont parfaitement adaptés au milieu aquatique. En cas de combat dans l'eau, ils ne souffrent d'aucune pénalité tandis que les personnages subissent un malus de -2 (marais) à -5 (sous l'eau). Voir page 114 pour les règles sur les conditions difficiles et le NR."
+        "description": "Les raykenns sont parfaitement adaptés au milieu aquatique. En cas de combat dans l'eau, ils ne souffrent d'aucune pénalité tandis que les personnages subissent un malus de -1d6 (marais) à -2d6 (sous l'eau)."
       }
     ]
   },
@@ -422,7 +422,7 @@ export const MONSTERS: Monster[] = [
       }
     ],
     "abilities": [],
-    "description": "Un cheval de selle n'est pas apte à subir le stress du combat. Dans ce type de situation, le cavalier doit utiliser une action de mouvement et réussir un test de CHA difficulté 10 pour réussir à le maîtriser à chaque tour. En cas d'échec, le cheval prend la fuite. Animal domestique, le cheval n'est pas habitué à se défendre, il reçoit un malus de -2 en combat (déjà pris en compte dans ses caractéristiques)."
+    "description": "Un cheval de selle n'est pas apte à subir le stress du combat. Dans ce type de situation, le cavalier doit utiliser une action de mouvement et réussir un test de CHA palier facile pour réussir à le maîtriser à chaque tour. En cas d'échec, le cheval prend la fuite. Animal domestique, le cheval n'est pas habitué à se défendre, il reçoit un malus de -1d6 en combat (déjà pris en compte dans ses caractéristiques)."
   },
   {
     "name": "Crocodile",
@@ -451,7 +451,7 @@ export const MONSTERS: Monster[] = [
     "abilities": [
       {
         "name": "Embuscade",
-        "description": "au premier tour de combat, si l'environnement permet au crocodile de se dissimuler, la cible doit faire un test de SAG palier moyenne ou être surprise. S'il attaque avec succès une cible surprise, le crocodile inflige +2 aux dégâts supplémentaires et toute créature dont la FOR est inférieure à la sienne est renversée. Il obtient un bonus de +5 à tous les tests de discrétion."
+        "description": "au premier tour de combat, si l'environnement permet au crocodile de se dissimuler, la cible doit faire un test de SAG palier moyenne ou être surprise. S'il attaque avec succès une cible surprise, le crocodile inflige +2 aux dégâts supplémentaires et toute créature dont la FOR est inférieure à la sienne est renversée. Il obtient un bonus de +2d6 à tous les tests de discrétion."
       }
     ],
     "description": "Ces caractéristiques peuvent aussi être utilisées pour tous les lézards prédateurs de grande taille (environ 3 mètres) à forte dentition (alligator et autres varans)."
@@ -497,7 +497,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Résistance",
-        "description": "Par défaut, tous les démons réduisent les DM de feu et d'acide de 10 points. D'autres capacités peuvent améliorer cette résistance."
+        "description": "Par défaut, tous les démons réduisent les dégâts de feu et d'acide de 5 points. D'autres capacités peuvent améliorer cette résistance."
       },
       {
         "name": "Télépathie",
@@ -513,11 +513,11 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Se fondre dans les ombres",
-        "description": "Au prix d'une action de mouvement, le démon mineur peut gagner les ombres et y disparaître. Il peut en ressortir quand bon lui semble, à une distance maximale de 20 m de son point de disparition – toujours au prix d'une action de mouvement. Tant qu'il est dans les ombres, le démon mineur est insensible à tout type de DM – hormis les DM de zone. Il peut cependant être révélé à l'aide d'une source de lumière suffisamment puissante (tel qu'un sort de Lumières dansantes par exemple ou un feu plus important que celui d'une torche)."
+        "description": "Au prix d'une action de mouvement, le démon mineur peut gagner les ombres et y disparaître. Il peut en ressortir quand bon lui semble, à une distance maximale de 20 m de son point de disparition – toujours au prix d'une action de mouvement. Tant qu'il est dans les ombres, le démon mineur est insensible à tout type de dégâts – hormis les dégâts de zone. Il peut cependant être révélé à l'aide d'une source de lumière suffisamment puissante (tel qu'un sort de Lumières dansantes par exemple ou un feu plus important que celui d'une torche)."
       },
       {
         "name": "Venin démoniaque",
-        "description": "Une créature blessée par le démon mineur doit réussir un test de END palier moyenne ou être affaiblie (utiliser 1d12) pendant 1d6 minutes."
+        "description": "Une créature blessée par le démon mineur doit réussir un test de END palier moyenne ou être affaiblie pendant 1d6 minutes."
       },
       {
         "name": "Vol",
@@ -525,7 +525,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Image décalée",
-        "description": "Pendant 7 tours, chaque fois que le démon est touché, lancez 1d6. Sur un résultat de 5 ou 6 il ne subit pas de DM."
+        "description": "Pendant 7 tours, chaque fois que le démon est touché, lancez 1d6. Sur un résultat de 5 ou 6 il ne subit pas de dégâts."
       },
       {
         "name": "Mirage",
@@ -541,11 +541,11 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Sous-tension",
-        "description": "Pendant 7 tours, toute attaque de contact réussie provoque 1d6 DM à l'attaque. Permet d'attaquer à distance pour 1d6 DM."
+        "description": "Pendant 7 tours, toute attaque de contact réussie provoque 2 dégâts à l'attaque. Permet d'attaquer à distance pour 2 dégâts."
       },
       {
         "name": "Armure de terre",
-        "description": "Octroie une RD 6 contre le feu, le froid, l'électricité ou l'acide pendant 7 tours (en plus de la Résistance)."
+        "description": "Octroie +3 d'armure contre le feu, le froid, l'électricité ou l'acide pendant 7 tours (en plus de la Résistance)."
       }
     ],
     "description": "Ce démon s'incarne rarement seul dans notre dimension, il s'agit plutôt du suivant d'un prince démon. À moins qu'un apprenti mystique n'ait cherché à jouer avec le feu... Le démon mineur est l'une des rares créatures démoniaques à pouvoir survivre en dehors du corps d'un hôte. Il n'a pas réellement de forme en vérité. Il ressemble davantage à une sorte de nuage ténébreux, une émanation informe et effrayante cherchant à se tapir dans les ombres pour mieux se repaître de la terreur des vivants."
@@ -586,11 +586,11 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Absorption d'énergie (L)",
-        "description": "une dominatrice peut aspirer l'énergie vitale de sa victime en l'enlaçant ou en l'embrassant. Si la victime n'est pas consentante, la dominatrice doit auparavant réussir un test d'attaque au contact puis gagner un test opposé de FOR. La victime de l'absorption d'énergie est affaiblie (utilise un d12 aux tests) pour 24 heures mais ressent une jouissance extatique lors de ce contact. Elle ressent le besoin impérieux de le renouveler pendant les 24 heures suivantes à moins de réussir un test de SAG palier difficile. Si la victime résiste, elle est immunisée à cet effet pour les prochaines 24 heures. En plus des autres effets, si la dominatrice le souhaite, à chaque fois qu'elle absorbe l'énergie, elle peut infliger 1d6 DM et guérir d'autant (les points de vie acquis au-delà de son score maximum de PV sont perdus après dix minutes)."
+        "description": "une dominatrice peut aspirer l'énergie vitale de sa victime en l'enlaçant ou en l'embrassant. Si la victime n'est pas consentante, la dominatrice doit auparavant réussir un test d'attaque au contact puis gagner un test opposé de FOR. La victime de l'absorption d'énergie est affaiblie pour 24 heures mais ressent une jouissance extatique lors de ce contact. Elle ressent le besoin impérieux de le renouveler pendant les 24 heures suivantes à moins de réussir un test de SAG palier difficile. Si la victime résiste, elle est immunisée à cet effet pour les prochaines 24 heures. En plus des autres effets, si la dominatrice le souhaite, à chaque fois qu'elle absorbe l'énergie, elle peut infliger 2 dégâts et guérir d'autant (les points de vie acquis au-delà de son score maximum de PV sont perdus après dix minutes)."
       },
       {
         "name": "Vitalité surnaturelle",
-        "description": "la dominatrice guérit à un rythme fantastique : elle récupère 5 PV à la fin de chaque tour. Les DM provenant d'armes magiques ou de sorts ne peuvent guérir de cette façon."
+        "description": "la dominatrice guérit à un rythme fantastique : elle récupère 3 PV à la fin de chaque tour. Les dégâts provenant d'armes magiques ou de sorts ne peuvent guérir de cette façon."
       }
     ],
     "description": "Bien qu'asexuée, la dominatrice apprécie de prendre la voix et le corps de belles humanoïdes pour dominer et corrompre les individus mâles. Elle préfère avoir recours à la ruse et la domination psychologique plutôt qu'au combat pour tuer et assouvir ses instincts de destruction."
@@ -628,7 +628,7 @@ export const MONSTERS: Monster[] = [
     "abilities": [
       {
         "name": "Souffle enflammé (L)",
-        "description": "au prix d'une action limitée, le dragon commun peut cracher un souffle ardent jusqu'à une distance de 6 et sur 4 m de large. Toutes les cibles prises dans la zone doivent réaliser un test de AGI palier moyenne. En cas d'échec, elles subissent 6d6 DM de feu. Une réussite permet de diviser les DM par deux. Le dragon doit attendre 1d4 tours avant de pouvoir de nouveau utiliser son souffle."
+        "description": "au prix d'une action limitée, le dragon commun peut cracher un souffle ardent jusqu'à une distance de 6 et sur 4 m de large. Toutes les cibles prises dans la zone doivent réaliser un test de AGI palier moyenne. En cas d'échec, elles subissent 11 dégâts de feu. Une réussite permet de diviser les dégâts par deux. Le dragon doit attendre 1d4 tours avant de pouvoir de nouveau utiliser son souffle."
       },
       {
         "name": "Vol rapide",
@@ -683,7 +683,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Coup de queue",
-        "description": "à chaque fois qu'un adversaire attaque le dragon originel dans le dos, il subit une attaque de queue gratuite équivalente à une attaque avec un malus de -5 et des DM divisés par deux."
+        "description": "à chaque fois qu'un adversaire attaque le dragon originel dans le dos, il subit une attaque de queue gratuite équivalente à une attaque avec un malus de -2d6 et des dégâts divisés par deux."
       },
       {
         "name": "Effroi",
@@ -691,7 +691,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Emporter dans les airs",
-        "description": "le dragon originel peut emporter dans les airs une victime agrippée de taille inférieure à la sienne au prix d'une action de mouvement. Au premier tour, si la victime se libère (test de FOR opposé), elle subit, 5d6 DM de chute. Au tour suivant, si la créature décide de prendre de l'altitude, les DM passent à 10d6."
+        "description": "le dragon originel peut emporter dans les airs une victime agrippée de taille inférieure à la sienne au prix d'une action de mouvement. Au premier tour, si la victime se libère (test de FOR opposé), elle subit, 9 dégâts de chute. Au tour suivant, si la créature décide de prendre de l'altitude, les dégâts passent à 18."
       },
       {
         "name": "Fauchage",
@@ -699,7 +699,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Souffle enflammé (L)",
-        "description": "le souffle est une attaque de zone affectant toutes les créatures dans un cône de 30 mètres de long sur 15 de large. L'attaque inflige automatiquement (pas de test d'attaque) [6d6 + 30] DM. Les DM sont divisés par deux si la victime réussit un test de AGI palier moyenne. La créature doit attendre après chaque utilisation 1d4 tours avant d'utiliser à nouveau son souffle."
+        "description": "le souffle est une attaque de zone affectant toutes les créatures dans un cône de 30 mètres de long sur 15 de large. L'attaque inflige automatiquement (pas de test d'attaque) 26 dégâts. Les dégâts sont divisés par deux si la victime réussit un test de AGI palier moyenne. La créature doit attendre après chaque utilisation 1d4 tours avant d'utiliser à nouveau son souffle."
       },
       {
         "name": "Vision dans le noir",
@@ -715,7 +715,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Sommeil",
-        "description": "1d6+4 créatures dans une zone de 10 mètres de diamètre (18 PV max.) sombrent dans l'inconscience pendant 9 minutes."
+        "description": "1d6+4 créatures dans une zone de 10 mètres de diamètre (9 PV max.) sombrent dans l'inconscience pendant 9 minutes."
       },
       {
         "name": "Confusion",
@@ -770,7 +770,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Coup de queue",
-        "description": ": à chaque fois qu'un adversaire attaque le dragon dans le dos, il subit une attaque de queue gratuite équivalente à une attaque avec un malus de -5 et des DM divisés par deux."
+        "description": ": à chaque fois qu'un adversaire attaque le dragon dans le dos, il subit une attaque de queue gratuite équivalente à une attaque avec un malus de -2d6 et des dégâts divisés par deux."
       },
       {
         "name": "Effroi",
@@ -778,7 +778,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Emporter dans les airs",
-        "description": ": le dragon originel peut emporter dans les airs une victime agrippée de taille inférieure à la sienne au prix d'une action de mouvement. Au premier tour, si la victime se libère (test de FOR opposé), elle subit 5d6 DM de chute. Au tour suivant, si la créature décide"
+        "description": ": le dragon originel peut emporter dans les airs une victime agrippée de taille inférieure à la sienne au prix d'une action de mouvement. Au premier tour, si la victime se libère (test de FOR opposé), elle subit 9 dégâts de chute. Au tour suivant, si la créature décide"
       },
       {
         "name": "Fauchage",
@@ -786,7 +786,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Souffle enflammé (L)",
-        "description": ": Le souffle est une attaque de zone affectant toutes les créatures dans un cône de 30 mètres de long sur 15 de large. L'attaque inflige automatiquement (pas de test d'attaque) 10d6 + 30 DM. Les DM sont divisés par deux si la victime réussit un test de AGI palier moyenne. La créature doit attendre 1d4 tours avant d'utiliser à nouveau son souffle après chaque utilisation."
+        "description": ": Le souffle est une attaque de zone affectant toutes les créatures dans un cône de 30 mètres de long sur 15 de large. L'attaque inflige automatiquement (pas de test d'attaque) 33 dégâts. Les dégâts sont divisés par deux si la victime réussit un test de AGI palier moyenne. La créature doit attendre 1d4 tours avant d'utiliser à nouveau son souffle après chaque utilisation."
       },
       {
         "name": "Vision dans le noir",
@@ -806,7 +806,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Sommeil",
-        "description": ": 1d6+6 créatures dans une zone de 10 mètres de diamètre (22 PV max.) sombrent dans l'inconscience pendant 11 minutes."
+        "description": ": 1d6+6 créatures dans une zone de 10 mètres de diamètre (11 PV max.) sombrent dans l'inconscience pendant 11 minutes."
       },
       {
         "name": "Confusion",
@@ -818,7 +818,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Domination",
-        "description": ": permet de prendre le contrôle d'un corps pendant [1d4+6] minutes en réussissant un test d'attaque magique opposé. La cible peut résister à chaque fois qu'elle prend des DM avec un test de SAG palier difficile."
+        "description": ": permet de prendre le contrôle d'un corps pendant [1d4+6] minutes en réussissant un test d'attaque magique opposé. La cible peut résister à chaque fois qu'elle prend des dégâts avec un test de SAG palier difficile."
       }
     ]
   },
@@ -860,8 +860,8 @@ export const MONSTERS: Monster[] = [
         "description": "la dryade vengeresse utilise sa grande taille pour affecter plusieurs créatures d’un seul coup de branche. Si plusieurs cibles sont présentes face à elle, son attaque affecte deux créatures (dans un arc de 180°). Faire un seul test d’attaque et le comparer à la défense de chaque cible."
       },
       {
-        "name": "Résistance aux DM",
-        "description": "la dryade possède retranche 10 points à tous les DM sauf s’il s’agit de DM de feu ou d’armes tranchantes très lourdes, comme les haches."
+        "name": "Résistance aux dégâts",
+        "description": "la dryade possède retranche 5 points à tous les dégâts sauf s’il s’agit de dégâts de feu ou d’armes tranchantes très lourdes, comme les haches."
       }
     ]
   },
@@ -899,8 +899,8 @@ export const MONSTERS: Monster[] = [
         "description": "les dryades ne respirent pas et sont immunisées aux maladies, aux poisons, à toutes les attaques qui demandent un test de END et sont infatigables."
       },
       {
-        "name": "Résistance aux DM",
-        "description": "la dryade possède retranche 10 points à tous les DM sauf s’il s’agit de DM de feu ou d’armes tranchantes très lourdes, comme les haches."
+        "name": "Résistance aux dégâts",
+        "description": "la dryade possède retranche 5 points à tous les dégâts sauf s’il s’agit de dégâts de feu ou d’armes tranchantes très lourdes, comme les haches."
       }
     ],
     "description": "Une dryade – également appelé esprit de la forêt – est une sorte d’arbre vivant ou un amalgame de végétaux ayant pris une forme grossièrement humanoïde. C’est la reine sylvaine Eliseii qui a réveillé ces créatures avant que la reine Ora ne renouvelle l’exploit quelques décennies plus tard. Aujourd’hui, les dryades sont retournées à leur hibernation séculaire mais leur essence est toujours présente dans les forêts de Duhann et de Daëdenn. Il n’est pas exclu qu’un druide ou un sage suffisamment puissant soit capable d’en éveiller de nouvelles, quels que soit ses desseins."
@@ -940,7 +940,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Cyclone (L)",
-        "description": "une fois par combat, un élémentaire peut se transformer en tourbillon de matière élémentaire. Pendant [1d4+1] tours, il peut se déplacer à travers les créatures et les objets à la vitesse de 30 mètres par tour. Toute créature sur son passage doit faire au choix un test de AGI ou de FOR palier difficile de l'élémentaire. En cas d'échec, la cible subit automatiqument les DM de base de l'élémentaire (selon la taille) et elle est renversée au sol (si sa taille ne dépasse pas celle de l'élémentaire). En cas de succès, elle ne subit que la moitié des DM et peut rester debout. Lorsqu'il est sous forme de cyclone, l'élémentaire gagne un bonus de +2d6 en défense."
+        "description": "une fois par combat, un élémentaire peut se transformer en tourbillon de matière élémentaire. Pendant [1d4+1] tours, il peut se déplacer à travers les créatures et les objets à la vitesse de 30 mètres par tour. Toute créature sur son passage doit faire au choix un test de AGI ou de FOR palier difficile de l'élémentaire. En cas d'échec, la cible subit automatiqument les dégâts de base de l'élémentaire (selon la taille) et elle est renversée au sol (si sa taille ne dépasse pas celle de l'élémentaire). En cas de succès, elle ne subit que la moitié des dégâts et peut rester debout. Lorsqu'il est sous forme de cyclone, l'élémentaire gagne un bonus de +2d6 en défense."
       },
       {
         "name": "Vision dans le noir",
@@ -991,7 +991,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Cyclone (L)",
-        "description": "une fois par combat, un élémentaire peut se transformer en tourbillon de matière élémentaire. Pendant [1d4+1] tours, il peut se déplacer à travers les créatures et les objets à la vitesse de 30 mètres par tour. Toute créature sur son passage doit faire au choix un test de AGI ou de FOR palier difficile de l'élémentaire. En cas d'échec, la cible subit automatiqument les DM de base de l'élémentaire (selon la taille) et elle est renversée au sol (si sa taille ne dépasse pas celle de l'élémentaire). En cas de succès, elle ne subit que la moitié des DM et peut rester debout. Lorsqu'il est sous forme de cyclone, l'élémentaire gagne un bonus de +2d6 en défense."
+        "description": "une fois par combat, un élémentaire peut se transformer en tourbillon de matière élémentaire. Pendant [1d4+1] tours, il peut se déplacer à travers les créatures et les objets à la vitesse de 30 mètres par tour. Toute créature sur son passage doit faire au choix un test de AGI ou de FOR palier difficile de l'élémentaire. En cas d'échec, la cible subit automatiqument les dégâts de base de l'élémentaire (selon la taille) et elle est renversée au sol (si sa taille ne dépasse pas celle de l'élémentaire). En cas de succès, elle ne subit que la moitié des dégâts et peut rester debout. Lorsqu'il est sous forme de cyclone, l'élémentaire gagne un bonus de +2d6 en défense."
       },
       {
         "name": "Vision dans le noir",
@@ -1042,7 +1042,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Cyclone (L)",
-        "description": "une fois par combat, un élémentaire peut se transformer en tourbillon de matière élémentaire. Pendant [1d4+1] tours, il peut se déplacer à travers les créatures et les objets à la vitesse de 30 mètres par tour. Toute créature sur son passage doit faire au choix un test de AGI ou de FOR palier difficile de l'élémentaire. En cas d'échec, la cible subit automatiqument les DM de base de l'élémentaire (selon la taille) et elle est renversée au sol (si sa taille ne dépasse pas celle de l'élémentaire). En cas de succès, elle ne subit que la moitié des DM et peut rester debout. Lorsqu'il est sous forme de cyclone, l'élémentaire gagne un bonus de +2d6 en défense."
+        "description": "une fois par combat, un élémentaire peut se transformer en tourbillon de matière élémentaire. Pendant [1d4+1] tours, il peut se déplacer à travers les créatures et les objets à la vitesse de 30 mètres par tour. Toute créature sur son passage doit faire au choix un test de AGI ou de FOR palier difficile de l'élémentaire. En cas d'échec, la cible subit automatiqument les dégâts de base de l'élémentaire (selon la taille) et elle est renversée au sol (si sa taille ne dépasse pas celle de l'élémentaire). En cas de succès, elle ne subit que la moitié des dégâts et peut rester debout. Lorsqu'il est sous forme de cyclone, l'élémentaire gagne un bonus de +2d6 en défense."
       },
       {
         "name": "Vision dans le noir",
@@ -1089,7 +1089,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Cyclone (L)",
-        "description": "une fois par combat, un élémentaire peut se transformer en tourbillon de matière élémentaire. Pendant [1d4+1] tours, il peut se déplacer à travers les créatures et les objets à la vitesse de 30 mètres par tour. Toute créature sur son passage doit faire au choix un test de AGI ou de FOR palier difficile de l'élémentaire. En cas d'échec, la cible subit automatiqument les DM de base de l'élémentaire (selon la taille) et elle est renversée au sol (si sa taille ne dépasse pas celle de l'élémentaire). En cas de succès, elle ne subit que la moitié des DM et peut rester debout. Lorsqu'il est sous forme de cyclone, l'élémentaire gagne un bonus de +2d6 en défense."
+        "description": "une fois par combat, un élémentaire peut se transformer en tourbillon de matière élémentaire. Pendant [1d4+1] tours, il peut se déplacer à travers les créatures et les objets à la vitesse de 30 mètres par tour. Toute créature sur son passage doit faire au choix un test de AGI ou de FOR palier difficile de l'élémentaire. En cas d'échec, la cible subit automatiqument les dégâts de base de l'élémentaire (selon la taille) et elle est renversée au sol (si sa taille ne dépasse pas celle de l'élémentaire). En cas de succès, elle ne subit que la moitié des dégâts et peut rester debout. Lorsqu'il est sous forme de cyclone, l'élémentaire gagne un bonus de +2d6 en défense."
       },
       {
         "name": "Vision dans le noir",
@@ -1132,7 +1132,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Cyclone (L)",
-        "description": "une fois par combat, un élémentaire peut se transformer en tourbillon de matière élémentaire. Pendant [1d4+1] tours, il peut se déplacer à travers les créatures et les objets à la vitesse de 30 mètres par tour. Toute créature sur son passage doit faire au choix un test de AGI ou de FOR palier difficile de l'élémentaire. En cas d'échec, la cible subit automatiqument les DM de base de l'élémentaire (selon la taille) et elle est renversée au sol (si sa taille ne dépasse pas celle de l'élémentaire). En cas de succès, elle ne subit que la moitié des DM et peut rester debout. Lorsqu'il est sous forme de cyclone, l'élémentaire gagne un bonus de +2d6 en défense."
+        "description": "une fois par combat, un élémentaire peut se transformer en tourbillon de matière élémentaire. Pendant [1d4+1] tours, il peut se déplacer à travers les créatures et les objets à la vitesse de 30 mètres par tour. Toute créature sur son passage doit faire au choix un test de AGI ou de FOR palier difficile de l'élémentaire. En cas d'échec, la cible subit automatiqument les dégâts de base de l'élémentaire (selon la taille) et elle est renversée au sol (si sa taille ne dépasse pas celle de l'élémentaire). En cas de succès, elle ne subit que la moitié des dégâts et peut rester debout. Lorsqu'il est sous forme de cyclone, l'élémentaire gagne un bonus de +2d6 en défense."
       },
       {
         "name": "Vision dans le noir",
@@ -1179,7 +1179,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Affaiblissement",
-        "description": "à chaque fois qu'une créature subit les DM du contact corrupteur du fantôme, elle doit réussir un test de END palier moyenne ou être affaiblie pendant 1d6 minutes."
+        "description": "à chaque fois qu'une créature subit les dégâts du contact corrupteur du fantôme, elle doit réussir un test de END palier moyenne ou être affaiblie pendant 1d6 minutes."
       },
       {
         "name": "Aspect terrifiant",
@@ -1239,7 +1239,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Affaiblissement",
-        "description": "à chaque fois qu'une créature subit les DM du contact corrupteur du fantôme, elle doit réussir un test de END palier moyenne ou être affaiblie pendant 1d6 minutes."
+        "description": "à chaque fois qu'une créature subit les dégâts du contact corrupteur du fantôme, elle doit réussir un test de END palier moyenne ou être affaiblie pendant 1d6 minutes."
       },
       {
         "name": "Créature non vivante",
@@ -1349,11 +1349,11 @@ export const MONSTERS: Monster[] = [
     "abilities": [
       {
         "name": "Armure magique (L)",
-        "description": "la créature possède un pouvoir magique qui lui permet de diviser tous les DM physiques subis par deux pour le reste du combat. Ce pouvoir n'affecte pas les DM des attaques magiques élémentaires (feu, froid, acide, électricité)."
+        "description": "la créature possède un pouvoir magique qui lui permet de diviser tous les dégâts physiques subis par deux pour le reste du combat. Ce pouvoir n'affecte pas les dégâts des attaques magiques élémentaires (feu, froid, acide, électricité)."
       },
       {
         "name": "Attaque magique élémentaire (L)",
-        "description": "le fléau possède un pouvoir magique qui inflige [10d6 + 30] DM sur un test d'attaque magique réussi (portée 30 mètres) sur une cible unique. Ce pouvoir est lié à un élément propre au Fléau, que ce soit le feu, la glace, la roche, la foudre, etc."
+        "description": "le fléau possède un pouvoir magique qui inflige 33 dégâts sur un test d'attaque magique réussi (portée 30 mètres) sur une cible unique. Ce pouvoir est lié à un élément propre au Fléau, que ce soit le feu, la glace, la roche, la foudre, etc."
       },
       {
         "name": "Balayage",
@@ -1368,7 +1368,7 @@ export const MONSTERS: Monster[] = [
         "description": "sur un critique au test d'attaque, la victime est projetée à [1d6+1]"
       }
     ],
-    "description": "Également appelés géants ou titans, les Fléaux sont d'immenses créatures animées par l'énergie primordiale du monde. Ils dominaient les Terres d'Arran avant même l'arrivée des premiers Elfes et ont ravagé le monde par leurs guerres de territoires avant de s'apaiser et de s'endormir.\n\nLes légendes racontent qu'ils se sont éveillés une fois et que leur colère à la découverte des civilisations émergentes avait manqué d'éradiquer toute forme de vie pensante. Nul ne sait comment ils ont été de nouveau plongés dans leur sommeil sans fin.\n\nLe monde a depuis oublié leur existence. Mais s'il est vrai que les eaux, les roches et la végétation ont recouvert leur corps, ils ne sont pas morts. Ils dorment, simplement.\n\nLes Fléaux sont des créatures immenses, mesurant jusqu'à près de 20 mètres de haut – voire bien plus, les légendes traitant de certains Fléaux comme de véritables montagnes –, à la forme humanoïde mais aux traits bestiaux. Ils sont habités d'une rage ancestrale et dotés d'une force encore plus considérable que ce que laisse envisager leur stature. Certains disposent de pouvoirs magiques dépassant l'entendement.\n\nPersonnalisation : vous pouvez ajouter des voies de profil ou de prestige pour un bonus de +1 au NC par voie. Il n'y a virtuellement aucune limite au NC d'un Fléau mais ajoutez un rang"
+    "description": "Également appelés géants ou titans, les Fléaux sont d'immenses créatures animées par l'énergie primordiale du monde. Ils dominaient les Terres d'Arran avant même l'arrivée des premiers Elfes et ont ravagé le monde par leurs guerres de territoires avant de s'apaiser et de s'endormir.\n\nLes légendes racontent qu'ils se sont éveillés une fois et que leur colère à la découverte des civilisations émergentes avait manqué d'éradiquer toute forme de vie pensante. Nul ne sait comment ils ont été de nouveau plongés dans leur sommeil sans fin.\n\nLe monde a depuis oublié leur existence. Mais s'il est vrai que les eaux, les roches et la végétation ont recouvert leur corps, ils ne sont pas morts. Ils dorment, simplement.\n\nLes Fléaux sont des créatures immenses, mesurant jusqu'à près de 20 mètres de haut – voire bien plus, les légendes traitant de certains Fléaux comme de véritables montagnes –, à la forme humanoïde mais aux traits bestiaux. Ils sont habités d'une rage ancestrale et dotés d'une force encore plus considérable que ce que laisse envisager leur stature. Certains disposent de pouvoirs magiques dépassant l'entendement.\n\nPersonnalisation : vous pouvez ajouter des voies de profil ou de prestige pour un bonus de +1 au rang de menace par voie. Il n'y a virtuellement aucune limite au rang de menace d'un Fléau mais ajoutez un rang"
   },
   {
     "name": "Géant",
@@ -1443,7 +1443,7 @@ export const MONSTERS: Monster[] = [
     "abilities": [
       {
         "name": "Absorber l’électricité",
-        "description": "non seulement le golem de chair est immunisé à l’électricité mais, de plus, les DM de ce type lui permettent de guérir de ses blessures. Il régénère 1 PV pour 3 points de DM d’électricité qui lui sont infligés."
+        "description": "non seulement le golem de chair est immunisé à l’électricité mais, de plus, les dégâts de ce type lui permettent de guérir de ses blessures. Il régénère 1 PV pour 3 points de dégâts d’électricité qui lui sont infligés."
       },
       {
         "name": "Créature non vivante",
@@ -1451,15 +1451,15 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Charge (L)",
-        "description": "le golem de chair parcourt une distance maximale de 30 mètres et réalise une attaque : avec avantage (+1d6). Si l’attaque est réussie, en plus des DM normaux, une victime de taille inférieure ou égale à la créature, doit faire un test opposé de FOR ou être renversée. Dans ce cas, la créature piétine (ou embroche) sa victime et les DM sont doublés."
+        "description": "le golem de chair parcourt une distance maximale de 30 mètres et réalise une attaque : avec avantage (+1d6). Si l’attaque est réussie, en plus des dégâts normaux, une victime de taille inférieure ou égale à la créature, doit faire un test opposé de FOR ou être renversée. Dans ce cas, la créature piétine (ou embroche) sa victime et les dégâts sont doublés."
       },
       {
         "name": "Enrager",
-        "description": "lorsqu’il reçoit un coup critique ou si ses PV ont diminué de moitié ou plus, le golem de chair devient enragé. Il ignore les pénalités de douleur ou la peur, augmente de +5 son score d’attaque au contact et ses DM de +1d6. Il peut encore agir un tour complet après avoir atteint 0 PV."
+        "description": "lorsqu’il reçoit un coup critique ou si ses PV ont diminué de moitié ou plus, le golem de chair devient enragé. Il ignore les pénalités de douleur ou la peur, gagne +2d6 à ses attaques au contact et +2 aux dégâts. Il peut encore agir un tour complet après avoir atteint 0 PV."
       },
       {
         "name": "Résistance",
-        "description": "le golem de chair divise par deux tous les DM élémentaires (feu, froid, électricité, acide)."
+        "description": "le golem de chair divise par deux tous les dégâts élémentaires (feu, froid, électricité, acide)."
       },
       {
         "name": "Vision dans le noir",
@@ -1515,7 +1515,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Résistance",
-        "description": "le golem de divise par deux tous les DM élémentaires (feu, froid, électricité, acide)."
+        "description": "le golem de divise par deux tous les dégâts élémentaires (feu, froid, électricité, acide)."
       },
       {
         "name": "Vision dans le noir",
@@ -1567,7 +1567,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Résistance",
-        "description": "le golem divise par deux tous les DM élémentaires (feu, froid, électricité, acide)."
+        "description": "le golem divise par deux tous les dégâts élémentaires (feu, froid, électricité, acide)."
       },
       {
         "name": "Vision dans le noir",
@@ -1723,7 +1723,7 @@ export const MONSTERS: Monster[] = [
     "abilities": [
       {
         "name": "Embuscade",
-        "description": "au premier tour de combat, si l'environnement permet au grand crocodile de se dissimuler, la cible doit faire un test de SAG palier moyenne ou être surprise. S'il attaque avec succès une cible surprise, le crocodile inflige +2 aux dégâts supplémentaires et toute créature dont la FOR est inférieure à la sienne est renversée. Il obtient un bonus de +5 à tous les tests de discrétion."
+        "description": "au premier tour de combat, si l'environnement permet au grand crocodile de se dissimuler, la cible doit faire un test de SAG palier moyenne ou être surprise. S'il attaque avec succès une cible surprise, le crocodile inflige +2 aux dégâts supplémentaires et toute créature dont la FOR est inférieure à la sienne est renversée. Il obtient un bonus de +2d6 à tous les tests de discrétion."
       },
       {
         "name": "Dévorer",
@@ -1901,7 +1901,7 @@ export const MONSTERS: Monster[] = [
     "abilities": [
       {
         "name": "Guérison accélérée",
-        "description": "l'hydre guérit de 5 PV par tour sauf contre les DM de feu."
+        "description": "l'hydre guérit de 3 PV par tour sauf contre les dégâts de feu."
       },
       {
         "name": "Vision dans le noir",
@@ -1936,7 +1936,7 @@ export const MONSTERS: Monster[] = [
     "abilities": [
       {
         "name": "Guérison accélérée",
-        "description": "l'hydre guérit de 5 PV par tour sauf contre les DM de feu."
+        "description": "l'hydre guérit de 3 PV par tour sauf contre les dégâts de feu."
       },
       {
         "name": "Vision dans le noir",
@@ -2105,7 +2105,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Embuscade",
-        "description": "au premier tour de combat, si l'environnement permet au lion de se dissimuler, la cible doit faire un test de SAG palier difficile ou être surprise. S'il attaque avec succès une cible surprise, la créature inflige +2 aux dégâts et toute créature dont la FOR est inférieure à la sienne est *renversée*. Le lion obtient un bonus de +5 à tous les tests de discrétion et en Init."
+        "description": "au premier tour de combat, si l'environnement permet au lion de se dissimuler, la cible doit faire un test de SAG palier difficile ou être surprise. S'il attaque avec succès une cible surprise, la créature inflige +2 aux dégâts et toute créature dont la FOR est inférieure à la sienne est *renversée*. Le lion obtient un bonus de +2d6 à tous les tests de discrétion et de +2 en initiative."
       }
     ],
     "description": "Ce profil correspond à un jeune lion ou à une lionne d'environ 150 kg."
@@ -2141,7 +2141,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Embuscade",
-        "description": "au premier tour de combat, si l'environnement permet au lion de se dissimuler, la cible doit faire un test de SAG palier difficile ou être surprise. S'il attaque avec succès une cible surprise, la créature inflige +2 aux dégâts et toute créature dont la FOR est inférieure à la sienne est *renversée*. Le lion obtient un bonus de +5 à tous les tests de discrétion et en Init."
+        "description": "au premier tour de combat, si l'environnement permet au lion de se dissimuler, la cible doit faire un test de SAG palier difficile ou être surprise. S'il attaque avec succès une cible surprise, la créature inflige +2 aux dégâts et toute créature dont la FOR est inférieure à la sienne est *renversée*. Le lion obtient un bonus de +2d6 à tous les tests de discrétion et de +2 en initiative."
       }
     ]
   },
@@ -2172,14 +2172,14 @@ export const MONSTERS: Monster[] = [
     "abilities": [
       {
         "name": "Interchangeables",
-        "description": "tant que le loup et ses alliées sont plus nombreux que la cible, ils se relaient pour esquiver ses attaques et obtiennent un bonus de +2d6 en défense. Si plusieurs loups semblables sont au contact du PJ, le MJ a toute latitude pour infliger les DM d'une attaque sur le loup de son choix, le personnage ne sachant jamais lequel il blesse."
+        "description": "tant que le loup et ses alliées sont plus nombreux que la cible, ils se relaient pour esquiver ses attaques et obtiennent un bonus de +2d6 en défense. Si plusieurs loups semblables sont au contact du PJ, le MJ a toute latitude pour infliger les dégâts d'une attaque sur le loup de son choix, le personnage ne sachant jamais lequel il blesse."
       },
       {
         "name": "Odorat",
         "description": "l'odorat supérieur des loups leur permet d'obtenir la SAG en Carac. supérieure."
       }
     ],
-    "description": "Seul, le loup n'a pas usage de la capacité Interchangeables et son NC passe à ½. Ce profil correspond à un loup d'une cinquantaine de kilos."
+    "description": "Seul, le loup n'a pas usage de la capacité Interchangeables. Ce profil correspond à un loup d'une cinquantaine de kilos."
   },
   {
     "name": "Loup arctique",
@@ -2214,15 +2214,15 @@ export const MONSTERS: Monster[] = [
     "abilities": [
       {
         "name": "Embuscade",
-        "description": "au premier tour de combat, si l'environnement permet au loup arctique de se dissimuler, la cible doit faire un test de SAG palier difficile ou être surprise. S'il attaque avec succès une cible surprise, il inflige +2 aux dégâts et toute créature dont la FOR est inférieure à la sienne est renversée. Le loup arctique obtient un bonus de +5 à tous les tests de discrétion et en Init."
+        "description": "au premier tour de combat, si l'environnement permet au loup arctique de se dissimuler, la cible doit faire un test de SAG palier difficile ou être surprise. S'il attaque avec succès une cible surprise, il inflige +2 aux dégâts et toute créature dont la FOR est inférieure à la sienne est renversée. Le loup arctique obtient un bonus de +2d6 à tous les tests de discrétion et de +2 en initiative."
       },
       {
         "name": "Interchangeables",
-        "description": "tant que le loup arctique et ses alliées sont plus nombreux que la cible, ils se relaient pour esquiver ses attaques et obtiennent un bonus de +2d6 en défense. Si plusieurs loups arctiques semblables sont au contact du PJ, le MJ a toute latitude pour infliger les DM d'une attaque sur le loup arctique de son choix, le personnage ne sachant jamais lequel il blesse."
+        "description": "tant que le loup arctique et ses alliées sont plus nombreux que la cible, ils se relaient pour esquiver ses attaques et obtiennent un bonus de +2d6 en défense. Si plusieurs loups arctiques semblables sont au contact du PJ, le MJ a toute latitude pour infliger les dégâts d'une attaque sur le loup arctique de son choix, le personnage ne sachant jamais lequel il blesse."
       },
       {
         "name": "Souffle glacial (L)",
-        "description": "le souffle est une attaque de zone affectant toutes les créatures dans un cône de 10 mètres de long de 5 mètres de large. L'attaque inflige automatiquement [6d6 + 6] DM. Les DM sont divisés par deux si la victime réussit un test de AGI palier moyenne. Le loup arctique doit attendre 1d4 tours après chaque utilisation avant de pouvoir utiliser à nouveau son souffle."
+        "description": "le souffle est une attaque de zone affectant toutes les créatures dans un cône de 10 mètres de long de 5 mètres de large. L'attaque inflige automatiquement 14 dégâts. Les dégâts sont divisés par deux si la victime réussit un test de AGI palier moyenne. Le loup arctique doit attendre 1d4 tours après chaque utilisation avant de pouvoir utiliser à nouveau son souffle."
       }
     ],
     "description": "Le loup arctique est un formidable prédateur des étendues gelées du nord de la Borduria. Ce loup géant (environ 230 kg), capable de souffler une mort glacée sur ses proies, chasse généralement en meute et n'hésite pas à s'attaquer à des proies puissantes comme les ours polaires."
@@ -2254,7 +2254,7 @@ export const MONSTERS: Monster[] = [
     "abilities": [
       {
         "name": "Embuscade",
-        "description": "au premier tour de combat, si l’environnement permet au loup de se dissimuler, la cible doit faire un test de SAG palier difficile ou être surprise. S’il attaque avec succès une cible surprise, il inflige +2 aux dégâts et toute créature dont la FOR est inférieure à la sienne est renversée. Le loup obtient un bonus de +5 à tous les tests de discrétion et en Init."
+        "description": "au premier tour de combat, si l’environnement permet au loup de se dissimuler, la cible doit faire un test de SAG palier difficile ou être surprise. S’il attaque avec succès une cible surprise, il inflige +2 aux dégâts et toute créature dont la FOR est inférieure à la sienne est renversée. Le loup obtient un bonus de +2d6 à tous les tests de discrétion et de +2 en initiative."
       },
       {
         "name": "Dévorer",
@@ -2295,7 +2295,7 @@ export const MONSTERS: Monster[] = [
     "abilities": [
       {
         "name": "Embuscade",
-        "description": "au premier tour de combat, si l’environnement permet au loup-garou de se dissimuler, la cible doit faire un test de SAG palier difficile ou être surprise. S’il attaque avec succès une cible surprise, il inflige +2 aux dégâts et toute créature dont la FOR est inférieure à la sienne est renversée. Le loup obtient un bonus de +5 à tous les les tests de discrétion et en Init."
+        "description": "au premier tour de combat, si l’environnement permet au loup-garou de se dissimuler, la cible doit faire un test de SAG palier difficile ou être surprise. S’il attaque avec succès une cible surprise, il inflige +2 aux dégâts et toute créature dont la FOR est inférieure à la sienne est renversée. Le loup obtient un bonus de +2d6 à tous les tests de discrétion et de +2 en initiative."
       },
       {
         "name": "Empathie avec les loups",
@@ -2386,7 +2386,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Vampirisation (L)",
-        "description": "le murth’n thun doit réussir une attaque magique sur une cible vivante à une distance maximale de 30 mètres. En cas de réussite, la cible subit 4d6 DM et le murth’n thun régénère d’autant de PV que de DM infligés. De plus, à chaque fois qu’une créature meurt à moins de 20 mètres d’elle, la créature siphonné son énergie et gagne 1d6+8 PV."
+        "description": "le murth’n thun doit réussir une attaque magique sur une cible vivante à une distance maximale de 30 mètres. En cas de réussite, la cible subit 7 dégâts et le murth’n thun régénère d’autant de PV que de dégâts infligés. De plus, à chaque fois qu’une créature meurt à moins de 20 mètres d’elle, la créature siphonné son énergie et gagne 6 PV."
       },
       {
         "name": "Vision dans le noir",
@@ -2463,7 +2463,7 @@ export const MONSTERS: Monster[] = [
     "abilities": [
       {
         "name": "Venin",
-        "description": "la victime d'une morsure de serpent venimeux doit faire un test de END palier moyenne lors de chaque morsure. En cas d'échec la victime subit 1 point de DM supplémentaire par tour pendant 1d6 tours et, de plus, la victime est affaiblie pour une durée similaire exprimée en heures. Une nouvelle morsure n'augmente pas les DM à chaque tour mais cumule la durée d'effet (trois morsures venimeuses par serpent au maximum)."
+        "description": "la victime d'une morsure de serpent venimeux doit faire un test de END palier moyenne lors de chaque morsure. En cas d'échec la victime subit 1 dégât supplémentaire par tour pendant 1d6 tours et, de plus, la victime est affaiblie pour une durée similaire exprimée en heures. Une nouvelle morsure n'augmente pas les dégâts à chaque tour mais cumule la durée d'effet (trois morsures venimeuses par serpent au maximum)."
       },
       {
         "name": "Crachat (L)",
@@ -2525,11 +2525,11 @@ export const MONSTERS: Monster[] = [
     "abilities": [
       {
         "name": "Recouvrir (L)",
-        "description": "la nuée peut recouvrir sa proie après avoir réussi une attaque de contact. Dès lors, la cible est distraite, déséquilibrée et victime d’innombrables morsures. La nuée lui inflige automatiquement 1d6 DM par tour et la victime est affaiblie tant que la nuée n’est pas vaincue."
+        "description": "la nuée peut recouvrir sa proie après avoir réussi une attaque de contact. Dès lors, la cible est distraite, déséquilibrée et victime d’innombrables morsures. La nuée lui inflige automatiquement 2 dégâts par tour et la victime est affaiblie tant que la nuée n’est pas vaincue."
       },
       {
         "name": "Cibles multiples",
-        "description": "la nuée est constituée de très nombreuses cibles et les attaques conventionnelles lui infligent peu de DM. Les attaques de zone lui infligent des DM normaux mais tous les DM provoqués par des armes de contact ou à distance ne lui infligent qu’un seul point de DM par attaque réussie."
+        "description": "la nuée est constituée de très nombreuses cibles et les attaques conventionnelles lui infligent peu de dégâts. Les attaques de zone lui infligent des dégâts normaux mais tous les dégâts provoqués par des armes de contact ou à distance ne lui infligent qu’un seul point de dégâts par attaque réussie."
       },
       {
         "name": "Lent",
@@ -2570,7 +2570,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Vitalité surnaturelle",
-        "description": "l'ombre guérit à un rythme fantastique : elle récupère 5 PV à la fin de chaque tour."
+        "description": "l'ombre guérit à un rythme fantastique : elle récupère 3 PV à la fin de chaque tour."
       },
       {
         "name": "Vision dans le noir",
@@ -2578,7 +2578,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Affaiblissement",
-        "description": "à chaque fois qu'une ombre inflige des DM, la victime doit réussir un test de END palier moyenne ou être affaiblie pour 1d6 minutes."
+        "description": "à chaque fois qu'une ombre inflige des dégâts, la victime doit réussir un test de END palier moyenne ou être affaiblie pour 1d6 minutes."
       },
       {
         "name": "Création de rejeton",
@@ -2594,7 +2594,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Talon d'Achille",
-        "description": "une ombre retranche 10 points (RD 10) aux DM qui lui sont infligés par des armes ordinaires. Contre un groupe de personnage équipés d'armes traditionnelles, les ombres ont seulement un rang de menace de 2."
+        "description": "une ombre retranche 5 points aux dégâts qui lui sont infligés par des armes ordinaires. Contre un groupe de personnage équipés d'armes traditionnelles, les ombres ont seulement un rang de menace de 2."
       }
     ],
     "description": "Une ombre est un mort-vivant étrange, les restes maudits des âmes de morts très anciens qui hantent les ruines antiques. Une ombre est intangible et seulement vaguement humanoïde, rampant au sol telle une forme fuligineuse pour se dresser soudainement. Elle prend alors la forme d'une silhouette fantomatique plus ou moins translucide mue par le seul désir impie d'aspirer la vitalité de sa victime."
@@ -2632,7 +2632,7 @@ export const MONSTERS: Monster[] = [
     "abilities": [
       {
         "name": "Armure magique",
-        "description": "la créature possède un pouvoir magique qui lui permet de diviser tous les DM physiques subis par deux pour le reste du combat. Ce pouvoir n’affecte pas les DM des attaques magiques élémentaires (feu, froid, acide, électricité)."
+        "description": "la créature possède un pouvoir magique qui lui permet de diviser tous les dégâts physiques subis par deux pour le reste du combat. Ce pouvoir n’affecte pas les dégâts des attaques magiques élémentaires (feu, froid, acide, électricité)."
       },
       {
         "name": "Balayage",
@@ -2680,7 +2680,7 @@ export const MONSTERS: Monster[] = [
     "abilities": [
       {
         "name": "Charge (L)",
-        "description": "l'ours parcourt une distance maximale de 30 mètres et porte une attaque. avec avantage (+1d6). Si l'attaque est réussie, en plus des DM normaux, une victime de taille inférieure ou égale à la créature, doit faire un test opposé de FOR ou être renversée. Dans ce cas, l'ours piétine sa victime et les DM sont doublés."
+        "description": "l'ours parcourt une distance maximale de 30 mètres et porte une attaque. avec avantage (+1d6). Si l'attaque est réussie, en plus des dégâts normaux, une victime de taille inférieure ou égale à la créature, doit faire un test opposé de FOR ou être renversée. Dans ce cas, l'ours piétine sa victime et les dégâts sont doublés."
       }
     ],
     "description": "L'ours brun mesure environ 1,50 m au garrot et jusqu'à 2,50 m lorsqu'il se dresse sur ses pattes postérieures pour un poids d'environ 300 kg. On peut aussi trouver des spécimens d'ours noir particulièrement massifs (jusqu'à 400 kg) qui correspondent à ce profil."
@@ -2712,11 +2712,11 @@ export const MONSTERS: Monster[] = [
     "abilities": [
       {
         "name": "Charge (L)",
-        "description": "L’ours parcourt une distance maximale de 30 mètres et porte une attaque. avec avantage (+1d6). Si l’attaque est réussie, en plus des DM normaux, une victime de taille inférieure ou égale à la créature, doit faire un test opposé de FOR ou être renversée. Dans ce cas, l’ours piétine sa victime et les DM sont doublés."
+        "description": "L’ours parcourt une distance maximale de 30 mètres et porte une attaque. avec avantage (+1d6). Si l’attaque est réussie, en plus des dégâts normaux, une victime de taille inférieure ou égale à la créature, doit faire un test opposé de FOR ou être renversée. Dans ce cas, l’ours piétine sa victime et les dégâts sont doublés."
       },
       {
         "name": "Enrager",
-        "description": "lorsqu’il reçoit un coup critique ou si ses PV sont réduits de moitié ou plus, l’ours devient enragé. Il ignore les pénalités de douleur ou la peur, augmente de +5 son score d’attaque au contact et ses DM de +1d6. Il peut encore agir un tour complet après avoir atteint 0 PV."
+        "description": "lorsqu’il reçoit un coup critique ou si ses PV sont réduits de moitié ou plus, l’ours devient enragé. Il ignore les pénalités de douleur ou la peur, gagne +2d6 à ses attaques au contact et +2 aux dégâts. Il peut encore agir un tour complet après avoir atteint 0 PV."
       }
     ],
     "description": "Ces ours sont de véritables légendes que rêvent d’affronter les chasseurs les plus chevronnés. Énormes, puissants et démesurés, ils sont rares et vivent dans les grottes les plus isolées et reculées. On suspecte la magie des nécromants d’être à l’origine de leurs proportions monstrueuses."
@@ -2801,7 +2801,7 @@ export const MONSTERS: Monster[] = [
     "abilities": [
       {
         "name": "Charge (L)",
-        "description": "L’ours parcourt une distance maximale de 30 mètres et porte une attaque. avec avantage (+1d6). Si l’attaque est réussie, en plus des DM normaux, une victime de taille inférieure ou égale à la créature, doit faire un test opposé de FOR ou être renversée. Dans ce cas, l’ours piétine sa victime et les DM sont doublés."
+        "description": "L’ours parcourt une distance maximale de 30 mètres et porte une attaque. avec avantage (+1d6). Si l’attaque est réussie, en plus des dégâts normaux, une victime de taille inférieure ou égale à la créature, doit faire un test opposé de FOR ou être renversée. Dans ce cas, l’ours piétine sa victime et les dégâts sont doublés."
       },
       {
         "name": "Fauchage",
@@ -2837,7 +2837,7 @@ export const MONSTERS: Monster[] = [
     "abilities": [
       {
         "name": "Emboscade",
-        "description": "au premier tour de combat, si l’environnement permet à la panthère de se dissimuler, la cible doit faire un test de SAG palier difficile ou être surprise. Si elle attaque avec succès une cible surprise, elle inflige +2 aux dégâts et toute créature dont la FOR est inférieure à la sienne est renversée. La panthère obtient un bonus de +5 à tous les tests de discrétion."
+        "description": "au premier tour de combat, si l’environnement permet à la panthère de se dissimuler, la cible doit faire un test de SAG palier difficile ou être surprise. Si elle attaque avec succès une cible surprise, elle inflige +2 aux dégâts et toute créature dont la FOR est inférieure à la sienne est renversée. La panthère obtient un bonus de +2d6 à tous les tests de discrétion."
       }
     ],
     "description": "Ce profil convient à tous les félins de taille moyenne comme le léopard, le jaguar, le jargal ou le jewghar."
@@ -2869,7 +2869,7 @@ export const MONSTERS: Monster[] = [
     "abilities": [
       {
         "name": "Emboscade",
-        "description": "au premier tour de combat, si l’environnement permet au jargal de se dissimuler, la cible doit faire un test de SAG palier difficile ou être surprise. S’il attaque avec succès une cible surprise, il inflige +2 aux dégâts et toute créature dont la FOR est inférieure à la sienne est renversée. Le jargal obtient un bonus de +5 à tous les tests de discrétion."
+        "description": "au premier tour de combat, si l’environnement permet au jargal de se dissimuler, la cible doit faire un test de SAG palier difficile ou être surprise. S’il attaque avec succès une cible surprise, il inflige +2 aux dégâts et toute créature dont la FOR est inférieure à la sienne est renversée. Le jargal obtient un bonus de +2d6 à tous les tests de discrétion."
       }
     ],
     "description": "Légendaire cheval ailé à la couleur immaculée, il ne reste que peu de représentants de cette race issue d'âges oubliés et préservée par les Elfes blancs. On ne les retrouve guère qu'autour et par-delà les îles Blanches."
@@ -2919,7 +2919,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Corps enflammé",
-        "description": "le prince-dé­mon est nimbé d'une aura de feu noire démoniaque ou peut la faire surgir à volonté. Elle inflige +4 aux dégâts de feu par attaque de contact réussie. Une créature qui l'attaque au contact subit 2d6 DM pour chaque attaque réussie. Si une victime est saisie ou agrippée par le prince-démon, elle subit à chaque tour +4 aux dégâts de feu supplémentaires."
+        "description": "le prince-dé­mon est nimbé d'une aura de feu noire démoniaque ou peut la faire surgir à volonté. Elle inflige +4 aux dégâts de feu par attaque de contact réussie. Une créature qui l'attaque au contact subit 4 dégâts pour chaque attaque réussie. Si une victime est saisie ou agrippée par le prince-démon, elle subit à chaque tour +4 aux dégâts de feu supplémentaires."
       },
       {
         "name": "Domination (L)",
@@ -2965,7 +2965,7 @@ export const MONSTERS: Monster[] = [
     "abilities": [
       {
         "name": "Natation",
-        "description": "Les raykenns sont parfaitement adaptés au milieu aquatique. En cas de combat dans l'eau, ils ne souffrent d'aucune pénalité tandis que les personnages subissent un malus de -2 (marais) à -5 (sous l'eau). Voir page 114 pour les règles sur les conditions difficiles et le NR."
+        "description": "Les raykenns sont parfaitement adaptés au milieu aquatique. En cas de combat dans l'eau, ils ne souffrent d'aucune pénalité tandis que les personnages subissent un malus de -1d6 (marais) à -2d6 (sous l'eau)."
       }
     ],
     "description": "Les raykenns sont des créatures reptiliennes humanoïdes robustes mesurant environ deux mètres de haut, douées de langage, insolites, barbares, violentes, dangereuses, au goût prononcé pour la chair de tout être vivant. Ils vivent dans les terres de Styx, enfermés au sein de l'enceinte de Renkaar sur une île à l'ouest du Royaume d'Yrlanie."
@@ -3024,11 +3024,11 @@ export const MONSTERS: Monster[] = [
     "abilities": [
       {
         "name": "Charge (L)",
-        "description": "Le sanglier parcourt une distance maximale de 30 mètres et porte une attaque. avec avantage (+1d6). Si l'attaque est réussie, en plus des DM normaux, une victime de taille inférieure ou égale à la créature, doit faire un test opposé de FOR ou être renversée. Dans ce cas, le sanglier embroche sa victime et les DM sont doublés. Sur une charge réussie, si la victime est d'une taille inférieure au sanglier, elle est également projetée à [1d6+1] mètres de là et doit réussir un test de END de palier moyenne ou être étourdie. À chaque tour, elle peut tenter un nouveau test de END pour retrouver ses esprits."
+        "description": "Le sanglier parcourt une distance maximale de 30 mètres et porte une attaque. avec avantage (+1d6). Si l'attaque est réussie, en plus des dégâts normaux, une victime de taille inférieure ou égale à la créature, doit faire un test opposé de FOR ou être renversée. Dans ce cas, le sanglier embroche sa victime et les dégâts sont doublés. Sur une charge réussie, si la victime est d'une taille inférieure au sanglier, elle est également projetée à [1d6+1] mètres de là et doit réussir un test de END de palier moyenne ou être étourdie. À chaque tour, elle peut tenter un nouveau test de END pour retrouver ses esprits."
       },
       {
         "name": "Enrager",
-        "description": "lorsqu'il reçoit un coup critique ou si ses PV sont réduits de moitié ou plus, le sanglier devient enragé. Il ignore les pénalités de douleur ou la peur, augmente de +5 son score d'attaque au contact et ses DM de +1d6. Il peut encore agir un tour complet après avoir atteint 0 PV."
+        "description": "lorsqu'il reçoit un coup critique ou si ses PV sont réduits de moitié ou plus, le sanglier devient enragé. Il ignore les pénalités de douleur ou la peur, gagne +2d6 à ses attaques au contact et +2 aux dégâts. Il peut encore agir un tour complet après avoir atteint 0 PV."
       }
     ],
     "description": "Il s'agit d'une imposante créature pourvue d'une crête osseuse et de défenses énormes. On rencontre des meutes dans l'Ourann ou plus au sud, à la limite de la Terre des Ogres."
@@ -3060,7 +3060,7 @@ export const MONSTERS: Monster[] = [
     "abilities": [
       {
         "name": "Embuscade",
-        "description": "au premier tour de combat, si l'environnement permet au serpent de se dissimuler, la cible doit faire un test de SAG palier moyenne ou être surprise. S'il attaque avec succès une cible surprise, il inflige +2 aux dégâts et toute créature dont la FOR est inférieure à la sienne est renversée. Le serpent obtient un bonus de +5 à tous les tests de discrétion."
+        "description": "au premier tour de combat, si l'environnement permet au serpent de se dissimuler, la cible doit faire un test de SAG palier moyenne ou être surprise. S'il attaque avec succès une cible surprise, il inflige +2 aux dégâts et toute créature dont la FOR est inférieure à la sienne est renversée. Le serpent obtient un bonus de +2d6 à tous les tests de discrétion."
       }
     ],
     "description": "Ce profil correspond au boa ou au python, toutefois cette famille de serpents comprend de grandes disparités de tailles et de poids, les serpents pouvant faire deux mètres pour une quinzaine de kilos à plus de 6 mètres pour 150 kg et au-delà. Les caractéristiques présentées ici correspondent à un spécimen d'environ 4 m pour 80 kg."
@@ -3092,11 +3092,11 @@ export const MONSTERS: Monster[] = [
     "abilities": [
       {
         "name": "Étreinte",
-        "description": "à chaque fois que le serpent réussit une attaque il peut faire un test de FOR opposé contre sa victime (toutefois celle-ci peut choisir de résister par un test de AGI). En cas de succès, il s'enroule autour d'elle et commence à l'étouffer, infligeant automatiquement 1d6 DM supplémentaires par tour. La victime est immobilisée. Elle peut tenter de se libérer au prix d'une action de mouvement à chaque tour, en réussissant un test de FOR palier difficile."
+        "description": "à chaque fois que le serpent réussit une attaque il peut faire un test de FOR opposé contre sa victime (toutefois celle-ci peut choisir de résister par un test de AGI). En cas de succès, il s'enroule autour d'elle et commence à l'étouffer, infligeant automatiquement 2 dégâts supplémentaires par tour. La victime est immobilisée. Elle peut tenter de se libérer au prix d'une action de mouvement à chaque tour, en réussissant un test de FOR palier difficile."
       },
       {
         "name": "Gober",
-        "description": "lorsqu'il réussit une étreinte, le serpent peut avaler entièrement une cible d'au moins une taille inférieure la sienne. La victime doit faire un test de FOR opposé; en cas d'échec elle passe directement dans l'estomac du monstre. Un personnage avalé subit 3d6 DM d'asphyxie et d'acide chaque tour. Il peut attaquer avec une arme pas plus grande qu'une dague en réussissant un test de FOR palier moyenne à chaque tour. L'attaque se fait avec une pénalité de -2d6 en attaque et les DM sont divisés par deux."
+        "description": "lorsqu'il réussit une étreinte, le serpent peut avaler entièrement une cible d'au moins une taille inférieure la sienne. La victime doit faire un test de FOR opposé; en cas d'échec elle passe directement dans l'estomac du monstre. Un personnage avalé subit 5 dégâts d'asphyxie et d'acide chaque tour. Il peut attaquer avec une arme pas plus grande qu'une dague en réussissant un test de FOR palier moyenne à chaque tour. L'attaque se fait avec une pénalité de -2d6 en attaque et les dégâts sont divisés par deux."
       },
       {
         "name": "Note",
@@ -3132,7 +3132,7 @@ export const MONSTERS: Monster[] = [
     "abilities": [
       {
         "name": "DÉVORER",
-        "description": "lorsque le shargren réussit une attaque avec un critique, il saisit sa proie entre ses crocs et lui inflige immédiatement une attaque gratuite supplémentaire dont les DM sont majorés de +1d6. Pour se libérer, la victime doit réussir un test de FOR opposé lors de son tour et cela lui demande une action de mouvement (et une autre pour amorcer une fuite ou se remettre en position de combat si elle a réussi)."
+        "description": "lorsque le shargren réussit une attaque avec un critique, il saisit sa proie entre ses crocs et lui inflige immédiatement une attaque gratuite supplémentaire dont les dégâts sont majorés de +2. Pour se libérer, la victime doit réussir un test de FOR opposé lors de son tour et cela lui demande une action de mouvement (et une autre pour amorcer une fuite ou se remettre en position de combat si elle a réussi)."
       },
       {
         "name": "Vision dans le noir",
@@ -3180,8 +3180,8 @@ export const MONSTERS: Monster[] = [
         "description": "aucune âme n'habite la carcasse morte et le squelette est immunisé à tous les sorts qui affectent l'esprit (INT, SAG et CHA)."
       },
       {
-        "name": "Réduction des DM",
-        "description": "tous les DM infligés à un squelette sont réduits de 5 points à moins que l'attaquant n'utilise une arme contondante. Une arme contondante est une arme qui utilise la force de l'impact pour blesser comme une masse ou un marteau, à l'inverse d'une épée (tranchante) ou d'une flèche (perforante)."
+        "name": "Réduction des dégâts",
+        "description": "tous les dégâts infligés à un squelette sont réduits de 3 points à moins que l'attaquant n'utilise une arme contondante. Une arme contondante est une arme qui utilise la force de l'impact pour blesser comme une masse ou un marteau, à l'inverse d'une épée (tranchante) ou d'une flèche (perforante)."
       },
       {
         "name": "Vision dans le noir",
@@ -3224,8 +3224,8 @@ export const MONSTERS: Monster[] = [
         "description": "aucune âme n'habite la carcasse morte et le squelette est immunisé à tous les sorts qui affectent l'esprit (INT, SAG et CHA)."
       },
       {
-        "name": "Réduction des DM",
-        "description": "tous les DM infligés à un squelette sont réduits de 5 points à moins que l'attaquant n'utilise une arme contondante. Une arme contondante est une arme qui utilise la force de l'impact pour blesser comme une masse ou un marteau à l'inverse d'une épée (tranchante) ou d'une flèche (perforante)."
+        "name": "Réduction des dégâts",
+        "description": "tous les dégâts infligés à un squelette sont réduits de 3 points à moins que l'attaquant n'utilise une arme contondante. Une arme contondante est une arme qui utilise la force de l'impact pour blesser comme une masse ou un marteau à l'inverse d'une épée (tranchante) ou d'une flèche (perforante)."
       },
       {
         "name": "Vision dans le noir",
@@ -3265,7 +3265,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Embuscade",
-        "description": "au premier tour de combat, si l'environnement permet au tigre de se dissimuler, la cible doit faire un test de SAG palier difficile ou être surprise. S'il attaque avec succès une cible surprise, il inflige +2 aux dégâts et toute créature dont la FOR est inférieure à la sienne est renversée. Le tigre obtient un bonus de +5 à tous les tests de discrétion et en Init."
+        "description": "au premier tour de combat, si l'environnement permet au tigre de se dissimuler, la cible doit faire un test de SAG palier difficile ou être surprise. S'il attaque avec succès une cible surprise, il inflige +2 aux dégâts et toute créature dont la FOR est inférieure à la sienne est renversée. Le tigre obtient un bonus de +2d6 à tous les tests de discrétion et de +2 en initiative."
       }
     ],
     "description": "Le tigre à dents de sabre est un énorme félin aux canines acérées qui vivait jadis dans les steppes reculées de la Borduria. L'expansion humaine et la malédiction des goules sont responsables de l'extinction de la race aujourd'hui. Il persiste cependant quelques meutes disséminées un peu partout dans l'Ourann."
@@ -3303,7 +3303,7 @@ export const MONSTERS: Monster[] = [
     "abilities": [
       {
         "name": "Vitalité surnaturelle",
-        "description": "un troll récupère 5 PV par tour, sauf si les DM subis sont de feu ou d'acide. Même à 0 PV, il continue à régénérer les tissus morts à moins qu'on ne brûle son corps."
+        "description": "un troll récupère 3 PV par tour, sauf si les dégâts subis sont de feu ou d'acide. Même à 0 PV, il continue à régénérer les tissus morts à moins qu'on ne brûle son corps."
       }
     ],
     "description": "Les trolls sont de grands humanoïdes de 2,70 m à la peau caoutchouteuse verdâtre ou violacée, couverte d'excroissances et de plaques suppurantes. Non seulement les armes rebondissent sur cette épaisse peau élastique mais, de plus, les blessures infligées cicatrisent de façon accélérée grâce à un métabolisme exceptionnel. Aussi, le troll est un monstre dénué de peur, confiant en sa capacité à échapper à la mort et qui se montre particulièrement féroce au combat."
@@ -3450,7 +3450,7 @@ export const MONSTERS: Monster[] = [
     "abilities": [
       {
         "name": "Embuscade",
-        "description": "Au premier tour de combat, si l'environnement permet au worg de se dissimuler, la cible doit faire un test de SAG palier difficile ou être surprise. S'il attaque avec succès une cible surprise, il inflige +2 aux dégâts et toute créature dont la FOR est inférieure à la sienne est renversée. Le worg obtient un bonus de +5 à tous les tests de discrétion et en Init."
+        "description": "Au premier tour de combat, si l'environnement permet au worg de se dissimuler, la cible doit faire un test de SAG palier difficile ou être surprise. S'il attaque avec succès une cible surprise, il inflige +2 aux dégâts et toute créature dont la FOR est inférieure à la sienne est renversée. Le worg obtient un bonus de +2d6 à tous les tests de discrétion et de +2 en initiative."
       },
       {
         "name": "Attaque en traître (L)",
@@ -3458,12 +3458,11 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Interchangeables",
-        "description": "Tant que le worg et ses alliées sont plus nombreux que la cible, ils se relaient pour esquiver ses attaques et obtiennent un bonus de +2d6 en défense. Si plusieurs worg semblables sont au contact du PJ, le MJ a toute latitude pour infliger les DM d'une attaque sur le worg de son choix, le personnage ne sachant jamais lequel il blesse."
+        "description": "Tant que le worg et ses alliées sont plus nombreux que la cible, ils se relaient pour esquiver ses attaques et obtiennent un bonus de +2d6 en défense. Si plusieurs worg semblables sont au contact du PJ, le MJ a toute latitude pour infliger les dégâts d'une attaque sur le worg de son choix, le personnage ne sachant jamais lequel il blesse."
       },
       {
         "name": "L'hallali",
-        "description": "Les worgs profitent d'une erreur de leur adversaire pour lui porter des attaques fatales. À chaque fois que la victime de la meute rate une attaque ou obtient sur un test d'attaque un résultat au d20 allant de 1 à 5 (inclus), elle déclenche la curée ! Chaque worg doté de cette capacité bénéficie immédiatement et gratuitement d'une attaque en traître contre la victime (+5 au jet d'attaque/+4 aux dégâts).",
-        "review": true
+        "description": "La curée : chaque fois que sa cible rate une attaque, chaque créature proche dotée de cette capacité lui porte aussitôt une Attaque en traître gratuite."
       }
     ],
     "description": "Les worgs sont des cousins des loups, plus puissants (jusqu'à 150 kg) et plus dangereux. Ils ont été domestiqués par certaines tribus orques pour participer aux chasses."
@@ -3576,7 +3575,7 @@ export const MONSTERS: Monster[] = [
     "abilities": [
       {
         "name": "Charge (L)",
-        "description": "Attaque avec avantage (+1d6). Succès = FOR opposé ou renversé, DM×2."
+        "description": "Attaque avec avantage (+1d6). Succès = FOR opposé ou renversé, dégâts×2."
       }
     ],
     "description": "Guerrier brut spécialisé dans les charges dévastatrices."
@@ -3672,11 +3671,11 @@ export const MONSTERS: Monster[] = [
     "abilities": [
       {
         "name": "Charge (L)",
-        "description": "Attaque avec avantage (+1d6). Succès = FOR opposé ou renversé, DM×2."
+        "description": "Attaque avec avantage (+1d6). Succès = FOR opposé ou renversé, dégâts×2."
       },
       {
         "name": "Enrager",
-        "description": "Sur critique ou ≤50% PV : +5 attaque, +2 aux dégâts. Agit 1 tour après 0 PV."
+        "description": "Sur critique ou ≤50% PV : +2d6 à l'attaque, +2 aux dégâts. Agit 1 tour après 0 PV."
       }
     ],
     "description": "Guerrier brut de haut rang, redoutable dans les charges."
@@ -3748,7 +3747,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Capitaine",
-        "description": "Alliés en vue : +2 init/attaque/DM. Attaque supplémentaire avec action limitée."
+        "description": "Alliés en vue : +1d6 à l'attaque, +1 aux dégâts et +1 en initiative. Attaque supplémentaire avec action limitée."
       }
     ],
     "description": "Chef de guerre inspirant."
@@ -3780,15 +3779,15 @@ export const MONSTERS: Monster[] = [
     "abilities": [
       {
         "name": "Charge (L)",
-        "description": "Attaque avec avantage (+1d6). Succès = FOR opposé ou renversé, DM×2."
+        "description": "Attaque avec avantage (+1d6). Succès = FOR opposé ou renversé, dégâts×2."
       },
       {
         "name": "Enrager",
-        "description": "Sur critique ou ≤50% PV : +5 attaque, +2 aux dégâts. Agit 1 tour après 0 PV."
+        "description": "Sur critique ou ≤50% PV : +2d6 à l'attaque, +2 aux dégâts. Agit 1 tour après 0 PV."
       },
       {
         "name": "Percuter",
-        "description": "Après une Charge réussie, END 15 ou étourdi."
+        "description": "Après une Charge réussie, END palier moyenne ou étourdi."
       }
     ],
     "description": "Brute imparable et enragée."
@@ -3828,7 +3827,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Hausser le ton",
-        "description": "À ≤50% PV : +5 attaque, +2 aux dégâts, RD 5."
+        "description": "À ≤50% PV : +2d6 à l'attaque, +2 aux dégâts, +3 d'armure."
       }
     ],
     "description": "Champion endurci qui regagne de la puissance sous la pression."
@@ -3864,11 +3863,11 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Capitaine",
-        "description": "Alliés en vue : +2 init/attaque/DM. Attaque supplémentaire."
+        "description": "Alliés en vue : +1d6 à l'attaque, +1 aux dégâts et +1 en initiative. Attaque supplémentaire."
       },
       {
         "name": "Commandant",
-        "description": "Bonus à +3. Si ≥4 alliés à 10 m, prend moitié des DM."
+        "description": "Bonus de Capitaine porté à +2 aux dégâts. Si ≥4 alliés à 10 m, prend moitié des dégâts."
       }
     ],
     "description": "Commandant de terrain avec bonus de commandement croissants."
@@ -3900,15 +3899,15 @@ export const MONSTERS: Monster[] = [
     "abilities": [
       {
         "name": "Charge (L)",
-        "description": "Attaque avec avantage (+1d6). Succès = FOR opposé ou renversé, DM×2."
+        "description": "Attaque avec avantage (+1d6). Succès = FOR opposé ou renversé, dégâts×2."
       },
       {
         "name": "Enrager",
-        "description": "Sur critique ou ≤50% PV : +5 attaque, +2 aux dégâts."
+        "description": "Sur critique ou ≤50% PV : +2d6 à l'attaque, +2 aux dégâts."
       },
       {
         "name": "Percuter",
-        "description": "Après Charge, END 15 ou étourdi."
+        "description": "Après Charge, END palier moyenne ou étourdi."
       },
       {
         "name": "Imparable (L)",
@@ -3952,11 +3951,11 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Hausser le ton",
-        "description": "À ≤50% PV : +5 attaque, +2 aux dégâts, RD 5."
+        "description": "À ≤50% PV : +2d6 à l'attaque, +2 aux dégâts, +3 d'armure."
       },
       {
         "name": "Charge (L)",
-        "description": "Attaque avec avantage (+1d6). Succès = FOR opposé ou renversé, DM×2."
+        "description": "Attaque avec avantage (+1d6). Succès = FOR opposé ou renversé, dégâts×2."
       }
     ],
     "description": "Champion de haut rang, virtuose du combat."
@@ -3992,11 +3991,11 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Capitaine",
-        "description": "Alliés en vue : +2 init/attaque/DM. Attaque supplémentaire."
+        "description": "Alliés en vue : +1d6 à l'attaque, +1 aux dégâts et +1 en initiative. Attaque supplémentaire."
       },
       {
         "name": "Commandant",
-        "description": "Bonus à +3. Si ≥4 alliés à 10 m, prend moitié des DM."
+        "description": "Bonus de Capitaine porté à +2 aux dégâts. Si ≥4 alliés à 10 m, prend moitié des dégâts."
       },
       {
         "name": "Instinct de survie",
@@ -4032,15 +4031,15 @@ export const MONSTERS: Monster[] = [
     "abilities": [
       {
         "name": "Charge (L)",
-        "description": "Attaque avec avantage (+1d6). Succès = FOR opposé ou renversé, DM×2."
+        "description": "Attaque avec avantage (+1d6). Succès = FOR opposé ou renversé, dégâts×2."
       },
       {
         "name": "Enrager",
-        "description": "Sur critique ou ≤50% PV : +5 attaque, +2 aux dégâts."
+        "description": "Sur critique ou ≤50% PV : +2d6 à l'attaque, +2 aux dégâts."
       },
       {
         "name": "Percuter",
-        "description": "Après Charge, END 15 ou étourdi."
+        "description": "Après Charge, END palier moyenne ou étourdi."
       },
       {
         "name": "Imparable (L)",
@@ -4048,7 +4047,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Fauchage",
-        "description": "Sur un critique, cible renversée si rate AGI [10+BU]."
+        "description": "Sur un critique, cible renversée si rate AGI palier difficile."
       }
     ],
     "description": "Brute expérimentée qui fauche ses ennemis."
@@ -4088,15 +4087,15 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Hausser le ton",
-        "description": "À ≤50% PV : +5 attaque, +2 aux dégâts, RD 5."
+        "description": "À ≤50% PV : +2d6 à l'attaque, +2 aux dégâts, +3 d'armure."
       },
       {
         "name": "Charge (L)",
-        "description": "Attaque avec avantage (+1d6). Succès = FOR opposé ou renversé, DM×2."
+        "description": "Attaque avec avantage (+1d6). Succès = FOR opposé ou renversé, dégâts×2."
       },
       {
         "name": "Enrager",
-        "description": "Sur critique ou ≤50% PV : +5 attaque, +2 aux dégâts."
+        "description": "Sur critique ou ≤50% PV : +2d6 à l'attaque, +2 aux dégâts."
       }
     ],
     "description": "Champion capable de charger et contre-attaquer."
@@ -4132,11 +4131,11 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Capitaine",
-        "description": "Alliés en vue : +2 init/attaque/DM. Attaque supplémentaire."
+        "description": "Alliés en vue : +1d6 à l'attaque, +1 aux dégâts et +1 en initiative. Attaque supplémentaire."
       },
       {
         "name": "Commandant",
-        "description": "Bonus à +3. Si ≥4 alliés à 10 m, prend moitié des DM."
+        "description": "Bonus de Capitaine porté à +2 aux dégâts. Si ≥4 alliés à 10 m, prend moitié des dégâts."
       },
       {
         "name": "Instinct de survie",
@@ -4176,15 +4175,15 @@ export const MONSTERS: Monster[] = [
     "abilities": [
       {
         "name": "Charge (L)",
-        "description": "Attaque avec avantage (+1d6). Succès = FOR opposé ou renversé, DM×2."
+        "description": "Attaque avec avantage (+1d6). Succès = FOR opposé ou renversé, dégâts×2."
       },
       {
         "name": "Enrager",
-        "description": "Sur critique ou ≤50% PV : +5 attaque, +2 aux dégâts."
+        "description": "Sur critique ou ≤50% PV : +2d6 à l'attaque, +2 aux dégâts."
       },
       {
         "name": "Percuter",
-        "description": "Après Charge, END 15 ou étourdi."
+        "description": "Après Charge, END palier moyenne ou étourdi."
       },
       {
         "name": "Imparable (L)",
@@ -4192,7 +4191,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Fauchage",
-        "description": "Sur un critique, cible renversée si rate AGI [10+BU]."
+        "description": "Sur un critique, cible renversée si rate AGI palier difficile."
       }
     ],
     "description": "Brute puissante avec portée de frappe étendue."
@@ -4232,15 +4231,15 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Hausser le ton",
-        "description": "À ≤50% PV : +5 attaque, +2 aux dégâts, RD 5."
+        "description": "À ≤50% PV : +2d6 à l'attaque, +2 aux dégâts, +3 d'armure."
       },
       {
         "name": "Charge (L)",
-        "description": "Attaque avec avantage (+1d6). Succès = FOR opposé ou renversé, DM×2."
+        "description": "Attaque avec avantage (+1d6). Succès = FOR opposé ou renversé, dégâts×2."
       },
       {
         "name": "Enrager",
-        "description": "Sur critique ou ≤50% PV : +5 attaque, +2 aux dégâts."
+        "description": "Sur critique ou ≤50% PV : +2d6 à l'attaque, +2 aux dégâts."
       }
     ],
     "description": "Champion maîtrisant charge et enragement."
@@ -4276,11 +4275,11 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Capitaine",
-        "description": "Alliés en vue : +2 init/attaque/DM. Attaque supplémentaire."
+        "description": "Alliés en vue : +1d6 à l'attaque, +1 aux dégâts et +1 en initiative. Attaque supplémentaire."
       },
       {
         "name": "Commandant",
-        "description": "Bonus à +3. Si ≥4 alliés à 10 m, prend moitié des DM."
+        "description": "Bonus de Capitaine porté à +2 aux dégâts. Si ≥4 alliés à 10 m, prend moitié des dégâts."
       },
       {
         "name": "Instinct de survie",
@@ -4320,15 +4319,15 @@ export const MONSTERS: Monster[] = [
     "abilities": [
       {
         "name": "Charge (L)",
-        "description": "Attaque avec avantage (+1d6). Succès = FOR opposé ou renversé, DM×2."
+        "description": "Attaque avec avantage (+1d6). Succès = FOR opposé ou renversé, dégâts×2."
       },
       {
         "name": "Enrager",
-        "description": "Sur critique ou ≤50% PV : +5 attaque, +2 aux dégâts."
+        "description": "Sur critique ou ≤50% PV : +2d6 à l'attaque, +2 aux dégâts."
       },
       {
         "name": "Percuter",
-        "description": "Après Charge, END 15 ou étourdi."
+        "description": "Après Charge, END palier moyenne ou étourdi."
       },
       {
         "name": "Imparable (L)",
@@ -4336,7 +4335,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Fauchage",
-        "description": "Sur un critique, cible renversée si rate AGI [10+BU]."
+        "description": "Sur un critique, cible renversée si rate AGI palier difficile."
       },
       {
         "name": "Balayage",
@@ -4380,19 +4379,19 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Hausser le ton",
-        "description": "À ≤50% PV : +5 attaque, +2 aux dégâts, RD 5."
+        "description": "À ≤50% PV : +2d6 à l'attaque, +2 aux dégâts, +3 d'armure."
       },
       {
         "name": "Charge (L)",
-        "description": "Attaque avec avantage (+1d6). Succès = FOR opposé ou renversé, DM×2."
+        "description": "Attaque avec avantage (+1d6). Succès = FOR opposé ou renversé, dégâts×2."
       },
       {
         "name": "Enrager",
-        "description": "Sur critique ou ≤50% PV : +5 attaque, +2 aux dégâts."
+        "description": "Sur critique ou ≤50% PV : +2d6 à l'attaque, +2 aux dégâts."
       },
       {
         "name": "Percuter",
-        "description": "Après Charge, END 15 ou étourdi."
+        "description": "Après Charge, END palier moyenne ou étourdi."
       }
     ],
     "description": "Champion percutant, maître du contrôle de foule."
@@ -4428,11 +4427,11 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Capitaine",
-        "description": "Alliés en vue : +2 init/attaque/DM. Attaque supplémentaire."
+        "description": "Alliés en vue : +1d6 à l'attaque, +1 aux dégâts et +1 en initiative. Attaque supplémentaire."
       },
       {
         "name": "Commandant",
-        "description": "Bonus à +3. Si ≥4 alliés à 10 m, prend moitié des DM."
+        "description": "Bonus de Capitaine porté à +2 aux dégâts. Si ≥4 alliés à 10 m, prend moitié des dégâts."
       },
       {
         "name": "Instinct de survie",
@@ -4444,7 +4443,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Attaque mortelle (L)",
-        "description": "Depuis derrière ou surprise : +5 attaque, +5 aux dégâts. +5 en discrétion."
+        "description": "Depuis derrière ou surprise : +2d6 à l'attaque, +5 aux dégâts. +2d6 en discrétion."
       }
     ],
     "description": "Conquérant maîtrisant l'attaque mortelle dissimulée."
@@ -4476,15 +4475,15 @@ export const MONSTERS: Monster[] = [
     "abilities": [
       {
         "name": "Charge (L)",
-        "description": "Attaque avec avantage (+1d6). Succès = FOR opposé ou renversé, DM×2."
+        "description": "Attaque avec avantage (+1d6). Succès = FOR opposé ou renversé, dégâts×2."
       },
       {
         "name": "Enrager",
-        "description": "Sur critique ou ≤50% PV : +5 attaque, +2 aux dégâts."
+        "description": "Sur critique ou ≤50% PV : +2d6 à l'attaque, +2 aux dégâts."
       },
       {
         "name": "Percuter",
-        "description": "Après Charge, END 15 ou étourdi."
+        "description": "Après Charge, END palier moyenne ou étourdi."
       },
       {
         "name": "Imparable (L)",
@@ -4492,14 +4491,14 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Fauchage",
-        "description": "Sur un critique, cible renversée si rate AGI [10+BU]."
+        "description": "Sur un critique, cible renversée si rate AGI palier difficile."
       },
       {
         "name": "Balayage",
         "description": "Attaque jusqu'à 3 cibles dans un arc de 180°."
       }
     ],
-    "description": "Brute de haut rang avec RD 3."
+    "description": "Brute de haut rang avec +2 d'armure."
   },
   {
     "name": "Combattant Champion NC10",
@@ -4536,19 +4535,19 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Hausser le ton",
-        "description": "À ≤50% PV : +5 attaque, +2 aux dégâts, RD 5."
+        "description": "À ≤50% PV : +2d6 à l'attaque, +2 aux dégâts, +3 d'armure."
       },
       {
         "name": "Charge (L)",
-        "description": "Attaque avec avantage (+1d6). Succès = FOR opposé ou renversé, DM×2."
+        "description": "Attaque avec avantage (+1d6). Succès = FOR opposé ou renversé, dégâts×2."
       },
       {
         "name": "Enrager",
-        "description": "Sur critique ou ≤50% PV : +5 attaque, +2 aux dégâts."
+        "description": "Sur critique ou ≤50% PV : +2d6 à l'attaque, +2 aux dégâts."
       },
       {
         "name": "Percuter",
-        "description": "Après Charge, END 15 ou étourdi."
+        "description": "Après Charge, END palier moyenne ou étourdi."
       }
     ],
     "description": "Champion légendaire."
@@ -4584,11 +4583,11 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Capitaine",
-        "description": "Alliés en vue : +2 init/attaque/DM. Attaque supplémentaire."
+        "description": "Alliés en vue : +1d6 à l'attaque, +1 aux dégâts et +1 en initiative. Attaque supplémentaire."
       },
       {
         "name": "Commandant",
-        "description": "Bonus à +3. Si ≥4 alliés à 10 m, prend moitié des DM."
+        "description": "Bonus de Capitaine porté à +2 aux dégâts. Si ≥4 alliés à 10 m, prend moitié des dégâts."
       },
       {
         "name": "Instinct de survie",
@@ -4600,7 +4599,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Attaque mortelle (L)",
-        "description": "Depuis derrière ou surprise : +5 attaque, +5 aux dégâts. +5 en discrétion."
+        "description": "Depuis derrière ou surprise : +2d6 à l'attaque, +5 aux dégâts. +2d6 en discrétion."
       }
     ],
     "description": "Conquérant suprême, commandant de légion."
@@ -4632,15 +4631,15 @@ export const MONSTERS: Monster[] = [
     "abilities": [
       {
         "name": "Charge (L)",
-        "description": "Attaque avec avantage (+1d6). Succès = FOR opposé ou renversé, DM×2."
+        "description": "Attaque avec avantage (+1d6). Succès = FOR opposé ou renversé, dégâts×2."
       },
       {
         "name": "Enrager",
-        "description": "Sur critique ou ≤50% PV : +5 attaque, +2 aux dégâts."
+        "description": "Sur critique ou ≤50% PV : +2d6 à l'attaque, +2 aux dégâts."
       },
       {
         "name": "Percuter",
-        "description": "Après Charge, END 15 ou étourdi."
+        "description": "Après Charge, END palier moyenne ou étourdi."
       },
       {
         "name": "Imparable (L)",
@@ -4648,14 +4647,14 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Fauchage",
-        "description": "Sur un critique, cible renversée si rate AGI [10+BU]."
+        "description": "Sur un critique, cible renversée si rate AGI palier difficile."
       },
       {
         "name": "Balayage",
         "description": "Attaque jusqu'à 3 cibles dans un arc de 180°."
       }
     ],
-    "description": "Brute quasi-invincible avec RD 3."
+    "description": "Brute quasi-invincible avec +2 d'armure."
   },
   {
     "name": "Combattant Champion NC11",
@@ -4692,19 +4691,19 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Hausser le ton",
-        "description": "À ≤50% PV : +5 attaque, +2 aux dégâts, RD 5."
+        "description": "À ≤50% PV : +2d6 à l'attaque, +2 aux dégâts, +3 d'armure."
       },
       {
         "name": "Charge (L)",
-        "description": "Attaque avec avantage (+1d6). Succès = FOR opposé ou renversé, DM×2."
+        "description": "Attaque avec avantage (+1d6). Succès = FOR opposé ou renversé, dégâts×2."
       },
       {
         "name": "Enrager",
-        "description": "Sur critique ou ≤50% PV : +5 attaque, +2 aux dégâts."
+        "description": "Sur critique ou ≤50% PV : +2d6 à l'attaque, +2 aux dégâts."
       },
       {
         "name": "Percuter",
-        "description": "Après Charge, END 15 ou étourdi."
+        "description": "Après Charge, END palier moyenne ou étourdi."
       }
     ],
     "description": "Champion de légende avec riposte totale."
@@ -4740,11 +4739,11 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Capitaine",
-        "description": "Alliés en vue : +2 init/attaque/DM. Attaque supplémentaire."
+        "description": "Alliés en vue : +1d6 à l'attaque, +1 aux dégâts et +1 en initiative. Attaque supplémentaire."
       },
       {
         "name": "Commandant",
-        "description": "Bonus à +3. Si ≥4 alliés à 10 m, prend moitié des DM."
+        "description": "Bonus de Capitaine porté à +2 aux dégâts. Si ≥4 alliés à 10 m, prend moitié des dégâts."
       },
       {
         "name": "Instinct de survie",
@@ -4756,7 +4755,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Attaque mortelle (L)",
-        "description": "Depuis derrière ou surprise : +5 attaque, +5 aux dégâts. +5 en discrétion."
+        "description": "Depuis derrière ou surprise : +2d6 à l'attaque, +5 aux dégâts. +2d6 en discrétion."
       }
     ],
     "description": "Conquérant légendaire."
@@ -4788,15 +4787,15 @@ export const MONSTERS: Monster[] = [
     "abilities": [
       {
         "name": "Charge (L)",
-        "description": "Attaque avec avantage (+1d6). Succès = FOR opposé ou renversé, DM×2."
+        "description": "Attaque avec avantage (+1d6). Succès = FOR opposé ou renversé, dégâts×2."
       },
       {
         "name": "Enrager",
-        "description": "Sur critique ou ≤50% PV : +5 attaque, +2 aux dégâts."
+        "description": "Sur critique ou ≤50% PV : +2d6 à l'attaque, +2 aux dégâts."
       },
       {
         "name": "Percuter",
-        "description": "Après Charge, END 15 ou étourdi."
+        "description": "Après Charge, END palier moyenne ou étourdi."
       },
       {
         "name": "Imparable (L)",
@@ -4804,14 +4803,14 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Fauchage",
-        "description": "Sur un critique, cible renversée si rate AGI [10+BU]."
+        "description": "Sur un critique, cible renversée si rate AGI palier difficile."
       },
       {
         "name": "Balayage",
         "description": "Attaque jusqu'à 3 cibles dans un arc de 180°."
       }
     ],
-    "description": "Brute de haut rang avec RD 3."
+    "description": "Brute de haut rang avec +2 d'armure."
   },
   {
     "name": "Combattant Champion NC12",
@@ -4848,19 +4847,19 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Hausser le ton",
-        "description": "À ≤50% PV : +5 attaque, +2 aux dégâts, RD 5."
+        "description": "À ≤50% PV : +2d6 à l'attaque, +2 aux dégâts, +3 d'armure."
       },
       {
         "name": "Charge (L)",
-        "description": "Attaque avec avantage (+1d6). Succès = FOR opposé ou renversé, DM×2."
+        "description": "Attaque avec avantage (+1d6). Succès = FOR opposé ou renversé, dégâts×2."
       },
       {
         "name": "Enrager",
-        "description": "Sur critique ou ≤50% PV : +5 attaque, +2 aux dégâts."
+        "description": "Sur critique ou ≤50% PV : +2d6 à l'attaque, +2 aux dégâts."
       },
       {
         "name": "Percuter",
-        "description": "Après Charge, END 15 ou étourdi."
+        "description": "Après Charge, END palier moyenne ou étourdi."
       }
     ],
     "description": "Champion au sommet."
@@ -4896,11 +4895,11 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Capitaine",
-        "description": "Alliés en vue : +2 init/attaque/DM. Attaque supplémentaire."
+        "description": "Alliés en vue : +1d6 à l'attaque, +1 aux dégâts et +1 en initiative. Attaque supplémentaire."
       },
       {
         "name": "Commandant",
-        "description": "Bonus à +3. Si ≥4 alliés à 10 m, prend moitié des DM."
+        "description": "Bonus de Capitaine porté à +2 aux dégâts. Si ≥4 alliés à 10 m, prend moitié des dégâts."
       },
       {
         "name": "Instinct de survie",
@@ -4912,7 +4911,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Attaque mortelle (L)",
-        "description": "Depuis derrière ou surprise : +5 attaque, +5 aux dégâts. +5 en discrétion."
+        "description": "Depuis derrière ou surprise : +2d6 à l'attaque, +5 aux dégâts. +2d6 en discrétion."
       }
     ],
     "description": "Conquérant au sommet de l'art militaire."
@@ -4944,15 +4943,15 @@ export const MONSTERS: Monster[] = [
     "abilities": [
       {
         "name": "Charge (L)",
-        "description": "Attaque avec avantage (+1d6). Succès = FOR opposé ou renversé, DM×2."
+        "description": "Attaque avec avantage (+1d6). Succès = FOR opposé ou renversé, dégâts×2."
       },
       {
         "name": "Enrager",
-        "description": "Sur critique ou ≤50% PV : +5 attaque, +2 aux dégâts."
+        "description": "Sur critique ou ≤50% PV : +2d6 à l'attaque, +2 aux dégâts."
       },
       {
         "name": "Percuter",
-        "description": "Après Charge, END 15 ou étourdi."
+        "description": "Après Charge, END palier moyenne ou étourdi."
       },
       {
         "name": "Imparable (L)",
@@ -4960,14 +4959,14 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Fauchage",
-        "description": "Sur un critique, cible renversée si rate AGI [10+BU]."
+        "description": "Sur un critique, cible renversée si rate AGI palier difficile."
       },
       {
         "name": "Balayage",
         "description": "Attaque jusqu'à 3 cibles dans un arc de 180°."
       }
     ],
-    "description": "Brute épique avec RD 6."
+    "description": "Brute épique avec +3 d'armure."
   },
   {
     "name": "Combattant Champion NC13",
@@ -5004,19 +5003,19 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Hausser le ton",
-        "description": "À ≤50% PV : +5 attaque, +2 aux dégâts, RD 5."
+        "description": "À ≤50% PV : +2d6 à l'attaque, +2 aux dégâts, +3 d'armure."
       },
       {
         "name": "Charge (L)",
-        "description": "Attaque avec avantage (+1d6). Succès = FOR opposé ou renversé, DM×2."
+        "description": "Attaque avec avantage (+1d6). Succès = FOR opposé ou renversé, dégâts×2."
       },
       {
         "name": "Enrager",
-        "description": "Sur critique ou ≤50% PV : +5 attaque, +2 aux dégâts."
+        "description": "Sur critique ou ≤50% PV : +2d6 à l'attaque, +2 aux dégâts."
       },
       {
         "name": "Percuter",
-        "description": "Après Charge, END 15 ou étourdi."
+        "description": "Après Charge, END palier moyenne ou étourdi."
       }
     ],
     "description": "Champion épique."
@@ -5052,11 +5051,11 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Capitaine",
-        "description": "Alliés en vue : +2 init/attaque/DM. Attaque supplémentaire."
+        "description": "Alliés en vue : +1d6 à l'attaque, +1 aux dégâts et +1 en initiative. Attaque supplémentaire."
       },
       {
         "name": "Commandant",
-        "description": "Bonus à +3. Si ≥4 alliés à 10 m, prend moitié des DM."
+        "description": "Bonus de Capitaine porté à +2 aux dégâts. Si ≥4 alliés à 10 m, prend moitié des dégâts."
       },
       {
         "name": "Instinct de survie",
@@ -5068,7 +5067,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Attaque mortelle (L)",
-        "description": "Depuis derrière ou surprise : +5 attaque, +5 aux dégâts. +5 en discrétion."
+        "description": "Depuis derrière ou surprise : +2d6 à l'attaque, +5 aux dégâts. +2d6 en discrétion."
       }
     ],
     "description": "Conquérant épique."
@@ -5100,15 +5099,15 @@ export const MONSTERS: Monster[] = [
     "abilities": [
       {
         "name": "Charge (L)",
-        "description": "Attaque avec avantage (+1d6). Succès = FOR opposé ou renversé, DM×2."
+        "description": "Attaque avec avantage (+1d6). Succès = FOR opposé ou renversé, dégâts×2."
       },
       {
         "name": "Enrager",
-        "description": "Sur critique ou ≤50% PV : +5 attaque, +2 aux dégâts."
+        "description": "Sur critique ou ≤50% PV : +2d6 à l'attaque, +2 aux dégâts."
       },
       {
         "name": "Percuter",
-        "description": "Après Charge, END 15 ou étourdi."
+        "description": "Après Charge, END palier moyenne ou étourdi."
       },
       {
         "name": "Imparable (L)",
@@ -5116,14 +5115,14 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Fauchage",
-        "description": "Sur un critique, cible renversée si rate AGI [10+BU]."
+        "description": "Sur un critique, cible renversée si rate AGI palier difficile."
       },
       {
         "name": "Balayage",
         "description": "Attaque jusqu'à 3 cibles dans un arc de 180°."
       }
     ],
-    "description": "Brute légendaire avec RD 6."
+    "description": "Brute légendaire avec +3 d'armure."
   },
   {
     "name": "Combattant Champion NC14",
@@ -5160,19 +5159,19 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Hausser le ton",
-        "description": "À ≤50% PV : +5 attaque, +2 aux dégâts, RD 5."
+        "description": "À ≤50% PV : +2d6 à l'attaque, +2 aux dégâts, +3 d'armure."
       },
       {
         "name": "Charge (L)",
-        "description": "Attaque avec avantage (+1d6). Succès = FOR opposé ou renversé, DM×2."
+        "description": "Attaque avec avantage (+1d6). Succès = FOR opposé ou renversé, dégâts×2."
       },
       {
         "name": "Enrager",
-        "description": "Sur critique ou ≤50% PV : +5 attaque, +2 aux dégâts."
+        "description": "Sur critique ou ≤50% PV : +2d6 à l'attaque, +2 aux dégâts."
       },
       {
         "name": "Percuter",
-        "description": "Après Charge, END 15 ou étourdi."
+        "description": "Après Charge, END palier moyenne ou étourdi."
       }
     ],
     "description": "Champion légendaire."
@@ -5208,11 +5207,11 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Capitaine",
-        "description": "Alliés en vue : +2 init/attaque/DM. Attaque supplémentaire."
+        "description": "Alliés en vue : +1d6 à l'attaque, +1 aux dégâts et +1 en initiative. Attaque supplémentaire."
       },
       {
         "name": "Commandant",
-        "description": "Bonus à +3. Si ≥4 alliés à 10 m, prend moitié des DM."
+        "description": "Bonus de Capitaine porté à +2 aux dégâts. Si ≥4 alliés à 10 m, prend moitié des dégâts."
       },
       {
         "name": "Instinct de survie",
@@ -5224,7 +5223,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Attaque mortelle (L)",
-        "description": "Depuis derrière ou surprise : +5 attaque, +5 aux dégâts. +5 en discrétion."
+        "description": "Depuis derrière ou surprise : +2d6 à l'attaque, +5 aux dégâts. +2d6 en discrétion."
       }
     ],
     "description": "Conquérant légendaire."
@@ -5256,15 +5255,15 @@ export const MONSTERS: Monster[] = [
     "abilities": [
       {
         "name": "Charge (L)",
-        "description": "Attaque avec avantage (+1d6). Succès = FOR opposé ou renversé, DM×2."
+        "description": "Attaque avec avantage (+1d6). Succès = FOR opposé ou renversé, dégâts×2."
       },
       {
         "name": "Enrager",
-        "description": "Sur critique ou ≤50% PV : +5 attaque, +2 aux dégâts."
+        "description": "Sur critique ou ≤50% PV : +2d6 à l'attaque, +2 aux dégâts."
       },
       {
         "name": "Percuter",
-        "description": "Après Charge, END 15 ou étourdi."
+        "description": "Après Charge, END palier moyenne ou étourdi."
       },
       {
         "name": "Imparable (L)",
@@ -5272,14 +5271,14 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Fauchage",
-        "description": "Sur un critique, cible renversée si rate AGI [10+BU]."
+        "description": "Sur un critique, cible renversée si rate AGI palier difficile."
       },
       {
         "name": "Balayage",
         "description": "Attaque jusqu'à 3 cibles dans un arc de 180°."
       }
     ],
-    "description": "Brute suprême avec RD 6."
+    "description": "Brute suprême avec +3 d'armure."
   },
   {
     "name": "Combattant Champion NC15",
@@ -5316,19 +5315,19 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Hausser le ton",
-        "description": "À ≤50% PV : +5 attaque, +2 aux dégâts, RD 5."
+        "description": "À ≤50% PV : +2d6 à l'attaque, +2 aux dégâts, +3 d'armure."
       },
       {
         "name": "Charge (L)",
-        "description": "Attaque avec avantage (+1d6). Succès = FOR opposé ou renversé, DM×2."
+        "description": "Attaque avec avantage (+1d6). Succès = FOR opposé ou renversé, dégâts×2."
       },
       {
         "name": "Enrager",
-        "description": "Sur critique ou ≤50% PV : +5 attaque, +2 aux dégâts."
+        "description": "Sur critique ou ≤50% PV : +2d6 à l'attaque, +2 aux dégâts."
       },
       {
         "name": "Percuter",
-        "description": "Après Charge, END 15 ou étourdi."
+        "description": "Après Charge, END palier moyenne ou étourdi."
       }
     ],
     "description": "Champion suprême."
@@ -5364,11 +5363,11 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Capitaine",
-        "description": "Alliés en vue : +2 init/attaque/DM. Attaque supplémentaire."
+        "description": "Alliés en vue : +1d6 à l'attaque, +1 aux dégâts et +1 en initiative. Attaque supplémentaire."
       },
       {
         "name": "Commandant",
-        "description": "Bonus à +3. Si ≥4 alliés à 10 m, prend moitié des DM."
+        "description": "Bonus de Capitaine porté à +2 aux dégâts. Si ≥4 alliés à 10 m, prend moitié des dégâts."
       },
       {
         "name": "Instinct de survie",
@@ -5380,7 +5379,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Attaque mortelle (L)",
-        "description": "Depuis derrière ou surprise : +5 attaque, +5 aux dégâts. +5 en discrétion."
+        "description": "Depuis derrière ou surprise : +2d6 à l'attaque, +5 aux dégâts. +2d6 en discrétion."
       }
     ],
     "description": "Conquérant suprême, seigneur de guerre légendaire."
@@ -5507,7 +5506,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Attaque mortelle (L)",
-        "description": "Depuis derrière ou surprise : +5 attaque, +5 aux dégâts. +5 discrétion."
+        "description": "Depuis derrière ou surprise : +2d6 à l'attaque, +5 aux dégâts. +2d6 en discrétion."
       }
     ],
     "description": "Assassin spécialisé dans les attaques mortelles."
@@ -5579,7 +5578,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Embuscade",
-        "description": "Premier tour : SAG 19 ou surpris. +2 aux dégâts vs surpris. +5 discrétion/init."
+        "description": "Premier tour : SAG palier difficile ou surpris. +2 aux dégâts vs surpris. +2d6 en discrétion, +2 en initiative."
       }
     ],
     "description": "Tireur d'élite adepte des embuscades."
@@ -5615,7 +5614,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Attaque mortelle (L)",
-        "description": "Depuis derrière ou surprise : +5 attaque, +5 aux dégâts. +5 discrétion."
+        "description": "Depuis derrière ou surprise : +2d6 à l'attaque, +5 aux dégâts. +2d6 en discrétion."
       },
       {
         "name": "Disparition (L)",
@@ -5695,11 +5694,11 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Embuscade",
-        "description": "Premier tour : SAG 19 ou surpris. +2 aux dégâts vs surpris. +5 discrétion/init."
+        "description": "Premier tour : SAG palier difficile ou surpris. +2 aux dégâts vs surpris. +2d6 en discrétion, +2 en initiative."
       },
       {
         "name": "Attaque mortelle (L)",
-        "description": "Depuis derrière ou surprise : +5 attaque, +5 aux dégâts. +5 discrétion."
+        "description": "Depuis derrière ou surprise : +2d6 à l'attaque, +5 aux dégâts. +2d6 en discrétion."
       }
     ],
     "description": "Tireur mobile et difficile à cibler."
@@ -5735,7 +5734,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Attaque mortelle (L)",
-        "description": "Depuis derrière ou surprise : +5 attaque, +5 aux dégâts. +5 discrétion."
+        "description": "Depuis derrière ou surprise : +2d6 à l'attaque, +5 aux dégâts. +2d6 en discrétion."
       },
       {
         "name": "Disparition (L)",
@@ -5743,7 +5742,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Assassinat",
-        "description": "Attaque mortelle sur cible surprise : END 15 ou 0 PV."
+        "description": "Attaque mortelle sur cible surprise : END palier moyenne ou 0 PV."
       }
     ],
     "description": "Assassin capable d'exécuter ses cibles."
@@ -5787,7 +5786,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Hausser le ton",
-        "description": "À ≤50% PV : +5 attaque, +2 aux dégâts, RD 5."
+        "description": "À ≤50% PV : +2d6 à l'attaque, +2 aux dégâts, +3 d'armure."
       }
     ],
     "description": "Maître d'armes qui reprend de la vigueur sous pression."
@@ -5823,7 +5822,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Attaque mortelle (L)",
-        "description": "Depuis derrière ou surprise : +5 attaque, +5 aux dégâts. +5 discrétion."
+        "description": "Depuis derrière ou surprise : +2d6 à l'attaque, +5 aux dégâts. +2d6 en discrétion."
       },
       {
         "name": "Imparable (L)",
@@ -5863,7 +5862,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Attaque mortelle (L)",
-        "description": "Depuis derrière ou surprise : +5 attaque, +5 aux dégâts. +5 discrétion."
+        "description": "Depuis derrière ou surprise : +2d6 à l'attaque, +5 aux dégâts. +2d6 en discrétion."
       },
       {
         "name": "Disparition (L)",
@@ -5871,11 +5870,11 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Assassinat",
-        "description": "Attaque mortelle sur surpris : END 15 ou 0 PV."
+        "description": "Attaque mortelle sur surpris : END palier moyenne ou 0 PV."
       },
       {
         "name": "Interchangeables",
-        "description": "+2d6 en défense en supériorité numérique. Redistribution des DM possible."
+        "description": "+2d6 en défense en supériorité numérique. Redistribution des dégâts possible."
       }
     ],
     "description": "Assassin interchangeable, imprévisible en groupe."
@@ -5919,11 +5918,11 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Hausser le ton",
-        "description": "À ≤50% PV : +5 attaque, +2 aux dégâts, RD 5."
+        "description": "À ≤50% PV : +2d6 à l'attaque, +2 aux dégâts, +3 d'armure."
       },
       {
         "name": "Interchangeables",
-        "description": "+2d6 en défense en supériorité numérique. Redistribution des DM possible."
+        "description": "+2d6 en défense en supériorité numérique. Redistribution des dégâts possible."
       }
     ],
     "description": "Maître d'armes interchangeable en groupe."
@@ -5959,7 +5958,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Attaque mortelle (L)",
-        "description": "Depuis derrière ou surprise : +5 attaque, +5 aux dégâts. +5 discrétion."
+        "description": "Depuis derrière ou surprise : +2d6 à l'attaque, +5 aux dégâts. +2d6 en discrétion."
       },
       {
         "name": "Imparable (L)",
@@ -5967,7 +5966,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Tireur d'élite (L)",
-        "description": "2 attaques à distance par action. Ignore couverture. Option d12 : +4 aux dégâts."
+        "description": "2 attaques à distance par action. Ignore couverture. Option : -1d6 à l'attaque pour +4 aux dégâts."
       }
     ],
     "description": "Tireur d'élite avec disparition tactique."
@@ -6003,11 +6002,11 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Embuscade",
-        "description": "Premier tour : SAG 19 ou surpris. +2 aux dégâts vs surpris. +5 discrétion/init."
+        "description": "Premier tour : SAG palier difficile ou surpris. +2 aux dégâts vs surpris. +2d6 en discrétion, +2 en initiative."
       },
       {
         "name": "Attaque mortelle (L)",
-        "description": "Depuis derrière ou surprise : +5 attaque, +5 aux dégâts. +5 discrétion."
+        "description": "Depuis derrière ou surprise : +2d6 à l'attaque, +5 aux dégâts. +2d6 en discrétion."
       },
       {
         "name": "Disparition (L)",
@@ -6015,7 +6014,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Assassinat",
-        "description": "Attaque mortelle sur surpris : END 15 ou 0 PV."
+        "description": "Attaque mortelle sur surpris : END palier moyenne ou 0 PV."
       },
       {
         "name": "Interchangeables",
@@ -6055,7 +6054,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Embuscade",
-        "description": "Premier tour : SAG 19 ou surpris. +2 aux dégâts vs surpris. +5 discrétion/init."
+        "description": "Premier tour : SAG palier difficile ou surpris. +2 aux dégâts vs surpris. +2d6 en discrétion, +2 en initiative."
       },
       {
         "name": "Imparable (L)",
@@ -6067,7 +6066,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Hausser le ton",
-        "description": "À ≤50% PV : +5 attaque, +2 aux dégâts, RD 5."
+        "description": "À ≤50% PV : +2d6 à l'attaque, +2 aux dégâts, +3 d'armure."
       },
       {
         "name": "Interchangeables",
@@ -6107,11 +6106,11 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Embuscade",
-        "description": "Premier tour : SAG 19 ou surpris. +2 aux dégâts vs surpris. +5 discrétion/init."
+        "description": "Premier tour : SAG palier difficile ou surpris. +2 aux dégâts vs surpris. +2d6 en discrétion, +2 en initiative."
       },
       {
         "name": "Attaque mortelle (L)",
-        "description": "Depuis derrière ou surprise : +5 attaque, +5 aux dégâts. +5 discrétion."
+        "description": "Depuis derrière ou surprise : +2d6 à l'attaque, +5 aux dégâts. +2d6 en discrétion."
       },
       {
         "name": "Imparable (L)",
@@ -6119,7 +6118,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Tireur d'élite (L)",
-        "description": "2 attaques à distance par action. Ignore couverture. Option d12 : +4 aux dégâts."
+        "description": "2 attaques à distance par action. Ignore couverture. Option : -1d6 à l'attaque pour +4 aux dégâts."
       },
       {
         "name": "Disparition (L)",
@@ -6159,11 +6158,11 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Embuscade",
-        "description": "Premier tour : SAG 19 ou surpris. +2 aux dégâts vs surpris. +5 discrétion/init."
+        "description": "Premier tour : SAG palier difficile ou surpris. +2 aux dégâts vs surpris. +2d6 en discrétion, +2 en initiative."
       },
       {
         "name": "Attaque mortelle (L)",
-        "description": "Depuis derrière ou surprise : +5 attaque, +5 aux dégâts. +5 discrétion."
+        "description": "Depuis derrière ou surprise : +2d6 à l'attaque, +5 aux dégâts. +2d6 en discrétion."
       },
       {
         "name": "Disparition (L)",
@@ -6171,7 +6170,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Assassinat",
-        "description": "Attaque mortelle sur surpris : END 15 ou 0 PV."
+        "description": "Attaque mortelle sur surpris : END palier moyenne ou 0 PV."
       },
       {
         "name": "Interchangeables",
@@ -6211,7 +6210,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Embuscade",
-        "description": "Premier tour : SAG 19 ou surpris. +2 aux dégâts vs surpris. +5 discrétion/init."
+        "description": "Premier tour : SAG palier difficile ou surpris. +2 aux dégâts vs surpris. +2d6 en discrétion, +2 en initiative."
       },
       {
         "name": "Imparable (L)",
@@ -6223,7 +6222,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Hausser le ton",
-        "description": "À ≤50% PV : +5 attaque, +2 aux dégâts, RD 5."
+        "description": "À ≤50% PV : +2d6 à l'attaque, +2 aux dégâts, +3 d'armure."
       },
       {
         "name": "Interchangeables",
@@ -6263,11 +6262,11 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Embuscade",
-        "description": "Premier tour : SAG 19 ou surpris. +2 aux dégâts vs surpris. +5 discrétion/init."
+        "description": "Premier tour : SAG palier difficile ou surpris. +2 aux dégâts vs surpris. +2d6 en discrétion, +2 en initiative."
       },
       {
         "name": "Attaque mortelle (L)",
-        "description": "Depuis derrière ou surprise : +5 attaque, +5 aux dégâts. +5 discrétion."
+        "description": "Depuis derrière ou surprise : +2d6 à l'attaque, +5 aux dégâts. +2d6 en discrétion."
       },
       {
         "name": "Imparable (L)",
@@ -6275,7 +6274,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Tireur d'élite (L)",
-        "description": "2 attaques à distance par action. Ignore couverture. Option d12 : +4 aux dégâts."
+        "description": "2 attaques à distance par action. Ignore couverture. Option : -1d6 à l'attaque pour +4 aux dégâts."
       },
       {
         "name": "Disparition (L)",
@@ -6315,11 +6314,11 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Embuscade",
-        "description": "Premier tour : SAG 19 ou surpris. +2 aux dégâts vs surpris. +5 discrétion/init."
+        "description": "Premier tour : SAG palier difficile ou surpris. +2 aux dégâts vs surpris. +2d6 en discrétion, +2 en initiative."
       },
       {
         "name": "Attaque mortelle (L)",
-        "description": "Depuis derrière ou surprise : +5 attaque, +5 aux dégâts. +5 discrétion."
+        "description": "Depuis derrière ou surprise : +2d6 à l'attaque, +5 aux dégâts. +2d6 en discrétion."
       },
       {
         "name": "Disparition (L)",
@@ -6327,7 +6326,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Assassinat",
-        "description": "Attaque mortelle sur surpris : END 15 ou 0 PV."
+        "description": "Attaque mortelle sur surpris : END palier moyenne ou 0 PV."
       },
       {
         "name": "Interchangeables",
@@ -6367,7 +6366,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Embuscade",
-        "description": "Premier tour : SAG 19 ou surpris. +2 aux dégâts vs surpris. +5 discrétion/init."
+        "description": "Premier tour : SAG palier difficile ou surpris. +2 aux dégâts vs surpris. +2d6 en discrétion, +2 en initiative."
       },
       {
         "name": "Imparable (L)",
@@ -6379,7 +6378,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Hausser le ton",
-        "description": "À ≤50% PV : +5 attaque, +2 aux dégâts, RD 5."
+        "description": "À ≤50% PV : +2d6 à l'attaque, +2 aux dégâts, +3 d'armure."
       },
       {
         "name": "Interchangeables",
@@ -6419,11 +6418,11 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Embuscade",
-        "description": "Premier tour : SAG 19 ou surpris. +2 aux dégâts vs surpris. +5 discrétion/init."
+        "description": "Premier tour : SAG palier difficile ou surpris. +2 aux dégâts vs surpris. +2d6 en discrétion, +2 en initiative."
       },
       {
         "name": "Attaque mortelle (L)",
-        "description": "Depuis derrière ou surprise : +5 attaque, +5 aux dégâts. +5 discrétion."
+        "description": "Depuis derrière ou surprise : +2d6 à l'attaque, +5 aux dégâts. +2d6 en discrétion."
       },
       {
         "name": "Imparable (L)",
@@ -6431,7 +6430,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Tireur d'élite (L)",
-        "description": "2 attaques à distance par action. Ignore couverture. Option d12 : +4 aux dégâts."
+        "description": "2 attaques à distance par action. Ignore couverture. Option : -1d6 à l'attaque pour +4 aux dégâts."
       },
       {
         "name": "Disparition (L)",
@@ -6471,11 +6470,11 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Embuscade",
-        "description": "Premier tour : SAG 19 ou surpris. +2 aux dégâts vs surpris. +5 discrétion/init."
+        "description": "Premier tour : SAG palier difficile ou surpris. +2 aux dégâts vs surpris. +2d6 en discrétion, +2 en initiative."
       },
       {
         "name": "Attaque mortelle (L)",
-        "description": "Depuis derrière ou surprise : +5 attaque, +5 aux dégâts. +5 discrétion."
+        "description": "Depuis derrière ou surprise : +2d6 à l'attaque, +5 aux dégâts. +2d6 en discrétion."
       },
       {
         "name": "Disparition (L)",
@@ -6483,7 +6482,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Assassinat",
-        "description": "Attaque mortelle sur surpris : END 15 ou 0 PV."
+        "description": "Attaque mortelle sur surpris : END palier moyenne ou 0 PV."
       },
       {
         "name": "Interchangeables",
@@ -6523,7 +6522,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Embuscade",
-        "description": "Premier tour : SAG 19 ou surpris. +2 aux dégâts vs surpris. +5 discrétion/init."
+        "description": "Premier tour : SAG palier difficile ou surpris. +2 aux dégâts vs surpris. +2d6 en discrétion, +2 en initiative."
       },
       {
         "name": "Imparable (L)",
@@ -6535,7 +6534,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Hausser le ton",
-        "description": "À ≤50% PV : +5 attaque, +2 aux dégâts, RD 5."
+        "description": "À ≤50% PV : +2d6 à l'attaque, +2 aux dégâts, +3 d'armure."
       },
       {
         "name": "Interchangeables",
@@ -6575,11 +6574,11 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Embuscade",
-        "description": "Premier tour : SAG 19 ou surpris. +2 aux dégâts vs surpris. +5 discrétion/init."
+        "description": "Premier tour : SAG palier difficile ou surpris. +2 aux dégâts vs surpris. +2d6 en discrétion, +2 en initiative."
       },
       {
         "name": "Attaque mortelle (L)",
-        "description": "Depuis derrière ou surprise : +5 attaque, +5 aux dégâts. +5 discrétion."
+        "description": "Depuis derrière ou surprise : +2d6 à l'attaque, +5 aux dégâts. +2d6 en discrétion."
       },
       {
         "name": "Imparable (L)",
@@ -6587,7 +6586,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Tireur d'élite (L)",
-        "description": "2 attaques à distance par action. Ignore couverture. Option d12 : +4 aux dégâts."
+        "description": "2 attaques à distance par action. Ignore couverture. Option : -1d6 à l'attaque pour +4 aux dégâts."
       },
       {
         "name": "Disparition (L)",
@@ -6627,11 +6626,11 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Embuscade",
-        "description": "Premier tour : SAG 19 ou surpris. +2 aux dégâts vs surpris. +5 discrétion/init."
+        "description": "Premier tour : SAG palier difficile ou surpris. +2 aux dégâts vs surpris. +2d6 en discrétion, +2 en initiative."
       },
       {
         "name": "Attaque mortelle (L)",
-        "description": "Depuis derrière ou surprise : +5 attaque, +5 aux dégâts. +5 discrétion."
+        "description": "Depuis derrière ou surprise : +2d6 à l'attaque, +5 aux dégâts. +2d6 en discrétion."
       },
       {
         "name": "Disparition (L)",
@@ -6639,7 +6638,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Assassinat",
-        "description": "Attaque mortelle sur surpris : END 15 ou 0 PV."
+        "description": "Attaque mortelle sur surpris : END palier moyenne ou 0 PV."
       },
       {
         "name": "Interchangeables",
@@ -6679,7 +6678,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Embuscade",
-        "description": "Premier tour : SAG 19 ou surpris. +2 aux dégâts vs surpris. +5 discrétion/init."
+        "description": "Premier tour : SAG palier difficile ou surpris. +2 aux dégâts vs surpris. +2d6 en discrétion, +2 en initiative."
       },
       {
         "name": "Imparable (L)",
@@ -6691,7 +6690,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Hausser le ton",
-        "description": "À ≤50% PV : +5 attaque, +2 aux dégâts, RD 5."
+        "description": "À ≤50% PV : +2d6 à l'attaque, +2 aux dégâts, +3 d'armure."
       },
       {
         "name": "Interchangeables",
@@ -6731,11 +6730,11 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Embuscade",
-        "description": "Premier tour : SAG 19 ou surpris. +2 aux dégâts vs surpris. +5 discrétion/init."
+        "description": "Premier tour : SAG palier difficile ou surpris. +2 aux dégâts vs surpris. +2d6 en discrétion, +2 en initiative."
       },
       {
         "name": "Attaque mortelle (L)",
-        "description": "Depuis derrière ou surprise : +5 attaque, +5 aux dégâts. +5 discrétion."
+        "description": "Depuis derrière ou surprise : +2d6 à l'attaque, +5 aux dégâts. +2d6 en discrétion."
       },
       {
         "name": "Imparable (L)",
@@ -6743,7 +6742,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Tireur d'élite (L)",
-        "description": "2 attaques à distance par action. Ignore couverture. Option d12 : +4 aux dégâts."
+        "description": "2 attaques à distance par action. Ignore couverture. Option : -1d6 à l'attaque pour +4 aux dégâts."
       },
       {
         "name": "Disparition (L)",
@@ -6783,11 +6782,11 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Embuscade",
-        "description": "Premier tour : SAG 19 ou surpris. +2 aux dégâts vs surpris. +5 discrétion/init."
+        "description": "Premier tour : SAG palier difficile ou surpris. +2 aux dégâts vs surpris. +2d6 en discrétion, +2 en initiative."
       },
       {
         "name": "Attaque mortelle (L)",
-        "description": "Depuis derrière ou surprise : +5 attaque, +5 aux dégâts. +5 discrétion."
+        "description": "Depuis derrière ou surprise : +2d6 à l'attaque, +5 aux dégâts. +2d6 en discrétion."
       },
       {
         "name": "Disparition (L)",
@@ -6795,7 +6794,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Assassinat",
-        "description": "Attaque mortelle sur surpris : END 15 ou 0 PV."
+        "description": "Attaque mortelle sur surpris : END palier moyenne ou 0 PV."
       },
       {
         "name": "Interchangeables",
@@ -6835,7 +6834,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Embuscade",
-        "description": "Premier tour : SAG 19 ou surpris. +2 aux dégâts vs surpris. +5 discrétion/init."
+        "description": "Premier tour : SAG palier difficile ou surpris. +2 aux dégâts vs surpris. +2d6 en discrétion, +2 en initiative."
       },
       {
         "name": "Imparable (L)",
@@ -6847,7 +6846,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Hausser le ton",
-        "description": "À ≤50% PV : +5 attaque, +2 aux dégâts, RD 5."
+        "description": "À ≤50% PV : +2d6 à l'attaque, +2 aux dégâts, +3 d'armure."
       },
       {
         "name": "Interchangeables",
@@ -6887,11 +6886,11 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Embuscade",
-        "description": "Premier tour : SAG 19 ou surpris. +2 aux dégâts vs surpris. +5 discrétion/init."
+        "description": "Premier tour : SAG palier difficile ou surpris. +2 aux dégâts vs surpris. +2d6 en discrétion, +2 en initiative."
       },
       {
         "name": "Attaque mortelle (L)",
-        "description": "Depuis derrière ou surprise : +5 attaque, +5 aux dégâts. +5 discrétion."
+        "description": "Depuis derrière ou surprise : +2d6 à l'attaque, +5 aux dégâts. +2d6 en discrétion."
       },
       {
         "name": "Imparable (L)",
@@ -6899,7 +6898,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Tireur d'élite (L)",
-        "description": "2 attaques à distance par action. Ignore couverture. Option d12 : +4 aux dégâts."
+        "description": "2 attaques à distance par action. Ignore couverture. Option : -1d6 à l'attaque pour +4 aux dégâts."
       },
       {
         "name": "Disparition (L)",
@@ -6939,15 +6938,15 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Embuscade",
-        "description": "Premier tour : SAG 19 ou surpris. +2 aux dégâts vs surpris. +5 discrétion/init."
+        "description": "Premier tour : SAG palier difficile ou surpris. +2 aux dégâts vs surpris. +2d6 en discrétion, +2 en initiative."
       },
       {
         "name": "Attaque en traître (L)",
-        "description": "+5 attaque, +4 aux dégâts quand il cible le même ennemi qu'un allié."
+        "description": "+2d6 à l'attaque, +4 aux dégâts quand il cible le même ennemi qu'un allié."
       },
       {
         "name": "Attaque mortelle (L)",
-        "description": "Depuis derrière ou surprise : +5 attaque, +5 aux dégâts. +5 discrétion."
+        "description": "Depuis derrière ou surprise : +2d6 à l'attaque, +5 aux dégâts. +2d6 en discrétion."
       },
       {
         "name": "Disparition (L)",
@@ -6955,7 +6954,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Assassinat",
-        "description": "Attaque mortelle sur surpris : END 15 ou 0 PV."
+        "description": "Attaque mortelle sur surpris : END palier moyenne ou 0 PV."
       },
       {
         "name": "Interchangeables",
@@ -6995,11 +6994,11 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Embuscade",
-        "description": "Premier tour : SAG 19 ou surpris. +2 aux dégâts vs surpris. +5 discrétion/init."
+        "description": "Premier tour : SAG palier difficile ou surpris. +2 aux dégâts vs surpris. +2d6 en discrétion, +2 en initiative."
       },
       {
         "name": "Attaque en traître (L)",
-        "description": "+5 attaque, +4 aux dégâts quand il cible le même ennemi qu'un allié."
+        "description": "+2d6 à l'attaque, +4 aux dégâts quand il cible le même ennemi qu'un allié."
       },
       {
         "name": "Imparable (L)",
@@ -7011,7 +7010,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Hausser le ton",
-        "description": "À ≤50% PV : +5 attaque, +2 aux dégâts, RD 5."
+        "description": "À ≤50% PV : +2d6 à l'attaque, +2 aux dégâts, +3 d'armure."
       },
       {
         "name": "Interchangeables",
@@ -7051,15 +7050,15 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Embuscade",
-        "description": "Premier tour : SAG 19 ou surpris. +2 aux dégâts vs surpris. +5 discrétion/init."
+        "description": "Premier tour : SAG palier difficile ou surpris. +2 aux dégâts vs surpris. +2d6 en discrétion, +2 en initiative."
       },
       {
         "name": "Attaque en traître (L)",
-        "description": "+5 attaque, +4 aux dégâts quand il cible le même ennemi qu'un allié."
+        "description": "+2d6 à l'attaque, +4 aux dégâts quand il cible le même ennemi qu'un allié."
       },
       {
         "name": "Attaque mortelle (L)",
-        "description": "Depuis derrière ou surprise : +5 attaque, +5 aux dégâts. +5 discrétion."
+        "description": "Depuis derrière ou surprise : +2d6 à l'attaque, +5 aux dégâts. +2d6 en discrétion."
       },
       {
         "name": "Imparable (L)",
@@ -7067,7 +7066,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Tireur d'élite (L)",
-        "description": "2 attaques à distance par action. Ignore couverture. Option d12 : +4 aux dégâts."
+        "description": "2 attaques à distance par action. Ignore couverture. Option : -1d6 à l'attaque pour +4 aux dégâts."
       },
       {
         "name": "Disparition (L)",
@@ -7107,15 +7106,15 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Embuscade",
-        "description": "Premier tour : SAG 19 ou surpris. +2 aux dégâts vs surpris. +5 discrétion/init."
+        "description": "Premier tour : SAG palier difficile ou surpris. +2 aux dégâts vs surpris. +2d6 en discrétion, +2 en initiative."
       },
       {
         "name": "Attaque en traître (L)",
-        "description": "+5 attaque, +4 aux dégâts sur même cible qu'un allié."
+        "description": "+2d6 à l'attaque, +4 aux dégâts sur même cible qu'un allié."
       },
       {
         "name": "Attaque mortelle (L)",
-        "description": "Depuis derrière ou surprise : +5 attaque, +5 aux dégâts. +5 discrétion."
+        "description": "Depuis derrière ou surprise : +2d6 à l'attaque, +5 aux dégâts. +2d6 en discrétion."
       },
       {
         "name": "Disparition (L)",
@@ -7123,7 +7122,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Assassinat",
-        "description": "Attaque mortelle sur surpris : END 15 ou 0 PV."
+        "description": "Attaque mortelle sur surpris : END palier moyenne ou 0 PV."
       },
       {
         "name": "Interchangeables",
@@ -7163,11 +7162,11 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Embuscade",
-        "description": "Premier tour : SAG 19 ou surpris. +2 aux dégâts vs surpris. +5 discrétion/init."
+        "description": "Premier tour : SAG palier difficile ou surpris. +2 aux dégâts vs surpris. +2d6 en discrétion, +2 en initiative."
       },
       {
         "name": "Attaque en traître (L)",
-        "description": "+5 attaque, +4 aux dégâts sur même cible qu'un allié."
+        "description": "+2d6 à l'attaque, +4 aux dégâts sur même cible qu'un allié."
       },
       {
         "name": "Imparable (L)",
@@ -7179,7 +7178,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Hausser le ton",
-        "description": "À ≤50% PV : +5 attaque, +2 aux dégâts, RD 5."
+        "description": "À ≤50% PV : +2d6 à l'attaque, +2 aux dégâts, +3 d'armure."
       },
       {
         "name": "Interchangeables",
@@ -7219,15 +7218,15 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Embuscade",
-        "description": "Premier tour : SAG 19 ou surpris. +2 aux dégâts vs surpris. +5 discrétion/init."
+        "description": "Premier tour : SAG palier difficile ou surpris. +2 aux dégâts vs surpris. +2d6 en discrétion, +2 en initiative."
       },
       {
         "name": "Attaque en traître (L)",
-        "description": "+5 attaque, +4 aux dégâts sur même cible qu'un allié."
+        "description": "+2d6 à l'attaque, +4 aux dégâts sur même cible qu'un allié."
       },
       {
         "name": "Attaque mortelle (L)",
-        "description": "Depuis derrière ou surprise : +5 attaque, +5 aux dégâts. +5 discrétion."
+        "description": "Depuis derrière ou surprise : +2d6 à l'attaque, +5 aux dégâts. +2d6 en discrétion."
       },
       {
         "name": "Imparable (L)",
@@ -7235,7 +7234,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Tireur d'élite (L)",
-        "description": "2 attaques à distance par action. Ignore couverture. Option d12 : +4 aux dégâts."
+        "description": "2 attaques à distance par action. Ignore couverture. Option : -1d6 à l'attaque pour +4 aux dégâts."
       },
       {
         "name": "Disparition (L)",
@@ -7275,19 +7274,19 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Embuscade",
-        "description": "Premier tour : SAG 19 ou surpris. +2 aux dégâts vs surpris. +5 discrétion/init."
+        "description": "Premier tour : SAG palier difficile ou surpris. +2 aux dégâts vs surpris. +2d6 en discrétion, +2 en initiative."
       },
       {
         "name": "Attaque en traître (L)",
-        "description": "+5 attaque, +4 aux dégâts sur même cible qu'un allié."
+        "description": "+2d6 à l'attaque, +4 aux dégâts sur même cible qu'un allié."
       },
       {
         "name": "L'hallali",
-        "description": "Attaque en traître gratuite quand l'ennemi obtient 1-5 sur son dé d'attaque."
+        "description": "La curée : chaque fois que sa cible rate une attaque, chaque créature proche dotée de cette capacité lui porte aussitôt une Attaque en traître gratuite."
       },
       {
         "name": "Attaque mortelle (L)",
-        "description": "Depuis derrière ou surprise : +5 attaque, +5 aux dégâts. +5 discrétion."
+        "description": "Depuis derrière ou surprise : +2d6 à l'attaque, +5 aux dégâts. +2d6 en discrétion."
       },
       {
         "name": "Disparition (L)",
@@ -7295,7 +7294,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Assassinat",
-        "description": "Attaque mortelle sur surpris : END 15 ou 0 PV."
+        "description": "Attaque mortelle sur surpris : END palier moyenne ou 0 PV."
       },
       {
         "name": "Interchangeables",
@@ -7335,15 +7334,15 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Embuscade",
-        "description": "Premier tour : SAG 19 ou surpris. +2 aux dégâts vs surpris. +5 discrétion/init."
+        "description": "Premier tour : SAG palier difficile ou surpris. +2 aux dégâts vs surpris. +2d6 en discrétion, +2 en initiative."
       },
       {
         "name": "Attaque en traître (L)",
-        "description": "+5 attaque, +4 aux dégâts sur même cible qu'un allié."
+        "description": "+2d6 à l'attaque, +4 aux dégâts sur même cible qu'un allié."
       },
       {
         "name": "L'hallali",
-        "description": "Attaque en traître gratuite quand l'ennemi obtient 1-5 sur son dé d'attaque."
+        "description": "La curée : chaque fois que sa cible rate une attaque, chaque créature proche dotée de cette capacité lui porte aussitôt une Attaque en traître gratuite."
       },
       {
         "name": "Imparable (L)",
@@ -7355,7 +7354,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Hausser le ton",
-        "description": "À ≤50% PV : +5 attaque, +2 aux dégâts, RD 5."
+        "description": "À ≤50% PV : +2d6 à l'attaque, +2 aux dégâts, +3 d'armure."
       },
       {
         "name": "Interchangeables",
@@ -7395,19 +7394,19 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Embuscade",
-        "description": "Premier tour : SAG 19 ou surpris. +2 aux dégâts vs surpris. +5 discrétion/init."
+        "description": "Premier tour : SAG palier difficile ou surpris. +2 aux dégâts vs surpris. +2d6 en discrétion, +2 en initiative."
       },
       {
         "name": "Attaque en traître (L)",
-        "description": "+5 attaque, +4 aux dégâts sur même cible qu'un allié."
+        "description": "+2d6 à l'attaque, +4 aux dégâts sur même cible qu'un allié."
       },
       {
         "name": "L'hallali",
-        "description": "Attaque en traître gratuite quand l'ennemi obtient 1-5 sur son dé d'attaque."
+        "description": "La curée : chaque fois que sa cible rate une attaque, chaque créature proche dotée de cette capacité lui porte aussitôt une Attaque en traître gratuite."
       },
       {
         "name": "Attaque mortelle (L)",
-        "description": "Depuis derrière ou surprise : +5 attaque, +5 aux dégâts. +5 discrétion."
+        "description": "Depuis derrière ou surprise : +2d6 à l'attaque, +5 aux dégâts. +2d6 en discrétion."
       },
       {
         "name": "Imparable (L)",
@@ -7415,7 +7414,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Tireur d'élite (L)",
-        "description": "2 attaques à distance par action. Ignore couverture. Option d12 : +4 aux dégâts."
+        "description": "2 attaques à distance par action. Ignore couverture. Option : -1d6 à l'attaque pour +4 aux dégâts."
       },
       {
         "name": "Disparition (L)",
@@ -7552,7 +7551,7 @@ export const MONSTERS: Monster[] = [
     "abilities": [
       {
         "name": "Maîtrise élémentaire",
-        "description": "AM touche zone 10 m diamètre. AGI [10+BU] ou DM entiers. RD élémentaire = BU."
+        "description": "Attaque magique touche zone 10 m diamètre. AGI palier difficile ou dégâts entiers. +rang de menace d'armure contre les éléments."
       }
     ],
     "description": "Arcaniste maîtrisant les attaques magiques de zone."
@@ -7626,7 +7625,7 @@ export const MONSTERS: Monster[] = [
     "abilities": [
       {
         "name": "Vampirisation (L)",
-        "description": "AM jusqu'à 30 m. 3 DM, soigne autant. 3 PV à chaque mort dans 20 m."
+        "description": "Attaque magique jusqu'à 30 m. 3 dégâts, soigne autant. 3 PV à chaque mort dans 20 m."
       }
     ],
     "description": "Nécromancien qui draine la vie de ses victimes."
@@ -7663,11 +7662,11 @@ export const MONSTERS: Monster[] = [
     "abilities": [
       {
         "name": "Maîtrise élémentaire",
-        "description": "AM touche zone 10 m. AGI [10+BU] ou DM entiers. RD élémentaire = BU."
+        "description": "Attaque magique touche zone 10 m. AGI palier difficile ou dégâts entiers. +rang de menace d'armure contre les éléments."
       },
       {
         "name": "Armure magique (L)",
-        "description": "Réduit de moitié tous les DM non magiques pour le reste du combat."
+        "description": "Réduit de moitié tous les dégâts non magiques pour le reste du combat."
       }
     ],
     "description": "Arcaniste avec armure magique."
@@ -7708,7 +7707,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Armure magique (L)",
-        "description": "Réduit de moitié tous les DM non magiques."
+        "description": "Réduit de moitié tous les dégâts non magiques."
       }
     ],
     "description": "Guérisseur avec armure magique."
@@ -7745,11 +7744,11 @@ export const MONSTERS: Monster[] = [
     "abilities": [
       {
         "name": "Vampirisation (L)",
-        "description": "4 DM, soigne autant. 4 PV à chaque mort dans 20 m."
+        "description": "4 dégâts, soigne autant. 4 PV à chaque mort dans 20 m."
       },
       {
         "name": "Armure magique (L)",
-        "description": "Réduit de moitié tous les DM non magiques."
+        "description": "Réduit de moitié tous les dégâts non magiques."
       }
     ],
     "description": "Nécromancien vampirique avec armure magique."
@@ -7786,11 +7785,11 @@ export const MONSTERS: Monster[] = [
     "abilities": [
       {
         "name": "Maîtrise élémentaire",
-        "description": "AM touche zone 10 m. AGI [10+BU] ou DM entiers. RD élémentaire = BU."
+        "description": "Attaque magique touche zone 10 m. AGI palier difficile ou dégâts entiers. +rang de menace d'armure contre les éléments."
       },
       {
         "name": "Armure magique (L)",
-        "description": "Réduit de moitié tous les DM non magiques."
+        "description": "Réduit de moitié tous les dégâts non magiques."
       }
     ],
     "description": "Arcaniste de rang moyen."
@@ -7831,7 +7830,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Armure magique (L)",
-        "description": "Réduit de moitié tous les DM non magiques."
+        "description": "Réduit de moitié tous les dégâts non magiques."
       },
       {
         "name": "Guérir (L)",
@@ -7872,15 +7871,15 @@ export const MONSTERS: Monster[] = [
     "abilities": [
       {
         "name": "Vampirisation (L)",
-        "description": "4 DM, soigne autant. 4 PV à chaque mort dans 20 m."
+        "description": "4 dégâts, soigne autant. 4 PV à chaque mort dans 20 m."
       },
       {
         "name": "Armure magique (L)",
-        "description": "Réduit de moitié tous les DM non magiques."
+        "description": "Réduit de moitié tous les dégâts non magiques."
       },
       {
         "name": "Animer un cadavre (L)",
-        "description": "Réanime un mort avec ses stats -2 attaque/-2 init. Impossible si rang de menace mort > rang de menace nécromancien."
+        "description": "Réanime un mort avec ses stats -1d6 à l'attaque, -1 en initiative. Impossible si rang de menace mort > rang de menace nécromancien."
       }
     ],
     "description": "Nécromancien capable d'animer les morts."
@@ -7917,15 +7916,15 @@ export const MONSTERS: Monster[] = [
     "abilities": [
       {
         "name": "Maîtrise élémentaire",
-        "description": "AM touche zone 10 m. AGI [10+BU] ou DM entiers. RD élémentaire = BU."
+        "description": "Attaque magique touche zone 10 m. AGI palier difficile ou dégâts entiers. +rang de menace d'armure contre les éléments."
       },
       {
         "name": "Armure magique (L)",
-        "description": "Réduit de moitié tous les DM non magiques."
+        "description": "Réduit de moitié tous les dégâts non magiques."
       },
       {
         "name": "Contrôle mental (L)",
-        "description": "Attaque magique opposée. Contrôle la cible 1d4 tours. SAG [15+BU] pour se libérer."
+        "description": "Attaque magique opposée. Contrôle la cible 1d4 tours. SAG palier difficile pour se libérer."
       }
     ],
     "description": "Arcaniste contrôlant les esprits adverses."
@@ -7966,7 +7965,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Armure magique (L)",
-        "description": "Réduit de moitié tous les DM non magiques."
+        "description": "Réduit de moitié tous les dégâts non magiques."
       },
       {
         "name": "Guérir (L)",
@@ -7974,7 +7973,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Gaz alchimique (L)",
-        "description": "Nuage toxique 10 m portée, 4 m diamètre. END [12+BU] ou 5 DM + affaibli 1d4 tours."
+        "description": "Nuage toxique 10 m portée, 4 m diamètre. END palier difficile ou 3 dégâts + affaibli 1d4 tours."
       }
     ],
     "description": "Guérisseur avec gaz alchimique offensif."
@@ -8011,19 +8010,19 @@ export const MONSTERS: Monster[] = [
     "abilities": [
       {
         "name": "Vampirisation (L)",
-        "description": "5 DM, soigne autant. 5 PV à chaque mort dans 20 m."
+        "description": "5 dégâts, soigne autant. 5 PV à chaque mort dans 20 m."
       },
       {
         "name": "Armure magique (L)",
-        "description": "Réduit de moitié tous les DM non magiques."
+        "description": "Réduit de moitié tous les dégâts non magiques."
       },
       {
         "name": "Animer un cadavre (L)",
-        "description": "Réanime un mort avec ses stats -2 attaque/-2 init."
+        "description": "Réanime un mort avec ses stats -1d6 à l'attaque, -1 en initiative."
       },
       {
         "name": "Injonction mortelle (L)",
-        "description": "Cible dans 30 m : END 15 ou PV=0. En cas de réussite 7 DM. Une fois par cible par combat."
+        "description": "Cible dans 30 m : END palier moyenne ou PV=0. En cas de réussite 7 dégâts. Une fois par cible par combat."
       }
     ],
     "description": "Nécromancien avec injonction mortelle dévastatrice."
@@ -8060,15 +8059,15 @@ export const MONSTERS: Monster[] = [
     "abilities": [
       {
         "name": "Maîtrise élémentaire",
-        "description": "AM touche zone 10 m. AGI [10+BU] ou DM entiers. RD élémentaire = BU."
+        "description": "Attaque magique touche zone 10 m. AGI palier difficile ou dégâts entiers. +rang de menace d'armure contre les éléments."
       },
       {
         "name": "Armure magique (L)",
-        "description": "Réduit de moitié tous les DM non magiques."
+        "description": "Réduit de moitié tous les dégâts non magiques."
       },
       {
         "name": "Contrôle mental (L)",
-        "description": "Attaque magique opposée. Contrôle 1d4 tours. SAG [15+BU] pour se libérer."
+        "description": "Attaque magique opposée. Contrôle 1d4 tours. SAG palier difficile pour se libérer."
       }
     ],
     "description": "Arcaniste puissant avec bâton runique."
@@ -8109,7 +8108,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Armure magique (L)",
-        "description": "Réduit de moitié tous les DM non magiques."
+        "description": "Réduit de moitié tous les dégâts non magiques."
       },
       {
         "name": "Guérir (L)",
@@ -8117,7 +8116,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Gaz alchimique (L)",
-        "description": "Nuage toxique ; END [12+BU] ou 5 DM + affaibli."
+        "description": "Nuage toxique ; END palier difficile ou 3 dégâts + affaibli."
       }
     ],
     "description": "Guérisseur de haut rang."
@@ -8154,19 +8153,19 @@ export const MONSTERS: Monster[] = [
     "abilities": [
       {
         "name": "Vampirisation (L)",
-        "description": "6 DM, soigne autant. 5 PV à chaque mort dans 20 m."
+        "description": "6 dégâts, soigne autant. 5 PV à chaque mort dans 20 m."
       },
       {
         "name": "Armure magique (L)",
-        "description": "Réduit de moitié tous les DM non magiques."
+        "description": "Réduit de moitié tous les dégâts non magiques."
       },
       {
         "name": "Animer un cadavre (L)",
-        "description": "Réanime un mort avec ses stats -2 attaque/-2 init."
+        "description": "Réanime un mort avec ses stats -1d6 à l'attaque, -1 en initiative."
       },
       {
         "name": "Injonction mortelle (L)",
-        "description": "END 15 ou PV=0. Sinon 7 DM."
+        "description": "END palier moyenne ou PV=0. Sinon 7 dégâts."
       }
     ],
     "description": "Nécromancien de haut rang."
@@ -8203,15 +8202,15 @@ export const MONSTERS: Monster[] = [
     "abilities": [
       {
         "name": "Maîtrise élémentaire",
-        "description": "AM touche zone 10 m. AGI [10+BU] ou DM entiers. RD élémentaire = BU."
+        "description": "Attaque magique touche zone 10 m. AGI palier difficile ou dégâts entiers. +rang de menace d'armure contre les éléments."
       },
       {
         "name": "Armure magique (L)",
-        "description": "Réduit de moitié tous les DM non magiques."
+        "description": "Réduit de moitié tous les dégâts non magiques."
       },
       {
         "name": "Contrôle mental (L)",
-        "description": "Attaque magique opposée. Contrôle 1d4 tours. SAG [15+BU] pour se libérer."
+        "description": "Attaque magique opposée. Contrôle 1d4 tours. SAG palier difficile pour se libérer."
       }
     ],
     "description": "Arcaniste de haut rang."
@@ -8252,7 +8251,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Armure magique (L)",
-        "description": "Réduit de moitié tous les DM non magiques."
+        "description": "Réduit de moitié tous les dégâts non magiques."
       },
       {
         "name": "Guérir (L)",
@@ -8260,7 +8259,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Gaz alchimique (L)",
-        "description": "Nuage toxique ; END [12+BU] ou 5 DM + affaibli."
+        "description": "Nuage toxique ; END palier difficile ou 3 dégâts + affaibli."
       }
     ],
     "description": "Guérisseur de haut rang."
@@ -8297,19 +8296,19 @@ export const MONSTERS: Monster[] = [
     "abilities": [
       {
         "name": "Vampirisation (L)",
-        "description": "7 DM, soigne autant. 6 PV à chaque mort dans 20 m."
+        "description": "7 dégâts, soigne autant. 6 PV à chaque mort dans 20 m."
       },
       {
         "name": "Armure magique (L)",
-        "description": "Réduit de moitié tous les DM non magiques."
+        "description": "Réduit de moitié tous les dégâts non magiques."
       },
       {
         "name": "Animer un cadavre (L)",
-        "description": "Réanime un mort avec ses stats -2 attaque/-2 init."
+        "description": "Réanime un mort avec ses stats -1d6 à l'attaque, -1 en initiative."
       },
       {
         "name": "Injonction mortelle (L)",
-        "description": "END 15 ou PV=0. Sinon 8 DM."
+        "description": "END palier moyenne ou PV=0. Sinon 8 dégâts."
       }
     ],
     "description": "Nécromancien implacable."
@@ -8346,11 +8345,11 @@ export const MONSTERS: Monster[] = [
     "abilities": [
       {
         "name": "Maîtrise élémentaire",
-        "description": "AM touche zone 10 m. AGI [10+BU] ou DM entiers. RD élémentaire = BU."
+        "description": "Attaque magique touche zone 10 m. AGI palier difficile ou dégâts entiers. +rang de menace d'armure contre les éléments."
       },
       {
         "name": "Armure magique (L)",
-        "description": "Réduit de moitié tous les DM non magiques."
+        "description": "Réduit de moitié tous les dégâts non magiques."
       },
       {
         "name": "Contrôle mental (L)",
@@ -8399,7 +8398,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Armure magique (L)",
-        "description": "Réduit de moitié tous les DM non magiques."
+        "description": "Réduit de moitié tous les dégâts non magiques."
       },
       {
         "name": "Guérir (L)",
@@ -8407,7 +8406,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Gaz alchimique (L)",
-        "description": "Nuage toxique ; END [12+BU] ou 5 DM + affaibli."
+        "description": "Nuage toxique ; END palier difficile ou 3 dégâts + affaibli."
       },
       {
         "name": "Déplacement magique (L)",
@@ -8448,11 +8447,11 @@ export const MONSTERS: Monster[] = [
     "abilities": [
       {
         "name": "Vampirisation (L)",
-        "description": "8 DM, soigne autant. 6 PV à chaque mort dans 20 m."
+        "description": "8 dégâts, soigne autant. 6 PV à chaque mort dans 20 m."
       },
       {
         "name": "Armure magique (L)",
-        "description": "Réduit de moitié tous les DM non magiques."
+        "description": "Réduit de moitié tous les dégâts non magiques."
       },
       {
         "name": "Animer un cadavre (L)",
@@ -8460,7 +8459,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Injonction mortelle (L)",
-        "description": "END 15 ou PV=0. Sinon 8 DM."
+        "description": "END palier moyenne ou PV=0. Sinon 8 dégâts."
       },
       {
         "name": "Déplacement magique (L)",
@@ -8501,11 +8500,11 @@ export const MONSTERS: Monster[] = [
     "abilities": [
       {
         "name": "Maîtrise élémentaire",
-        "description": "AM touche zone 10 m. AGI [10+BU] ou DM entiers. RD élémentaire = BU."
+        "description": "Attaque magique touche zone 10 m. AGI palier difficile ou dégâts entiers. +rang de menace d'armure contre les éléments."
       },
       {
         "name": "Armure magique (L)",
-        "description": "Réduit de moitié tous les DM non magiques."
+        "description": "Réduit de moitié tous les dégâts non magiques."
       },
       {
         "name": "Contrôle mental (L)",
@@ -8554,7 +8553,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Armure magique (L)",
-        "description": "Réduit de moitié tous les DM non magiques."
+        "description": "Réduit de moitié tous les dégâts non magiques."
       },
       {
         "name": "Guérir (L)",
@@ -8562,7 +8561,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Gaz alchimique (L)",
-        "description": "Nuage toxique ; END [12+BU] ou 5 DM + affaibli."
+        "description": "Nuage toxique ; END palier difficile ou 3 dégâts + affaibli."
       },
       {
         "name": "Déplacement magique (L)",
@@ -8603,11 +8602,11 @@ export const MONSTERS: Monster[] = [
     "abilities": [
       {
         "name": "Vampirisation (L)",
-        "description": "9 DM, soigne autant. 7 PV à chaque mort dans 20 m."
+        "description": "9 dégâts, soigne autant. 7 PV à chaque mort dans 20 m."
       },
       {
         "name": "Armure magique (L)",
-        "description": "Réduit de moitié tous les DM non magiques."
+        "description": "Réduit de moitié tous les dégâts non magiques."
       },
       {
         "name": "Animer un cadavre (L)",
@@ -8615,7 +8614,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Injonction mortelle (L)",
-        "description": "END 15 ou PV=0. Sinon 9 DM."
+        "description": "END palier moyenne ou PV=0. Sinon 9 dégâts."
       },
       {
         "name": "Déplacement magique (L)",
@@ -8656,11 +8655,11 @@ export const MONSTERS: Monster[] = [
     "abilities": [
       {
         "name": "Maîtrise élémentaire",
-        "description": "AM touche zone 10 m. AGI [10+BU] ou DM entiers. RD élémentaire = BU."
+        "description": "Attaque magique touche zone 10 m. AGI palier difficile ou dégâts entiers. +rang de menace d'armure contre les éléments."
       },
       {
         "name": "Armure magique (L)",
-        "description": "Réduit de moitié tous les DM non magiques."
+        "description": "Réduit de moitié tous les dégâts non magiques."
       },
       {
         "name": "Contrôle mental (L)",
@@ -8713,7 +8712,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Armure magique (L)",
-        "description": "Réduit de moitié tous les DM non magiques."
+        "description": "Réduit de moitié tous les dégâts non magiques."
       },
       {
         "name": "Guérir (L)",
@@ -8721,7 +8720,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Gaz alchimique (L)",
-        "description": "Nuage toxique ; END [12+BU] ou 5 DM + affaibli."
+        "description": "Nuage toxique ; END palier difficile ou 3 dégâts + affaibli."
       },
       {
         "name": "Déplacement magique (L)",
@@ -8766,11 +8765,11 @@ export const MONSTERS: Monster[] = [
     "abilities": [
       {
         "name": "Vampirisation (L)",
-        "description": "10 DM, soigne autant. 7 PV à chaque mort dans 20 m."
+        "description": "10 dégâts, soigne autant. 7 PV à chaque mort dans 20 m."
       },
       {
         "name": "Armure magique (L)",
-        "description": "Réduit de moitié tous les DM non magiques."
+        "description": "Réduit de moitié tous les dégâts non magiques."
       },
       {
         "name": "Animer un cadavre (L)",
@@ -8778,7 +8777,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Injonction mortelle (L)",
-        "description": "END 15 ou PV=0. Sinon 9 DM."
+        "description": "END palier moyenne ou PV=0. Sinon 9 dégâts."
       },
       {
         "name": "Déplacement magique (L)",
@@ -8823,11 +8822,11 @@ export const MONSTERS: Monster[] = [
     "abilities": [
       {
         "name": "Maîtrise élémentaire",
-        "description": "AM touche zone 10 m. AGI [10+BU] ou DM entiers. RD élémentaire = BU."
+        "description": "Attaque magique touche zone 10 m. AGI palier difficile ou dégâts entiers. +rang de menace d'armure contre les éléments."
       },
       {
         "name": "Armure magique (L)",
-        "description": "Réduit de moitié tous les DM non magiques."
+        "description": "Réduit de moitié tous les dégâts non magiques."
       },
       {
         "name": "Contrôle mental (L)",
@@ -8880,7 +8879,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Armure magique (L)",
-        "description": "Réduit de moitié tous les DM non magiques."
+        "description": "Réduit de moitié tous les dégâts non magiques."
       },
       {
         "name": "Guérir (L)",
@@ -8888,7 +8887,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Gaz alchimique (L)",
-        "description": "Nuage toxique ; END [12+BU] ou 5 DM + affaibli."
+        "description": "Nuage toxique ; END palier difficile ou 3 dégâts + affaibli."
       },
       {
         "name": "Déplacement magique (L)",
@@ -8933,11 +8932,11 @@ export const MONSTERS: Monster[] = [
     "abilities": [
       {
         "name": "Vampirisation (L)",
-        "description": "11 DM, soigne autant. 8 PV à chaque mort dans 20 m."
+        "description": "11 dégâts, soigne autant. 8 PV à chaque mort dans 20 m."
       },
       {
         "name": "Armure magique (L)",
-        "description": "Réduit de moitié tous les DM non magiques."
+        "description": "Réduit de moitié tous les dégâts non magiques."
       },
       {
         "name": "Animer un cadavre (L)",
@@ -8945,7 +8944,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Injonction mortelle (L)",
-        "description": "END 15 ou PV=0. Sinon 10 DM."
+        "description": "END palier moyenne ou PV=0. Sinon 10 dégâts."
       },
       {
         "name": "Déplacement magique (L)",
@@ -8990,11 +8989,11 @@ export const MONSTERS: Monster[] = [
     "abilities": [
       {
         "name": "Maîtrise élémentaire",
-        "description": "AM touche zone 10 m. AGI [10+BU] ou DM entiers. RD élémentaire = BU."
+        "description": "Attaque magique touche zone 10 m. AGI palier difficile ou dégâts entiers. +rang de menace d'armure contre les éléments."
       },
       {
         "name": "Armure magique (L)",
-        "description": "Réduit de moitié tous les DM non magiques."
+        "description": "Réduit de moitié tous les dégâts non magiques."
       },
       {
         "name": "Contrôle mental (L)",
@@ -9010,7 +9009,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Résistance à la magie",
-        "description": "RD 5 contre tous les dégâts magiques."
+        "description": "+3 d'armure contre tous les dégâts magiques."
       }
     ],
     "description": "Arcaniste épique résistant à la magie."
@@ -9051,7 +9050,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Armure magique (L)",
-        "description": "Réduit de moitié tous les DM non magiques."
+        "description": "Réduit de moitié tous les dégâts non magiques."
       },
       {
         "name": "Guérir (L)",
@@ -9059,7 +9058,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Gaz alchimique (L)",
-        "description": "Nuage toxique ; END [12+BU] ou 5 DM + affaibli."
+        "description": "Nuage toxique ; END palier difficile ou 3 dégâts + affaibli."
       },
       {
         "name": "Déplacement magique (L)",
@@ -9071,7 +9070,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Résistance à la magie",
-        "description": "RD 5 contre tous les dégâts magiques."
+        "description": "+3 d'armure contre tous les dégâts magiques."
       }
     ],
     "description": "Guérisseur épique résistant à la magie."
@@ -9108,11 +9107,11 @@ export const MONSTERS: Monster[] = [
     "abilities": [
       {
         "name": "Vampirisation (L)",
-        "description": "11 DM, soigne autant. 8 PV à chaque mort dans 20 m."
+        "description": "11 dégâts, soigne autant. 8 PV à chaque mort dans 20 m."
       },
       {
         "name": "Armure magique (L)",
-        "description": "Réduit de moitié tous les DM non magiques."
+        "description": "Réduit de moitié tous les dégâts non magiques."
       },
       {
         "name": "Animer un cadavre (L)",
@@ -9120,7 +9119,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Injonction mortelle (L)",
-        "description": "END 15 ou PV=0. Sinon 10 DM."
+        "description": "END palier moyenne ou PV=0. Sinon 10 dégâts."
       },
       {
         "name": "Déplacement magique (L)",
@@ -9132,7 +9131,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Résistance à la magie",
-        "description": "RD 5 contre tous les dégâts magiques."
+        "description": "+3 d'armure contre tous les dégâts magiques."
       }
     ],
     "description": "Nécromancien épique résistant à la magie."
@@ -9169,11 +9168,11 @@ export const MONSTERS: Monster[] = [
     "abilities": [
       {
         "name": "Maîtrise élémentaire",
-        "description": "AM touche zone 10 m. AGI [10+BU] ou DM entiers. RD élémentaire = BU."
+        "description": "Attaque magique touche zone 10 m. AGI palier difficile ou dégâts entiers. +rang de menace d'armure contre les éléments."
       },
       {
         "name": "Armure magique (L)",
-        "description": "Réduit de moitié tous les DM non magiques."
+        "description": "Réduit de moitié tous les dégâts non magiques."
       },
       {
         "name": "Contrôle mental (L)",
@@ -9189,7 +9188,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Résistance à la magie",
-        "description": "RD 5 contre tous les dégâts magiques."
+        "description": "+3 d'armure contre tous les dégâts magiques."
       }
     ],
     "description": "Arcaniste légendaire."
@@ -9230,7 +9229,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Armure magique (L)",
-        "description": "Réduit de moitié tous les DM non magiques."
+        "description": "Réduit de moitié tous les dégâts non magiques."
       },
       {
         "name": "Guérir (L)",
@@ -9238,7 +9237,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Gaz alchimique (L)",
-        "description": "Nuage toxique ; END [12+BU] ou 5 DM + affaibli."
+        "description": "Nuage toxique ; END palier difficile ou 3 dégâts + affaibli."
       },
       {
         "name": "Déplacement magique (L)",
@@ -9250,7 +9249,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Résistance à la magie",
-        "description": "RD 5 contre tous les dégâts magiques."
+        "description": "+3 d'armure contre tous les dégâts magiques."
       }
     ],
     "description": "Guérisseur légendaire."
@@ -9287,11 +9286,11 @@ export const MONSTERS: Monster[] = [
     "abilities": [
       {
         "name": "Vampirisation (L)",
-        "description": "12 DM, soigne autant. 9 PV à chaque mort dans 20 m."
+        "description": "12 dégâts, soigne autant. 9 PV à chaque mort dans 20 m."
       },
       {
         "name": "Armure magique (L)",
-        "description": "Réduit de moitié tous les DM non magiques."
+        "description": "Réduit de moitié tous les dégâts non magiques."
       },
       {
         "name": "Animer un cadavre (L)",
@@ -9299,7 +9298,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Injonction mortelle (L)",
-        "description": "END 15 ou PV=0. Sinon 11 DM."
+        "description": "END palier moyenne ou PV=0. Sinon 11 dégâts."
       },
       {
         "name": "Déplacement magique (L)",
@@ -9311,7 +9310,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Résistance à la magie",
-        "description": "RD 5 contre tous les dégâts magiques."
+        "description": "+3 d'armure contre tous les dégâts magiques."
       }
     ],
     "description": "Nécromancien légendaire quasi-indestructible."
@@ -9348,11 +9347,11 @@ export const MONSTERS: Monster[] = [
     "abilities": [
       {
         "name": "Maîtrise élémentaire",
-        "description": "AM touche zone 10 m. AGI [10+BU] ou DM entiers. RD élémentaire = BU."
+        "description": "Attaque magique touche zone 10 m. AGI palier difficile ou dégâts entiers. +rang de menace d'armure contre les éléments."
       },
       {
         "name": "Armure magique (L)",
-        "description": "Réduit de moitié tous les DM non magiques."
+        "description": "Réduit de moitié tous les dégâts non magiques."
       },
       {
         "name": "Contrôle mental (L)",
@@ -9368,11 +9367,11 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Résistance à la magie",
-        "description": "RD 5 contre tous les dégâts magiques."
+        "description": "+3 d'armure contre tous les dégâts magiques."
       },
       {
         "name": "Régénération magique",
-        "description": "Régénère 5 PV par tour. Seuls le feu et l'acide peuvent détruire définitivement l'arcaniste."
+        "description": "Régénère 3 PV par tour. Seuls le feu et l'acide peuvent détruire définitivement l'arcaniste."
       }
     ],
     "description": "Arcaniste suprême avec régénération magique."
@@ -9413,7 +9412,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Armure magique (L)",
-        "description": "Réduit de moitié tous les DM non magiques."
+        "description": "Réduit de moitié tous les dégâts non magiques."
       },
       {
         "name": "Guérir (L)",
@@ -9421,7 +9420,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Gaz alchimique (L)",
-        "description": "Nuage toxique ; END [12+BU] ou 5 DM + affaibli."
+        "description": "Nuage toxique ; END palier difficile ou 3 dégâts + affaibli."
       },
       {
         "name": "Déplacement magique (L)",
@@ -9433,11 +9432,11 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Résistance à la magie",
-        "description": "RD 5 contre tous les dégâts magiques."
+        "description": "+3 d'armure contre tous les dégâts magiques."
       },
       {
         "name": "Régénération magique",
-        "description": "Régénère 5 PV par tour. Seuls le feu et l'acide peuvent détruire définitivement le guérisseur."
+        "description": "Régénère 3 PV par tour. Seuls le feu et l'acide peuvent détruire définitivement le guérisseur."
       }
     ],
     "description": "Guérisseur suprême avec régénération."
@@ -9474,11 +9473,11 @@ export const MONSTERS: Monster[] = [
     "abilities": [
       {
         "name": "Vampirisation (L)",
-        "description": "13 DM, soigne autant. 9 PV à chaque mort dans 20 m."
+        "description": "13 dégâts, soigne autant. 9 PV à chaque mort dans 20 m."
       },
       {
         "name": "Armure magique (L)",
-        "description": "Réduit de moitié tous les DM non magiques."
+        "description": "Réduit de moitié tous les dégâts non magiques."
       },
       {
         "name": "Animer un cadavre (L)",
@@ -9486,7 +9485,7 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Injonction mortelle (L)",
-        "description": "END 15 ou PV=0. Sinon 11 DM."
+        "description": "END palier moyenne ou PV=0. Sinon 11 dégâts."
       },
       {
         "name": "Déplacement magique (L)",
@@ -9498,11 +9497,11 @@ export const MONSTERS: Monster[] = [
       },
       {
         "name": "Résistance à la magie",
-        "description": "RD 5 contre tous les dégâts magiques."
+        "description": "+3 d'armure contre tous les dégâts magiques."
       },
       {
         "name": "Régénération magique",
-        "description": "Régénère 5 PV par tour. Seuls le feu et l'acide peuvent détruire définitivement le nécromancien."
+        "description": "Régénère 3 PV par tour. Seuls le feu et l'acide peuvent détruire définitivement le nécromancien."
       }
     ],
     "description": "Nécromancien suprême avec armée de morts."

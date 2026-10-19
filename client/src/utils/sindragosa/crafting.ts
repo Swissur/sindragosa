@@ -85,10 +85,15 @@ export function recipesByDomain(
  * Composants (décidé le 2026-10-18) : il faut les avoir pour lancer le jet, et
  * ils sont consommés que le jet réussisse ou non.
  * Les patrons écrivent le même composant au singulier ou au pluriel
- * (« Lingot de Fer brut », « Lingots de Fer brut ») : la comparaison l'ignore.
+ * (« Lingot de Fer », « Lingots de Fer ») : la comparaison l'ignore.
+ * Le seul pluriel irrégulier des composants : « Cristaux ».
  */
+const IRREGULAR_PLURALS: Record<string, string> = { cristaux: 'cristal' }
+
 export function componentKey(name: string): string {
-  return normalizeName(name).split(' ').map((w) => (w.length > 3 ? w.replace(/[sx]$/, '') : w)).join(' ')
+  return normalizeName(name).split(' ')
+    .map((w) => IRREGULAR_PLURALS[w] ?? (w.length > 3 ? w.replace(/[sx]$/, '') : w))
+    .join(' ')
 }
 
 function owned(items: ItemRow[], name: string): number {

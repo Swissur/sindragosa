@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { MONSTERS } from './monsters'
+import { D20_LEFTOVERS } from '../../utils/sindragosa/bestiary'
 
 const byName = (name: string) => MONSTERS.find((m) => m.name === name)!
 
@@ -28,8 +29,17 @@ describe('bestiaire converti', () => {
     expect(byName('Loup').armor).toBe(0)
   })
 
-  it('il ne reste presque plus de vocabulaire d20 à relire', () => {
-    const review = MONSTERS.flatMap((m) => m.abilities.filter((a) => a.review).map((a) => `${m.name} : ${a.name}`))
-    expect(review).toEqual(['Worg : L\'hallali'])
+  it('il ne reste plus de vocabulaire d20', () => {
+    const texts = MONSTERS.flatMap((m) => [
+      ...m.abilities.map((a) => ({ where: `${m.name} : ${a.name}`, text: `${a.name} ${a.description}` })),
+      { where: m.name, text: m.description ?? '' },
+    ])
+    expect(texts.filter((t) => D20_LEFTOVERS.test(t.text)).map((t) => t.where)).toEqual([])
+  })
+
+  it('l’hallali part d’une attaque ratée, sans plage d20', () => {
+    const hallali = MONSTERS.flatMap((m) => m.abilities.filter((a) => a.name === 'L\'hallali'))
+    expect(hallali).toHaveLength(4)
+    for (const a of hallali) expect(a.description).toMatch(/rate une attaque/)
   })
 })

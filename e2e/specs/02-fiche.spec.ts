@@ -209,7 +209,9 @@ test('le joueur ne voit que ses compétences débloquées, le MJ voit tout le ca
     await pageMj.goto(`/campagnes/${sandbox.id}/personnage/${orlane.userId}`)
     await pageMj.getByRole('tab', { name: 'Compétences' }).click()
     await pageMj.getByTestId('abilities-locked').click()
-    await expect(pageMj.getByTestId('ability-1')).toBeVisible()
+    // Rangées par carac comme chez le joueur : Attaque sournoise est sous Agilité
+    await pageMj.getByTestId('abilities-agi').click()
+    await expect(pageMj.getByTestId('ability-1').first()).toBeVisible()
   } finally {
     await joueur.close()
     await mj.close()

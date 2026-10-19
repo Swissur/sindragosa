@@ -10,7 +10,7 @@ export const UPDATABLE_FIELDS = [
   'domains', 'specialties', 'advancedDomains',
   'abilityUses', 'sessionTicks', 'resources', 'crafts',
   'items', 'goldCoins', 'silverCoins', 'copperCoins',
-  'pcCurrent', 'states',
+  'pcCurrent', 'states', 'form', 'manaCurrent', 'manaMax',
 ] as const
 
 export type UpdatableField = (typeof UPDATABLE_FIELDS)[number]
@@ -22,10 +22,11 @@ export function pickUpdatable(raw: Record<string, unknown>): Partial<Record<Upda
 }
 
 // Ce que le MJ règle sur la fiche d'un joueur (plans/32 « Outils du MJ ») :
-// caracs, rangs forcés, récompenses (coches), titres. `hpMax` suit l'Endurance.
+// caracs, rangs forcés, récompenses (coches), titres. `hpMax` suit l'Endurance,
+// `manaMax` les rangs magiques.
 export const GM_EDITABLE_FIELDS = [
   'str', 'agi', 'end', 'int', 'wis', 'cha',
-  'domains', 'specialties', 'advancedDomains', 'titles', 'hpMax',
+  'domains', 'specialties', 'advancedDomains', 'titles', 'hpMax', 'manaMax',
 ] as const
 
 export type GmEditableField = (typeof GM_EDITABLE_FIELDS)[number]

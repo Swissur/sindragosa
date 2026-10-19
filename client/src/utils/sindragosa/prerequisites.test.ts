@@ -79,3 +79,21 @@ describe('prerequisiteLabel', () => {
     expect(prerequisiteLabel({ kind: 'specialty', name: 'Bouclier', level: 2 })).toBe('Boucliers (Expert)')
   })
 })
+
+describe('Forme animale', () => {
+  // Une spécialité de Communion suppose au moins le rang 1 dans ce domaine
+  const formeAnimale: ProgressState = {
+    ...empty, domainRanks: { 'communion-naturelle-chamanisme': 1 }, specialties: [{ name: 'Forme animale', level: 1 }],
+  }
+  const names = (state: ProgressState) => unlockedAbilities(state).map((a) => a.name)
+
+  it('la spécialité donne Forme d\'ours et Forme de félin', () => {
+    expect(names(formeAnimale)).toEqual(expect.arrayContaining(["Forme d'ours", 'Forme de félin']))
+  })
+
+  it('Forme d\'ours reste ouverte par ses prérequis du PDF', () => {
+    const pdf = { ...empty, domainRanks: { 'communion-naturelle-chamanisme': 1, 'resistance-physique': 1 } }
+    expect(names(pdf)).toContain("Forme d'ours")
+    expect(names(pdf)).not.toContain('Forme de félin')
+  })
+})

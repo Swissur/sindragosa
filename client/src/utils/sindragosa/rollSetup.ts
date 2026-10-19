@@ -18,6 +18,8 @@ export interface RollChoice {
   mode: RollMode
   /** Points de chance dépensés (+1d6 chacun). */
   luck: number
+  /** Sort en concentration Puissante : +1d6. */
+  power?: number
 }
 
 export interface RollSetup {
@@ -56,18 +58,20 @@ export function rollSetup(c: Character, choice: RollChoice): RollSetup | null {
   const advantages = choice.mode === 'avantage' ? 1 : 0
   const disadvantages = choice.mode === 'desavantage' ? 1 : 0
   const luck = Math.max(0, Math.min(choice.luck, c.pcCurrent))
+  const power = choice.power ?? 0
 
   const parts = [
     { label: STATS.find((st) => st.id === target.statId)!.abbr, value: stat },
     { label: 'rang', value: rank },
   ]
   if (specialtyLevel >= 2) parts.push({ label: SPECIALTY_LEVEL_LABELS[specialtyLevel], value: 1 })
+  if (power) parts.push({ label: 'puissante', value: power })
   if (advantages) parts.push({ label: 'avantage', value: 1 })
   if (disadvantages) parts.push({ label: 'désavantage', value: -1 })
   if (luck) parts.push({ label: 'chance', value: luck })
 
-  const count = poolSize({ stat, domainRank: rank, specialtyLevel, advantages, disadvantages, luck })
-  return { kind: target.kind, count, specialtyLevel, parts, sources: poolSources(stat, rank, specialtyLevel, advantages, luck, count) }
+  const count = poolSize({ stat, domainRank: rank, specialtyLevel, advantages, disadvantages, luck, power })
+  return { kind: target.kind, count, specialtyLevel, parts, sources: poolSources(stat, rank, specialtyLevel, power, advantages, luck, count) }
 }
 
 /**
@@ -75,11 +79,12 @@ export function rollSetup(c: Character, choice: RollChoice): RollSetup | null {
  * caractéristique (puis de domaine, s'il n'en reste plus) : c'est la base de la
  * réserve qui est entamée, pas un bonus.
  */
-function poolSources(stat: number, rank: number, specialtyLevel: SpecialtyLevel, advantages: number, luck: number, count: number): PoolDieSource[] {
+function poolSources(stat: number, rank: number, specialtyLevel: SpecialtyLevel, power: number, advantages: number, luck: number, count: number): PoolDieSource[] {
   const sources: PoolDieSource[] = [
     ...Array<PoolDieSource>(Math.max(0, stat)).fill('stat'),
     ...Array<PoolDieSource>(Math.max(0, rank)).fill('domaine'),
     ...(specialtyLevel >= 2 ? ['specialite' as const] : []),
+    ...Array<PoolDieSource>(power).fill('puissance'),
     ...Array<PoolDieSource>(advantages).fill('avantage'),
     ...Array<PoolDieSource>(luck).fill('chance'),
   ]

@@ -58,6 +58,7 @@ Si le contenu touche plusieurs sujets, répartis-le dans les fichiers approprié
 
 ### Structure d'un fichier existant (enrichissement)
 - Lis d'abord le fichier cible en entier
+- **L'app prime sur la source** : les fiches décrivent les règles telles que l'app les applique (voir CLAUDE.md). Si le contenu source contredit une fiche ou l'app, n'écrase rien : signale l'écart à l'utilisateur.
 - Ajoute les nouvelles sections sans dupliquer l'existant
 - Respecte le style : titres `##`, listes `-`, tableaux Markdown
 - Marque les passages non vérifiés : ⚠️ *à vérifier dans le PDF*

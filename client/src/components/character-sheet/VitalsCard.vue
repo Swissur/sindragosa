@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Heart, Clover, Shield, Zap, FlaskConical } from 'lucide-vue-next'
+import { Heart, Clover, Shield, Zap, FlaskConical, Droplet } from 'lucide-vue-next'
 import AppCard from '../ui/AppCard.vue'
 import AppStepper from '../ui/AppStepper.vue'
 import AppTooltip from '../ui/AppTooltip.vue'
@@ -7,7 +7,7 @@ import EtatsTags from '../etats/EtatsTags.vue'
 import { hpGradientColor } from '../../utils/hpGradientColor'
 import type { Character } from '../../types/character'
 
-/** PV, chance, armure, initiative et états : ce qu'on touche pendant la partie. */
+/** PV, mana, chance, armure, initiative et états : ce qu'on touche pendant la partie. */
 defineProps<{
   character: Character
   hpMax: number
@@ -33,6 +33,22 @@ defineProps<{
         <span class="vital-max">/{{ hpMax }}</span>
       </AppStepper>
       <span v-else class="vital-value vital-value--static">{{ character.hpCurrent }}<span class="vital-max">/{{ hpMax }}</span></span>
+    </div>
+
+    <div v-if="character.manaMax > 0" class="vital" data-testid="mana">
+      <span class="vital-label">
+        <Droplet :size="15" /> Mana
+        <AppTooltip label="Calcul de la mana max">
+          <template #trigger><span class="vital-help">?</span></template>
+          Plus haute carac magique (INT, SAG ou CHA) + rangs dans les domaines magiques.
+          Repos court : +⅓ de la jauge. Repos long : pleine.
+        </AppTooltip>
+      </span>
+      <AppStepper v-if="!readonly" v-model="character.manaCurrent" :max="character.manaMax" label="Mana" testid="mana">
+        <span data-testid="mana-current">{{ character.manaCurrent }}</span>
+        <span class="vital-max">/{{ character.manaMax }}</span>
+      </AppStepper>
+      <span v-else class="vital-value vital-value--static">{{ character.manaCurrent }}<span class="vital-max">/{{ character.manaMax }}</span></span>
     </div>
 
     <div class="vital">

@@ -61,23 +61,32 @@ test('le dé d’un autre joueur roule chez le MJ, sauf si le MJ le coupe', asyn
   }
 })
 
-// Concentration (gardée d'Arran, à adapter) : « Puissante » monte les dés de
-// l'effet d'une catégorie. Orlane a débloqué Déflagration d'Arcane (+1d6).
-test('un mage se concentre : puissante monte les dés de l’effet', async ({ browser }) => {
+// Mana et concentration (plans/40) : Orlane (INT 3, Profane 3) a 3 mana sur 7 et
+// a débloqué Déflagration d'Arcane (1 mana). « Puissante » ajoute 1d6 au jet.
+test('un mage lance un sort puissant : +1d6 au jet, la mana paie', async ({ browser }) => {
   const ctx = await browser.newContext({ storageState: stateFor('orlane') })
   const page = await ctx.newPage()
 
   try {
     await page.goto('/personnage')
+    await expect(page.getByTestId('mana-current')).toHaveText('3')
     await page.getByRole('tab', { name: 'Compétences' }).click()
     // Sections repliées par défaut : Déflagration d'Arcane est sous Intelligence
     await page.getByTestId('abilities-int').click()
     const carte = page.getByTestId('ability-46')
+    await expect(carte.getByTestId('ability-mana-46')).toHaveText('1')
     await carte.getByTestId('ability-toggle').click()
-    await expect(carte.getByTestId('ability-effect')).toContainText('+1d6')
-
     await carte.getByTestId('concentration-puissante').click()
-    await expect(carte.getByTestId('ability-effect')).toContainText('+1d8')
+    await carte.getByTestId('ability-attack-46').click()
+
+    await expect(page.getByTestId('roll-formula')).toContainText('puissante 1')
+    await expect(page.getByTestId('roll-mana')).toContainText('Coûte 1 mana')
+    const { dice } = await lancer(page)
+    expect(dice).toHaveLength(7) // INT 3 + rang 3 + puissante 1
+
+    await page.keyboard.press('Escape')
+    await page.getByRole('tab', { name: 'Héros' }).click()
+    await expect(page.getByTestId('mana-current')).toHaveText('2')
   } finally {
     await ctx.close()
   }

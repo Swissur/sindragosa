@@ -1,7 +1,6 @@
 # Jets de dés : la réserve de d6
 
-Source : `docs/regles/Sindragosa.pdf` § 1.A et 1.C. Décisions : `plans/31-refonte-regles-sindragosa.md` § 6.
-Moteur : `client/src/utils/sindragosa/pool.ts`.
+Règles telles que l'app les applique. Origine : `docs/regles/Sindragosa.pdf` § 1.A et 1.C. Décisions : `plans/31-refonte-regles-sindragosa.md` § 6–7.
 
 ## La réserve
 
@@ -14,7 +13,10 @@ Moteur : `client/src/utils/sindragosa/pool.ts`.
 | Désavantage | −1d6 |
 | Point de chance dépensé | +1d6 par point |
 
-Le joueur choisit la spécialité utilisée ; elle doit correspondre exactement à l'action.
+- Avantage et désavantage ne se cumulent pas : un jet est normal, avec avantage ou avec désavantage.
+- La réserve ne descend jamais sous 0 dé ; à 0 dé, on ne peut pas lancer.
+- La spécialité est facultative. Le joueur choisit parmi celles du domaine lancé ; elle doit correspondre exactement à l'action.
+- **Domaine avancé** : on lance la plus haute des caractéristiques liées à ses prérequis + son rang, sans spécialité.
 
 ## Lire le résultat
 
@@ -27,23 +29,24 @@ Le joueur choisit la spécialité utilisée ; elle doit correspondre exactement 
 | 1 | Facile |
 | 2 | Moyenne |
 | 3 | Difficile |
-| 4 et plus | Exploit héroïque |
+| 4 et plus | Exploit |
 
 - **Réussite critique** : un dé qui affiche 6. Avec une spécialité **Maître**, un 5 compte aussi comme critique.
 - **Échec critique** : aucun succès et au moins un 1. Conséquence narrative (blessure, alarme, outil brisé), mais le personnage apprend : il peut cocher le domaine ou la spécialité (voir `progression.md`).
+- Un **Exploit** ou un **échec critique** déclenche le moment critique partagé : toute la table le voit.
 
 ## Bonus de spécialité
 
 | Niveau | Effet |
 |---|---|
-| 1 — Apprenti | Relance un résultat de 1 de la réserve |
+| 1 — Apprenti | Relance un résultat de 1 de la réserve (un seul dé, une seule fois) |
 | 2 — Expert | +1d6 à la réserve |
 | 3 — Maître | Critique sur 5 ou 6 |
 
 ## Points de chance
 
-- 2 points par séance, rendus à la fin de séance.
-- Chaque point dépensé ajoute 1d6 à un jet, décidé avant de lancer.
+- 2 points par séance : la fin de séance (lancée par le MJ) les remet à 2.
+- On peut en dépenser plusieurs sur un même jet, dans la limite de ceux qu'on a. Chaque point ajoute 1d6, décidé avant de lancer.
 
 ## Écarts connus avec le PDF
 

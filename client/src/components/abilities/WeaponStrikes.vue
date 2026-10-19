@@ -1,18 +1,21 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { Swords } from 'lucide-vue-next'
-import { equippedWeapons, weaponDamage } from '../../utils/sindragosa/equipment'
+import { strikeWeapons, weaponDamage, weaponDomainId } from '../../utils/sindragosa/equipment'
 import { rollSetup } from '../../utils/sindragosa/rollSetup'
 import { domainById } from '../../data/sindragosa/domains'
 import { openRollSheet } from '../../composables/useRollSheet'
 import type { Character, ItemRow } from '../../types/character'
 
-/** L'attaque de chaque arme équipée, en tête de la liste des compétences (plans/35). */
+/**
+ * L'attaque de chaque arme équipée, en tête de la liste des compétences (plans/35) ;
+ * l'arme de la forme prise, ou les mains nues sans arme (plans/39).
+ */
 const props = defineProps<{ character: Character; readonly?: boolean }>()
 
 const strikes = computed(() =>
-  equippedWeapons(props.character).map((w) => {
-    const domainId = w.domainId ?? 'melee-bourrine'
+  strikeWeapons(props.character).map((w) => {
+    const domainId = weaponDomainId(w)
     const setup = rollSetup(props.character, { domainId, specialtyId: '', mode: 'normal', luck: 0 })
     return { weapon: w, domainId, detail: `${domainById(domainId)?.label} · ${setup?.count ?? 0}d6 · ${weaponDamage(w)} dégâts` }
   }),

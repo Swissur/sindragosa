@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import AppBottomSheet from '../ui/AppBottomSheet.vue'
-import { ETATS, sortEtats, type EtatId } from '../../data/etats'
+import AppStepper from '../ui/AppStepper.vue'
+import { ETATS, normalizeEtats, type EtatEntry, type EtatId } from '../../data/etats'
 import { showToast } from '../../composables/useToast'
 
 const open = defineModel<boolean>({ required: true })
@@ -9,28 +10,35 @@ const open = defineModel<boolean>({ required: true })
 const props = defineProps<{
   /** Le porteur des etats — affiche dans le titre. */
   name: string
-  states: readonly string[]
+  states: readonly EtatEntry[]
   /**
    * L'ecriture cote serveur. Absente sur sa propre fiche : la sauvegarde auto
    * de la fiche se charge d'ecrire `character.states`.
    */
-  apply?: (states: EtatId[]) => Promise<void>
+  apply?: (states: EtatEntry[]) => Promise<void>
 }>()
 
-const emit = defineEmits<{ (e: 'update:states', states: EtatId[]): void }>()
+const emit = defineEmits<{ (e: 'update:states', states: EtatEntry[]): void }>()
 
-const local = ref<EtatId[]>(sortEtats(props.states).map((e) => e.id))
+const local = ref<EtatEntry[]>(normalizeEtats(props.states))
+const byId = computed(() => new Map(local.value.map((e) => [e.id, e])))
 
 watch(
   () => props.states,
-  (v) => { local.value = sortEtats(v).map((e) => e.id) },
+  (v) => { local.value = normalizeEtats(v) },
 )
+
+/** Duree donnee au prochain etat pose ; 0 = sans duree. La plupart des competences disent « 1 tour ». */
+const duration = ref(1)
 
 // Chaque tap ecrit tout de suite : pas de bouton Valider. On affiche le
 // resultat sans attendre, et on revient en arriere si le serveur refuse.
+// Changer la duree d'un etat pose : le retirer, puis le reposer.
 async function toggle(id: EtatId) {
   const before = local.value
-  const next = before.includes(id) ? before.filter((x) => x !== id) : [...before, id]
+  const next = byId.value.has(id)
+    ? before.filter((e) => e.id !== id)
+    : [...before, duration.value > 0 ? { id, turns: duration.value } : { id }]
   local.value = next
   emit('update:states', next)
   if (!props.apply) return
@@ -46,32 +54,52 @@ async function toggle(id: EtatId) {
 
 <template>
   <!-- Le libelle texte sous l'icone deroge a la regle « boutons icone seule »
-       du projet : cet ecran s'ouvre rarement et sous pression en combat, 13
+       du projet : cet ecran s'ouvre rarement et sous pression en combat, 17
        pictogrammes de meme teinte sans mot y sont illisibles.
        AppToggleGroup ne convient pas : il est mono-selection, or on peut etre
-       Renverse *et* Desarme. Ces toggles restent donc locaux au composant. -->
+       A terre *et* Desarme. Ces toggles restent donc locaux au composant. -->
   <AppBottomSheet v-model="open" :title="`États — ${name}`">
+    <div class="etats-duration">
+      <span class="etats-duration-label">Durée</span>
+      <AppStepper v-model="duration" :max="99" label="Durée de l'état" testid="etat-duration">
+        {{ duration > 0 ? `${duration} tour${duration > 1 ? 's' : ''}` : 'Sans durée' }}
+      </AppStepper>
+    </div>
     <div class="etats-grid">
       <button
         v-for="e in ETATS"
         :key="e.id"
         type="button"
         class="etat-toggle"
-        :class="[`etat-toggle--${e.id}`, { active: local.includes(e.id) }]"
+        :class="[`etat-toggle--${e.id}`, { active: byId.has(e.id) }]"
         :data-testid="`etat-toggle-${e.id}`"
-        :aria-pressed="local.includes(e.id)"
+        :aria-pressed="byId.has(e.id)"
         :title="e.effect"
         @click="toggle(e.id)"
       >
         <component :is="e.icon" v-if="e.icon" :size="18" class="etat-toggle-icon" />
         <span v-else class="etat-toggle-emoji">{{ e.emoji }}</span>
         <span class="etat-toggle-label">{{ e.label }}</span>
+        <span v-if="byId.get(e.id)?.turns" class="etat-toggle-turns">{{ byId.get(e.id)!.turns }} t.</span>
       </button>
     </div>
   </AppBottomSheet>
 </template>
 
 <style scoped>
+.etats-duration {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-sm);
+}
+
+.etats-duration-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
 .etats-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -117,7 +145,6 @@ async function toggle(id: EtatId) {
   color: var(--etat);
 }
 
-/* Affaibli reste violet : c'est le seul etat qui change une regle de jet. */
 .etat-toggle--affaibli {
   --etat: var(--etat-affaibli);
 }
@@ -133,5 +160,9 @@ async function toggle(id: EtatId) {
 
 .etat-toggle-label {
   overflow-wrap: anywhere;
+}
+
+.etat-toggle-turns {
+  font-weight: 700;
 }
 </style>

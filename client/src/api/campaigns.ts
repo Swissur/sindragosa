@@ -1,5 +1,5 @@
 import type { ServerCharacter } from './characters'
-import type { EtatId } from '../data/etats'
+import type { EtatEntry } from '../data/etats'
 import type { RollPool } from '../utils/rollOutcome'
 import type { MonsterAbility, MonsterAttack } from '../utils/sindragosa/bestiary'
 
@@ -122,7 +122,7 @@ export function fetchMemberCharacter(campaignId: number, userId: number): Promis
 /** Ce que le MJ règle sur la fiche d'un joueur : caracs, rangs, récompenses, titres. */
 export type GmCharacterPatch = Partial<Pick<ServerCharacter,
   'str' | 'agi' | 'end' | 'int' | 'wis' | 'cha'
-  | 'domains' | 'specialties' | 'advancedDomains' | 'titles' | 'hpMax'>>
+  | 'domains' | 'specialties' | 'advancedDomains' | 'titles' | 'hpMax' | 'manaMax'>>
 
 export function patchMemberCharacter(campaignId: number, userId: number, patch: GmCharacterPatch): Promise<ServerCharacter> {
   return request<ServerCharacter>(`/${campaignId}/members/${userId}/character`, {
@@ -304,13 +304,16 @@ export interface RestChange {
 export interface RestDelta {
   hp?: RestChange
   pc?: RestChange
+  mana?: RestChange
 }
 
 export interface RestState {
   hpCurrent: number
   hpMax: number
   pcCurrent: number
-  states: EtatId[]
+  manaCurrent: number
+  manaMax: number
+  states: EtatEntry[]
   abilityUses: Record<string, Record<string, number>>
   sessionTicks: { success: number; critFail: number }
 }

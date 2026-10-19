@@ -73,8 +73,7 @@
   --on-brand: #241c10;
   --danger: #8f2f2f;
   --success: #2f7d45;
-  /* Etats prejudiciables. Ambre pour les 12 etats "rappel visuel" ;
-     Affaibli garde son violet, c'est le seul qui change une regle de jet. */
+  /* Etats prejudiciables : ambre, sauf Affaibli qui garde son violet. */
   --etat: #c98a1a;
   --etat-affaibli: #8e44ad;
   /* Ombres quasi invisibles. Les grosses ombres portees font "template 2015". */

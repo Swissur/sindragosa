@@ -103,6 +103,8 @@ describe('composants', () => {
   it('singulier, pluriel, casse et accents ne comptent pas', () => {
     expect(componentKey('Lingots de Fer brut')).toBe(componentKey('lingot de fer brut'))
     expect(componentKey('Cuirs épais')).toBe(componentKey('Cuir epais'))
+    expect(componentKey('Cristaux de mana')).toBe(componentKey('Cristal de mana'))
+    expect(componentKey('Eaux bénites')).toBe(componentKey('Eau bénite'))
   })
 
   it('compte ce que l’inventaire contient', () => {

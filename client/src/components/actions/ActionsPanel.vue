@@ -17,7 +17,7 @@ import { DOMAINS, domainById } from '../../data/sindragosa/domains'
 import { raceAbility, raceById } from '../../data/sindragosa/races'
 import { rollSetup } from '../../utils/sindragosa/rollSetup'
 import { USES_PER_LABELS } from '../../utils/sindragosa/abilityUses'
-import { equippedWeapons, weaponDamage } from '../../utils/sindragosa/equipment'
+import { strikeWeapons, weaponDamage, weaponDomainId } from '../../utils/sindragosa/equipment'
 import type { Ability } from '../../data/sindragosa/types'
 import type { Pin } from '../../utils/sindragosa/pins'
 
@@ -56,8 +56,8 @@ const startedDomains = computed<{ id: string; label: string }[]>(() => [
   ...unlockedAdvanced.value,
 ])
 
-/** Les armes équipées : leur attaque est une action de combat. */
-const weapons = computed(() => equippedWeapons(character.value))
+/** Les armes équipées (ou celle de la forme, ou les mains nues) : leur attaque est une action de combat. */
+const weapons = computed(() => strikeWeapons(character.value))
 
 /** Le pouvoir racial se range avec les compétences débloquées. */
 const abilities = computed(() => {
@@ -160,9 +160,9 @@ const rollDomain = (domainId: string) => openRollSheet({ domainId, context: 'act
           :key="w.id"
           :icon="Swords"
           :label="w.name"
-          :detail="`${poolLabel(w.domainId ?? '')} · ${weaponDamage(w)} dégâts`"
+          :detail="`${poolLabel(weaponDomainId(w))} · ${weaponDamage(w)} dégâts`"
           :testid="`tile-weapon-${w.id}`"
-          @activate="openRollSheet({ domainId: w.domainId ?? 'melee-bourrine', label: w.name, weapon: w, context: 'actions' })"
+          @activate="openRollSheet({ domainId: weaponDomainId(w), label: w.name, weapon: w, context: 'actions' })"
         />
         <ActionTile
           v-for="a in combatAbilities"
@@ -176,7 +176,7 @@ const rollDomain = (domainId: string) => openRollSheet({ domainId, context: 'act
           @toggle-pin="toggle(abilityPin(a.id))"
         />
         <AppEmptyState v-if="!weapons.length && !combatAbilities.length">
-          Pas encore d'arme équipée ni de compétence de combat.
+          Pas encore de compétence de combat.
         </AppEmptyState>
       </div>
 
@@ -216,7 +216,9 @@ const rollDomain = (domainId: string) => openRollSheet({ domainId, context: 'act
           :unlocked="true"
           :default-open="true"
           :pinned="isPinned(abilityPin(openedAbility.id))"
+          roll-context="actions"
           @toggle-pin="toggle(abilityPin(openedAbility.id))"
+          @attack="openedAbility = null"
         />
       </AppBottomSheet>
     </template>

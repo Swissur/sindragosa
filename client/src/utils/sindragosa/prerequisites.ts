@@ -61,7 +61,8 @@ export function meetsPrerequisite(state: ProgressState, p: Prerequisite): boolea
 }
 
 export function meetsPrerequisites(state: ProgressState, ability: Ability): boolean {
-  return ability.prerequisites.every((p) => meetsPrerequisite(state, p))
+  const meetsAll = (list: Prerequisite[]) => list.every((p) => meetsPrerequisite(state, p))
+  return meetsAll(ability.prerequisites) || (!!ability.alternatePrerequisites && meetsAll(ability.alternatePrerequisites))
 }
 
 export function unlockedAbilities(state: ProgressState, catalog: Ability[] = ABILITIES): Ability[] {

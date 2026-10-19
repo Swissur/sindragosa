@@ -6,7 +6,6 @@ import AppAccordion from '../ui/AppAccordion.vue'
 import AbilityCard from './AbilityCard.vue'
 import WeaponStrikes from './WeaponStrikes.vue'
 import AbilityFilters from './AbilityFilters.vue'
-import { equippedWeapons } from '../../utils/sindragosa/equipment'
 import { usePins } from '../../composables/usePins'
 import { STATS } from '../../data/sindragosa/domains'
 import { abilityStats, byStat } from '../../utils/sindragosa/statGroups'
@@ -34,13 +33,12 @@ const groups = computed(() => {
   const grouped = byStat(sorted.value.filter((a) => matchesAbilityFilter(a, filter.value)), abilityStats)
   return STATS.map((s) => ({ stat: s, abilities: grouped[s.id] })).filter((g) => g.abilities.length)
 })
-const hasWeapons = computed(() => equippedWeapons(props.character).length > 0)
 </script>
 
 <template>
   <AppCard title="Compétences" data-testid="unlocked-abilities">
     <WeaponStrikes :character="character" :readonly="readonly" />
-    <AppEmptyState v-if="!sorted.length && !hasWeapons">
+    <AppEmptyState v-if="!sorted.length">
       Aucune compétence pour l'instant : continue à pratiquer tes domaines, elles se révèlent d'elles-mêmes.
     </AppEmptyState>
     <AbilityFilters v-if="sorted.length" v-model:search="search" v-model:action-type="actionType" />

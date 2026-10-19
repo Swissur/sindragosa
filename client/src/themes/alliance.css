@@ -1,0 +1,231 @@
+/* ═══════════════════════════════════════════════════════════════════════
+   ALLIANCE — Bleu roi, or et enluminures
+   Applied via [data-style="alliance"] on <html>
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* ── Clair : vélin d'un manuscrit de Hurlevent ── */
+:root[data-style="alliance"] {
+  font-family: 'Cormorant Garamond', 'Iowan Old Style', Georgia, serif;
+  --title-font: 'Cinzel Decorative', Georgia, serif;
+
+  --bg: #ece6d6;
+  --bg-alt: #e2dac6;
+  --surface: #faf6ec;
+  --surface-2: #f1ebdc;
+  --surface-3: #e6dec9;
+  --text: #121a3d;
+  --muted: #4c5273;
+  --border: #d2c39a;
+  --border-strong: #b39a5a;
+  --accent: #b8891c;
+  --accent-strong: #7f5d0c;
+  --accent-soft: rgba(184, 137, 28, 0.14);
+  --brand: #1f3f99;
+  --brand-strong: #162d73;
+  --on-brand: #f6e3a6;
+  --danger: #9b2226;
+
+  --al-gold: #c9a032;
+  --al-gold-light: #f2d27a;
+  --al-banner: linear-gradient(180deg, #23449f, #142a6b);
+
+  --shadow-soft: 0 1px 2px rgba(18, 26, 61, 0.08);
+  --shadow-card: 0 1px 3px rgba(18, 26, 61, 0.09), 0 1px 2px rgba(18, 26, 61, 0.05);
+}
+
+/* ── Sombre : salle du trône à la nuit tombée ── */
+:root[data-style="alliance"][data-theme="dark"] {
+  --bg: #080d22;
+  --bg-alt: #0b1230;
+  --surface: #111a3b;
+  --surface-2: #17214a;
+  --surface-3: #1e2a58;
+  --text: #efe7cf;
+  --muted: #a9b0cf;
+  --border: #26325f;
+  --border-strong: #3a4678;
+  --accent: #e0b84c;
+  --accent-strong: #f2d27a;
+  --accent-soft: rgba(224, 184, 76, 0.16);
+  --brand: #3a62d1;
+  --brand-strong: #f2d27a;
+  --on-brand: #fbf1cf;
+  --danger: #f08a8a;
+
+  --al-banner: linear-gradient(180deg, #13245e, #0a1438);
+
+  --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.35), 0 1px 2px rgba(0, 0, 0, 0.25);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   BODY — Treillis doré de manuscrit
+   ═══════════════════════════════════════════════════════════════════════ */
+
+[data-style="alliance"] body {
+  background:
+    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'><path d='M18 1 35 18 18 35 1 18Z' fill='none' stroke='%23c9a032' stroke-opacity='.16'/><circle cx='18' cy='18' r='1.6' fill='%231f3f99' fill-opacity='.14'/><circle cx='0' cy='0' r='1.6' fill='%23c9a032' fill-opacity='.22'/><circle cx='36' cy='36' r='1.6' fill='%23c9a032' fill-opacity='.22'/></svg>") repeat 0 0 / 36px 36px,
+    radial-gradient(ellipse 90% 45% at 50% 0%, rgba(31, 63, 153, 0.12), transparent 60%),
+    radial-gradient(circle at 85% 100%, rgba(201, 160, 50, 0.14), transparent 45%),
+    linear-gradient(180deg, var(--bg), var(--bg-alt));
+}
+
+[data-style="alliance"][data-theme="dark"] body {
+  background:
+    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'><path d='M18 1 35 18 18 35 1 18Z' fill='none' stroke='%23e0b84c' stroke-opacity='.08'/><circle cx='0' cy='0' r='1.4' fill='%23e0b84c' fill-opacity='.18'/><circle cx='36' cy='36' r='1.4' fill='%23e0b84c' fill-opacity='.18'/></svg>") repeat 0 0 / 36px 36px,
+    radial-gradient(ellipse 90% 45% at 50% 0%, rgba(58, 98, 209, 0.18), transparent 60%),
+    radial-gradient(circle at 85% 100%, rgba(224, 184, 76, 0.08), transparent 45%),
+    linear-gradient(180deg, var(--bg), var(--bg-alt));
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   BARRES — Bannière royale bordée d'or
+   ═══════════════════════════════════════════════════════════════════════ */
+
+html[data-style="alliance"] .top-nav,
+html[data-style="alliance"] .bottom-nav {
+  background: var(--al-banner);
+}
+
+html[data-style="alliance"] .top-nav {
+  border-bottom: 2px solid var(--al-gold);
+  box-shadow: 0 1px 0 rgba(18, 38, 96, 0.35);
+}
+
+html[data-style="alliance"] .bottom-nav {
+  border-top: 2px solid var(--al-gold);
+}
+
+html[data-style="alliance"] .top-nav .brand {
+  color: var(--al-gold-light);
+  text-shadow: 0 1px 0 #0b1a4a, 0 0 10px rgba(242, 210, 122, 0.35);
+}
+
+html[data-style="alliance"] :is(.top-nav, .bottom-nav) .nav-link:not(.nav-fight) {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(201, 160, 50, 0.45);
+  color: #e9dcb4;
+}
+
+html[data-style="alliance"] :is(.top-nav, .bottom-nav) .nav-link:not(.nav-fight):hover {
+  background: rgba(201, 160, 50, 0.18);
+  border-color: var(--al-gold);
+  color: #fff3c4;
+}
+
+html[data-style="alliance"] :is(.top-nav, .bottom-nav) :is(.nav-link--on, .nav-link.router-link-active):not(.nav-fight) {
+  background: linear-gradient(180deg, #e6c25a, #b8891c);
+  border-color: var(--al-gold-light);
+  color: #122660;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   CARTES — Cadre doré double, fleurons aux quatre coins, lettrine
+   ═══════════════════════════════════════════════════════════════════════ */
+
+html[data-style="alliance"] .card {
+  border-color: color-mix(in srgb, var(--al-gold) 70%, var(--border));
+  box-shadow:
+    inset 0 0 0 3px var(--surface),
+    inset 0 0 0 4px color-mix(in srgb, var(--al-gold) 40%, transparent),
+    var(--shadow-card);
+  background-image:
+    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 28' fill='none' stroke='%23c9a032' stroke-width='1.5' stroke-linecap='round'><path d='M3 25V9a6 6 0 0 1 6-6h16'/><path d='M8 3c0 4 2 6 6 6M3 8c4 0 6 2 6 6'/><circle cx='11' cy='11' r='1.7' fill='%23c9a032'/></svg>"),
+    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 28' fill='none' stroke='%23c9a032' stroke-width='1.5' stroke-linecap='round'><g transform='rotate(90 14 14)'><path d='M3 25V9a6 6 0 0 1 6-6h16'/><path d='M8 3c0 4 2 6 6 6M3 8c4 0 6 2 6 6'/><circle cx='11' cy='11' r='1.7' fill='%23c9a032'/></g></svg>"),
+    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 28' fill='none' stroke='%23c9a032' stroke-width='1.5' stroke-linecap='round'><g transform='rotate(270 14 14)'><path d='M3 25V9a6 6 0 0 1 6-6h16'/><path d='M8 3c0 4 2 6 6 6M3 8c4 0 6 2 6 6'/><circle cx='11' cy='11' r='1.7' fill='%23c9a032'/></g></svg>"),
+    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 28' fill='none' stroke='%23c9a032' stroke-width='1.5' stroke-linecap='round'><g transform='rotate(180 14 14)'><path d='M3 25V9a6 6 0 0 1 6-6h16'/><path d='M8 3c0 4 2 6 6 6M3 8c4 0 6 2 6 6'/><circle cx='11' cy='11' r='1.7' fill='%23c9a032'/></g></svg>");
+  background-repeat: no-repeat;
+  background-size: 18px 18px;
+  background-position:
+    left 5px top 5px,
+    right 5px top 5px,
+    left 5px bottom 5px,
+    right 5px bottom 5px;
+}
+
+html[data-style="alliance"] .card-head h2 {
+  letter-spacing: 0.03em;
+}
+
+/* Les filets du titre deviennent un trait doré terminé par un losange */
+html[data-style="alliance"] .card-head h2::before,
+html[data-style="alliance"] .card-head h2::after {
+  width: 1.7rem;
+  height: 0.6rem;
+  border-radius: 0;
+  background: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 10'><path d='M0 5h19' stroke='%23c9a032' stroke-width='1.5'/><path d='M23 1l4 4-4 4-4-4z' fill='%23c9a032'/><circle cx='23' cy='5' r='1.2' fill='%231f3f99'/></svg>") center / contain no-repeat;
+}
+
+html[data-style="alliance"] .card-head h2::after {
+  transform: scaleX(-1);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   TITRE DE PAGE — Couronne dorée
+   ═══════════════════════════════════════════════════════════════════════ */
+
+html[data-style="alliance"] .page-head-title {
+  letter-spacing: 0.03em;
+}
+
+html[data-style="alliance"] .page-head-title::before {
+  content: '';
+  flex-shrink: 0;
+  width: 1.05em;
+  height: 1.05em;
+  background: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' stroke='%237f5d0c' stroke-width='1.2' stroke-linejoin='round'><path fill='%23c9a032' d='M11.562 3.266a.5.5 0 0 1 .876 0L15.39 8.87a1 1 0 0 0 1.516.294L21.183 5.5a.5.5 0 0 1 .798.519l-2.834 10.246a1 1 0 0 1-.956.734H5.81a1 1 0 0 1-.957-.734L2.02 6.02a.5.5 0 0 1 .798-.519l4.276 3.664a1 1 0 0 0 1.516-.294z'/><path fill='none' stroke='%23c9a032' stroke-width='2' stroke-linecap='round' d='M5 21h14'/></svg>") center / contain no-repeat;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   BOUTONS — Bleu roi frappé d'or
+   ═══════════════════════════════════════════════════════════════════════ */
+
+html[data-style="alliance"] .btn {
+  font-weight: 700;
+}
+
+html[data-style="alliance"] .btn.primary {
+  background: linear-gradient(180deg, #2a4fb3, #1a3584);
+  border-color: var(--al-gold);
+  color: #f6e3a6;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18), var(--shadow-soft);
+}
+
+html[data-style="alliance"] .btn.primary:hover:not(:disabled) {
+  box-shadow: 0 0 0 1px var(--al-gold), 0 0 10px rgba(201, 160, 50, 0.4);
+}
+
+html[data-style="alliance"] .icon-btn.ghost:not(.danger):not(.success) {
+  border-color: color-mix(in srgb, var(--al-gold) 45%, var(--border));
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   ONGLETS, CHAMPS, DIALOGUES
+   ═══════════════════════════════════════════════════════════════════════ */
+
+html[data-style="alliance"] .tab-btn[data-state="active"] {
+  background: var(--al-banner);
+  color: #f6e3a6;
+  box-shadow: inset 0 0 0 1px var(--al-gold);
+}
+
+html[data-style="alliance"] input:focus-visible,
+html[data-style="alliance"] textarea:focus-visible,
+html[data-style="alliance"] select:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--bg), 0 0 0 3px var(--al-gold), 0 0 10px rgba(201, 160, 50, 0.3);
+}
+
+html[data-style="alliance"] :is(.modal-box, .sheet) {
+  border-color: var(--al-gold);
+  box-shadow:
+    inset 0 0 0 3px var(--surface),
+    inset 0 0 0 4px color-mix(in srgb, var(--al-gold) 40%, transparent);
+}
+
+[data-style="alliance"] ::-webkit-scrollbar { width: 8px; }
+[data-style="alliance"] ::-webkit-scrollbar-track { background: var(--surface-2); }
+[data-style="alliance"] ::-webkit-scrollbar-thumb {
+  background: var(--al-gold);
+  border-radius: var(--radius-xs);
+}

@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest'
+import type { EtatEntry } from './etats.js'
 import {
   applyCharacterHp, applyCharacterStates, getClientsForCombat, releaseClient, type SseClient,
 } from './sseStore.js'
@@ -12,32 +13,32 @@ const monster = (hpCurrent: number, hpMax: number, name = 'Gobelin'): P =>
 
 describe('applyCharacterHp', () => {
   it('overrides player HP with the live character value', () => {
-    const out = applyCharacterHp([player(1, 10, 10)], new Map([[1, { hpCurrent: 3, hpMax: 12 }]]))
+    const out = applyCharacterHp([player(1, 10, 10)], new Map<number, EtatEntry[]>([[1, { hpCurrent: 3, hpMax: 12 }]]))
     expect(out[0].hpCurrent).toBe(3)
     expect(out[0].hpMax).toBe(12)
   })
 
   it('leaves monsters untouched', () => {
     const m = monster(5, 8)
-    const out = applyCharacterHp([m], new Map([[1, { hpCurrent: 3, hpMax: 12 }]]))
+    const out = applyCharacterHp([m], new Map<number, EtatEntry[]>([[1, { hpCurrent: 3, hpMax: 12 }]]))
     expect(out[0]).toEqual(m)
   })
 
   it('leaves players without a mapped character untouched', () => {
     const p = player(2, 7, 7)
-    const out = applyCharacterHp([p], new Map([[1, { hpCurrent: 3, hpMax: 12 }]]))
+    const out = applyCharacterHp([p], new Map<number, EtatEntry[]>([[1, { hpCurrent: 3, hpMax: 12 }]]))
     expect(out[0].hpCurrent).toBe(7)
     expect(out[0].hpMax).toBe(7)
   })
 
   it('does not mutate the input participants', () => {
     const p = player(1, 10, 10)
-    applyCharacterHp([p], new Map([[1, { hpCurrent: 1, hpMax: 10 }]]))
+    applyCharacterHp([p], new Map<number, EtatEntry[]>([[1, { hpCurrent: 1, hpMax: 10 }]]))
     expect(p.hpCurrent).toBe(10)
   })
 
   it('preserves other fields when overriding', () => {
-    const out = applyCharacterHp([player(1, 10, 10, 'Aragorn')], new Map([[1, { hpCurrent: 4, hpMax: 10 }]]))
+    const out = applyCharacterHp([player(1, 10, 10, 'Aragorn')], new Map<number, EtatEntry[]>([[1, { hpCurrent: 4, hpMax: 10 }]]))
     expect(out[0].name).toBe('Aragorn')
     expect(out[0].kind).toBe('player')
   })
@@ -103,41 +104,41 @@ describe('le registre des clients SSE', () => {
   })
 })
 
-type S = { kind: string; userId: number | null; states: string[]; name: string }
+type S = { kind: string; userId: number | null; states: EtatEntry[]; name: string }
 
-const joueur = (userId: number, states: string[], name = 'Hero'): S =>
+const joueur = (userId: number, states: EtatEntry[], name = 'Hero'): S =>
   ({ kind: 'player', userId, states, name })
 
 describe('applyCharacterStates', () => {
   it("remplace les états d'un joueur par ceux de sa fiche", () => {
-    const out = applyCharacterStates([joueur(1, ['affaibli'])], new Map([[1, ['renverse', 'desarme']]]))
-    expect(out[0].states).toEqual(['renverse', 'desarme'])
+    const out = applyCharacterStates([joueur(1, [{ id: 'affaibli' }])], new Map<number, EtatEntry[]>([[1, [{ id: 'renverse' }, { id: 'desarme' }]]]))
+    expect(out[0].states).toEqual([{ id: 'renverse' }, { id: 'desarme' }])
     expect(out[0].name).toBe('Hero')
   })
 
   it('rend un monstre intact', () => {
-    const m: S = { kind: 'monster', userId: null, states: ['renverse'], name: 'Gobelin' }
-    const out = applyCharacterStates([m], new Map([[1, ['affaibli']]]))
+    const m: S = { kind: 'monster', userId: null, states: [{ id: 'renverse' }], name: 'Gobelin' }
+    const out = applyCharacterStates([m], new Map<number, EtatEntry[]>([[1, [{ id: 'affaibli' }]]]))
     expect(out[0]).toEqual(m)
   })
 
   it('rend un joueur sans userId intact', () => {
-    const p: S = { kind: 'player', userId: null, states: ['renverse'], name: 'PNJ' }
-    const out = applyCharacterStates([p], new Map([[1, ['affaibli']]]))
+    const p: S = { kind: 'player', userId: null, states: [{ id: 'renverse' }], name: 'PNJ' }
+    const out = applyCharacterStates([p], new Map<number, EtatEntry[]>([[1, [{ id: 'affaibli' }]]]))
     expect(out[0]).toEqual(p)
   })
 
   it("rend intact un joueur absent de la Map (il n'a pas de fiche)", () => {
-    const p = joueur(2, ['renverse'])
-    const out = applyCharacterStates([p], new Map([[1, ['affaibli']]]))
-    expect(out[0].states).toEqual(['renverse'])
+    const p = joueur(2, [{ id: 'renverse' }])
+    const out = applyCharacterStates([p], new Map<number, EtatEntry[]>([[1, [{ id: 'affaibli' }]]]))
+    expect(out[0].states).toEqual([{ id: 'renverse' }])
   })
 
   it("ne mute pas le tableau d'entrée", () => {
-    const p = joueur(1, ['affaibli'])
+    const p = joueur(1, [{ id: 'affaibli' }])
     const entree = [p]
-    const out = applyCharacterStates(entree, new Map([[1, ['renverse']]]))
-    expect(p.states).toEqual(['affaibli'])
+    const out = applyCharacterStates(entree, new Map<number, EtatEntry[]>([[1, [{ id: 'renverse' }]]]))
+    expect(p.states).toEqual([{ id: 'affaibli' }])
     expect(entree[0]).toBe(p)
     expect(out).not.toBe(entree)
   })

@@ -1,6 +1,6 @@
 # Personnage : caractéristiques, domaines, spécialités
 
-Source : `docs/regles/Sindragosa.pdf` § 1.B et 5. Catalogue : `client/src/data/sindragosa/domains.ts`.
+Règles telles que l'app les applique. Origine : `docs/regles/Sindragosa.pdf` § 1.B et 5. Catalogue : `client/src/data/sindragosa/domains.ts`.
 
 ## Création
 
@@ -14,9 +14,22 @@ Le personnage naît vierge : aucun historique imposé, aucune compétence, aucun
 
 1. **6 caractéristiques** : le potentiel brut. Elles montent à la discrétion du MJ.
 2. **5 domaines par caractéristique**, rang 0 à 5 : la réserve de base des jets.
-3. **Spécialités** dans un domaine, 3 niveaux (Apprenti, Expert, Maître). Les joueurs peuvent en proposer d'autres.
+3. **Spécialités** dans un domaine de base, 3 niveaux (Apprenti, Expert, Maître). Un domaine en accueille **autant que son rang** (aucune au rang 0). Les joueurs peuvent en proposer d'autres que les suggestions. Effets des niveaux : `regles-jets.md`.
 
-Les spécialités suggérées ci-dessous sont celles qu'exigent les compétences (décidé le 2026-10-18) : un joueur qui suit une suggestion est sur la voie d'une compétence. Les domaines qu'aucune compétence ne cite gardent les exemples du livre de règles. Quelques noms sont équivalents (« Bouclier » = « Boucliers », « Furtivité » = « Discrétion dans l'ombre »…) : voir `SPECIALTY_ALIASES` dans `client/src/data/sindragosa/domains.ts`.
+Les spécialités suggérées ci-dessous sont celles qu'exigent les compétences (décidé le 2026-10-18) : un joueur qui suit une suggestion est sur la voie d'une compétence. Les domaines qu'aucune compétence ne cite gardent les exemples du livre de règles.
+
+Noms équivalents pour les prérequis : une spécialité écrite « A/B » ou « A (B) » accepte chacun des noms, et ces synonymes comptent pour la même spécialité (le premier est le nom affiché) :
+
+- Boucliers = Bouclier
+- Discrétion dans l'ombre = Furtivité
+- Téléportation = Téléportation & Portails
+- Armes à deux mains = Épées / Masses / Haches à deux mains
+- Masses = Masse
+- Forme animale = Formes animales druidiques
+- Analyse des failles = Analyse des points faibles
+- Poisons/Saignements = Poisons
+
+**Spécialité offerte** : débloquer une compétence qui porte le nom d'une spécialité exigée ailleurs (Second souffle, Analyse des failles) donne cette spécialité au niveau Apprenti, en plus de la limite du domaine.
 
 ### Force (FOR)
 
@@ -92,30 +105,33 @@ Force de personnalité, leadership, illusion et magie de l'Ombre/Fél.
 
 ## Domaines avancés
 
-- Un domaine avancé **s'ouvre** quand ses prérequis sont réunis (domaines de base ou autres domaines avancés), sauf ceux qui portent le nom d'une **compétence** (Ivresse du Combat, Danse des Lames) : ils s'ouvrent seulement quand le personnage la débloque (décidé le 2026-10-18). Ceux qui restent fermés ne s'affichent pas au joueur.
+- Un domaine avancé **s'ouvre** quand ses prérequis sont réunis (domaines de base ou autres domaines avancés), sauf ceux qui portent le nom d'une **compétence** (Ivresse du Combat, Danse des Lames) : ils s'ouvrent seulement quand le personnage la débloque, et leurs prérequis ne servent plus qu'à choisir la carac du jet (décidé le 2026-10-18). Un rang donné par le MJ l'ouvre aussi. Ceux qui restent fermés ne s'affichent pas au joueur.
 - Une fois ouvert, il part du rang 0 et **progresse comme un domaine** (mêmes paliers de coches).
-- Son **jet** : la plus haute des caractéristiques liées à ses prérequis + son rang. Pas de spécialité.
-- Prérequis de chacun : `client/src/data/sindragosa/domains.ts` (table du plan 31 § 7).
+- Son **jet** : la plus haute des caractéristiques liées à ses prérequis (en remontant ceux qui sont eux-mêmes avancés) + son rang. Pas de spécialité.
 
-- Ivresse du Combat
-- Tactique de Choc
-- Danse des Lames
-- Poisons & Toxines
-- Nécromancie & Peste
-- Maîtrise des Arcanes
-- Magie du Givre & Altération
-- Pyromancie
-- Chronomancie
-- Runes Anciennes
-- Maîtrise des Éléments
-- Astral & Céleste
-- Lumière Vengeuse
-- Discipline & Absolution
-- Démonologie & Fél
-- Malédictions & Affliction
-- Magie du Vide
-- Ingénierie Goblino-Gnome
-- Élixirs Arcaniques
-- Toxines Sauvages
-- Dressage Sauvage
-- Magie Draconique
+| Domaine avancé | Prérequis |
+|---|---|
+| Ivresse du Combat | Mêlée bourrine 2 + Volonté & Récupération 1 (s'ouvre par la compétence Ivresse du combat) |
+| Tactique de Choc | Intimidation physique 2 + Tactique & Analyse 1 |
+| Danse des Lames | Combat de précision 2 + Acrobatie & Furtivité 1 (s'ouvre par la compétence Danse des lames) |
+| Poisons & Toxines | Escamotage & Crochetage 2 + Alchimie & Herboristerie 1 |
+| Nécromancie & Peste | Mêlée bourrine 2 + Magie de l'Ombre & Fél 1 |
+| Maîtrise des Arcanes | Magie profane & Arcanes 2 |
+| Magie du Givre & Altération | Magie profane & Arcanes 2 |
+| Pyromancie | Magie profane & Arcanes 2 |
+| Chronomancie | Magie profane & Arcanes 3 + Histoire & Géographie 1 |
+| Runes Anciennes | Magie profane & Arcanes 2 + Histoire & Géographie 2 |
+| Maîtrise des Éléments | Communion naturelle & Chamanisme 3 |
+| Astral & Céleste | Communion naturelle & Chamanisme 2 + Magie profane & Arcanes 2 |
+| Lumière Vengeuse | Magie divine & Sacrée 3 + Commandement & Inspiration 1 |
+| Discipline & Absolution | Magie divine & Sacrée 2 + Volonté spirituelle 2 |
+| Démonologie & Fél | Magie de l'Ombre & Fél 2 |
+| Malédictions & Affliction | Magie de l'Ombre & Fél 2 |
+| Magie du Vide | Magie de l'Ombre & Fél 2 + Volonté spirituelle 1 |
+| Ingénierie Goblino-Gnome | Explosifs & Ingénierie 2 |
+| Élixirs Arcaniques | Alchimie & Herboristerie 2 + Magie profane & Arcanes 1 |
+| Toxines Sauvages | Alchimie & Herboristerie 2 + Survie en milieu hostile 1 |
+| Dressage Sauvage | Communion naturelle & Chamanisme 2 + Survie en milieu hostile 1 |
+| Magie Draconique | Magie profane & Arcanes 3 + Histoire & Géographie 2 |
+
+**Artisanats avancés** (décidé le 2026-10-18) : chacun des 20 métiers hybrides est aussi un domaine avancé. Il s'ouvre quand l'une de ses deux compétences est débloquée ; ses prérequis (ceux de ces deux compétences) ne servent qu'à choisir la carac du jet. Liste et patrons : `artisanat.md`.

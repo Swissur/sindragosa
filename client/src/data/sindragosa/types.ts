@@ -17,6 +17,8 @@ export interface Ability {
   nameEn: string | null
   category: string
   prerequisites: Prerequisite[]
+  /** Autre façon de la débloquer : remplir tous ces prérequis suffit aussi. */
+  alternatePrerequisites?: Prerequisite[]
   /** Texte des prérequis tel qu'écrit dans le PDF. */
   prerequisitesRaw: string
   actionType: ActionType
@@ -25,6 +27,8 @@ export interface Ability {
   cooldownTurns: number | null
   usesPer: UsesPer | null
   effect: string
+  /** Coût en mana : présent sur les sorts seulement (plans/40-mana.md). */
+  manaCost?: number
   /** Interprétation faite à la transcription, s'il y en a eu une. */
   notes?: string
 }

@@ -1,6 +1,7 @@
 import { ref, watch, computed } from 'vue'
 import type { Character } from '../types/character'
-import { isEtatId, type EtatId } from '../data/etats'
+import { normalizeEtats, type EtatEntry } from '../data/etats'
+import { isFormId } from '../data/sindragosa/forms'
 import {
   fetchCharacters,
   fetchCharacter,
@@ -10,6 +11,7 @@ import {
 } from '../api/characters'
 import { computeMaxHp, progressState, domainRanks } from '../utils/sindragosa/sheet'
 import { initiative } from '../utils/sindragosa/combat'
+import { maxMana } from '../utils/sindragosa/mana'
 import { effectiveArmor } from '../utils/sindragosa/equipment'
 import { unlockedAbilities } from '../utils/sindragosa/prerequisites'
 import { unlockedAdvancedDomains } from '../utils/sindragosa/advanced'
@@ -48,7 +50,10 @@ export function toCharacter(s: ServerCharacter): Character {
     silverCoins: s.silverCoins ?? 0,
     copperCoins: s.copperCoins ?? 0,
     pcCurrent: s.pcCurrent ?? LUCK_PER_SESSION,
-    states: arr<string>(s.states).filter(isEtatId),
+    manaCurrent: Math.max(0, Math.min(s.manaCurrent ?? 0, s.manaMax ?? 0)),
+    manaMax: s.manaMax ?? 0,
+    states: normalizeEtats(s.states),
+    form: isFormId(s.form) ? s.form : null,
   }
 }
 
@@ -82,7 +87,10 @@ export function toServerPayload(c: Character): Omit<ServerCharacter, 'id' | 'use
     silverCoins: c.silverCoins,
     copperCoins: c.copperCoins,
     pcCurrent: c.pcCurrent,
+    manaCurrent: c.manaCurrent,
+    manaMax: c.manaMax,
     states: c.states,
+    form: c.form,
   }
 }
 
@@ -112,7 +120,10 @@ export function createDefaultCharacter(): Character {
     silverCoins: 0,
     copperCoins: 0,
     pcCurrent: LUCK_PER_SESSION,
+    manaCurrent: 0,
+    manaMax: 0,
     states: [],
+    form: null,
   }
 }
 
@@ -141,6 +152,19 @@ watch(computedArmor, (val) => { character.value.armor = val }, { immediate: true
 watch(computedHp, (val) => {
   character.value.hpMax = val
   if (character.value.hpCurrent > val) character.value.hpCurrent = val
+}, { immediate: true })
+
+/** Mana max : plus haute carac magique + rangs magiques (plans/40-mana.md). */
+export const computedMana = computed(() => maxMana(character.value))
+
+// Mana max calculée → stockée (le serveur s'en sert au repos). Un nouveau rang
+// magique remplit d'autant la jauge : on compare à la valeur stockée, pas à
+// l'ancienne valeur calculée, pour qu'un chargement de fiche ne compte pas comme un gain.
+watch(computedMana, (val) => {
+  const c = character.value
+  const gain = val - c.manaMax
+  c.manaMax = val
+  c.manaCurrent = Math.max(0, Math.min(c.manaCurrent + Math.max(0, gain), val))
 }, { immediate: true })
 
 const loading = ref(false)
@@ -187,9 +211,8 @@ export function applyServerHp(hpCurrent: number): void {
 }
 
 /** Applique des états posés par le MJ depuis le combat, sans sauvegarde auto. */
-export function applyServerStates(states: EtatId[]): void {
-  const current = character.value.states
-  if (current.length === states.length && current.every((id, i) => id === states[i])) return
+export function applyServerStates(states: EtatEntry[]): void {
+  if (JSON.stringify(character.value.states) === JSON.stringify(states)) return
   character.value.states = [...states]
   markSynced()
 }
@@ -198,13 +221,15 @@ export function applyServerStates(states: EtatId[]): void {
 export function applyServerRest(state: {
   hpCurrent: number
   pcCurrent: number
-  states: EtatId[]
+  manaCurrent: number
+  states: EtatEntry[]
   abilityUses: Character['abilityUses']
   sessionTicks: Character['sessionTicks']
 }): void {
   const c = character.value
   c.hpCurrent = state.hpCurrent
   c.pcCurrent = state.pcCurrent
+  c.manaCurrent = state.manaCurrent
   c.states = state.states
   c.abilityUses = state.abilityUses
   c.sessionTicks = state.sessionTicks
@@ -224,7 +249,9 @@ export function applyServerPatch(characterId: number, patch: Partial<ServerChara
     userId: 0,
     isActive: true,
   } as ServerCharacter)
-  character.value = { ...merged, hpMax: character.value.hpMax, hpCurrent: character.value.hpCurrent }
+  const c = character.value
+  // La mana max reste la locale : le recalcul qui suit remplit la jauge du rang gagné.
+  character.value = { ...merged, hpMax: c.hpMax, hpCurrent: c.hpCurrent, manaMax: c.manaMax, manaCurrent: c.manaCurrent }
   markSynced()
 }
 

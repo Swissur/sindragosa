@@ -713,8 +713,19 @@ activeCombatRouter.get('/active', async (req, res) => {
     ))
     .orderBy(desc(combats.createdAt))
     .limit(1)
+  if (!row) {
+    res.json(null)
+    return
+  }
 
-  res.json(row ?? null)
+  // Le joueur a-t-il un pion dans ce combat ? (raccourci « Fight » de la barre)
+  const [mine] = await db
+    .select({ id: combatParticipants.id })
+    .from(combatParticipants)
+    .where(and(eq(combatParticipants.combatId, row.combatId), eq(combatParticipants.userId, userId)))
+    .limit(1)
+
+  res.json({ ...row, participating: !!mine })
 })
 
 export default router

@@ -224,8 +224,16 @@ export function removeCombatParticipant(
   })
 }
 
-export async function fetchActiveCombat(): Promise<{ combatId: number; campaignId: number; name: string } | null> {
+export interface ActiveCombatSummary {
+  combatId: number
+  campaignId: number
+  name: string
+  /** J'ai un pion dans ce combat. */
+  participating: boolean
+}
+
+export async function fetchActiveCombat(): Promise<ActiveCombatSummary | null> {
   const res = await fetch('/api/combats/active', { credentials: 'include' })
   if (!res.ok) return null
-  return res.json() as Promise<{ combatId: number; campaignId: number; name: string } | null>
+  return res.json() as Promise<ActiveCombatSummary | null>
 }

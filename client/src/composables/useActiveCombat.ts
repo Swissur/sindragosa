@@ -8,6 +8,8 @@ interface ActiveCombatInfo {
   name: string
   campaignId: number
   combatId: number
+  /** J'ai un pion dans ce combat : la barre du haut affiche le raccourci « Fight ». */
+  participating: boolean
 }
 
 const activeCombat = ref<ActiveCombatInfo | null>(loadFromStorage())
@@ -45,6 +47,7 @@ export async function refreshActiveCombat(): Promise<void> {
         name: active.name,
         campaignId: active.campaignId,
         combatId: active.combatId,
+        participating: active.participating,
       })
     } else {
       clearActiveCombat()

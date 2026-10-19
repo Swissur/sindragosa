@@ -2,7 +2,7 @@
 import { RouterLink, RouterView } from "vue-router";
 import { computed, defineAsyncComponent, onBeforeUnmount, ref, watch } from "vue";
 import { useRoute } from "vue-router";
-import { UserCircle, Loader2, ScrollText, Swords, Backpack, BookOpenText, Map, Palette, Dices, History, Users, Wrench, Tv } from "lucide-vue-next";
+import { UserCircle, Loader2, ScrollText, Swords, Backpack, BookOpenText, Palette, Dices, History, Users, Wrench, Tv, Crown } from "lucide-vue-next";
 import AppToast from "./components/ui/AppToast.vue";
 import RollSheet from "./components/roll/RollSheet.vue";
 import DiceBar from "./components/DiceBar.vue";
@@ -17,6 +17,7 @@ import { useActiveCombat, refreshActiveCombat } from "./composables/useActiveCom
 import { wakeCombat } from "./composables/useCombat";
 import { useDiceBar } from "./composables/useDiceBar";
 import { useCampaignRolls } from "./composables/useCampaignRolls";
+import { useGmCampaign } from "./composables/useGmCampaign";
 import { remoteDiceEnabled, setRemoteDiceEnabled } from "./composables/useDice3D";
 import { primeAudio } from "./utils/sfx";
 
@@ -28,6 +29,7 @@ const DevToolsSheet = defineAsyncComponent(() => import("./components/dev/DevToo
 const route = useRoute();
 const { activeCombat } = useActiveCombat();
 const { diceBarOpen, toggleDiceBar } = useDiceBar();
+const { gmCampaignId } = useGmCampaign();
 const {
   unread,
   panelOpen,
@@ -107,19 +109,35 @@ if (savedStyle) {
   </div>
   <div v-else class="app-shell" :class="{ 'shell-docked': panelOpen }">
     <header class="top-nav">
-      <RouterLink to="/personnage" class="brand">Sindragosa</RouterLink>
+      <RouterLink :to="gmCampaignId ? `/campagnes/${gmCampaignId}` : '/personnage'" class="brand">Sindragosa</RouterLink>
         <nav class="nav-links">
-        <RouterLink to="/personnage" class="nav-link" title="Personnage"
-          ><ScrollText :size="20"
+        <!-- Le MJ n'a pas de fiche : son écran et le journal suffisent. -->
+        <RouterLink
+          v-if="gmCampaignId"
+          :to="`/campagnes/${gmCampaignId}`"
+          class="nav-link"
+          title="Écran MJ"
+          data-testid="nav-gm-screen"
+          ><Crown :size="20"
         /></RouterLink>
-        <RouterLink to="/inventaire" class="nav-link" title="Inventaire"
-          ><Backpack :size="20"
-        /></RouterLink>
+        <template v-else>
+          <RouterLink
+            v-if="activeCombat?.participating"
+            :to="activeCombat.url"
+            class="nav-link nav-fight"
+            title="Rejoindre le combat"
+            data-testid="nav-fight"
+            >Fight</RouterLink
+          >
+          <RouterLink to="/personnage" class="nav-link" title="Personnage"
+            ><ScrollText :size="20"
+          /></RouterLink>
+          <RouterLink to="/inventaire" class="nav-link" title="Inventaire"
+            ><Backpack :size="20"
+          /></RouterLink>
+        </template>
         <RouterLink to="/journal" class="nav-link" title="Journal"
           ><BookOpenText :size="20"
-        /></RouterLink>
-        <RouterLink to="/campagnes" class="nav-link" title="Campagnes"
-          ><Map :size="20"
         /></RouterLink>
         <RouterLink
           v-if="isDev"
@@ -480,6 +498,26 @@ button.nav-link {
   color: var(--accent-strong);
   border-color: var(--accent);
   background: color-mix(in srgb, var(--accent-soft) 72%, var(--surface));
+}
+
+/* Raccourci vers le combat en cours : un rond rouge qui pulse, impossible à rater */
+.nav-fight,
+.nav-fight:hover,
+.nav-fight.router-link-active {
+  color: var(--bg);
+  background: var(--danger);
+  border-color: var(--danger);
+  font-family: var(--title-font);
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  animation: fight-pulse 1.6s ease-out infinite;
+}
+
+@keyframes fight-pulse {
+  0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--danger) 55%, transparent); }
+  100% { box-shadow: 0 0 0 8px transparent; }
 }
 
 /* Dev-only entry: tinted so it never gets mistaken for a real feature */

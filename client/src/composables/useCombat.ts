@@ -67,17 +67,15 @@ function connect(campaignId: number, combatId: number, options: { viewer?: boole
       resetIdleTimer()
       // Keep my own character sheet HP in sync with the live combat state
       // (combat is the moment my HP changes — reflect it in "Mes actions"/ma perso).
-      if (user.value) {
-        const mine = state.participants.find(
-          (p) => p.kind === 'player' && p.userId === user.value!.id,
-        )
-        if (mine && mine.hpCurrent != null) {
-          applyServerHp(mine.hpCurrent)
-        }
-        // Idem pour mes états : le MJ peut les poser depuis le combat.
-        if (mine) {
-          applyServerStates((mine.states ?? []).filter(isEtatId))
-        }
+      const mine = user.value
+        ? state.participants.find((p) => p.kind === 'player' && p.userId === user.value!.id)
+        : undefined
+      if (mine && mine.hpCurrent != null) {
+        applyServerHp(mine.hpCurrent)
+      }
+      // Idem pour mes états : le MJ peut les poser depuis le combat.
+      if (mine) {
+        applyServerStates((mine.states ?? []).filter(isEtatId))
       }
       if (state.status === 'active') {
         setActiveCombat({
@@ -85,6 +83,7 @@ function connect(campaignId: number, combatId: number, options: { viewer?: boole
           name: state.name,
           campaignId,
           combatId,
+          participating: !!mine,
         })
       } else {
         clearActiveCombat()

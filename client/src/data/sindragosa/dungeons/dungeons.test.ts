@@ -38,6 +38,17 @@ describe('donjons', () => {
     ])
   })
 
+  it('le Gouffre de Ragefeu finit sur Bazzalan', () => {
+    const ragefeu = DUNGEONS.find((d) => d.name === 'Le Gouffre de Ragefeu')!
+    expect(ragefeu.encounters.at(-1)?.name).toBe('Bazzalan')
+  })
+
+  it('chaque combat de boss du Gouffre de Ragefeu a sa table de butin', () => {
+    const ragefeu = DUNGEONS.find((d) => d.name === 'Le Gouffre de Ragefeu')!
+    const withLoot = ragefeu.encounters.filter((e) => e.loot?.length).map((e) => e.name)
+    expect(withLoot).toEqual(['Lorgnesilex', "Taragaman l'Affameur", "Jergosh l'Invocateur", 'Bazzalan'])
+  })
+
   it('le butin est un objet d’inventaire valide : une arme a un gabarit et un domaine connu', () => {
     const domainIds = new Set(DOMAINS.map((d) => d.id))
     for (const item of DUNGEONS.flatMap((d) => d.encounters.flatMap((e) => e.loot ?? []))) {

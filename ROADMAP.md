@@ -10,7 +10,6 @@ Sindragosa est un **JDR maison inspiré de World of Warcraft**, joué en réserv
 
 On ne touche pas aux mécaniques concernées tant que ces points ne sont pas définis.
 
-- [ ] **RP = Résistance Psychique** (nom donné par l'artisanat) : quel maximum, comment la perd-on, à quoi sert-elle ?
 - [ ] **Ressources de classe** citées par les compétences : Énergie, Rage, Ferveur, Focalisation, Points de Combo, Puissance Runique / Sacrée / Céleste, Éclats d'Âme, Charges Arcaniques, Fureur démoniaque, Insalubrité. La mana est tranchée (plan 40), pas les autres.
 - [ ] **Classes émergentes** : liste des titres, des combinaisons de compétences et des hauts-faits. En attendant, le MJ accorde les titres à la main.
 

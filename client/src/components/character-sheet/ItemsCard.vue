@@ -6,7 +6,10 @@ import AppCard from '../ui/AppCard.vue'
 import AppIconBtn from '../ui/AppIconBtn.vue'
 import AppEmptyState from '../ui/AppEmptyState.vue'
 import ItemEditorSheet from './ItemEditorSheet.vue'
+import GiveItemSheet from './GiveItemSheet.vue'
+import { user } from '../../composables/useAuth'
 import { removeWithUndo } from '../../composables/useUndoRemove'
+import { showToast } from '../../composables/useToast'
 import { ITEM_TYPE_LABELS, isEquippable, weaponDamage } from '../../utils/sindragosa/equipment'
 import type { Character, ItemRow, ItemType } from '../../types/character'
 
@@ -41,6 +44,35 @@ function addItem() {
   const item: ItemRow = { id: crypto.randomUUID(), name: '', description: '', quantity: 1, type: 'divers' }
   props.character.items.push(item)
   editingId.value = item.id
+}
+
+/** Copie non équipée, rangée juste sous l'original. */
+function duplicate() {
+  const i = props.character.items.findIndex((x) => x.id === editingId.value)
+  const item = props.character.items[i]
+  if (!item) return
+  props.character.items.splice(i + 1, 0, { ...item, id: crypto.randomUUID(), equipped: false })
+  editingId.value = null
+  showToast(`${item.name || 'Objet'} dupliqué`)
+}
+
+/** Donner : l'éditeur se ferme, le choix du joueur prend le relais. */
+const canGive = computed(() => !!user.value?.activeCampaignId && !!props.character.id)
+const givingId = ref<string | null>(null)
+const giving = computed(() => props.character.items.find((i) => i.id === givingId.value) ?? null)
+const giveOpen = computed({
+  get: () => giving.value !== null,
+  set: (v: boolean) => { if (!v) givingId.value = null },
+})
+
+function startGive() {
+  givingId.value = editingId.value
+  editingId.value = null
+}
+
+function given(item: ItemRow) {
+  const i = props.character.items.findIndex((x) => x.id === item.id)
+  if (i >= 0) props.character.items.splice(i, 1)
 }
 
 function remove() {
@@ -82,7 +114,8 @@ function remove() {
       </li>
     </ul>
 
-    <ItemEditorSheet v-model="editorOpen" :item="editing" @remove="remove" />
+    <ItemEditorSheet v-model="editorOpen" :item="editing" :can-give="canGive" @remove="remove" @duplicate="duplicate" @give="startGive" />
+    <GiveItemSheet v-if="canGive" v-model="giveOpen" :item="giving" :character-id="Number(character.id)" @given="given" />
   </AppCard>
 </template>
 

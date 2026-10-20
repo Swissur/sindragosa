@@ -55,7 +55,23 @@ warcraft.wiki.gg (ordre des zones, compositions, lore).
 - Le piétinement de M. Châtiment étourdit sans jet, comme dans le jeu : c'est
   la signature du combat, en contrepartie il perd son tour suivant.
 
+## Gouffre de Ragefeu : sources et choix
+
+Sources : JudgeHype (noms FR des boss, tactiques), warcraft.wiki.gg (parcours,
+monstres, butin), table de butin WoW Forever (taux issus de Classic Era).
+
+- 9 combats, 12 monstres (`ragefeu.ts`). Ordre : troggs, fore-terre,
+  Lorgnesilex, lac de lave, cultistes, Taragaman, garde de la Lame ardente,
+  Jergosh, Bazzalan (caché au-dessus de Jergosh).
+- Noms FR des boss officiels. Noms des sbires et des objets : traductions maison
+  (Fore-terre, Gangrelame maudite, Lame psalmodiante, Marche-gouffre…).
+- Taux de drop publiés pour Taragaman et Jergosh. Lorgnesilex et Bazzalan n'ont
+  pas d'objet rare dans le jeu : leurs objets courants ont un taux estimé (30 %).
+- Le cœur de Taragaman (objet de quête) n'est pas dans le butin : à 100 %, il
+  écraserait le tirage pondéré. Il est cité dans la description du combat.
+- Zelemar le Courroucé (garde funeste invoqué pour une quête) n'est pas repris.
+
 ## À calibrer en jeu
 
 Les PV et dégâts des boss sont une première estimation pour 4–5 débutants.
-Après un premier passage, ajuster dans `mortemines.ts`.
+Après un premier passage, ajuster dans `mortemines.ts` / `ragefeu.ts`.

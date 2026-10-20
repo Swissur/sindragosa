@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { Star } from 'lucide-vue-next'
+import { Gift, Star } from 'lucide-vue-next'
 import AppTickGauge from '../ui/AppTickGauge.vue'
 import AppIconBtn from '../ui/AppIconBtn.vue'
 import { openRollSheet } from '../../composables/useRollSheet'
+import { rewardTick } from '../../composables/gmReward'
 import { DOMAIN_GAUGE_SLOTS, MAX_DOMAIN_RANK, ticksForRank } from '../../utils/sindragosa/progression'
 import type { AdvancedDomain } from '../../data/sindragosa/domains'
 import type { Character } from '../../types/character'
@@ -17,6 +18,8 @@ const props = defineProps<{
   character: Character
   domain: AdvancedDomain
   readonly?: boolean
+  /** Mode MJ : coches en récompense, même sur un domaine encore verrouillé. */
+  gm?: boolean
   /** Favori de la fiche. Absent = pas de bouton (fiche d'un autre joueur). */
   pinned?: boolean
 }>()
@@ -53,6 +56,15 @@ function roll() {
       @click="emit('toggle-pin')"
     >
       <Star :size="16" :class="{ 'star--on': pinned }" />
+    </AppIconBtn>
+    <AppIconBtn
+      v-if="gm"
+      variant="primary"
+      title="Récompense : une coche"
+      :data-testid="`gm-reward-${domain.id}`"
+      @click="rewardTick(character, { kind: 'advanced', id: domain.id })"
+    >
+      <Gift :size="16" />
     </AppIconBtn>
     <span class="advanced-spacer" />
   </div>

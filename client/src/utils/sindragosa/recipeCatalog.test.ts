@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { catalogRecipes, isFilteringCatalog, isKnownRecipe, matchesCatalogFilter, type CatalogFilter } from './recipeCatalog'
+import { catalogRecipes, isFilteringCatalog, isKnownRecipe, matchesCatalogFilter, toggleRecipeGrant, type CatalogFilter } from './recipeCatalog'
 import { RECIPES } from '../../data/sindragosa/crafts'
 import type { Craft, Recipe } from '../../data/sindragosa/types'
 
@@ -50,5 +50,28 @@ describe('matchesCatalogFilter', () => {
     expect(isKnownRecipe(h2, known)).toBe(true)
     expect(matchesCatalogFilter(f3, { ...none, known })).toBe(false)
     expect(isFilteringCatalog({ ...none, known })).toBe(true)
+  })
+
+  it('connus : le MJ passe outre le rang', () => {
+    const known = { forge: 2 }
+    expect(matchesCatalogFilter(f3, { ...none, known, grants: { f3: true } })).toBe(true)
+    expect(matchesCatalogFilter(epee, { ...none, known, grants: { f1: false } })).toBe(false)
+  })
+})
+
+describe('toggleRecipeGrant', () => {
+  const [epee, f3] = entries
+  const known = { forge: 2 }
+
+  it('apprend un patron hors rang, puis l’oublie : plus d’entrée', () => {
+    const once = toggleRecipeGrant({}, f3, known)
+    expect(once).toEqual({ f3: true })
+    expect(toggleRecipeGrant(once, f3, known)).toEqual({})
+  })
+
+  it('fait oublier un patron du rang, puis le rend', () => {
+    const once = toggleRecipeGrant({ f3: true }, epee, known)
+    expect(once).toEqual({ f3: true, f1: false })
+    expect(toggleRecipeGrant(once, epee, known)).toEqual({ f3: true })
   })
 })

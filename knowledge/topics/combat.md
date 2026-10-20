@@ -129,4 +129,4 @@ Décidés le 2026-10-19 (`plans/42-etats.md`, catalogue `client/src/data/etats.t
 
 ## Non définis par les règles
 
-Résistance Psychique (RP), Énergie. Voir la TODO de `ROADMAP.md`.
+Énergie. Voir la TODO de `ROADMAP.md`.

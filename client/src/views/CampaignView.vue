@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { ArrowLeft, Crown, Swords, Settings, Bed, BookOpen, Moon, Coffee, Sunrise, Sunset } from 'lucide-vue-next'
+import { ArrowLeft, Crown, Swords, Settings, Bed, BookOpen, Moon, Coffee, Sunrise, Sunset, Square } from 'lucide-vue-next'
 import {
   activateCampaign,
   fetchCampaign,
@@ -11,7 +11,7 @@ import {
   type CampaignMember,
   type RestKind,
 } from '../api/campaigns'
-import { fetchCombats, type CombatSummary } from '../api/combats'
+import { fetchCombats, finishCombat, type CombatSummary } from '../api/combats'
 import { user } from '../composables/useAuth'
 import { refreshActiveCombat } from '../composables/useActiveCombat'
 import { liveSessionActive, onlineUserIds } from '../composables/useCampaignLive'
@@ -60,6 +60,7 @@ const showOptions = ref(false)
 const confirmEndSession = ref(false)
 /** Décoché par défaut : le MJ peut toujours lancer le repos long à la main. */
 const endWithLongRest = ref(false)
+const confirmEndCombat = ref(false)
 
 onMounted(load)
 
@@ -117,6 +118,17 @@ async function doRest(kind: RestKind) {
   }
 }
 
+async function endCombat() {
+  confirmEndCombat.value = false
+  if (!campaign.value || !activeCombat.value) return
+  try {
+    await finishCombat(campaign.value.id, activeCombat.value.id)
+    await reloadCombats()
+  } catch (e) {
+    error.value = e instanceof Error ? e.message : 'Erreur'
+  }
+}
+
 const sessionBusy = ref(false)
 
 async function setSession(active: boolean) {
@@ -155,7 +167,7 @@ async function setSession(active: boolean) {
     <AppEmptyState v-else-if="error && !campaign" variant="error">{{ error }}</AppEmptyState>
 
     <template v-else-if="campaign">
-      <div class="gm-banner">
+      <div v-if="!isGm" class="gm-banner">
         <Crown :size="16" class="gm-icon" />
         <span>MJ : <strong>{{ campaign.gmUsername }}</strong></span>
         <span v-if="sessionActive" class="session-tag" data-testid="session-tag">Session en cours</span>
@@ -178,6 +190,15 @@ async function setSession(active: boolean) {
           <span class="combat-round">Round {{ activeCombat.roundNumber }}</span>
         </div>
         <AppButton variant="primary" size="small">Rejoindre</AppButton>
+        <AppIconBtn
+          v-if="isGm"
+          variant="danger"
+          title="Terminer le combat"
+          data-testid="active-combat-end"
+          @click.stop="confirmEndCombat = true"
+        >
+          <Square :size="18" />
+        </AppIconBtn>
       </div>
 
       <template v-if="isGm">
@@ -252,6 +273,13 @@ async function setSession(active: boolean) {
       </div>
       <p v-if="restError" class="rest-error">{{ restError }}</p>
     </AppBottomSheet>
+
+    <AppModal v-model="confirmEndCombat" title="Terminer ce combat ?">
+      <template #footer>
+        <AppButton @click="confirmEndCombat = false">Annuler</AppButton>
+        <AppButton variant="danger" data-testid="active-combat-end-confirm" @click="endCombat">Terminer</AppButton>
+      </template>
+    </AppModal>
 
     <AppModal v-model="confirmEndSession" title="Fin de session">
       <p class="confirm">

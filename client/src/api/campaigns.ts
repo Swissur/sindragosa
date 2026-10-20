@@ -1,4 +1,6 @@
 import type { ServerCharacter } from './characters'
+import type { ItemRow } from '../types/character'
+import type { GameSystemId as CampaignSystem } from '../data/systems'
 import type { EtatEntry } from '../data/etats'
 import type { RollPool } from '../utils/rollOutcome'
 import type { MonsterAbility, MonsterAttack } from '../utils/sindragosa/bestiary'
@@ -11,6 +13,7 @@ export interface CampaignSummary {
   name: string
   gmUserId: number
   gmUsername: string
+  system: CampaignSystem
   memberCount: number
   isMember: boolean
   createdAt: string
@@ -39,9 +42,9 @@ export interface CampaignDetail {
   createdAt: string
 }
 
-/** Systèmes de jeu proposés à la création (un seul pour l'instant). */
-export const CAMPAIGN_SYSTEMS = [{ value: 'wow-forever', label: 'WoW Forever' }] as const
-export type CampaignSystem = (typeof CAMPAIGN_SYSTEMS)[number]['value']
+/** Systèmes de jeu proposés à la création (plans/43). */
+export { GAME_SYSTEMS as CAMPAIGN_SYSTEMS } from '../data/systems'
+export type { CampaignSystem }
 
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
   const res = await fetch(BASE + path, {
@@ -85,19 +88,39 @@ export function setCampaignSession(id: number, active: boolean, longRest = false
 
 export interface GmMessage {
   id: number
+  fromUserId: number
+  fromUsername: string
   toUserId: number
   toUsername: string
   body: string
+  /** Le destinataire a ouvert le fil. `null` = non lu. */
+  readAt: string | null
   createdAt: string
 }
 
-/** Le MJ reçoit tout ce qu'il a envoyé, le joueur ses propres messages. */
-export function fetchGmMessages(campaignId: number): Promise<GmMessage[]> {
+/** Le MJ reçoit tous les échanges de la campagne, le joueur le sien. */
+export function fetchGmMessages(campaignId: number): Promise<{ isGm: boolean; messages: GmMessage[] }> {
   return request(`/${campaignId}/messages`)
 }
 
+/** Le MJ écrit à un joueur. */
 export function sendGmMessage(campaignId: number, toUserId: number, body: string): Promise<void> {
   return request(`/${campaignId}/messages`, { method: 'POST', body: JSON.stringify({ toUserId, body }) })
+}
+
+/** Messages pour moi pas encore lus dans la campagne. */
+export function fetchGmUnread(campaignId: number): Promise<{ count: number }> {
+  return request(`/${campaignId}/messages/unread`)
+}
+
+/** J'ouvre un fil : ses messages pour moi sont lus. Le MJ précise le joueur. */
+export function markGmMessagesRead(campaignId: number, withUserId?: number): Promise<void> {
+  return request(`/${campaignId}/messages/read`, { method: 'POST', body: JSON.stringify({ withUserId }) })
+}
+
+/** Le joueur écrit au MJ de la campagne. */
+export function sendMessageToGm(campaignId: number, body: string): Promise<void> {
+  return request(`/${campaignId}/messages`, { method: 'POST', body: JSON.stringify({ body }) })
 }
 
 export function fetchCampaign(id: number): Promise<CampaignDetail> {
@@ -120,10 +143,15 @@ export function fetchMemberCharacter(campaignId: number, userId: number): Promis
   return request<ServerCharacter>(`/${campaignId}/members/${userId}/character`)
 }
 
+/** Le MJ pose un nouveau mot de passe à un joueur qui l'a oublié. */
+export function resetMemberPassword(campaignId: number, userId: number, password: string): Promise<void> {
+  return request(`/${campaignId}/members/${userId}/password`, { method: 'POST', body: JSON.stringify({ password }) })
+}
+
 /** Ce que le MJ règle sur la fiche d'un joueur : caracs, rangs, récompenses, titres. */
 export type GmCharacterPatch = Partial<Pick<ServerCharacter,
   'str' | 'agi' | 'end' | 'int' | 'wis' | 'cha'
-  | 'domains' | 'specialties' | 'advancedDomains' | 'titles' | 'hpMax' | 'manaMax'>>
+  | 'domains' | 'specialties' | 'advancedDomains' | 'titles' | 'recipeGrants' | 'hpMax' | 'manaMax'>>
 
 export function patchMemberCharacter(campaignId: number, userId: number, patch: GmCharacterPatch): Promise<ServerCharacter> {
   return request<ServerCharacter>(`/${campaignId}/members/${userId}/character`, {
@@ -137,8 +165,18 @@ export interface CharacterPatchEvent {
   userId: number
   characterId: number
   patch: GmCharacterPatch | Pick<ServerCharacter, 'items'>
-  /** Nom de l'objet reçu quand le patch vient du butin d'un combat. */
+  /** Nom de l'objet reçu quand le patch vient du butin d'un combat ou d'un autre joueur. */
   loot?: string
+  /** Nom du personnage qui a donné l'objet. */
+  from?: string
+}
+
+/** Donne un objet de mon personnage au personnage d'un autre joueur de la campagne. */
+export function giveItem(campaignId: number, characterId: number, toUserId: number, item: ItemRow): Promise<void> {
+  return request(`/${campaignId}/items/give`, {
+    method: 'POST',
+    body: JSON.stringify({ characterId, toUserId, item }),
+  })
 }
 
 // ── Encounters ──────────────────────────────────────────────────────────────
@@ -224,6 +262,11 @@ export function importDungeonEncounters(campaignId: number, dungeon: string, enc
 
 export function deleteEncounter(campaignId: number, eid: number): Promise<void> {
   return request(`/${campaignId}/encounters/${eid}`, { method: 'DELETE' })
+}
+
+/** Efface d'un coup toutes les rencontres d'un donjon importé. */
+export function deleteDungeon(campaignId: number, dungeon: string): Promise<{ count: number }> {
+  return request(`/${campaignId}/dungeons/${encodeURIComponent(dungeon)}`, { method: 'DELETE' })
 }
 
 export function addEncounterMonster(campaignId: number, eid: number, data: Omit<EncounterMonster, 'id' | 'encounterId'>): Promise<EncounterMonster> {

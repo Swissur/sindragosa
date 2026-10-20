@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { Sword, Scroll, Heart, Trash2, Plus, Pencil, Coins, Expand, Flame, Dices } from 'lucide-vue-next'
+import { Sword, Scroll, Heart, Trash2, Plus, Pencil, Coins, Expand, Flame, Dices, Settings } from 'lucide-vue-next'
 import AppPageLayout from '../components/ui/AppPageLayout.vue'
 import AppPageHead from '../components/ui/AppPageHead.vue'
 import AppCard from '../components/ui/AppCard.vue'
@@ -335,6 +335,9 @@ function forceRoll(value: number) {
     </AppModal>
 
     <AppBottomSheet v-model="sheetOpen" title="Bottom sheet">
+      <template #titleActions>
+        <AppIconBtn variant="bare" title="Réglages"><Settings :size="18" /></AppIconBtn>
+      </template>
       <p>Feuille ancrée en bas sur mobile, dialogue centré sur desktop.</p>
     </AppBottomSheet>
   </AppPageLayout>

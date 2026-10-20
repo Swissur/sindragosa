@@ -1,6 +1,8 @@
 <script setup lang="ts">
-import { Heart, Clover, Shield, Zap, FlaskConical, Droplet } from 'lucide-vue-next'
+import { ref } from 'vue'
+import { Heart, Clover, Shield, Zap, FlaskConical, Droplet, ChevronDown } from 'lucide-vue-next'
 import AppCard from '../ui/AppCard.vue'
+import AppIconBtn from '../ui/AppIconBtn.vue'
 import AppStepper from '../ui/AppStepper.vue'
 import AppTooltip from '../ui/AppTooltip.vue'
 import EtatsTags from '../etats/EtatsTags.vue'
@@ -15,6 +17,9 @@ defineProps<{
   editing?: boolean
   readonly?: boolean
 }>()
+
+/** Replié : seuls les états actifs. Déplié : tous, pour en poser un. */
+const allEtats = ref(false)
 </script>
 
 <template>
@@ -91,10 +96,23 @@ defineProps<{
     </div>
 
     <div class="vital-status">
-      <span class="vital-label"><FlaskConical :size="15" /> Statut</span>
+      <div class="vital">
+        <span class="vital-label"><FlaskConical :size="15" /> Statut</span>
+        <AppIconBtn
+          v-if="!readonly"
+          variant="bare"
+          :title="allEtats ? 'Masquer les autres états' : 'Afficher tous les états'"
+          :aria-expanded="allEtats"
+          data-testid="etats-expand"
+          @click="allEtats = !allEtats"
+        >
+          <ChevronDown :size="18" class="etats-chevron" :class="{ open: allEtats }" />
+        </AppIconBtn>
+      </div>
       <EtatsTags
         :states="character.states"
         :readonly="readonly"
+        :all="allEtats"
         @update:states="(states) => (character.states = states)"
       />
     </div>
@@ -161,6 +179,14 @@ defineProps<{
   font-weight: 500;
   color: var(--muted);
   font-size: 0.85rem;
+}
+
+.etats-chevron {
+  transition: transform 0.15s;
+}
+
+.etats-chevron.open {
+  transform: rotate(180deg);
 }
 
 .vital-help {

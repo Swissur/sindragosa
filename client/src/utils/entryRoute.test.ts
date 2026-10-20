@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { autoEntryCampaign, campaignHome, myCampaigns } from './entryRoute'
+import { autoEntryCampaign, campaignHome, myCampaigns, playableCount } from './entryRoute'
 
 const ME = 7
 const led = { id: 1, gmUserId: ME, isMember: false }
@@ -35,5 +35,18 @@ describe('campaignHome', () => {
 
   it('le joueur choisit son perso quand il en a plusieurs', () => {
     expect(campaignHome(played, ME, 2)).toBe('/personnages')
+  })
+})
+
+describe('playableCount', () => {
+  const chars = [{ system: 'wow-forever' }, { system: 'knight' }, { system: 'wow-forever' }]
+
+  it('ne compte que les fiches du système de la campagne', () => {
+    expect(playableCount({ ...played, system: 'knight' }, chars)).toBe(1)
+    expect(playableCount({ ...played, system: 'wow-forever' }, chars)).toBe(2)
+  })
+
+  it('compte tout quand le système est inconnu', () => {
+    expect(playableCount(played, chars)).toBe(3)
   })
 })

@@ -5,7 +5,6 @@ import { isFormId } from '../data/sindragosa/forms'
 import {
   fetchCharacters,
   fetchCharacter,
-  createCharacter,
   updateCharacter,
   type ServerCharacter,
 } from '../api/characters'
@@ -16,7 +15,10 @@ import { effectiveArmor } from '../utils/sindragosa/equipment'
 import { unlockedAbilities } from '../utils/sindragosa/prerequisites'
 import { unlockedAdvancedDomains } from '../utils/sindragosa/advanced'
 import { specialtyGrants } from '../utils/sindragosa/specialtyGrants'
+import { knightDerived, normalizeKnightSheet } from '../utils/knight/sheet'
+import { isGameSystem } from '../data/systems'
 import { showToast } from './useToast'
+import { createCharacterHere } from './useNewCharacter'
 
 /** Points de chance rendus à chaque séance. */
 export const LUCK_PER_SESSION = 2
@@ -25,8 +27,11 @@ const obj = <T>(v: unknown, fallback: T): T => (v && typeof v === 'object' ? (v 
 const arr = <T>(v: unknown): T[] => (Array.isArray(v) ? (v as T[]) : [])
 
 export function toCharacter(s: ServerCharacter): Character {
+  const system = isGameSystem(s.system) ? s.system : 'wow-forever'
   return {
     id: String(s.id),
+    system,
+    knight: system === 'knight' ? normalizeKnightSheet(s.sheet) : null,
     name: s.name,
     histoire: s.histoire ?? '',
     race: s.race ?? '',
@@ -45,6 +50,7 @@ export function toCharacter(s: ServerCharacter): Character {
     sessionTicks: obj(s.sessionTicks, { success: 0, critFail: 0 }),
     resources: arr(s.resources),
     crafts: obj(s.crafts, {}),
+    recipeGrants: obj(s.recipeGrants, {}),
     items: arr(s.items),
     goldCoins: s.goldCoins ?? 0,
     silverCoins: s.silverCoins ?? 0,
@@ -82,6 +88,7 @@ export function toServerPayload(c: Character): Omit<ServerCharacter, 'id' | 'use
     sessionTicks: c.sessionTicks,
     resources: c.resources,
     crafts: c.crafts,
+    recipeGrants: c.recipeGrants,
     items: c.items,
     goldCoins: c.goldCoins,
     silverCoins: c.silverCoins,
@@ -91,12 +98,16 @@ export function toServerPayload(c: Character): Omit<ServerCharacter, 'id' | 'use
     manaMax: c.manaMax,
     states: c.states,
     form: c.form,
+    system: c.system,
+    sheet: c.knight ?? {},
   }
 }
 
 export function createDefaultCharacter(): Character {
   return {
     id: '',
+    system: 'wow-forever',
+    knight: null,
     name: 'Nouveau héros',
     histoire: '',
     race: '',
@@ -115,6 +126,7 @@ export function createDefaultCharacter(): Character {
     sessionTicks: { success: 0, critFail: 0 },
     resources: [],
     crafts: {},
+    recipeGrants: {},
     items: [],
     goldCoins: 0,
     silverCoins: 0,
@@ -130,20 +142,24 @@ export function createDefaultCharacter(): Character {
 export const character = ref<Character>(createDefaultCharacter())
 const serverId = ref<number | null>(null)
 
-/** PV max selon les règles Sindragosa (+ bonus divers). */
-export const computedHp = computed(() => computeMaxHp(character.value))
+/** Valeurs dérivées Knight, `null` pour une fiche WoW Forever. */
+export const knightValues = computed(() => (character.value.knight ? knightDerived(character.value.knight) : null))
 
-/** Initiative = AGI + SAG + rang en Perception & Sens. */
-export const computedInitiative = computed(() => initiative(character.value.stats, domainRanks(character.value)))
+/** PV max selon les règles du système : Sindragosa (+ bonus divers), ou la Santé de Knight. */
+export const computedHp = computed(() => knightValues.value?.santeMax ?? computeMaxHp(character.value))
 
-/** Compétences dont tous les prérequis sont réunis. */
-export const unlocked = computed(() => unlockedAbilities(progressState(character.value)))
+/** Initiative = AGI + SAG + rang en Perception & Sens (Knight : carac de Masque + overdrive). */
+export const computedInitiative = computed(() =>
+  knightValues.value?.initiative ?? initiative(character.value.stats, domainRanks(character.value)))
+
+/** Compétences dont tous les prérequis sont réunis. Knight n'en a pas. */
+export const unlocked = computed(() => (character.value.knight ? [] : unlockedAbilities(progressState(character.value))))
 
 /** Domaines avancés ouverts : prérequis réunis ou compétence homonyme débloquée. */
 export const unlockedAdvanced = computed(() => unlockedAdvancedDomains(progressState(character.value), unlocked.value))
 
-/** AP = armures équipées + bonus des compétences (plans/35-equipement.md). */
-export const computedArmor = computed(() => effectiveArmor(character.value))
+/** AP = armures équipées + bonus des compétences (plans/35-equipement.md). Knight : le champ de force. */
+export const computedArmor = computed(() => character.value.knight?.armure.cdf ?? effectiveArmor(character.value))
 
 // AP calculée → stockée sur la fiche : le combat la lit.
 watch(computedArmor, (val) => { character.value.armor = val }, { immediate: true })
@@ -155,7 +171,7 @@ watch(computedHp, (val) => {
 }, { immediate: true })
 
 /** Mana max : plus haute carac magique + rangs magiques (plans/40-mana.md). */
-export const computedMana = computed(() => maxMana(character.value))
+export const computedMana = computed(() => (character.value.knight ? 0 : maxMana(character.value)))
 
 // Mana max calculée → stockée (le serveur s'en sert au repos). Un nouveau rang
 // magique remplit d'autant la jauge : on compare à la valeur stockée, pas à
@@ -274,7 +290,7 @@ export async function loadCharacter(id?: number): Promise<void> {
       if (active) {
         applyLoaded(active)
       } else {
-        const created = await createCharacter({ name: 'Nouveau héros' })
+        const created = await createCharacterHere()
         if (gen !== loadGen) return
         applyLoaded(created)
       }

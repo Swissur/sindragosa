@@ -1,7 +1,7 @@
 import { and, asc, eq } from 'drizzle-orm'
 import { Router } from 'express'
 import { db } from '../db/index.js'
-import { campaignMembers, characters, generatedImages, users } from '../db/schema.js'
+import { campaignMembers, campaigns, characters, generatedImages, users } from '../db/schema.js'
 import { requireAuth, type AuthRequest } from '../auth/middleware.js'
 
 function username(req: unknown): string {
@@ -9,16 +9,26 @@ function username(req: unknown): string {
 }
 import { broadcastUserCombats } from '../combats/sseStore.js'
 import { pickUpdatable } from '../characters/updatable.js'
+import { isCampaignSystem } from '../campaigns/systems.js'
 type CharacterInsert = typeof characters.$inferInsert
 
 const router = Router()
 router.use(requireAuth)
 
-// GET /api/characters — liste les personnages de l'utilisateur
+// GET /api/characters — liste les personnages de l'utilisateur,
+// avec le nom des campagnes où chacun est engagé.
 router.get('/', async (req, res) => {
   const userId = (req as unknown as AuthRequest).userId
   const rows = await db.select().from(characters).where(eq(characters.userId, userId)).orderBy(asc(characters.id))
-  res.json(rows)
+  const memberships = await db
+    .select({ characterId: campaignMembers.characterId, name: campaigns.name })
+    .from(campaignMembers)
+    .innerJoin(campaigns, eq(campaigns.id, campaignMembers.campaignId))
+    .where(eq(campaignMembers.userId, userId))
+  res.json(rows.map((row) => ({
+    ...row,
+    campaignNames: memberships.filter((m) => m.characterId === row.id).map((m) => m.name),
+  })))
 })
 
 // GET /api/characters/:id
@@ -39,9 +49,15 @@ router.get('/:id', async (req, res) => {
 // POST /api/characters — crée un personnage.
 // Les valeurs par défaut de Sindragosa (caracs à 2, 20 PV, 2 points de chance…)
 // viennent de la base ; le client peut en préciser certaines (nom, race, caracs).
+// Le système ne se choisit qu'ici : une fiche ne change jamais de système.
 router.post('/', async (req, res) => {
   const userId = (req as unknown as AuthRequest).userId
-  const body = pickUpdatable((req.body ?? {}) as Record<string, unknown>) as Partial<CharacterInsert>
+  const raw = (req.body ?? {}) as Record<string, unknown>
+  const body = pickUpdatable(raw) as Partial<CharacterInsert>
+  if (raw.system !== undefined) {
+    if (!isCampaignSystem(raw.system)) { res.status(400).json({ error: 'Système inconnu' }); return }
+    body.system = raw.system
+  }
 
   const existing = await db.select({ id: characters.id }).from(characters).where(eq(characters.userId, userId)).limit(1)
   const isFirst = existing.length === 0
@@ -149,7 +165,7 @@ router.post('/:id/activate', async (req, res) => {
       .update(characters)
       .set({ isActive: true })
       .where(and(eq(characters.id, id), eq(characters.userId, userId)))
-      .returning({ id: characters.id })
+      .returning({ id: characters.id, system: characters.system })
 
     if (!row) throw new Error('not_found')
 
@@ -158,11 +174,18 @@ router.post('/:id/activate', async (req, res) => {
       .select({ activeCampaignId: users.activeCampaignId })
       .from(users)
       .where(eq(users.id, userId))
+    // Une fiche d'un autre système ne la joue pas : elle reste juste active hors campagne.
     if (me?.activeCampaignId) {
-      await tx
-        .update(campaignMembers)
-        .set({ characterId: id })
-        .where(and(eq(campaignMembers.campaignId, me.activeCampaignId), eq(campaignMembers.userId, userId)))
+      const [campaign] = await tx
+        .select({ system: campaigns.system })
+        .from(campaigns)
+        .where(eq(campaigns.id, me.activeCampaignId))
+      if (campaign?.system === row.system) {
+        await tx
+          .update(campaignMembers)
+          .set({ characterId: id })
+          .where(and(eq(campaignMembers.campaignId, me.activeCampaignId), eq(campaignMembers.userId, userId)))
+      }
     }
   }).catch((err) => {
     if (err.message === 'not_found') {

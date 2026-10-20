@@ -16,7 +16,9 @@ import journalRouter from "./routes/journal.js";
 import campaignsRouter from "./routes/campaigns.js";
 import combatsRouter, { activeCombatRouter } from "./routes/combats.js";
 import codexRouter from "./routes/codex.js";
+import codexBoardRouter from "./routes/codexBoard.js";
 import gmMessagesRouter from "./routes/gmMessages.js";
+import memberPasswordRouter from "./routes/memberPassword.js";
 import notesRouter from "./routes/notes.js";
 import revisionsRouter from "./routes/revisions.js";
 import devRouter from "./dev/routes.js";
@@ -25,7 +27,8 @@ import { requireAuth, type AuthRequest } from "./auth/middleware.js";
 import { CLIENT_DIST } from "./paths.js";
 import { and, eq, inArray } from "drizzle-orm";
 import { db } from "./db/index.js";
-import { campaignMembers, characters, generatedImages, users } from "./db/schema.js";
+import { union } from "drizzle-orm/pg-core";
+import { campaignMembers, campaigns, characters, generatedImages, users } from "./db/schema.js";
 
 const app = express();
 // En prod le client est servi par ce même serveur (same-origin) ; en dev le proxy
@@ -55,7 +58,9 @@ app.use("/api/campaigns", campaignsRouter);
 app.use("/api/campaigns", combatsRouter);
 app.use("/api/combats", activeCombatRouter);
 app.use("/api/campaigns", codexRouter);
+app.use("/api/campaigns", codexBoardRouter);
 app.use("/api/campaigns", gmMessagesRouter);
+app.use("/api/campaigns", memberPasswordRouter);
 app.use("/api/notes", notesRouter);
 
 // Outils de dev : seed, changement d'identité, combats bidon. Contournent
@@ -68,14 +73,15 @@ app.use("/api/revisions", revisionsRouter);
 
 /**
  * Une image est visible par son propriétaire, ou si elle sert de portrait au
- * personnage d'un membre d'une campagne que le demandeur partage avec lui.
+ * personnage d'un membre d'une campagne que le demandeur partage avec lui
+ * (comme joueur, ou comme MJ : le MJ n'est pas dans `campaign_member`).
  */
 async function canSeeImage(imageId: number, ownerId: number, userId: number) {
   if (ownerId === userId) return true;
-  const mine = db
-    .select({ campaignId: campaignMembers.campaignId })
-    .from(campaignMembers)
-    .where(eq(campaignMembers.userId, userId));
+  const mine = union(
+    db.select({ campaignId: campaignMembers.campaignId }).from(campaignMembers).where(eq(campaignMembers.userId, userId)),
+    db.select({ campaignId: campaigns.id }).from(campaigns).where(eq(campaigns.gmUserId, userId)),
+  );
   const [shared] = await db
     .select({ id: campaignMembers.id })
     .from(campaignMembers)

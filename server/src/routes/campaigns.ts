@@ -9,10 +9,12 @@ import { parsePool } from '../campaigns/rollPool.js'
 import { pickGmEditable } from '../characters/updatable.js'
 import { isRestKind } from '../campaigns/rest.js'
 import { restCampaign } from '../campaigns/restCampaign.js'
-import { isCampaignSystem } from '../campaigns/systems.js'
+import { isCampaignSystem, pickCharacterFor } from '../campaigns/systems.js'
 import { dominantColor } from '../campaigns/diceStyle.js'
 import { effectiveDiceStyle } from '../campaigns/diceStyleQuery.js'
 import { importEncounters, monsterValues, parseEncounterImport } from '../campaigns/encounterImport.js'
+import { sanitizeLoot, toInventoryItem } from '../combats/loot.js'
+import { randomUUID } from 'node:crypto'
 
 const router = Router()
 router.use(requireAuth)
@@ -25,6 +27,7 @@ router.get('/', async (_req, res) => {
       name: campaigns.name,
       gmUserId: campaigns.gmUserId,
       gmUsername: users.username,
+      system: campaigns.system,
       createdAt: campaigns.createdAt,
     })
     .from(campaigns)
@@ -155,6 +158,14 @@ router.patch('/:id', async (req, res) => {
   }
   if (system !== undefined) {
     if (!isCampaignSystem(system)) { res.status(400).json({ error: 'Système inconnu' }); return }
+    // Une fiche ne change pas de système : on ne retire pas le sol sous les joueurs.
+    const [other] = await db
+      .select({ id: characters.id })
+      .from(campaignMembers)
+      .innerJoin(characters, eq(characters.id, campaignMembers.characterId))
+      .where(and(eq(campaignMembers.campaignId, id), sql`${characters.system} <> ${system}`))
+      .limit(1)
+    if (other) { res.status(400).json({ error: 'Des joueurs ont une fiche d’un autre système' }); return }
     patch.system = system
   }
   if (Object.keys(patch).length === 0) { res.status(400).json({ error: 'Rien à modifier' }); return }
@@ -173,6 +184,14 @@ router.post('/:id/activate', async (req, res) => {
   if (check.status === 'forbidden') { res.status(403).json({ error: 'Pas membre de cette campagne' }); return }
 
   await db.update(users).set({ activeCampaignId: id }).where(eq(users.id, userId))
+
+  // Entrer dans la campagne, c'est reprendre la fiche qu'on y joue : avec deux
+  // systèmes, la fiche active d'hier peut être celle d'une autre campagne.
+  const [member] = await db
+    .select({ characterId: campaignMembers.characterId })
+    .from(campaignMembers)
+    .where(and(eq(campaignMembers.campaignId, id), eq(campaignMembers.userId, userId)))
+  if (member?.characterId) await activateCharacterRow(userId, member.characterId)
   res.json({ ok: true })
 })
 
@@ -202,7 +221,7 @@ router.post('/:id/join', async (req, res) => {
 
   // Verify campaign exists
   const [campaign] = await db
-    .select({ id: campaigns.id, gmUserId: campaigns.gmUserId })
+    .select({ id: campaigns.id, gmUserId: campaigns.gmUserId, system: campaigns.system })
     .from(campaigns)
     .where(eq(campaigns.id, id))
   if (!campaign) {
@@ -211,16 +230,6 @@ router.post('/:id/join', async (req, res) => {
   }
   if (campaign.gmUserId === userId) {
     res.status(400).json({ error: 'Le MJ ne peut pas rejoindre sa propre campagne en tant que joueur' })
-    return
-  }
-
-  // Find active character
-  const [activeChar] = await db
-    .select({ id: characters.id })
-    .from(characters)
-    .where(and(eq(characters.userId, userId), eq(characters.isActive, true)))
-  if (!activeChar) {
-    res.status(400).json({ error: 'Aucun personnage actif' })
     return
   }
 
@@ -234,9 +243,23 @@ router.post('/:id/join', async (req, res) => {
     return
   }
 
+  // Le perso qui joue : celui du système de la campagne (l'actif de préférence).
+  // Sans fiche de ce système, on lui en crée une vierge.
+  const mine = await db
+    .select({ id: characters.id, system: characters.system, isActive: characters.isActive })
+    .from(characters)
+    .where(eq(characters.userId, userId))
+    .orderBy(asc(characters.id))
+  const picked = pickCharacterFor(mine, campaign.system)
+  const characterId = picked?.id ?? (await db
+    .insert(characters)
+    .values({ userId, system: campaign.system, name: campaign.system === 'knight' ? 'Nouveau chevalier' : undefined })
+    .returning({ id: characters.id }))[0].id
+  await activateCharacterRow(userId, characterId)
+
   const [member] = await db
     .insert(campaignMembers)
-    .values({ campaignId: id, userId, characterId: activeChar.id })
+    .values({ campaignId: id, userId, characterId })
     .returning()
 
   // Set as active campaign
@@ -358,6 +381,59 @@ router.patch('/:id/members/:userId/character', async (req, res) => {
   res.json(updated)
 })
 
+// POST /api/campaigns/:id/items/give — un joueur donne un objet de son inventaire à un autre joueur.
+// L'objet vient du client (il peut ne pas être encore sauvegardé) ; il quitte la fiche du
+// donneur et rejoint celle du receveur par concaténation SQL, qui reçoit son inventaire par SSE.
+router.post('/:id/items/give', async (req, res) => {
+  const userId = (req as unknown as AuthRequest).userId
+  const campaignId = Number(req.params.id)
+  const body = (req.body ?? {}) as { characterId?: unknown; toUserId?: unknown; item?: { id?: unknown } }
+  const toUserId = Number(body.toUserId)
+  const itemId = body.item?.id
+  const [entry] = sanitizeLoot([body.item])
+  if (!entry || typeof itemId !== 'string' || toUserId === userId) { res.status(400).json({ error: 'Objet ou destinataire invalide' }); return }
+
+  const memberOf = (uid: number) => db
+    .select({ characterId: campaignMembers.characterId, name: characters.name })
+    .from(campaignMembers)
+    .leftJoin(characters, eq(characters.id, campaignMembers.characterId))
+    .where(and(eq(campaignMembers.campaignId, campaignId), eq(campaignMembers.userId, uid)))
+  const [giver] = await memberOf(userId)
+  if (!giver?.characterId || giver.characterId !== Number(body.characterId)) {
+    res.status(403).json({ error: 'Ce personnage ne joue pas dans la campagne' }); return
+  }
+  const [recipient] = await memberOf(toUserId)
+  if (!recipient?.characterId) { res.status(404).json({ error: 'Destinataire introuvable' }); return }
+
+  const item = toInventoryItem(entry, randomUUID())
+  const items = await db.transaction(async (tx) => {
+    await tx.update(characters)
+      .set({ items: sql`coalesce((select jsonb_agg(i) from jsonb_array_elements(${characters.items}) i where i->>'id' <> ${itemId}), '[]'::jsonb)`, updatedAt: new Date() })
+      .where(eq(characters.id, giver.characterId!))
+    const [updated] = await tx.update(characters)
+      .set({ items: sql`${characters.items} || ${JSON.stringify([item])}::jsonb`, updatedAt: new Date() })
+      .where(eq(characters.id, recipient.characterId!))
+      .returning({ items: characters.items })
+    return updated.items
+  })
+
+  broadcastCampaignEvent(campaignId, 'character', {
+    userId: toUserId, characterId: recipient.characterId, patch: { items }, loot: item.name, from: giver.name,
+  })
+  res.json({ ok: true })
+})
+
+// ── Helper: fiche active ─────────────────────────────────────────────────────
+/** Rend ce personnage actif (un seul par joueur, index `one_active_per_user`). */
+async function activateCharacterRow(userId: number, characterId: number) {
+  await db.transaction(async (tx) => {
+    await tx.update(characters).set({ isActive: false })
+      .where(and(eq(characters.userId, userId), eq(characters.isActive, true), sql`${characters.id} <> ${characterId}`))
+    await tx.update(characters).set({ isActive: true })
+      .where(and(eq(characters.id, characterId), eq(characters.userId, userId)))
+  })
+}
+
 // ── Helper: verify GM ownership ─────────────────────────────────────────────
 async function verifyGm(campaignId: number, userId: number) {
   const [campaign] = await db
@@ -440,6 +516,24 @@ router.post('/:id/encounters/import', async (req, res) => {
 
   const count = await importEncounters(campaignId, parsed.dungeon, parsed.encounters)
   res.status(201).json({ count })
+})
+
+// DELETE /api/campaigns/:id/dungeons/:name — efface toutes les rencontres d'un donjon importé
+router.delete('/:id/dungeons/:name', async (req, res) => {
+  const userId = (req as unknown as AuthRequest).userId
+  const campaignId = Number(req.params.id)
+
+  const check = await verifyGm(campaignId, userId)
+  if (check === 'not_found') { res.status(404).json({ error: 'Campagne introuvable' }); return }
+  if (check === 'forbidden') { res.status(403).json({ error: 'Réservé au MJ' }); return }
+
+  const rows = await db
+    .delete(encounterTemplates)
+    .where(and(eq(encounterTemplates.campaignId, campaignId), eq(encounterTemplates.dungeon, req.params.name)))
+    .returning({ id: encounterTemplates.id })
+
+  if (rows.length === 0) { res.status(404).json({ error: 'Donjon introuvable' }); return }
+  res.json({ count: rows.length })
 })
 
 // GET /api/campaigns/:id/encounters/:eid — détail d'une rencontre

@@ -52,7 +52,7 @@ const emit = defineEmits<{
   background: var(--surface-2);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  padding: var(--space-xs);
+  overflow: hidden;
 }
 
 .toggle-item {
@@ -60,9 +60,9 @@ const emit = defineEmits<{
   align-items: center;
   justify-content: center;
   width: 40px;
-  height: 40px;
+  height: 38px;
   border: none;
-  border-radius: var(--radius-md);
+  border-radius: 0;
   background: transparent;
   color: var(--muted);
   cursor: pointer;

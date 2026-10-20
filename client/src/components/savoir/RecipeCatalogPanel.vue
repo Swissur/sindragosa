@@ -6,18 +6,21 @@ import AppAccordion from '../ui/AppAccordion.vue'
 import AppInput from '../ui/AppInput.vue'
 import AppSelect from '../ui/AppSelect.vue'
 import AppEmptyState from '../ui/AppEmptyState.vue'
+import AppIconBtn from '../ui/AppIconBtn.vue'
+import AppBadge from '../ui/AppBadge.vue'
 import AppToggleGroup, { type AppToggleItem } from '../ui/AppToggleGroup.vue'
 import RecipeText from '../character-sheet/RecipeText.vue'
 import { CRAFTS } from '../../data/sindragosa/crafts'
 import { effectiveCrafts } from '../../utils/sindragosa/crafting'
-import { catalogRecipes, isFilteringCatalog, isKnownRecipe, matchesCatalogFilter } from '../../utils/sindragosa/recipeCatalog'
+import { catalogRecipes, isFilteringCatalog, isKnownRecipe, matchesCatalogFilter, toggleRecipeGrant, type CatalogRecipe } from '../../utils/sindragosa/recipeCatalog'
 import type { Character } from '../../types/character'
 
 /**
  * Tous les patrons de tous les métiers, pour le MJ : recherche, métier, rang.
  * Avec un personnage : ✓ / verrou sur chaque patron et un filtre « connus ».
+ * En mode MJ (`gm`), taper ✓ / verrou fait oublier ou apprend le patron.
  */
-const props = defineProps<{ character?: Character | null }>()
+const props = defineProps<{ character?: Character | null; gm?: boolean; knownFirst?: boolean }>()
 
 const ALL = catalogRecipes()
 const BASE_CRAFTS = CRAFTS.filter((c) => c.kind === 'base')
@@ -27,7 +30,7 @@ const search = ref('')
 const craftId = ref('')
 const rank = ref(0)
 /** '' ou 'known' : AppToggleGroup travaille en chaîne. */
-const knownOnly = ref('')
+const knownOnly = ref(props.knownFirst ? 'known' : '')
 const KNOWN_ITEMS: AppToggleItem[] = [
   { value: 'known', icon: Unlock, title: 'Patrons connus', testid: 'savoir-patrons-known' },
 ]
@@ -41,7 +44,15 @@ const filter = computed(() => ({
   craftId: craftId.value,
   rank: rank.value,
   known: knownOnly.value === 'known' ? known.value : null,
+  grants: props.character?.recipeGrants,
 }))
+
+const knows = (e: CatalogRecipe) => !!known.value && isKnownRecipe(e, known.value, props.character?.recipeGrants)
+
+function toggle(e: CatalogRecipe) {
+  const c = props.character
+  if (c && known.value) c.recipeGrants = toggleRecipeGrant(c.recipeGrants, e, known.value)
+}
 const filtering = computed(() => isFilteringCatalog(filter.value))
 
 const groups = computed(() => CRAFTS
@@ -89,13 +100,27 @@ const groups = computed(() => CRAFTS
           v-for="e in g.entries"
           :key="e.recipe.id"
           class="recipe"
-          :class="{ 'recipe--locked': known && !isKnownRecipe(e, known) }"
+          :class="{ 'recipe--locked': known && !knows(e) }"
         >
-          <template v-if="known">
-            <Check v-if="isKnownRecipe(e, known)" :size="15" class="ok" />
+          <AppIconBtn
+            v-if="gm"
+            variant="bare"
+            :title="knows(e) ? 'Faire oublier ce patron' : 'Apprendre ce patron'"
+            :data-testid="`gm-recipe-${e.recipe.id}`"
+            @click="toggle(e)"
+          >
+            <Check v-if="knows(e)" :size="16" class="ok" />
+            <Lock v-else :size="16" />
+          </AppIconBtn>
+          <template v-else-if="known">
+            <Check v-if="knows(e)" :size="15" class="ok" />
             <Lock v-else :size="15" />
           </template>
-          <RecipeText :recipe="e.recipe" :rank="e.rank" />
+          <div class="recipe-body">
+            <AppBadge v-if="character?.recipeGrants[e.recipe.id] === true" variant="active">bonus du MJ</AppBadge>
+            <AppBadge v-else-if="character?.recipeGrants[e.recipe.id] === false" variant="attaque">oublié</AppBadge>
+            <RecipeText :recipe="e.recipe" :rank="e.rank" />
+          </div>
         </li>
       </ul>
     </AppAccordion>
@@ -144,6 +169,11 @@ const groups = computed(() => CRAFTS
   display: flex;
   align-items: flex-start;
   gap: var(--space-xs);
+}
+
+.recipe-body {
+  flex: 1;
+  min-width: 0;
 }
 
 .recipe--locked {

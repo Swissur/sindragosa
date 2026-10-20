@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { computed } from 'vue'
-import { Trash2 } from 'lucide-vue-next'
+import { computed, ref, watch } from 'vue'
+import { Copy, Gift, Trash2 } from 'lucide-vue-next'
 import AppBottomSheet from '../ui/AppBottomSheet.vue'
 import AppButton from '../ui/AppButton.vue'
 import AppInput from '../ui/AppInput.vue'
@@ -8,13 +8,14 @@ import AppSelect from '../ui/AppSelect.vue'
 import AppStepper from '../ui/AppStepper.vue'
 import AppTextarea from '../ui/AppTextarea.vue'
 import { DOMAINS } from '../../data/sindragosa/domains'
-import { ITEM_TYPE_LABELS, WEAPON_SIZE_LABELS, isEquippable, weaponDamage } from '../../utils/sindragosa/equipment'
+import { COMPONENT_NAMES, findComponentName } from '../../utils/sindragosa/crafting'
+import { ITEM_TYPE_LABELS, WEAPON_SIZE_LABELS, isEquippable } from '../../utils/sindragosa/equipment'
 import type { ItemRow, ItemType } from '../../types/character'
 
-/** Édition d'un objet : nom, type, quantité ; gabarit et domaine d'une arme, AP d'une armure. */
-const props = defineProps<{ item: ItemRow | null }>()
+/** Édition d'un objet : type et quantité, puis gabarit et domaine d'une arme ou AP d'une armure, puis nom et description. */
+const props = defineProps<{ item: ItemRow | null; canGive?: boolean }>()
 const open = defineModel<boolean>({ required: true })
-const emit = defineEmits<{ (e: 'remove'): void }>()
+const emit = defineEmits<{ (e: 'remove'): void; (e: 'duplicate'): void; (e: 'give'): void }>()
 
 const type = computed({
   get: () => props.item?.type ?? 'divers',
@@ -28,20 +29,37 @@ const type = computed({
       item.damageBonus ??= 0
     }
     if (t === 'armure') item.armor ??= 1
-    if (!isEquippable(item)) item.equipped = false
+    // Une arme ou une armure est toujours unique : deux épées, ce sont deux lignes.
+    if (isEquippable(item)) item.quantity = 1
+    else item.equipped = false
+  },
+})
+
+/** Composant : nom choisi dans le catalogue de l'artisanat, ou en texte libre. */
+const FREE_TEXT = '__libre__'
+const freeText = ref(false)
+watch(() => [props.item?.id, props.item?.type], () => {
+  const name = props.item?.name ?? ''
+  freeText.value = !!name && !findComponentName(name)
+}, { immediate: true })
+
+const componentChoice = computed({
+  get: () => freeText.value ? FREE_TEXT : findComponentName(props.item?.name ?? '') ?? '',
+  set: (v: string) => {
+    freeText.value = v === FREE_TEXT
+    if (!freeText.value && props.item) props.item.name = v
   },
 })
 </script>
 
 <template>
-  <AppBottomSheet v-model="open" title="Objet" description="Nom, type et caractéristiques de l'objet.">
+  <AppBottomSheet v-model="open" title="Objet" description="Type, caractéristiques et nom de l'objet.">
     <div v-if="item" class="editor" data-testid="item-editor">
-      <AppInput v-model="item.name" placeholder="Nom de l'objet" data-testid="item-name" />
       <div class="editor-line">
         <AppSelect v-model="type" class="editor-grow" data-testid="item-type">
           <option v-for="(label, id) in ITEM_TYPE_LABELS" :key="id" :value="id">{{ label }}</option>
         </AppSelect>
-        <AppStepper v-model="item.quantity" :min="1" label="Quantité" testid="item-quantity" />
+        <AppStepper v-if="!isEquippable(item)" v-model="item.quantity" :min="1" label="Quantité" testid="item-quantity" />
       </div>
 
       <template v-if="item.type === 'arme'">
@@ -57,7 +75,6 @@ const type = computed({
           <span class="editor-label">Bonus de dégâts</span>
           <AppStepper :model-value="item.damageBonus ?? 0" :min="-5" @update:model-value="item.damageBonus = $event" label="Bonus de dégâts" testid="item-damage-bonus" />
         </div>
-        <p class="editor-hint" data-testid="item-damage">Dégâts : {{ weaponDamage(item) }} + marge − armure</p>
       </template>
 
       <div v-if="item.type === 'armure'" class="editor-line">
@@ -65,11 +82,25 @@ const type = computed({
         <AppStepper :model-value="item.armor ?? 0" :min="0" @update:model-value="item.armor = $event" label="Armure Physique" testid="item-armor" />
       </div>
 
+      <AppSelect v-if="item.type === 'composant'" v-model="componentChoice" data-testid="item-component">
+        <option value="" disabled>Choisir un composant…</option>
+        <option v-for="name in COMPONENT_NAMES" :key="name" :value="name">{{ name }}</option>
+        <option :value="FREE_TEXT">Texte libre</option>
+      </AppSelect>
+      <AppInput v-if="item.type !== 'composant' || freeText" v-model="item.name" placeholder="Nom de l'objet" data-testid="item-name" />
       <AppTextarea v-model="item.description" :rows="3" placeholder="Description" />
 
-      <AppButton variant="danger" block data-testid="item-remove" @click="emit('remove')">
-        <Trash2 :size="16" /> Jeter l'objet
+      <AppButton v-if="isEquippable(item)" block data-testid="item-duplicate" @click="emit('duplicate')">
+        <Copy :size="16" /> Dupliquer
       </AppButton>
+      <div class="editor-line">
+        <AppButton v-if="canGive" class="editor-grow" data-testid="item-give" @click="emit('give')">
+          <Gift :size="16" /> Donner l'objet
+        </AppButton>
+        <AppButton variant="danger" class="editor-grow" data-testid="item-remove" @click="emit('remove')">
+          <Trash2 :size="16" /> Jeter l'objet
+        </AppButton>
+      </div>
     </div>
   </AppBottomSheet>
 </template>
@@ -95,11 +126,5 @@ const type = computed({
 .editor-label {
   flex: 1;
   font-weight: 600;
-}
-
-.editor-hint {
-  margin: 0;
-  font-size: 0.85rem;
-  color: var(--muted);
 }
 </style>

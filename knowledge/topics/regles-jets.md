@@ -48,6 +48,13 @@ Règles telles que l'app les applique. Origine : `docs/regles/Sindragosa.pdf` §
 - 2 points par séance : la fin de séance (lancée par le MJ) les remet à 2.
 - On peut en dépenser plusieurs sur un même jet, dans la limite de ceux qu'on a. Chaque point ajoute 1d6, décidé avant de lancer.
 
+## Jet secret
+
+- « Lancer en secret » (joueur d'une campagne) : secret pour les **autres joueurs**, pas pour le lanceur. Il voit ses dés rouler et son résultat, peut cocher comme d'habitude.
+- Le jet ne part pas dans le log de campagne et ne déclenche pas le moment critique (halo, son, vibration).
+- Le MJ le reçoit dans l'« Échange avec le MJ » : qui lance quoi, la formule, les dés, les succès et le seuil atteint. Le lanceur le retrouve dans ce même échange.
+- Chance, mana et composants se dépensent comme pour un jet normal.
+
 ## Écarts connus avec le PDF
 
 Tranchés dans le plan 31 § 6–7 :

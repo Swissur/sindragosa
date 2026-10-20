@@ -27,6 +27,7 @@ import DomainsCard from '../components/character-sheet/DomainsCard.vue'
 import CraftsCard from '../components/character-sheet/CraftsCard.vue'
 import CraftRecipesCard from '../components/character-sheet/CraftRecipesCard.vue'
 import UnlockedAbilitiesCard from '../components/abilities/UnlockedAbilitiesCard.vue'
+import KnightSheet from '../components/knight/KnightSheet.vue'
 
 const { character, loading, loadError, saveStatus, computedHp, computedInitiative, unlocked, unlockedAdvanced } = useCharacter()
 const route = useRoute()
@@ -36,7 +37,8 @@ loadCharacter(id)
 
 type TabId = 'heros' | 'favoris' | 'domaines' | 'competences' | 'artisanat'
 const activeTab = ref<TabId>('heros')
-const editing = ref(false)
+// Une fiche qui vient d'être créée s'ouvre directement en édition
+const editing = ref(route.query.edit === '1')
 /** Pastille « du nouveau ici » sur un onglet. */
 const news = ref<Partial<Record<TabId, boolean>>>({})
 
@@ -123,6 +125,9 @@ watch(activeTab, (tab) => { news.value[tab] = false })
         <AppButton size="small" @click="loadCharacter(id)">Réessayer</AppButton>
       </template>
     </AppEmptyState>
+
+    <!-- Le système de la fiche décide de ce qu'on affiche (plans/43). -->
+    <KnightSheet v-else-if="character.knight" :character="character" :sheet="character.knight" :editing="editing" />
 
     <template v-else>
       <AgonieWatch />

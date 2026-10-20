@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
-import { Play, Plus, ArrowLeft, Castle, Download, Check } from 'lucide-vue-next'
+import { Play, Plus, ArrowLeft, Castle, Download, Check, Trash2, Hammer } from 'lucide-vue-next'
 import {
   createEncounter,
+  deleteDungeon,
   deleteEncounter,
   fetchEncounters,
   importDungeonEncounters,
@@ -23,9 +24,10 @@ import AppIconBtn from '../ui/AppIconBtn.vue'
 import AppInput from '../ui/AppInput.vue'
 import AppEmptyState from '../ui/AppEmptyState.vue'
 
-// Volet combat du MJ : les rencontres préparées, classées par donjon, chacune
-// avec ▶ (choisir les joueurs puis lancer), ■ si elle tourne, crayon et poubelle.
-// Le château ouvre les donjons prêts, à importer d'un coup dans la campagne.
+// Volet combat du MJ, en deux sections : les Créations du MJ (avec le combat
+// vide et la nouvelle rencontre) puis les Donjons chargés, repliés par défaut.
+// Chaque rencontre a ▶ (choisir les joueurs puis lancer), ■ si elle tourne,
+// crayon et poubelle. Un donjon chargé s'efface d'un coup.
 const props = defineProps<{
   campaign: CampaignDetail
   activeCombat: CombatSummary | undefined
@@ -46,12 +48,18 @@ const launching = ref<EncounterSummary | null | undefined>(undefined)
 const excluded = ref<Set<number>>(new Set())
 
 const confirmDelete = ref<EncounterSummary | null>(null)
+const confirmDeleteDungeon = ref<string | null>(null)
+
+const creationsOpen = ref(true)
+const dungeonsOpen = ref(false)
 
 /** Étape « Donjons prêts » : la liste des donjons à importer. */
 const showDungeons = ref(false)
 const importingName = ref<string | null>(null)
 
 const groups = computed(() => groupByDungeon(encounters.value))
+const creations = computed(() => groups.value.find((g) => g.dungeon === null)?.items ?? [])
+const dungeonGroups = computed(() => groups.value.filter((g) => g.dungeon !== null))
 
 async function loadEncounters() {
   encounters.value = await fetchEncounters(props.campaign.id)
@@ -65,6 +73,8 @@ watch(open, async (isOpen) => {
   error.value = null
   try {
     await loadEncounters()
+    creationsOpen.value = true
+    dungeonsOpen.value = dungeonGroups.value.some((g) => g.items.some(isRunning))
   } catch (e) {
     error.value = e instanceof Error ? e.message : 'Erreur'
   }
@@ -87,6 +97,7 @@ async function handleImport(d: Dungeon) {
     await importDungeonEncounters(props.campaign.id, d.name, dungeonEncounters(d))
     await loadEncounters()
     showDungeons.value = false
+    dungeonsOpen.value = true
   } catch (e) {
     error.value = e instanceof Error ? e.message : 'Erreur'
   } finally {
@@ -147,6 +158,17 @@ async function handleCreate() {
   }
 }
 
+async function handleDeleteDungeon(dungeon: string) {
+  confirmDeleteDungeon.value = null
+  error.value = null
+  try {
+    await deleteDungeon(props.campaign.id, dungeon)
+    encounters.value = encounters.value.filter((e) => e.dungeon !== dungeon)
+  } catch (e) {
+    error.value = e instanceof Error ? e.message : 'Erreur'
+  }
+}
+
 async function handleDelete(enc: EncounterSummary) {
   confirmDelete.value = null
   try {
@@ -195,55 +217,36 @@ async function handleDelete(enc: EncounterSummary) {
 
     <!-- Étape 1 : les rencontres -->
     <div v-else-if="launching === undefined" class="panel">
-      <div class="panel-actions">
-        <AppButton size="small" data-testid="combat-empty" @click="startLaunch(null)">
-          <Play :size="14" />
-          Combat vide
-        </AppButton>
-        <div class="panel-icons">
-          <AppIconBtn title="Donjons prêts" data-testid="dungeons-open" @click="showDungeons = true">
-            <Castle :size="18" />
-          </AppIconBtn>
-          <AppIconBtn title="Nouvelle rencontre" data-testid="encounter-new" @click="showCreate = !showCreate">
-            <Plus :size="18" />
-          </AppIconBtn>
-        </div>
-      </div>
+      <AppAccordion
+        v-model:open="creationsOpen"
+        title="Créations"
+        :hint="`${creations.length} combat${creations.length > 1 ? 's' : ''}`"
+        testid="section-creations"
+      >
+        <template #icon><Hammer :size="16" /></template>
+        <div class="section">
+          <div class="panel-actions">
+            <AppButton size="small" data-testid="combat-empty" @click="startLaunch(null)">
+              <Play :size="14" />
+              Combat vide
+            </AppButton>
+            <AppIconBtn title="Nouvelle rencontre" data-testid="encounter-new" @click="showCreate = !showCreate">
+              <Plus :size="18" />
+            </AppIconBtn>
+          </div>
 
-      <form v-if="showCreate" class="create-form" @submit.prevent="handleCreate">
-        <AppInput v-model="newName" class="grow" placeholder="Nom de la rencontre" :required="true" :autofocus="true" />
-        <AppButton type="submit" variant="primary">Créer</AppButton>
-      </form>
+          <form v-if="showCreate" class="create-form" @submit.prevent="handleCreate">
+            <AppInput v-model="newName" class="grow" placeholder="Nom de la rencontre" :required="true" :autofocus="true" />
+            <AppButton type="submit" variant="primary">Créer</AppButton>
+          </form>
 
-      <AppEmptyState v-if="encounters.length === 0 && !showCreate">
-        Aucune rencontre. Prépare tes combats, ou importe un donjon !
-      </AppEmptyState>
+          <AppEmptyState v-if="creations.length === 0 && !showCreate">
+            Aucune rencontre. Prépare tes combats !
+          </AppEmptyState>
 
-      <template v-for="group in groups" :key="group.dungeon ?? ''">
-        <ul v-if="group.dungeon === null" class="encounters">
-          <EncounterRow
-            v-for="enc in group.items"
-            :key="enc.id"
-            :encounter="enc"
-            :running="isRunning(enc)"
-            :locked="!!activeCombat"
-            @play="startLaunch(enc)"
-            @stop="stop"
-            @edit="router.push(`/campagnes/${campaign.id}/rencontres/${enc.id}`)"
-            @delete="confirmDelete = enc"
-          />
-        </ul>
-        <AppAccordion
-          v-else
-          :title="group.dungeon"
-          :hint="`${group.items.length} combat${group.items.length > 1 ? 's' : ''}`"
-          :default-open="group.items.some(isRunning)"
-          :testid="`dungeon-group-${group.dungeon}`"
-        >
-          <template #icon><Castle :size="16" /></template>
-          <ul class="encounters">
+          <ul v-else class="encounters">
             <EncounterRow
-              v-for="enc in group.items"
+              v-for="enc in creations"
               :key="enc.id"
               :encounter="enc"
               :running="isRunning(enc)"
@@ -254,8 +257,61 @@ async function handleDelete(enc: EncounterSummary) {
               @delete="confirmDelete = enc"
             />
           </ul>
-        </AppAccordion>
-      </template>
+        </div>
+      </AppAccordion>
+
+      <AppAccordion
+        v-model:open="dungeonsOpen"
+        title="Donjons"
+        :hint="`${dungeonGroups.length} donjon${dungeonGroups.length > 1 ? 's' : ''}`"
+        testid="section-dungeons"
+      >
+        <template #icon><Castle :size="16" /></template>
+        <div class="section">
+          <AppButton size="small" class="self-start" data-testid="dungeons-open" @click="showDungeons = true">
+            <Download :size="14" />
+            Charger un donjon
+          </AppButton>
+
+          <AppEmptyState v-if="dungeonGroups.length === 0">Aucun donjon chargé.</AppEmptyState>
+
+          <div v-else class="dungeon-groups">
+            <AppAccordion
+              v-for="group in dungeonGroups"
+              :key="group.dungeon!"
+              :title="group.dungeon!"
+              :hint="`${group.items.length} combat${group.items.length > 1 ? 's' : ''}`"
+              :default-open="group.items.some(isRunning)"
+              :testid="`dungeon-group-${group.dungeon}`"
+            >
+              <ul class="encounters">
+                <EncounterRow
+                  v-for="enc in group.items"
+                  :key="enc.id"
+                  :encounter="enc"
+                  :running="isRunning(enc)"
+                  :locked="!!activeCombat"
+                  @play="startLaunch(enc)"
+                  @stop="stop"
+                  @edit="router.push(`/campagnes/${campaign.id}/rencontres/${enc.id}`)"
+                  @delete="confirmDelete = enc"
+                />
+              </ul>
+              <div class="dungeon-actions">
+                <AppIconBtn
+                  variant="danger"
+                  title="Effacer le donjon"
+                  :disabled="group.items.some(isRunning)"
+                  :data-testid="`dungeon-delete-${group.dungeon}`"
+                  @click="confirmDeleteDungeon = group.dungeon"
+                >
+                  <Trash2 :size="16" />
+                </AppIconBtn>
+              </div>
+            </AppAccordion>
+          </div>
+        </div>
+      </AppAccordion>
     </div>
 
     <!-- Étape 2 : choix des joueurs -->
@@ -294,6 +350,20 @@ async function handleDelete(enc: EncounterSummary) {
       <AppButton variant="danger" @click="handleDelete(confirmDelete!)">Effacer</AppButton>
     </template>
   </AppModal>
+
+  <AppModal
+    :model-value="confirmDeleteDungeon !== null"
+    title="Effacer le donjon"
+    @update:model-value="confirmDeleteDungeon = null"
+  >
+    <p class="confirm">Effacer « {{ confirmDeleteDungeon }} » et tous ses combats ? Tu pourras le recharger.</p>
+    <template #footer>
+      <AppButton @click="confirmDeleteDungeon = null">Annuler</AppButton>
+      <AppButton variant="danger" data-testid="dungeon-delete-confirm" @click="handleDeleteDungeon(confirmDeleteDungeon!)">
+        Effacer
+      </AppButton>
+    </template>
+  </AppModal>
 </template>
 
 <style scoped>
@@ -330,9 +400,20 @@ async function handleDelete(enc: EncounterSummary) {
   gap: var(--space-sm);
 }
 
-.panel-icons {
+.section {
   display: flex;
-  gap: var(--space-xs);
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.dungeon-groups {
+  padding-left: var(--space-sm);
+}
+
+.dungeon-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: var(--space-sm);
 }
 
 .dungeon {

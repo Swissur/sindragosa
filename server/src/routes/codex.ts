@@ -4,6 +4,7 @@ import { db } from '../db/index.js'
 import { campaigns, campaignMembers, codexEntries, journalCompagnie, journalPages, notes } from '../db/schema.js'
 import { requireAuth, type AuthRequest } from '../auth/middleware.js'
 import { saveWithRevision } from '../revisions/service.js'
+import { publishBoard } from '../campaigns/codexBoard.js'
 
 const CODEX_TYPES = ['personnage', 'lieu', 'autre'] as const
 type CodexType = (typeof CODEX_TYPES)[number]
@@ -16,7 +17,7 @@ const router = Router()
 router.use(requireAuth)
 
 // Helper: verify member (GM or campaign member) — same pattern as combats.ts
-async function verifyMember(campaignId: number, userId: number) {
+export async function verifyMember(campaignId: number, userId: number) {
   const [campaign] = await db.select({ gmUserId: campaigns.gmUserId }).from(campaigns).where(eq(campaigns.id, campaignId))
   if (!campaign) return { status: 'not_found' as const, gmUserId: 0 }
   if (campaign.gmUserId === userId) return { status: 'ok' as const, gmUserId: campaign.gmUserId }
@@ -118,6 +119,8 @@ router.put('/:id/codex/:entryId', async (req, res) => {
 
   const [entry] = await db.select().from(codexEntries).where(eq(codexEntries.id, entryId))
   res.json(entry)
+  // Le tableau des fiches affiche le nom : les autres le voient changer.
+  void publishBoard(campaignId).catch(() => {})
 })
 
 // GET /:id/codex/:entryId/mentions — mes notes privées + pages partagées qui mentionnent la fiche
@@ -186,6 +189,8 @@ router.delete('/:id/codex/:entryId', async (req, res) => {
 
   await db.delete(codexEntries).where(eq(codexEntries.id, entryId))
   res.json({ ok: true })
+  // La fiche quitte aussi le tableau (cascade) : les autres la voient partir.
+  void publishBoard(campaignId).catch(() => {})
 })
 
 export default router

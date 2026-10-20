@@ -21,7 +21,7 @@ const known = computed(() =>
   CRAFTS.filter((c) => c.id in props.character.crafts).map((c) => ({
     craft: c,
     rank: props.character.crafts[c.id],
-    recipes: recipesFor(c.id, props.character.crafts[c.id]).map((recipe) => ({ recipe, craft: c })),
+    recipes: recipesFor(c.id, props.character.crafts[c.id], props.character.recipeGrants).map((recipe) => ({ recipe, craft: c })),
   })),
 )
 

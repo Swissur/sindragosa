@@ -15,6 +15,7 @@ test('le butin d’un boss tombe et part dans l’inventaire d’un héros', asy
     await pageMj.getByTestId('campaign-select').selectOption({ label: 'Bac à sable (MJ)' })
     await expect(pageMj).toHaveURL(/\/campagnes\/\d+$/)
     await pageMj.getByTestId('gm-combat').click()
+    await pageMj.getByTestId('section-dungeons').click()
     await pageMj.getByTestId('dungeons-open').click()
     const importe = pageMj.waitForResponse((r) => r.url().endsWith('/encounters/import') && r.ok())
     await pageMj.getByTestId('dungeon-import').first().click()

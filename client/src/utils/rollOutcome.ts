@@ -8,8 +8,16 @@
 
 export type RollOutcome = 'critical' | 'fumble' | null
 
-/** Ce qu'un jet en réserve de d6 garde en plus de ses dés (succès = `total`). */
-export interface RollPool {
+/**
+ * Ce qu'un jet en réserve de d6 garde en plus de ses dés (succès = `total`).
+ * Chaque système lit les dés à sa façon (plans/43) ; sans `system`, c'est WoW Forever :
+ * les jets déjà en base n'ont pas le champ.
+ */
+export type RollPool = SindragosaPool | KnightPool
+
+/** Réserve WoW Forever : un dé réussit sur 5 ou 6. */
+export interface SindragosaPool {
+  system?: 'wow-forever'
   /** Face à partir de laquelle un dé est critique : 6, ou 5 avec une spécialité Maître. */
   critFrom: 5 | 6
   reached: 'echec' | 'facile' | 'moyenne' | 'difficile' | 'exploit'
@@ -21,8 +29,27 @@ export interface RollPool {
   sources?: PoolDieSource[]
 }
 
-/** L'origine d'un dé de réserve : la caractéristique, le domaine, la spécialité, un sort Puissant, la chance ou l'avantage. */
-export type PoolDieSource = 'stat' | 'domaine' | 'specialite' | 'puissance' | 'chance' | 'avantage'
+/**
+ * Jet de combo Knight : un dé pair réussit, les overdrives ajoutent des réussites
+ * (rangées dans `bonus`), tous les dés pairs font un exploit qui relance la réserve.
+ */
+export interface KnightPool {
+  system: 'knight'
+  exploit: boolean
+  /** Aucun dé pair. */
+  critFail: boolean
+  /** Difficulté annoncée, `null` si le jet est libre. */
+  difficulty: number | null
+  sources?: PoolDieSource[]
+}
+
+/**
+ * L'origine d'un dé de réserve. WoW Forever : la caractéristique, le domaine, la spécialité,
+ * un sort Puissant, la chance ou l'avantage. Knight : la carac de base, celle du combo, la relance d'exploit.
+ */
+export type PoolDieSource =
+  | 'stat' | 'domaine' | 'specialite' | 'puissance' | 'chance' | 'avantage'
+  | 'base' | 'combo' | 'exploit'
 
 /**
  * Le minimum pour noter un jet. Satisfait aussi bien par les jets locaux
@@ -57,9 +84,10 @@ export function rollOutcome(roll: GradableRoll): RollOutcome {
   if (roll.damage?.critical) return 'critical'
   if (roll.damage?.fumble) return 'fumble'
 
-  // Réserve de d6 : la table vibre sur un exploit (4 succès ou plus) ou un échec critique
+  // Réserve de d6 : la table vibre sur un exploit (4 succès, ou tous les dés pairs en Knight) ou un échec critique
   if (roll.pool) {
     if (roll.pool.critFail) return 'fumble'
+    if (roll.pool.system === 'knight') return roll.pool.exploit ? 'critical' : null
     return roll.pool.reached === 'exploit' ? 'critical' : null
   }
 

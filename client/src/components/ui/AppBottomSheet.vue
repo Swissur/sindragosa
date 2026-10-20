@@ -32,7 +32,11 @@ const emit = defineEmits<{
       <DialogOverlay class="sheet-overlay" />
       <DialogContent class="sheet">
           <div class="sheet-head">
-            <DialogTitle v-if="title" class="sheet-title">{{ title }}</DialogTitle>
+            <div v-if="title" class="sheet-title-row">
+              <DialogTitle class="sheet-title">{{ title }}</DialogTitle>
+              <!-- Boutons icônes collés au titre (ex. réglages du joueur). -->
+              <slot name="titleActions" />
+            </div>
             <DialogTitle v-else class="sr-only">Panneau</DialogTitle>
             <!-- reka-ui exige une description : sans elle il avertit en dev. -->
             <DialogDescription class="sr-only">
@@ -87,6 +91,13 @@ const emit = defineEmits<{
   gap: 0.6rem;
   padding: var(--space-md) var(--space-lg) var(--space-sm);
   flex-shrink: 0;
+}
+
+.sheet-title-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  min-width: 0;
 }
 
 .sheet-title {

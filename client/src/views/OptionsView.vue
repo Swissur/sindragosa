@@ -14,6 +14,7 @@ import {
   Axe,
   Skull,
   Sparkles,
+  Users,
 } from "lucide-vue-next";
 import { user, logout } from "../composables/useAuth";
 import { updateMe } from "../api/auth";
@@ -21,10 +22,11 @@ import {
   fetchCharacters,
   activateCharacter,
   deleteCharacter,
-  createCharacter,
   type ServerCharacter,
 } from "../api/characters";
 import { raceById } from "../data/sindragosa/races";
+import { systemLabel } from "../data/systems";
+import { createCharacterHere } from "../composables/useNewCharacter";
 import AppPageLayout from "../components/ui/AppPageLayout.vue";
 import AppPageHead from "../components/ui/AppPageHead.vue";
 import AppCard from "../components/ui/AppCard.vue";
@@ -33,6 +35,9 @@ import AppEmptyState from "../components/ui/AppEmptyState.vue";
 import AppIconBtn from "../components/ui/AppIconBtn.vue";
 import AppButton from "../components/ui/AppButton.vue";
 import DiceStyleCard from "../components/options/DiceStyleCard.vue";
+import AppCheckbox from "../components/ui/AppCheckbox.vue";
+import AppModal from "../components/ui/AppModal.vue";
+import { remoteDiceEnabled, setRemoteDiceEnabled } from "../composables/useDice3D";
 
 const router = useRouter();
 
@@ -197,9 +202,11 @@ function openSheet(c: ServerCharacter) {
   router.push({ path: "/personnage", query: { id: c.id } });
 }
 
+/** Le personnage dont on demande confirmation de la suppression. */
+const confirmDelete = ref<ServerCharacter | null>(null);
+
 async function handleDelete(c: ServerCharacter) {
-  const isModified = c.name !== "Nouveau héros";
-  if (isModified && !confirm(`Supprimer « ${c.name} » définitivement ?`)) return;
+  confirmDelete.value = null;
   deleting.value = c.id;
   try {
     await deleteCharacter(c.id);
@@ -212,15 +219,20 @@ async function handleDelete(c: ServerCharacter) {
 async function handleCreate() {
   creating.value = true;
   try {
-    const created = await createCharacter({});
-    router.push({ path: "/personnage", query: { id: created.id } });
+    const created = await createCharacterHere();
+    router.push({ path: "/personnage", query: { id: created.id, edit: "1" } });
   } finally {
     creating.value = false;
   }
 }
 
 function listMetaLine(c: ServerCharacter): string {
-  return raceById(c.race)?.label ?? "Race à choisir";
+  const campaign = c.campaignNames?.length ? c.campaignNames.join(", ") : "Sans campagne";
+  const parts =
+    c.system === "wow-forever"
+      ? [raceById(c.race)?.label ?? "Race à choisir", campaign]
+      : [campaign];
+  return `${parts.join(" · ")} (${systemLabel(c.system)})`;
 }
 
 onMounted(load);
@@ -326,6 +338,20 @@ onMounted(load);
         </div>
       </div>
 
+      <div class="style-section">
+        <span class="option-label style-section-label">
+          <Users :size="16" />
+          Dés des autres joueurs
+        </span>
+        <AppCheckbox
+          :model-value="remoteDiceEnabled"
+          testid="option-remote-dice"
+          @update:model-value="setRemoteDiceEnabled"
+        >
+          Voir rouler les dés des autres membres de la campagne
+        </AppCheckbox>
+      </div>
+
       <DiceStyleCard />
     </AppCard>
 
@@ -383,7 +409,8 @@ onMounted(load);
             title="Supprimer"
             :size="32"
             :disabled="deleting === c.id"
-            @click="handleDelete(c)"
+            :data-testid="`delete-character-${c.id}`"
+            @click="confirmDelete = c"
           >
             <Trash2 :size="15" />
           </AppIconBtn>
@@ -394,6 +421,22 @@ onMounted(load);
         Aucun personnage. Crée-en un !
       </AppEmptyState>
     </AppCard>
+
+    <AppModal
+      :model-value="confirmDelete !== null"
+      title="Supprimer le personnage"
+      @update:model-value="confirmDelete = null"
+    >
+      <p class="confirm">Supprimer « {{ confirmDelete?.name }} » définitivement ?</p>
+      <template #footer>
+        <AppButton @click="confirmDelete = null">Annuler</AppButton>
+        <AppButton
+          variant="danger"
+          data-testid="confirm-delete-character"
+          @click="handleDelete(confirmDelete!)"
+        >Supprimer</AppButton>
+      </template>
+    </AppModal>
 
     <!-- ── Historique des jets ────────────────────────────────────────────── -->
     <AppCard title="Historique des jets">
@@ -606,6 +649,10 @@ onMounted(load);
 }
 
 /* ── Style selector ──────────────────────────────────────────────────────── */
+.confirm {
+  margin: 0;
+}
+
 .style-section {
   margin-top: 1rem;
   padding-top: 0.85rem;

@@ -4,16 +4,16 @@ import { ETATS, normalizeEtats, type EtatEntry, type EtatId } from '../../data/e
 
 /**
  * Les états de sa propre fiche, en tags : un tap pose ou retire l'état.
- * En lecture seule, seuls les états actifs s'affichent.
+ * Seuls les états actifs s'affichent, sauf avec `all` (pour en poser un nouveau).
  * Multi-sélection, donc pas AppToggleGroup (mono-sélection), comme EtatsSheet.
  * Un état posé ici n'a pas de durée : les durées se règlent en combat.
  */
-const props = defineProps<{ states: readonly EtatEntry[]; readonly?: boolean }>()
+const props = defineProps<{ states: readonly EtatEntry[]; readonly?: boolean; all?: boolean }>()
 
 const emit = defineEmits<{ (e: 'update:states', states: EtatEntry[]): void }>()
 
 const active = computed(() => new Map(normalizeEtats(props.states).map((e) => [e.id, e])))
-const shown = computed(() => (props.readonly ? ETATS.filter((e) => active.value.has(e.id)) : ETATS))
+const shown = computed(() => (props.all && !props.readonly ? ETATS : ETATS.filter((e) => active.value.has(e.id))))
 
 function toggle(id: EtatId) {
   const current = [...active.value.values()]
@@ -40,7 +40,7 @@ function toggle(id: EtatId) {
       {{ e.label }}
       <span v-if="active.get(e.id)?.turns" class="etat-tag-turns">· {{ active.get(e.id)!.turns }}</span>
     </button>
-    <span v-if="readonly && !shown.length" class="etats-none">Aucun</span>
+    <span v-if="!shown.length" class="etats-none">Aucun</span>
   </div>
 </template>
 

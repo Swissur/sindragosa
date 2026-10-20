@@ -13,6 +13,7 @@ import {
 import { user } from '../composables/useAuth'
 import { enterCampaign } from '../composables/useCampaignEntry'
 import { myCampaigns } from '../utils/entryRoute'
+import { systemLabel } from '../data/systems'
 import AppPageLayout from '../components/ui/AppPageLayout.vue'
 import AppPageHead from '../components/ui/AppPageHead.vue'
 import AppCard from '../components/ui/AppCard.vue'
@@ -139,9 +140,11 @@ async function handleJoin(c: CampaignSummary) {
                 {{ c.gmUsername }}
                 <span class="meta-sep">&middot;</span>
                 {{ c.memberCount }} joueur{{ c.memberCount > 1 ? 's' : '' }}
+                <span class="meta-sep">&middot;</span>
+                {{ systemLabel(c.system) }}
               </span>
             </div>
-            <AppIconBtn title="Rejoindre" @click="handleJoin(c)">
+            <AppIconBtn title="Rejoindre" :data-testid="`campaign-join-${c.id}`" @click="handleJoin(c)">
               <LogIn :size="18" />
             </AppIconBtn>
           </div>
@@ -153,7 +156,7 @@ async function handleJoin(c: CampaignSummary) {
       <form id="create-campaign" class="create-form" @submit.prevent="handleCreate">
         <label class="field">
           <span class="field-label">Système</span>
-          <AppSelect v-model="newSystem">
+          <AppSelect v-model="newSystem" data-testid="campaign-system">
             <option v-for="s in CAMPAIGN_SYSTEMS" :key="s.value" :value="s.value">{{ s.label }}</option>
           </AppSelect>
         </label>

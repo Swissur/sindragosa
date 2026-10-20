@@ -7,8 +7,8 @@ import AppModal from '../ui/AppModal.vue'
 import AppButton from '../ui/AppButton.vue'
 import AppIconBtn from '../ui/AppIconBtn.vue'
 
-// Le MJ m'a écrit : le message s'ouvre au milieu de l'écran, où que je sois.
-// Il reste ensuite dans le journal « Échange avec le MJ ».
+// Le MJ m'a écrit (ou un joueur, si je suis MJ) : le message s'ouvre au milieu
+// de l'écran, où que je sois. Il reste ensuite dans le journal « Échange avec le MJ ».
 const router = useRouter()
 
 const open = computed({
@@ -16,14 +16,21 @@ const open = computed({
   set: (v) => { if (!v) incomingGmMessage.value = null },
 })
 
+const title = computed(() => {
+  const m = incomingGmMessage.value
+  return !m || m.fromGm ? 'Message du MJ' : `Message de ${m.fromUsername}`
+})
+
 function toJournal() {
+  const m = incomingGmMessage.value
   incomingGmMessage.value = null
-  router.push({ path: '/journal', query: { tab: 'mj' } })
+  // Le MJ arrive directement dans le fil du joueur qui lui a écrit.
+  router.push({ path: '/journal', query: { tab: 'mj', joueur: m && !m.fromGm ? m.fromUserId : undefined } })
 }
 </script>
 
 <template>
-  <AppModal v-model="open" title="Message du MJ">
+  <AppModal v-model="open" :title="title">
     <p class="body" data-testid="gm-message-body">{{ incomingGmMessage?.body }}</p>
     <template #footer>
       <AppIconBtn title="Voir l'échange avec le MJ" @click="toJournal">

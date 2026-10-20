@@ -1,4 +1,5 @@
 import type { Character } from '../types/character'
+import type { GameSystemId } from '../data/systems'
 
 const BASE = '/api/characters'
 
@@ -30,6 +31,7 @@ export interface ServerCharacter {
   sessionTicks: Character['sessionTicks']
   resources: Character['resources']
   crafts: Character['crafts']
+  recipeGrants: Character['recipeGrants']
   items: Character['items']
   goldCoins: number
   silverCoins: number
@@ -39,6 +41,12 @@ export interface ServerCharacter {
   manaMax: number
   states: Character['states']
   form: Character['form']
+  /** Système de la fiche, fixé à la création. */
+  system: GameSystemId
+  /** Fiche propre au système (Knight), `{}` pour WoW Forever. */
+  sheet: unknown
+  /** Campagnes où la fiche est engagée — seulement dans la liste (`fetchCharacters`). */
+  campaignNames?: string[]
 }
 
 export async function fetchCharacter(id: number): Promise<ServerCharacter> {

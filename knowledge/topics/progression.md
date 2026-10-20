@@ -45,14 +45,14 @@ On peut avoir dans un domaine **autant de spécialités que son rang actuel**. E
 
 ## Caractéristiques
 
-Elles ne se gagnent pas avec des coches : elles montent **à la discrétion du MJ** (outils du MJ, fiche du joueur).
+Elles ne se gagnent pas avec des coches : elles montent **à la discrétion du MJ** (mode MJ de la fiche du joueur).
 
 ## Compétences, domaines avancés et titres
 
 - Une **compétence** se débloque automatiquement dès que tous ses prérequis sont réunis. Un prérequis sans rang précisé vaut rang 1. Voir `competences.md`.
 - Un **domaine avancé** s'ouvre par ses prérequis, ou seulement par la compétence qui l'ouvre s'il en a une (la compétence du même nom ; pour un artisanat avancé, l'une de ses deux compétences). Un rang donné par le MJ l'ouvre aussi. Il progresse ensuite comme un domaine (mêmes paliers de coches). Voir `personnage.md`.
 - Une compétence qui porte le **nom d'une spécialité** exigée ailleurs (ex. « Analyse des failles ») donne cette spécialité au niveau Apprenti quand on la débloque, en plus de la limite de spécialités du domaine.
-- Un **titre** (classe émergente) se débloque quand le personnage réunit une combinaison de compétences et accomplit un haut-fait. **Seul le MJ l'accorde ou le retire**, depuis ses outils : il choisit parmi les 22 titres qu'exigent les compétences ou en écrit un autre. Un joueur ne peut pas s'en donner.
+- Un **titre** (classe émergente) se débloque quand le personnage réunit une combinaison de compétences et accomplit un haut-fait. **Seul le MJ l'accorde ou le retire**, en mode MJ sur la fiche du joueur (sous le nom) : il choisit parmi les 22 titres qu'exigent les compétences ou en écrit un autre. Un joueur ne peut pas s'en donner.
 
 ## Précisions confirmées (2026-10-18)
 

@@ -83,4 +83,9 @@ describe('addSpecialty', () => {
     expect(addSpecialty(char(), 'melee-bourrine', 'Haches', 'a')).toBeNull()
     expect(addSpecialty(char({ domains: { 'melee-bourrine': { rank: 1, ticks: 0 } } }), 'melee-bourrine', '  ', 'a')).toBeNull()
   })
+
+  it('le MJ passe outre la limite de rang, pas le nom vide', () => {
+    expect(addSpecialty(char(), 'melee-bourrine', 'Haches', 'a', true)?.specialties).toHaveLength(1)
+    expect(addSpecialty(char(), 'melee-bourrine', ' ', 'a', true)).toBeNull()
+  })
 })

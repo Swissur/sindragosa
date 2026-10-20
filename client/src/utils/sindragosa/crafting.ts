@@ -7,6 +7,7 @@
 import type { Craft, Recipe } from '../../data/sindragosa/types'
 import { CRAFTS, RECIPES } from '../../data/sindragosa/crafts'
 import { ADVANCED_DOMAINS, DOMAINS } from '../../data/sindragosa/domains'
+import { HARVEST } from '../../data/sindragosa/harvest'
 import type { ItemRow } from '../../types/character'
 import { normalizeName } from './prerequisites'
 
@@ -26,9 +27,15 @@ export function craftDomainId(craft: Pick<Craft, 'id' | 'kind' | 'basis'>): stri
  * Recettes accessibles : jusqu'au rang connu. Les 5 patrons d'un métier hybride
  * n'ont pas de rang : ils s'ouvrent un par rang, dans l'ordre du catalogue
  * (décidé le 2026-10-18 : rang 2 → les 2 premiers).
+ * Le MJ passe outre, patron par patron (`grants` : true = appris en bonus, false = oublié).
  */
-export function recipesFor(craftId: string, rank: number, catalog: Recipe[] = RECIPES): Recipe[] {
-  return catalog.filter((r) => r.craft === craftId).filter((r, i) => (r.rank ?? i + 1) <= rank)
+export function recipesFor(craftId: string, rank: number, grants: Record<string, boolean> = {}, catalog: Recipe[] = RECIPES): Recipe[] {
+  return catalog.filter((r) => r.craft === craftId).filter((r, i) => grants[r.id] ?? (r.rank ?? i + 1) <= rank)
+}
+
+/** Rang qui ouvre le patron : celui écrit, ou sa place dans son métier hybride (cf. recipesFor). */
+export function recipeRank(recipe: Recipe, catalog: Recipe[] = RECIPES): number {
+  return recipe.rank ?? catalog.filter((r) => r.craft === recipe.craft).indexOf(recipe) + 1
 }
 
 /**
@@ -66,14 +73,15 @@ export interface DomainRecipes {
  */
 export function recipesByDomain(
   known: Record<string, number>,
+  grants: Record<string, boolean> = {},
   crafts: Craft[] = CRAFTS,
   catalog: Recipe[] = RECIPES,
 ): DomainRecipes[] {
   const groups = new Map<string, DomainRecipes['recipes']>()
   for (const craft of crafts) {
-    const domainId = craft.id in known ? craftDomainId(craft) : null
+    const domainId = craftDomainId(craft)
     if (!domainId) continue
-    const recipes = recipesFor(craft.id, known[craft.id], catalog).map((recipe) => ({ recipe, craft }))
+    const recipes = recipesFor(craft.id, known[craft.id] ?? 0, grants, catalog).map((recipe) => ({ recipe, craft }))
     groups.set(domainId, [...(groups.get(domainId) ?? []), ...recipes])
   }
   return [...DOMAINS, ...ADVANCED_DOMAINS]
@@ -94,6 +102,28 @@ export function componentKey(name: string): string {
   return normalizeName(name).split(' ')
     .map((w) => IRREGULAR_PLURALS[w] ?? (w.length > 3 ? w.replace(/[sx]$/, '') : w))
     .join(' ')
+}
+
+/**
+ * Tous les composants de l'artisanat (ceux des patrons et les matières premières),
+ * une seule fois chacun, sous leur forme la plus courte (« Lingot de Fer »), triés.
+ */
+export function componentNames(catalog: Recipe[] = RECIPES, harvest: { name: string }[] = HARVEST): string[] {
+  const byKey = new Map<string, string>()
+  for (const name of [...harvest.map((h) => h.name), ...catalog.flatMap((r) => r.components.map((c) => c.name))]) {
+    const key = componentKey(name)
+    const known = byKey.get(key)
+    if (!known || name.length < known.length) byKey.set(key, name)
+  }
+  return [...byKey.values()].sort((a, b) => a.localeCompare(b, 'fr'))
+}
+
+export const COMPONENT_NAMES = componentNames()
+
+/** Le nom du catalogue qui correspond à ce nom (singulier ou pluriel), sinon null. */
+export function findComponentName(name: string, names: string[] = COMPONENT_NAMES): string | null {
+  const key = componentKey(name)
+  return names.find((n) => componentKey(n) === key) ?? null
 }
 
 function owned(items: ItemRow[], name: string): number {

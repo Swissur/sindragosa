@@ -7,7 +7,7 @@ import { STATS, advancedDomainById, domainById, type StatId } from '../../data/s
 import { bestAdvancedStat } from './advanced'
 import { poolSize, type PoolResult, type SpecialtyLevel } from './pool'
 import { canTick, type TickReason } from './progression'
-import type { PoolDieSource, RollPool } from '../rollOutcome'
+import type { PoolDieSource, SindragosaPool } from '../rollOutcome'
 
 export type RollMode = 'desavantage' | 'normal' | 'avantage'
 
@@ -92,8 +92,8 @@ function poolSources(stat: number, rank: number, specialtyLevel: SpecialtyLevel,
 }
 
 /** Ce que le journal garde d'une réserve, en plus des dés. */
-export function poolSummary(result: PoolResult, specialtyLevel: SpecialtyLevel, sources?: PoolDieSource[]): RollPool {
-  const summary: RollPool = {
+export function poolSummary(result: PoolResult, specialtyLevel: SpecialtyLevel, sources?: PoolDieSource[]): SindragosaPool {
+  const summary: SindragosaPool = {
     critFrom: specialtyLevel >= 3 ? 5 : 6,
     reached: result.reached,
     critFail: result.isCriticalFailure,

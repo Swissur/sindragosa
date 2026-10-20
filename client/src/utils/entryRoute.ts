@@ -9,6 +9,8 @@ export interface EntryCampaign {
   id: number
   gmUserId: number
   isMember: boolean
+  /** Système de la campagne : seules les fiches de ce système peuvent y jouer. */
+  system?: string
 }
 
 /** Les campagnes que je mène ou où je joue. */
@@ -16,7 +18,12 @@ export function myCampaigns<T extends EntryCampaign>(all: T[], userId: number): 
   return all.filter((c) => c.gmUserId === userId || c.isMember)
 }
 
-/** Où mène l'entrée dans une campagne. */
+/** Le nombre de fiches qui peuvent jouer cette campagne (plans/43). */
+export function playableCount(campaign: EntryCampaign, characters: { system: string }[]): number {
+  return characters.filter((c) => !campaign.system || c.system === campaign.system).length
+}
+
+/** Où mène l'entrée dans une campagne. `characterCount` = fiches de son système. */
 export function campaignHome(campaign: EntryCampaign, userId: number, characterCount: number): string {
   if (campaign.gmUserId === userId) return `/campagnes/${campaign.id}`
   // 0 perso : la fiche en crée un ; 1 perso : c'est lui.

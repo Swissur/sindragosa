@@ -25,14 +25,24 @@ export interface CatalogFilter {
   rank: number
   /** Métiers connus du personnage (id → rang) ; null = pas de filtre. */
   known: Record<string, number> | null
+  /** Patrons réglés par le MJ (cf. recipesFor). */
+  grants?: Record<string, boolean>
 }
 
-export const isKnownRecipe = (e: CatalogRecipe, known: Record<string, number>): boolean => (known[e.craft.id] ?? 0) >= e.rank
+export const isKnownRecipe = (e: CatalogRecipe, known: Record<string, number>, grants: Record<string, boolean> = {}): boolean =>
+  grants[e.recipe.id] ?? (known[e.craft.id] ?? 0) >= e.rank
+
+/** Le MJ apprend ou fait oublier un patron. Revenu à ce que donne le rang du métier, l'entrée disparaît. */
+export function toggleRecipeGrant(grants: Record<string, boolean>, e: CatalogRecipe, known: Record<string, number>): Record<string, boolean> {
+  const { [e.recipe.id]: _previous, ...rest } = grants
+  const next = !isKnownRecipe(e, known, grants)
+  return next === isKnownRecipe(e, known) ? rest : { ...rest, [e.recipe.id]: next }
+}
 
 export function matchesCatalogFilter(e: CatalogRecipe, f: CatalogFilter): boolean {
   if (f.craftId && e.craft.id !== f.craftId) return false
   if (f.rank && e.rank !== f.rank) return false
-  if (f.known && !isKnownRecipe(e, f.known)) return false
+  if (f.known && !isKnownRecipe(e, f.known, f.grants)) return false
   const q = normalizeName(f.search)
   return !q || [e.recipe.name, e.recipe.effect, ...e.recipe.components.map((c) => c.name)].some((t) => normalizeName(t).includes(q))
 }

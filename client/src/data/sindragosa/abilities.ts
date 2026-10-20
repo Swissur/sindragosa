@@ -12764,7 +12764,7 @@ export const ABILITIES: Ability[] = [
     "condition": "Briser une fiole de potion au sol aux pieds du groupe.",
     "cooldownTurns": null,
     "usesPer": null,
-    "effect": "Applique l'effet bénéfique d'une potion (soin, buff, RP) à TOUS les alliés adjacents (rayon de 2m)."
+    "effect": "Applique l'effet bénéfique d'une potion (soin, buff) à TOUS les alliés adjacents (rayon de 2m)."
   },
   {
     "id": 481,

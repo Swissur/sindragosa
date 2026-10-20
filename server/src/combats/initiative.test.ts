@@ -10,3 +10,16 @@ describe('computeInitiative', () => {
     expect(computeInitiative({ agi: 2, wis: 2, domains: {} })).toBe(4)
   })
 })
+
+describe('computeInitiative — Knight', () => {
+  const base = { agi: 9, wis: 9, domains: {}, system: 'knight' }
+
+  it('carac de Masque choisie + overdrive', () => {
+    const sheet = { derived: { initiative: 'perception' }, carac: { perception: 3 }, overdrive: { perception: 2 } }
+    expect(computeInitiative({ ...base, sheet })).toBe(5)
+  })
+
+  it('une fiche vierge vaut 1', () => {
+    expect(computeInitiative({ ...base, sheet: {} })).toBe(1)
+  })
+})

@@ -27,13 +27,14 @@ Le MJ peut aussi créer un monstre sur mesure (R, PV, armure, défense, initiati
 
 Monstres écrits directement au d6 (`buildMonster`, `client/src/utils/sindragosa/bestiary.ts`) : on fixe R, les caractéristiques, les PV, la catégorie d'armure, les dégâts et les capacités ; réserves, défense, initiative et armure suivent les formules ci-dessus.
 
-Chaque donjon fournit aussi ses **combats tout prêts**, dans l'ordre du parcours. Le MJ les importe d'un coup depuis le volet Combat (château « Donjons prêts ») : chaque combat devient une rencontre de la campagne, classée sous la référence **donjon / raid** (le nom du donjon). Le MJ peut aussi poser cette référence à la main sur ses propres rencontres. Les renforts (Sneed dans son déchiqueteur, gardes noirs camouflés) entrent **en réserve**.
+Chaque donjon fournit aussi ses **combats tout prêts**, dans l'ordre du parcours. Le MJ les importe d'un coup depuis le volet Combat (château « Donjons prêts ») : chaque combat devient une rencontre de la campagne, classée sous la référence **donjon / raid** (le nom du donjon). Le MJ peut aussi poser cette référence à la main sur ses propres rencontres. Les renforts (Sneed dans son déchiqueteur, gardes noirs camouflés, troggs qui reviennent, larbins du Vide invoqués) entrent **en réserve**.
 
 Conventions des capacités : les effets forts (étourdir, ralentir) se déclenchent sur une **marge d'au moins 2**, pas sur un critique (un 6 sort trop souvent avec 5 dés). Les seuils de phase d'un boss sont écrits en PV.
 
 | Donjon | Combats | Monstres | Boss |
 |---|---|---|---|
 | Les Mortemines (avant le Cataclysme) | 12 | 23 | Rhahk'Zor, Mineur Johnson (rare), Déchiqueteur de Sneed et Sneed, Gilnid, M. Châtiment, Macaron (optionnel), Capitaine Vertepeau, Edwin VanCleef |
+| Le Gouffre de Ragefeu (avant le Cataclysme) | 9 | 12 | Lorgnesilex (optionnel), Taragaman l'Affameur, Jergosh l'Invocateur, Bazzalan (optionnel, caché) |
 
 ### Butin des boss
 
@@ -41,7 +42,7 @@ Un combat de boss porte une **table de butin** : des objets d'inventaire (arme a
 
 Quand le MJ termine le combat, le volet **Butin** s'ouvre (et se rouvre par le cadeau) : **Faire tomber** tire un objet parmi ceux pas encore donnés, au prorata des chances ; le MJ peut aussi en taper un. Il le donne ensuite à un héros du combat : l'objet entre dans son inventaire (non équipé) et le joueur reçoit un toast. Chaque objet ne se donne qu'une fois ; combien en tirer est au choix du MJ.
 
-Les Mortemines sont calibrées pour 4 ou 5 personnages débutants (20 à 40 PV, réserves de 4 à 6 d6) : sbires R1, élites R2, M. Châtiment et VanCleef R3.
+Les Mortemines sont calibrées pour 4 ou 5 personnages débutants (20 à 40 PV, réserves de 4 à 6 d6) : sbires R1, élites R2, M. Châtiment et VanCleef R3. Le Gouffre de Ragefeu vise le même groupe, un cran plus facile (premier donjon de la Horde) : seul Taragaman est R3. Dans Ragefeu, la lave inflige 6 dégâts de feu et coûte un tour pour en sortir.
 
 ## Conversion depuis CO
 

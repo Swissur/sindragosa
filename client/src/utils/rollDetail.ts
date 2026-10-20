@@ -7,6 +7,7 @@
  */
 import type { RollPool } from './rollOutcome'
 import { DIFFICULTY_LABELS } from './sindragosa/pool'
+import { comboTier } from './knight/combo'
 
 export interface RollDetailParts {
   /** "d20" pour un jet simple, "3d6" quand plusieurs dés s'additionnent. */
@@ -31,6 +32,8 @@ export interface RollDetailInput {
   rolls?: number[] | null
   dropped?: number[] | null
   pool?: RollPool | null
+  /** Le total du jet : en Knight, c'est lui (dés + overdrives) qui se compare à la difficulté. */
+  total?: number
 }
 
 /**
@@ -46,6 +49,6 @@ export function rollDetailParts(r: RollDetailInput): RollDetailParts {
     dropped: r.dropped ? [...r.dropped] : [],
     bonus: r.bonus,
     separator: r.pool ? ' ' : '+',
-    tier: r.pool ? DIFFICULTY_LABELS[r.pool.reached] : null,
+    tier: !r.pool ? null : r.pool.system === 'knight' ? comboTier(r.pool, r.total ?? 0) : DIFFICULTY_LABELS[r.pool.reached],
   }
 }

@@ -390,8 +390,14 @@ function openFinishConfirm() {
 async function handleFinish() {
   await finish();
   showFinishConfirm.value = false;
+  // Le MJ retourne à son écran ; s'il y a du butin, après l'avoir distribué.
   if (hasLoot.value) showLoot.value = true;
+  else goBack();
 }
+
+watch(showLoot, (open) => {
+  if (!open && combat.value?.status === "finished") goBack();
+});
 
 function goBack() {
   router.push(`/campagnes/${campaignId}`);

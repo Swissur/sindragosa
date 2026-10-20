@@ -3,6 +3,8 @@
 import type { EtatEntry } from '../data/etats'
 import type { StatId } from '../data/sindragosa/domains'
 import type { FormId } from '../data/sindragosa/forms'
+import type { GameSystemId } from '../data/systems'
+import type { KnightSheet } from './knight'
 
 export type ItemType = 'arme' | 'armure' | 'consommable' | 'composant' | 'divers'
 export type WeaponSize = 'naturelle' | 'legere' | 'une-main' | 'deux-mains'
@@ -52,6 +54,10 @@ export type Stats = Record<StatId, number>
 
 export interface Character {
   id: string
+  /** Système de la fiche (plans/43). Les champs Sindragosa ci-dessous ne servent qu'à WoW Forever. */
+  system: GameSystemId
+  /** Fiche Knight (colonne `sheet`), `null` pour WoW Forever. */
+  knight: KnightSheet | null
   name: string
   /** Background / backstory (UI: « Histoire »). */
   histoire: string
@@ -80,6 +86,8 @@ export interface Character {
   resources: ResourceRow[]
   /** Métiers d'artisanat connus : { [craftId]: rang }. */
   crafts: Record<string, number>
+  /** Patrons réglés par le MJ : { [recipeId]: true (appris en bonus) | false (oublié) }. Sans entrée, le rang du métier décide. */
+  recipeGrants: Record<string, boolean>
 
   items: ItemRow[]
   /** Monnaie : 1 or = 10 argent = 100 cuivre. */

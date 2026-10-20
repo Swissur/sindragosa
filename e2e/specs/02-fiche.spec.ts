@@ -83,14 +83,14 @@ test('le MJ récompense un joueur : la coche arrive sur sa fiche', async ({ brow
     const member = detail.members.find((m: { username: string }) => m.username === 'kaeliss')
 
     await pageMj.goto(`/campagnes/${sandbox.id}/personnage/${member.userId}`)
-    await pageMj.getByTestId('open-gm-tools').click()
-    // Perception & Sens : rang 1, 1 coche sur 3 → la récompense en fait 2.
-    await pageMj.getByTestId('gm-reward-target').selectOption('domain:perception-sens')
-    await pageMj.getByTestId('gm-reward').click()
+    await pageMj.getByTestId('gm-mode').click()
+    await pageMj.getByRole('tab', { name: 'Domaines', exact: true }).click()
+    await pageMj.getByTestId('domains-wis').click()
+    // Perception & Sens : rang 1, 1 coche sur 3 → la récompense en fait 2, enregistrée seule.
     const patched = pageMj.waitForResponse(
       (r) => r.url().endsWith(`/members/${member.userId}/character`) && r.request().method() === 'PATCH' && r.ok(),
     )
-    await pageMj.getByTestId('gm-save').click()
+    await pageMj.getByTestId('gm-reward-perception-sens').click()
     await patched
 
     const after = await activeCharacter(pageJoueur)
@@ -130,6 +130,9 @@ test('seul le MJ retire une spécialité, après confirmation', async ({ browser
     await pageMj.getByRole('tab', { name: 'Domaines', exact: true }).click()
     await pageMj.getByTestId('domains-str').click()
     await pageMj.getByTestId('domain-expand-melee-bourrine').click()
+    // Hors du mode MJ, la fiche reste en lecture.
+    await expect(pageMj.getByTestId('specialty-remove-s-boucliers')).toHaveCount(0)
+    await pageMj.getByTestId('gm-mode').click()
     await pageMj.getByTestId('specialty-remove-s-boucliers').click()
     const patched = pageMj.waitForResponse(
       (r) => r.url().endsWith(`/members/${member.userId}/character`) && r.request().method() === 'PATCH' && r.ok(),
@@ -279,20 +282,65 @@ test('seul le MJ accorde un titre', async ({ browser }) => {
     await pageJoueur.request.put(`/api/characters/${nym.id}`, { data: { titles: ['Héros d’Azeroth'] } })
     expect((await activeCharacter(pageJoueur)).titles).toEqual([])
 
-    // Le MJ le choisit dans la liste de ses outils.
+    // En mode MJ, il le choisit dans la liste sous le nom.
     await pageMj.goto(`/campagnes/${sandbox.id}/personnage/${member.userId}`)
-    await pageMj.getByTestId('open-gm-tools').click()
+    await pageMj.getByTestId('gm-mode').click()
     await pageMj.getByTestId('gm-title-select').selectOption('Saigneur de la Nuit')
-    await pageMj.getByTestId('gm-title-add').click()
     const patched = pageMj.waitForResponse(
       (r) => r.url().endsWith(memberCharacter) && r.request().method() === 'PATCH' && r.ok(),
     )
-    await pageMj.getByTestId('gm-save').click()
+    await pageMj.getByTestId('gm-title-add').click()
     await patched
 
     expect((await activeCharacter(pageJoueur)).titles).toEqual(['Saigneur de la Nuit'])
   } finally {
     await pageMj.request.patch(memberCharacter, { data: { titles: [] } })
+    await mj.close()
+    await joueur.close()
+  }
+})
+
+test('le MJ apprend un patron en bonus, puis le fait oublier', async ({ browser }) => {
+  const mj = await browser.newContext({ storageState: stateFor('mj-dev') })
+  const joueur = await browser.newContext({ storageState: stateFor('nym') })
+  const pageMj = await mj.newPage()
+  const pageJoueur = await joueur.newPage()
+
+  const campaigns = await (await pageMj.request.get('/api/campaigns')).json()
+  const sandbox = campaigns.find((c: { name: string }) => c.name === 'Bac à sable')
+  const detail = await (await pageMj.request.get(`/api/campaigns/${sandbox.id}`)).json()
+  const member = detail.members.find((m: { username: string }) => m.username === 'nym')
+  const memberCharacter = `/api/campaigns/${sandbox.id}/members/${member.userId}/character`
+  const patched = () => pageMj.waitForResponse(
+    (r) => r.url().endsWith(memberCharacter) && r.request().method() === 'PATCH' && r.ok(),
+  )
+
+  try {
+    // Le joueur ne peut pas s'en donner par l'API.
+    const nym = await activeCharacter(pageJoueur)
+    await pageJoueur.request.put(`/api/characters/${nym.id}`, { data: { recipeGrants: { 'forge-r5-01': true } } })
+    expect((await activeCharacter(pageJoueur)).recipeGrants).toEqual({})
+
+    await pageMj.goto(`/campagnes/${sandbox.id}/personnage/${member.userId}`)
+    await pageMj.getByRole('tab', { name: 'Patrons', exact: true }).click()
+    await pageMj.getByTestId('gm-mode').click()
+    // Tous les patrons, pas seulement les connus
+    await pageMj.getByTestId('savoir-patrons-known').click()
+    await pageMj.getByTestId('savoir-patrons-search').fill('Égide du Titan noir')
+    const recipe = pageMj.locator('[data-testid^="gm-recipe-"]').first()
+    const recipeId = (await recipe.getAttribute('data-testid'))!.slice('gm-recipe-'.length)
+
+    let saved = patched()
+    await recipe.click()
+    await saved
+    expect((await activeCharacter(pageJoueur)).recipeGrants).toEqual({ [recipeId]: true })
+
+    saved = patched()
+    await recipe.click()
+    await saved
+    expect((await activeCharacter(pageJoueur)).recipeGrants).toEqual({})
+  } finally {
+    await pageMj.request.patch(memberCharacter, { data: { recipeGrants: {} } })
     await mj.close()
     await joueur.close()
   }

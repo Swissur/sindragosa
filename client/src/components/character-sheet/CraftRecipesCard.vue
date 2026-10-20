@@ -19,6 +19,7 @@ const props = defineProps<{ character: Character; crafts: Record<string, number>
 
 const search = ref('')
 const craftId = ref('')
+const rank = ref(0)
 /** '' ou 'craftable' : AppToggleGroup travaille en chaîne. */
 const craftable = ref('')
 const CRAFTABLE_ITEMS: AppToggleItem[] = [
@@ -26,10 +27,10 @@ const CRAFTABLE_ITEMS: AppToggleItem[] = [
 ]
 
 const knownCrafts = computed(() => CRAFTS.filter((c) => c.id in props.crafts))
-const filter = computed(() => ({ search: search.value, craftId: craftId.value, craftable: craftable.value === 'craftable' }))
+const filter = computed(() => ({ search: search.value, craftId: craftId.value, rank: rank.value, craftable: craftable.value === 'craftable' }))
 const filtering = computed(() => isFilteringRecipes(filter.value))
 
-const groups = computed(() => recipesByDomain(props.crafts)
+const groups = computed(() => recipesByDomain(props.crafts, props.character.recipeGrants)
   .map((g) => ({ ...g, recipes: g.recipes.filter((r) => matchesRecipeFilter(r, props.character.items, filter.value)) }))
   .filter((g) => g.recipes.length))
 </script>
@@ -43,6 +44,10 @@ const groups = computed(() => recipesByDomain(props.crafts)
         <AppSelect v-model="craftId" class="filters-craft" data-testid="patrons-craft">
           <option value="">Tous les métiers</option>
           <option v-for="c in knownCrafts" :key="c.id" :value="c.id">{{ c.label }}</option>
+        </AppSelect>
+        <AppSelect v-model="rank" class="filters-rank" data-testid="patrons-rank">
+          <option :value="0">Rangs</option>
+          <option v-for="n in 5" :key="n" :value="n">Rang {{ n }}</option>
         </AppSelect>
       </div>
     </div>
@@ -81,5 +86,9 @@ const groups = computed(() => recipesByDomain(props.crafts)
 .filters-craft {
   flex: 1;
   min-width: 0;
+}
+
+.filters-rank {
+  flex: 0 0 6.5rem;
 }
 </style>

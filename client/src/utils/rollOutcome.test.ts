@@ -77,4 +77,11 @@ describe('rollOutcome', () => {
   it('accepte un damage nul, comme le renvoie l’API de campagne', () => {
     expect(rollOutcome({ kind: 'weapon', die: 20, sides: 20, damage: null })).toBe('critical')
   })
+
+  it('lit un jet de combo Knight : exploit et échec critique', () => {
+    const knight = { system: 'knight' as const, exploit: false, critFail: false, difficulty: null }
+    expect(rollOutcome({ kind: 'ability', die: 0, sides: 6, pool: { ...knight, exploit: true } })).toBe('critical')
+    expect(rollOutcome({ kind: 'ability', die: 0, sides: 6, pool: { ...knight, critFail: true } })).toBe('fumble')
+    expect(rollOutcome({ kind: 'ability', die: 0, sides: 6, pool: knight })).toBeNull()
+  })
 })

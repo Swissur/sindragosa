@@ -57,4 +57,11 @@ describe('rollDetailParts', () => {
     const parts = rollDetailParts({ die: 0, sides: 6, bonus: 0, rolls: [5], pool: { critFrom: 6, reached: 'facile', critFail: false } })
     expect(parts).toMatchObject({ label: '1d6', kept: [5], separator: ' ', tier: 'Facile' })
   })
+
+  it('un combo Knight : le palier compare le total à la difficulté', () => {
+    const pool = { system: 'knight' as const, exploit: false, critFail: false, difficulty: 3 }
+    expect(rollDetailParts({ die: 0, sides: 6, bonus: 2, rolls: [2, 4, 1], total: 4, pool }))
+      .toMatchObject({ label: '3d6', bonus: 2, tier: 'Réussite' })
+    expect(rollDetailParts({ die: 0, sides: 6, bonus: 0, rolls: [2, 1], total: 1, pool: { ...pool, difficulty: null } }).tier).toBeNull()
+  })
 })

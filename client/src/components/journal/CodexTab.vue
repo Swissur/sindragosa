@@ -1,13 +1,15 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import { Search, Plus, User, MapPin, FileText, Pencil, Trash2, AtSign } from 'lucide-vue-next'
+import { Search, Plus, User, MapPin, FileText, Pencil, Trash2, AtSign, List, Waypoints } from 'lucide-vue-next'
 import AppInput from '../ui/AppInput.vue'
+import AppToggleGroup from '../ui/AppToggleGroup.vue'
 import AppIconBtn from '../ui/AppIconBtn.vue'
 import AppEmptyState from '../ui/AppEmptyState.vue'
 import AppBottomSheet from '../ui/AppBottomSheet.vue'
 import AppButton from '../ui/AppButton.vue'
 import CodexFormSheet from './CodexFormSheet.vue'
 import MentionDigestSheet from './MentionDigestSheet.vue'
+import CodexBoard from './codex-board/CodexBoard.vue'
 import { fetchCodexEntries, deleteCodexEntry, type CodexEntry, type CodexType } from '../../api/codex'
 import { fetchCampaign } from '../../api/campaigns'
 import { user } from '../../composables/useAuth'
@@ -20,6 +22,18 @@ const entries = ref<CodexEntry[]>([])
 const gmUserId = ref<number | null>(null)
 const loading = ref(true)
 const search = ref('')
+
+// Liste des fiches, ou tableau partagé où on les relie par des flèches.
+const mode = ref<'list' | 'board'>('list')
+const MODE_ITEMS = [
+  { value: 'list', icon: List, title: 'Liste', testid: 'codex-mode-list' },
+  { value: 'board', icon: Waypoints, title: 'Tableau des relations', testid: 'codex-mode-board' },
+]
+
+function setMode(value: string) {
+  // Re-cliquer le bouton actif le désélectionne : on reste où on est.
+  if (value === 'list' || value === 'board') mode.value = value
+}
 
 const typeLabels: Record<CodexType, string> = {
   personnage: 'Personnage',
@@ -105,6 +119,16 @@ function openDigest() {
 const showForm = ref(false)
 const editEntry = ref<CodexEntry | null>(null)
 
+/** Le tableau ouvre une fiche : sa fiche peut venir d'un autre joueur, pas encore dans la liste. */
+async function openEntryFromBoard(entryId: number) {
+  let entry = entries.value.find((e) => e.id === entryId)
+  if (!entry) {
+    await load()
+    entry = entries.value.find((e) => e.id === entryId)
+  }
+  if (entry) openDetail(entry)
+}
+
 function openCreate() {
   editEntry.value = null
   showForm.value = true
@@ -133,16 +157,25 @@ onMounted(load)
 
     <template v-else>
       <div class="codex-toolbar">
-        <div class="search-wrap">
-          <Search :size="16" class="search-icon" />
-          <AppInput v-model="search" placeholder="Chercher une fiche…" class="search-input" />
-        </div>
-        <AppIconBtn variant="primary" title="Nouvelle fiche" @click="openCreate">
-          <Plus :size="18" />
-        </AppIconBtn>
+        <AppToggleGroup :model-value="mode" :items="MODE_ITEMS" @update:model-value="setMode" />
+        <template v-if="mode === 'list'">
+          <div class="search-wrap">
+            <Search :size="16" class="search-icon" />
+            <AppInput v-model="search" placeholder="Chercher une fiche…" class="search-input" />
+          </div>
+          <AppIconBtn variant="primary" title="Nouvelle fiche" @click="openCreate">
+            <Plus :size="18" />
+          </AppIconBtn>
+        </template>
       </div>
 
-      <AppEmptyState v-if="loading" variant="loading">Chargement…</AppEmptyState>
+      <CodexBoard
+        v-if="mode === 'board'"
+        :campaign-id="campaignId"
+        :entries="entries"
+        @open-entry="openEntryFromBoard"
+      />
+      <AppEmptyState v-else-if="loading" variant="loading">Chargement…</AppEmptyState>
       <AppEmptyState v-else-if="!entries.length">
         Aucune fiche pour le moment. Crée la première : un PNJ, un lieu, un mystère…
       </AppEmptyState>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, onMounted } from "vue";
+import { computed, ref, watch, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import { BookText, Users, StickyNote, Brush, BookUser, Pencil, BookPlus, History, MessagesSquare } from "lucide-vue-next";
 import AppPageLayout from "../components/ui/AppPageLayout.vue";
@@ -24,6 +24,7 @@ import JournalHistorySheet from "../components/journal/JournalHistorySheet.vue";
 import AppIconBtn from "../components/ui/AppIconBtn.vue";
 import { showToast } from "../composables/useToast";
 import { relativeTime } from "../utils/relativeTime";
+import { gmUnreadCount } from "../composables/useGmUnread";
 
 const route = useRoute();
 
@@ -33,13 +34,13 @@ const initialTab = ["compagnie", "notes", "dessins", "fiches", "mj"].includes(St
   : "compagnie";
 const activeTab = ref<Tab>(initialTab);
 
-const TABS = [
+const TABS = computed(() => [
   { value: "compagnie", label: "Journal de bord", icon: Users },
   { value: "notes", label: "Notes", icon: StickyNote },
   { value: "dessins", label: "Dessins", icon: Brush },
   { value: "fiches", label: "Fiches", icon: BookUser },
-  { value: "mj", label: "Échange avec le MJ", icon: MessagesSquare },
-];
+  { value: "mj", label: "Échange avec le MJ", icon: MessagesSquare, dot: gmUnreadCount.value > 0 },
+]);
 
 // ── Journal compagnie (live) ─────────────────────────────────────────────────
 

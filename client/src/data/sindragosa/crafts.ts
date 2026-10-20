@@ -2912,20 +2912,6 @@ export const PDF_RECIPES: Recipe[] = [
     "effect": "Enduit sur lame (3 charges) : 25 % de chances d'infliger un engourdissement (-1m de déplacement)."
   },
   {
-    "id": "alchimie-r1-07",
-    "craft": "alchimie",
-    "rank": 1,
-    "name": "Potion d'apaisement mental mineure",
-    "batch": null,
-    "components": [
-      {
-        "qty": 2,
-        "name": "Mageroie"
-      }
-    ],
-    "effect": "Restaure +3 RP (Résistance Psychique)."
-  },
-  {
     "id": "alchimie-r1-08",
     "craft": "alchimie",
     "rank": 1,
@@ -3041,7 +3027,7 @@ export const PDF_RECIPES: Recipe[] = [
         "name": "Rosée du matin"
       }
     ],
-    "effect": "Restaure +6 RP et retire un état de Confusion."
+    "effect": "Retire un état de Confusion."
   },
   {
     "id": "alchimie-r2-05",
@@ -3255,7 +3241,7 @@ export const PDF_RECIPES: Recipe[] = [
         "name": "Sauge-argent"
       }
     ],
-    "effect": "Restaure 100 % de la RP et immunise totalement à la Peur pour 3 tours."
+    "effect": "Immunise totalement à la Peur pour 3 tours."
   },
   {
     "id": "alchimie-r3-08",
@@ -3511,7 +3497,7 @@ export const PDF_RECIPES: Recipe[] = [
         "name": "Poussière d'étoile"
       }
     ],
-    "effect": "Si consommé avant un coup fatal, le joueur ressuscite immédiatement au tour suivant avec 100 % de ses PV et de sa RP."
+    "effect": "Si consommé avant un coup fatal, le joueur ressuscite immédiatement au tour suivant avec 100 % de ses PV."
   },
   {
     "id": "alchimie-r5-02",
@@ -3533,7 +3519,7 @@ export const PDF_RECIPES: Recipe[] = [
         "name": "Sang de Wyrm"
       }
     ],
-    "effect": "Régénère 10 PV par tour, augmente l'Armure de +3 et immunise à la mort immédiate pendant 5 tours. (Toxicité : Réduit la RP Max à 0 pour 1 jour après le combat)."
+    "effect": "Régénère 10 PV par tour, augmente l'Armure de +3 et immunise à la mort immédiate pendant 5 tours."
   },
   {
     "id": "alchimie-r5-03",
@@ -3555,7 +3541,7 @@ export const PDF_RECIPES: Recipe[] = [
         "name": "Essence de titan"
       }
     ],
-    "effect": "Accorde +20 PV Max, +10 RP Max et +1d6 sur TOUS les jets du joueur pendant tout un donjon."
+    "effect": "Accorde +20 PV Max et +1d6 sur TOUS les jets du joueur pendant tout un donjon."
   },
   {
     "id": "alchimie-r5-04",

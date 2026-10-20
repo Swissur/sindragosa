@@ -11,7 +11,8 @@ import { parseDiceStyle } from '../data/diceStyle'
 import { POOL_DICE_STYLES } from '../data/poolDiceStyles'
 import { refreshActiveCombat } from './useActiveCombat'
 import { appendFeed, clearFeed, feedLineFor, secretLineFor } from './useViewerFeed'
-import { incomingGmMessage, liveSessionActive, onlineUserIds, resetCampaignLive, type IncomingGmMessage } from './useCampaignLive'
+import { incomingGmMessage, liveCodexBoard, liveSessionActive, onlineUserIds, resetCampaignLive, type IncomingGmMessage } from './useCampaignLive'
+import type { Board } from '../api/codexBoard'
 
 /** Filtre du panneau de log. */
 export type RollFilter = 'all' | 'combat' | 'player' | 'monster'
@@ -88,7 +89,8 @@ function appendRoll(roll: RollEvent): void {
  */
 export function remoteDiceFor(roll: RollEvent): DieRoll[] {
   const values = roll.rolls?.length ? roll.rolls : [roll.die]
-  const critFrom = roll.pool?.critFrom
+  // Knight n'a pas de dé critique : seul le jet entier fait un exploit.
+  const critFrom = roll.pool && roll.pool.system !== 'knight' ? roll.pool.critFrom : undefined
   // Jet de compétence : chaque dé garde la couleur de son origine, chez les autres aussi.
   const sources = roll.pool?.sources
   const styleAt = (i: number) => (sources?.[i] ? POOL_DICE_STYLES[sources[i]] : undefined)
@@ -156,7 +158,7 @@ function connect(campaignId: number, options: { viewer?: boolean } = {}): void {
       const event = JSON.parse(e.data as string) as CharacterPatchEvent
       if (event.userId === user.value?.id) {
         applyServerPatch(event.characterId, event.patch)
-        if (event.loot) showToast(`🎁 ${event.loot} rejoint ton inventaire !`)
+        if (event.loot) showToast(event.from ? `🎁 ${event.from} te donne ${event.loot} !` : `🎁 ${event.loot} rejoint ton inventaire !`)
       }
       resetIdleTimer()
     } catch { /* ignore */ }
@@ -192,10 +194,18 @@ function connect(campaignId: number, options: { viewer?: boolean } = {}): void {
     } catch { /* ignore */ }
   })
 
-  // Le MJ m'écrit : le message s'ouvre au milieu de l'écran.
+  // Le MJ m'écrit (ou un joueur, si je suis MJ) : le message s'ouvre au milieu de l'écran.
   eventSource.addEventListener('gm-message', (e: MessageEvent) => {
     try {
       if (!viewer) incomingGmMessage.value = JSON.parse(e.data as string) as IncomingGmMessage
+      resetIdleTimer()
+    } catch { /* ignore */ }
+  })
+
+  // Quelqu'un a touché au tableau des fiches : l'onglet Fiches le redessine.
+  eventSource.addEventListener('codex-board', (e: MessageEvent) => {
+    try {
+      liveCodexBoard.value = JSON.parse(e.data as string) as Board
       resetIdleTimer()
     } catch { /* ignore */ }
   })

@@ -88,6 +88,8 @@ export const characters = pgTable(
     resources: jsonb('resources').notNull().default([]),
     /** Métiers d'artisanat connus : { [craftId]: rang } */
     crafts: jsonb('crafts').$type<Record<string, number>>().notNull().default({}),
+    /** Patrons réglés par le MJ : { [recipeId]: true (bonus) | false (oublié) } */
+    recipeGrants: jsonb('recipe_grants').$type<Record<string, boolean>>().notNull().default({}),
     /**
      * Inventaire : [{ id, name, description?, quantity, type?, equipped?, size?,
      * damageBonus?, domainId?, armor? }] (plans/35-equipement.md).
@@ -110,6 +112,11 @@ export const characters = pgTable(
 
     /** Transformation prise (forme d'ours…) : son arme naturelle remplace les armes (plans/39). */
     form: text('form'),
+
+    /** Système de jeu de la fiche (`campaigns/systems.ts`) : une fiche ne joue que les campagnes du sien. */
+    system: varchar('system', { length: 40 }).notNull().default('wow-forever'),
+    /** Fiche propre au système (Knight : aspects, caracs, méta-armure…). Vide pour WoW Forever. */
+    sheet: jsonb('sheet').$type<Record<string, unknown>>().notNull().default({}),
 
     /** ID of the portrait image in generated_images table */
     portraitImageId: integer('portrait_image_id').references(() => generatedImages.id),
@@ -149,7 +156,7 @@ export const campaigns = pgTable('campaign', {
   gmUserId: integer('gm_user_id')
     .notNull()
     .references(() => users.id, { onDelete: 'cascade' }),
-  /** Système de jeu choisi à la création (un seul pour l'instant). */
+  /** Système de jeu choisi à la création (`campaigns/systems.ts`). */
   system: varchar('system', { length: 40 }).notNull().default('wow-forever'),
   /** Une session de jeu est en cours (« Début de la session » / « Fin de session »). */
   sessionActive: boolean('session_active').notNull().default(false),
@@ -169,6 +176,8 @@ export const gmMessages = pgTable('gm_message', {
     .notNull()
     .references(() => users.id, { onDelete: 'cascade' }),
   body: text('body').notNull(),
+  /** Le destinataire a ouvert le fil. `null` = non lu. */
+  readAt: timestamp('read_at', { withTimezone: true }),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 })
 
@@ -336,6 +345,38 @@ export const codexEntries = pgTable('codex_entry', {
   createdByUserId: integer('created_by_user_id').notNull().references(() => users.id),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+})
+
+/** Fiche posée sur le tableau des fiches de sa campagne (au plus une fois). */
+export const codexBoardNodes = pgTable('codex_board_node', {
+  id: serial('id').primaryKey(),
+  campaignId: integer('campaign_id')
+    .notNull()
+    .references(() => campaigns.id, { onDelete: 'cascade' }),
+  codexEntryId: integer('codex_entry_id')
+    .notNull()
+    .unique()
+    .references(() => codexEntries.id, { onDelete: 'cascade' }),
+  x: real('x').notNull().default(0),
+  y: real('y').notNull().default(0),
+})
+
+/** Flèche entre deux fiches du tableau. */
+export const codexBoardLinks = pgTable('codex_board_link', {
+  id: serial('id').primaryKey(),
+  campaignId: integer('campaign_id')
+    .notNull()
+    .references(() => campaigns.id, { onDelete: 'cascade' }),
+  fromNodeId: integer('from_node_id')
+    .notNull()
+    .references(() => codexBoardNodes.id, { onDelete: 'cascade' }),
+  toNodeId: integer('to_node_id')
+    .notNull()
+    .references(() => codexBoardNodes.id, { onDelete: 'cascade' }),
+  /** 'one' (de from vers to) | 'both' (va-et-vient) */
+  direction: varchar('direction', { length: 4 }).notNull().default('one'),
+  dashed: boolean('dashed').notNull().default(false),
+  label: text('label').notNull().default(''),
 })
 
 /** Notes privées d'un joueur (remplace le blob user.notes_perso). */

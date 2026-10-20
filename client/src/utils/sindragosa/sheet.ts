@@ -88,10 +88,10 @@ export function applyTick(c: Character, target: TickTarget, reason: TickReason):
   return { ok: true, character: next, rankedUp: after > before, newRank: after }
 }
 
-/** Ajoute une spécialité Apprenti (0 coche), si le rang du domaine le permet. */
-export function addSpecialty(c: Character, domainId: string, name: string, id: string): Character | null {
+/** Ajoute une spécialité Apprenti (0 coche), si le rang du domaine le permet — ou toujours, si le MJ la donne (`force`). */
+export function addSpecialty(c: Character, domainId: string, name: string, id: string, force = false): Character | null {
   const count = c.specialties.filter((s) => s.domainId === domainId).length
-  if (!canAddSpecialty(c.domains[domainId]?.rank ?? 0, count) || !name.trim()) return null
+  if ((!force && !canAddSpecialty(c.domains[domainId]?.rank ?? 0, count)) || !name.trim()) return null
   const row: SpecialtyRow = { id, domainId, name: name.trim(), level: 1, ticks: 0 }
   return { ...c, specialties: [...c.specialties, row] }
 }

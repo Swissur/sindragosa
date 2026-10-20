@@ -17,6 +17,7 @@ Règles telles que l'app les applique. Origine : `docs/regles/Artisanat (Sindrag
 - On maîtrise les métiers appris, plus **le métier de base de chaque domaine d'artisanat où l'on a un rang** (Artisanat lourd 4 → Forge rang 4, 5 au plus), plus **chaque artisanat avancé** où l'on a au moins le rang 1. Le meilleur rang l'emporte.
 - **Métier de base** : patrons de rang 1 à 5, on accède à ceux de son rang et des rangs inférieurs.
 - **Métier hybride** : ses 5 patrons n'ont pas de rang, ils s'ouvrent **un par rang**, dans l'ordre du catalogue (rang 2 → les 2 premiers).
+- **Le MJ passe outre, patron par patron** (mode MJ de la fiche, onglet Patrons) : il apprend un patron en bonus, même hors du rang ou du métier, ou en fait oublier un. Ce choix l'emporte sur le rang du métier.
 
 ## De la récolte au patron
 

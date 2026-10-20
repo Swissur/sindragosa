@@ -144,7 +144,11 @@ export const SEED_PLAYERS = [
 
 async function upsertUser(username: string, passwordHash: string): Promise<number> {
   const [existing] = await db.select({ id: users.id }).from(users).where(eq(users.username, username))
-  if (existing) return existing.id
+  if (existing) {
+    // Un MJ a pu réinitialiser le mot de passe : le bac à sable repart sur « dev ».
+    await db.update(users).set({ passwordHash }).where(eq(users.id, existing.id))
+    return existing.id
+  }
   const [created] = await db.insert(users).values({ username, passwordHash }).returning({ id: users.id })
   return created.id
 }

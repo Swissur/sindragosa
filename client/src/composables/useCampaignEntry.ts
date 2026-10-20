@@ -1,6 +1,6 @@
 import { activateCampaign } from '../api/campaigns'
 import { fetchCharacters } from '../api/characters'
-import { campaignHome, type EntryCampaign } from '../utils/entryRoute'
+import { campaignHome, playableCount, type EntryCampaign } from '../utils/entryRoute'
 import { user } from './useAuth'
 
 /**
@@ -14,6 +14,6 @@ export async function enterCampaign(campaign: EntryCampaign): Promise<string> {
     await activateCampaign(campaign.id)
     user.value = { ...me, activeCampaignId: campaign.id }
   }
-  const characterCount = campaign.gmUserId === me.id ? 0 : (await fetchCharacters()).length
+  const characterCount = campaign.gmUserId === me.id ? 0 : playableCount(campaign, await fetchCharacters())
   return campaignHome(campaign, me.id, characterCount)
 }

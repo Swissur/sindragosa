@@ -32,7 +32,7 @@ export function useFavorites(
       domains: pinnedOf(pins.value, [...DOMAINS, ...unlockedAdvanced.value], (d) => `domain:${d.id}`),
       specialties: pinnedOf(pins.value, character.value.specialties, (s) => `specialty:${s.id}`),
       abilities: pinnedOf(pins.value, abilities, (a) => `ability:${a.id}`),
-      recipes: pinnedOf(pins.value, recipesByDomain(crafts.value).flatMap((g) => g.recipes), (r) => `recipe:${r.recipe.id}`),
+      recipes: pinnedOf(pins.value, recipesByDomain(crafts.value, character.value.recipeGrants).flatMap((g) => g.recipes), (r) => `recipe:${r.recipe.id}`),
     }
   })
 

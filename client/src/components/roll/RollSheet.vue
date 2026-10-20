@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { ArrowDown, ArrowUp, Clover, Dices, Skull, Check, Droplet } from 'lucide-vue-next'
+import { ArrowDown, ArrowUp, Clover, Dices, Skull, Check, Droplet, EyeOff } from 'lucide-vue-next'
 import AppBottomSheet from '../ui/AppBottomSheet.vue'
 import AppButton from '../ui/AppButton.vue'
 import AppSelect from '../ui/AppSelect.vue'
@@ -18,13 +18,20 @@ import { rollSetup, poolSummary, tickReasonFor, SPECIALTY_LEVEL_LABELS, type Rol
 import { applyTick, type TickTarget } from '../../utils/sindragosa/sheet'
 import { itemFromRecipe, weaponDamage } from '../../utils/sindragosa/equipment'
 import { consumeComponents, hasComponents } from '../../utils/sindragosa/crafting'
+import { secretRollMessage } from '../../utils/sindragosa/secretRoll'
+import { sendMessageToGm } from '../../api/campaigns'
+import { user } from '../../composables/useAuth'
+import { useGmCampaign } from '../../composables/useGmCampaign'
 
 /**
  * Feuille de jet Sindragosa (plans/32) : on choisit domaine, spécialité,
  * avantage et chance, on lance la réserve de d6, puis on décide de cocher.
+ * « Lancer en secret » : le lanceur voit tout, mais le jet ne part ni au log
+ * de campagne ni en moment critique ; le résultat va au MJ dans leur échange.
  */
 
 const { addRoll } = useRollHistory()
+const { gmCampaignId } = useGmCampaign()
 
 const domainId = ref('')
 const specialtyId = ref('')
@@ -88,10 +95,22 @@ const missingComponents = computed(() => {
 const manaCost = computed(() => rollRequest.value?.manaCost ?? 0)
 const missingMana = computed(() => character.value.manaCurrent < manaCost.value)
 
-async function roll() {
+/** Joueur d'une campagne : il a un MJ à qui envoyer le jet. */
+const canRollSecret = computed(() => !!user.value?.activeCampaignId && gmCampaignId.value === null)
+/** Le résultat affiché vient d'un jet secret. */
+const secret = ref(false)
+
+/** Ce qu'on lance, spécialité comprise : « Acrobatie & Furtivité · Équilibre ». */
+const rollLabel = computed(() => {
+  const specialty = specialties.value.find((x) => x.id === specialtyId.value)
+  return specialty ? `${title.value} · ${specialty.name}` : title.value
+})
+
+async function roll(asSecret = false) {
   const s = setup.value
   if (!s || s.count === 0 || rolling.value || missingComponents.value || missingMana.value) return
   rolling.value = true
+  secret.value = asSecret
   // Comme les composants, la mana part dès le jet, qu'il réussisse ou non.
   character.value.manaCurrent -= manaCost.value
   // Les composants sont utilisés dès le jet, qu'il réussisse ou non.
@@ -121,11 +140,10 @@ async function roll() {
   } else if (recipe) {
     showToast('Fabrication ratée : les composants sont perdus.')
   }
-  const specialty = specialties.value.find((x) => x.id === specialtyId.value)
   addRoll({
     characterName: character.value.name,
     kind: 'domaine',
-    label: specialty ? `${title.value} · ${specialty.name}` : title.value,
+    label: rollLabel.value,
     die: 0,
     sides: 6,
     bonus: 0,
@@ -133,7 +151,13 @@ async function roll() {
     rolls: r.dice,
     dropped: dropped.length ? dropped : undefined,
     pool: summary,
-  }, rollRequest.value?.context ?? 'fiche')
+  }, rollRequest.value?.context ?? 'fiche', { secret: asSecret })
+
+  const campaignId = user.value?.activeCampaignId
+  if (asSecret && campaignId) {
+    sendMessageToGm(campaignId, secretRollMessage(character.value.name, rollLabel.value, s, r))
+      .catch(() => showToast("Le jet secret n'est pas parti au MJ"))
+  }
 }
 
 const tickReason = computed(() => (result.value ? tickReasonFor(result.value, character.value.sessionTicks) : null))
@@ -218,9 +242,19 @@ const weaponHint = computed(() => {
           block
           :disabled="!setup || setup.count === 0 || rolling || missingComponents || missingMana"
           data-testid="roll-launch"
-          @click="roll"
+          @click="roll()"
         >
           <Dices :size="18" /> Lancer
+        </AppButton>
+        <AppButton
+          v-if="canRollSecret"
+          size="small"
+          class="roll-secret"
+          :disabled="!setup || setup.count === 0 || rolling || missingComponents || missingMana"
+          data-testid="roll-secret"
+          @click="roll(true)"
+        >
+          <EyeOff :size="14" /> Lancer en secret
         </AppButton>
         <p v-if="missingComponents" class="roll-note" data-testid="roll-missing-components">Il manque des composants.</p>
         <p v-if="manaCost" class="roll-note" data-testid="roll-mana">
@@ -244,6 +278,9 @@ const weaponHint = computed(() => {
         <p class="roll-outcome" data-testid="roll-outcome">
           <strong data-testid="roll-successes">{{ result.successes }}</strong>
           succès · {{ DIFFICULTY_LABELS[result.reached] }}
+        </p>
+        <p v-if="secret" class="roll-note" data-testid="roll-secret-note">
+          <EyeOff :size="13" /> Jet secret : seul le MJ en reçoit le résultat.
         </p>
         <p v-if="result.rerolledFrom !== null" class="roll-note">Un 1 a été relancé (spécialité).</p>
         <p v-if="result.isCriticalFailure" class="roll-critfail" data-testid="roll-critfail">
@@ -303,6 +340,10 @@ const weaponHint = computed(() => {
 
 .roll-luck-icon {
   color: var(--accent);
+}
+
+.roll-secret {
+  align-self: center;
 }
 
 .roll-formula {

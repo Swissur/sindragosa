@@ -77,7 +77,7 @@ client/src/
 │   ├── character-sheet/        # Cards rendered inside CharacterSheetView
 │   │   ├── HeroCard.vue
 │   │   ├── DomainsCard.vue
-│   │   ├── GmToolsSheet.vue
+│   │   ├── TitlesEditor.vue
 │   │   └── …
 │   ├── abilities/              # Ability cards and panel (Pouvoirs tab)
 │   └── roll/RollSheet.vue      # The single d6 roll sheet
@@ -162,7 +162,7 @@ Add a shadcn component with `npx shadcn-vue@latest add <name> -y -o` (writes int
 | `AppBadge` | Colored pill badges. Variants: `attaque`, `limitée`, `gratuite`, `info`, `pm`, `active`. |
 | `AppEmptyState` | Loading / empty / error feedback. Variants: `loading`, `empty` (default), `error`. Slot `#actions` for retry buttons. |
 | `AppModal` | **Every centered dialog** (confirmations, forms, pickers). `v-model` boolean, props `title`, `wide` (560px). Slots: default, `#footer` (action buttons). Built on reka-ui `Dialog`: focus trap, Escape, click-outside, scroll lock and focus restore come for free. |
-| `AppBottomSheet` | **Every bottom sheet** (mobile-first panels; centered dialog on desktop). `v-model` + `title`. Same reka-ui `Dialog` engine as AppModal — pick sheet for mobile flows, modal for confirmations. |
+| `AppBottomSheet` | **Every bottom sheet** (mobile-first panels; centered dialog on desktop). `v-model` + `title`, slot `#titleActions` for icon buttons next to the title. Same reka-ui `Dialog` engine as AppModal — pick sheet for mobile flows, modal for confirmations. |
 | `AppTabs` | **Every tab bar.** `v-model` string + `tabs: { value, label, icon?, dot? }[]` (icon = emoji string or Lucide component). Prop `iconOnlyMobile` hides labels on phones. Built on reka-ui `Tabs`: arrow-key navigation included. Active state is `[data-state="active"]`, not `.active`. |
 | `AppToggleGroup` | Groupe de boutons icône à choix unique (mode de concentration, etc.). `v-model` string (`''` = rien), `items: { value, icon, title, testid? }[]`. Re-cliquer le bouton actif le désélectionne. Built on reka-ui `ToggleGroup`. |
 | `AppCheckbox` | **Toute case à cocher.** `v-model` boolean, props `disabled`, `testid`. Slot par défaut = le libellé (toute la ligne est tapable, 40px). Built on reka-ui `Checkbox`. |

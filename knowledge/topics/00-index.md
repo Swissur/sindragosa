@@ -16,5 +16,6 @@ Ces fiches décrivent les règles **telles que l'app les applique**. Les PDF de 
 | `artisanat.md` | Métiers, patrons, récolte et composants, fabrication |
 | `bestiaire.md` | Monstres en jeu, ce que voient les joueurs, conversion depuis Chroniques Oubliées |
 | `monde-azeroth.md` | Histoire d'Azeroth jusqu'au début de World of Warcraft |
+| `knight.md` | Le deuxième système de l'app (Knight) : fiche, jet de combo, lien campagne ↔ fiche |
 
 Ce qui n'est pas encore défini par les règles est listé dans la TODO de `ROADMAP.md`.

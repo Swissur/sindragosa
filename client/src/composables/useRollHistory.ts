@@ -57,7 +57,8 @@ const history = ref<RollEntry[]>(load())
 export function useRollHistory() {
   const { wake } = useCampaignRolls()
 
-  function addRoll(entry: Omit<RollEntry, 'id' | 'timestamp'>, context: RollContext = 'actions') {
+  /** `secret` : le jet reste dans mon historique, sans moment critique ni log de campagne. */
+  function addRoll(entry: Omit<RollEntry, 'id' | 'timestamp'>, context: RollContext = 'actions', options: { secret?: boolean } = {}) {
     const full: RollEntry = {
       ...entry,
       id: crypto.randomUUID(),
@@ -66,6 +67,7 @@ export function useRollHistory() {
     history.value.unshift(full)
     if (history.value.length > MAX_ENTRIES) history.value = history.value.slice(0, MAX_ENTRIES)
     save(history.value)
+    if (options.secret) return
 
     // Le moment critique part d'ici : addRoll est appelé une fois le dé posé,
     // donc le halo tombe pile avec les étincelles. Les autres joueurs le

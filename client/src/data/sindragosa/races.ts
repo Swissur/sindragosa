@@ -30,7 +30,7 @@ export const RACES: Race[] = [
     flavor: 'Adaptabilité, diplomatie et leadership.',
     power: {
       name: 'Chacun pour soi', actionType: 'reaction', actionLabel: 'Action Rapide (Réaction)', usesPer: 'repos-court',
-      effect: "Dissipe immédiatement n'importe quel effet d'incapacité mentale ou physique (Étourdissement, Enracinement, Peur ou Sommeil) qui affecte le personnage et restaure instantanément +3 points de RP.",
+      effect: "Dissipe immédiatement n'importe quel effet d'incapacité mentale ou physique (Étourdissement, Enracinement, Peur ou Sommeil) qui affecte le personnage.",
     },
   },
   {
@@ -110,7 +110,7 @@ export const RACES: Race[] = [
     flavor: 'Affinité exceptionnelle avec la magie et les arcanes.',
     power: {
       name: 'Torrent Arcane', actionType: 'rapide', actionLabel: 'Action Rapide', usesPer: 'repos-court',
-      effect: "Libère une onde de choc magique qui réduit au silence tous les lanceurs de sorts ennemis dans un rayon de 4 mètres pendant 1 tour, tout en restaurant 5 points de Mana / Énergie (ou 3 RP) à l'Elfe de Sang.",
+      effect: "Libère une onde de choc magique qui réduit au silence tous les lanceurs de sorts ennemis dans un rayon de 4 mètres pendant 1 tour, tout en restaurant 5 points de Mana / Énergie à l'Elfe de Sang.",
     },
   },
   {

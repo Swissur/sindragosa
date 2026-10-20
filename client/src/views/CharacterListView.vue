@@ -5,10 +5,11 @@ import { Plus, User } from "lucide-vue-next";
 import {
   fetchCharacters,
   activateCharacter,
-  createCharacter,
   type ServerCharacter,
 } from "../api/characters";
 import { raceById } from "../data/sindragosa/races";
+import { systemLabel } from "../data/systems";
+import { createCharacterHere } from "../composables/useNewCharacter";
 import AppPageLayout from "../components/ui/AppPageLayout.vue";
 import AppPageHead from "../components/ui/AppPageHead.vue";
 import AppIconBtn from "../components/ui/AppIconBtn.vue";
@@ -50,12 +51,18 @@ async function handleCreate() {
   if (busy.value) return;
   busy.value = true;
   try {
-    const created = await createCharacter({});
+    const created = await createCharacterHere();
     await activateCharacter(created.id);
-    router.push({ path: "/personnage", query: { id: created.id } });
+    router.push({ path: "/personnage", query: { id: created.id, edit: "1" } });
   } finally {
     busy.value = false;
   }
+}
+
+/** Une fiche Knight n'a pas de race : on dit son système. */
+function metaLine(c: ServerCharacter): string {
+  if (c.system !== "wow-forever") return systemLabel(c.system);
+  return raceById(c.race)?.label ?? "Race à choisir";
 }
 
 onMounted(load);
@@ -101,7 +108,7 @@ onMounted(load);
           <User v-else :size="30" class="placeholder" />
         </span>
         <span class="name">{{ c.name }}</span>
-        <span class="meta">{{ raceById(c.race)?.label ?? "Race à choisir" }}</span>
+        <span class="meta">{{ metaLine(c) }}</span>
       </button>
     </div>
   </AppPageLayout>

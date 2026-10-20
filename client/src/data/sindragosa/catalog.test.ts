@@ -99,11 +99,14 @@ describe('artisanat', () => {
     expect(CRAFTS.filter((c) => c.kind === 'hybrid')).toHaveLength(20)
   })
 
+  // L'app a retiré la potion d'apaisement mental mineure (alchimie rang 1) avec la Résistance Psychique.
+  const REMOVED: Record<string, number> = { 'alchimie-1': 1 }
+
   it('PDF : 10 patrons par rang pour chaque métier de base, 5 par métier hybride', () => {
     for (const c of CRAFTS) {
       const mine = PDF_RECIPES.filter((r) => r.craft === c.id)
       if (c.kind === 'base') {
-        for (let rank = 1; rank <= 5; rank++) expect(mine.filter((r) => r.rank === rank), `${c.id} rang ${rank}`).toHaveLength(10)
+        for (let rank = 1; rank <= 5; rank++) expect(mine.filter((r) => r.rank === rank), `${c.id} rang ${rank}`).toHaveLength(10 - (REMOVED[`${c.id}-${rank}`] ?? 0))
       } else {
         expect(mine, c.id).toHaveLength(5)
       }

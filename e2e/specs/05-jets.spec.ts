@@ -47,7 +47,9 @@ test('le dé d’un autre joueur roule chez le MJ, sauf si le MJ le coupe', asyn
 
     // Toggle OFF : le jet suivant n'affiche plus de dé distant, mais arrive
     // toujours dans le log.
-    await pageMj.getByTestId('nav-remote-dice').click()
+    await pageMj.goto('/options')
+    await pageMj.getByTestId('option-remote-dice').click()
+    await pageMj.goto('/personnage')
     await expect(pageMj.getByTestId('remote-die-label')).toHaveCount(0, { timeout: 5_000 })
     await pageMj.getByTitle('Historique des jets').click()
     const before = await pageMj.getByTestId('roll-log-entry').count()
@@ -236,6 +238,49 @@ test('les dés du MJ restent invisibles pour les joueurs', async ({ browser }) =
     // Côté MJ, son jet est bien là, marqué « MJ uniquement ».
     await pageMj.getByTitle('Historique des jets').click()
     await expect(pageMj.getByTestId('roll-log').getByText('MJ').first()).toBeVisible()
+  } finally {
+    await mj.close()
+    await joueur.close()
+  }
+})
+
+test('un jet secret : le lanceur voit son résultat, le MJ le reçoit, le log de campagne non', async ({ browser }) => {
+  const mj = await browser.newContext({ storageState: stateFor('mj-dev') })
+  const joueur = await browser.newContext({ storageState: stateFor('nym') })
+  const pageMj = await mj.newPage()
+  const page = await joueur.newPage()
+
+  try {
+    await pageMj.goto('/personnage')
+    await pageMj.getByTitle('Historique des jets').click()
+    await expect(pageMj.getByTestId('roll-log')).toBeVisible()
+    // L'historique est chargé (les tests précédents y ont laissé des jets).
+    await expect(pageMj.getByTestId('roll-log-entry').first()).toBeVisible()
+    const entriesBefore = await pageMj.getByTestId('roll-log-entry').count()
+
+    await page.goto('/personnage')
+    await page.getByRole('tab', { name: 'Domaines', exact: true }).click()
+    await page.getByTestId('domains-agi').click()
+    await page.getByTestId('domain-roll-combat-precision').click()
+    await page.getByTestId('roll-secret').click()
+
+    // Le lanceur voit ses dés et son résultat, avec la mention du secret.
+    await expect(page.getByTestId('roll-dice')).toBeVisible({ timeout: 20_000 })
+    await expect(page.getByTestId('roll-secret-note')).toBeVisible()
+    const successes = await page.getByTestId('roll-successes').innerText()
+
+    // Le MJ reçoit d'où vient le jet et ce qu'il donne.
+    const body = pageMj.getByTestId('gm-message-body')
+    await expect(body).toContainText('Jet secret de')
+    await expect(body).toContainText('= 6d6')
+    await expect(body).toContainText(`→ ${successes} succès`)
+    // Rien dans le log partagé : le message est arrivé, le jet n'y est pas.
+    await expect(pageMj.getByTestId('roll-log-entry')).toHaveCount(entriesBefore)
+
+    // Le lanceur le retrouve dans son échange avec le MJ.
+    await page.keyboard.press('Escape')
+    await page.goto('/journal?tab=mj')
+    await expect(page.getByTestId('gm-messages')).toContainText('Jet secret de')
   } finally {
     await mj.close()
     await joueur.close()

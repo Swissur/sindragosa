@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { ChevronDown, Plus, Trash2, Star } from 'lucide-vue-next'
+import { ChevronDown, Gift, Plus, Trash2, Star } from 'lucide-vue-next'
 import AppTickGauge from '../ui/AppTickGauge.vue'
 import AppIconBtn from '../ui/AppIconBtn.vue'
 import AppInput from '../ui/AppInput.vue'
 import AppButton from '../ui/AppButton.vue'
 import AppModal from '../ui/AppModal.vue'
+import AppStepper from '../ui/AppStepper.vue'
 import { openRollSheet } from '../../composables/useRollSheet'
+import { rewardTick } from '../../composables/gmReward'
 import { addSpecialty } from '../../utils/sindragosa/sheet'
 import { canAddSpecialty, DOMAIN_GAUGE_SLOTS, MAX_DOMAIN_RANK, MAX_SPECIALTY_LEVEL, TICKS_PER_SPECIALTY_LEVEL, ticksForRank } from '../../utils/sindragosa/progression'
 import { SPECIALTY_LEVEL_LABELS } from '../../utils/sindragosa/rollSetup'
@@ -21,8 +23,8 @@ const props = defineProps<{
   character: Character
   domain: Domain
   readonly?: boolean
-  /** Fiche d'un joueur vue par le MJ : lui seul peut retirer une spécialité. */
-  canRemoveSpecialty?: boolean
+  /** Mode MJ : coches en récompense, rang forcé, spécialités données (sans limite de rang) ou retirées. */
+  gm?: boolean
   /** Favori de la fiche. Absent = pas de bouton (fiche d'un autre joueur). */
   pinned?: boolean
   /** Ids des spécialités épinglées. Absent = pas de bouton. */
@@ -43,6 +45,15 @@ const otherOpen = ref(false)
 const progress = computed(() => props.character.domains[props.domain.id] ?? { rank: 0, ticks: 0 })
 const specialties = computed(() => props.character.specialties.filter((s) => s.domainId === props.domain.id))
 const canAdd = computed(() => canAddSpecialty(progress.value.rank, specialties.value.length))
+const showAdd = computed(() => props.gm || (canAdd.value && !props.readonly))
+
+/** Rang forcé par le MJ : les coches en cours repartent de zéro. */
+const forcedRank = computed({
+  get: () => progress.value.rank,
+  set: (rank: number) => {
+    props.character.domains = { ...props.character.domains, [props.domain.id]: { rank, ticks: 0 } }
+  },
+})
 const suggestions = computed(() =>
   props.domain.specialties.filter((n) => !specialties.value.some((s) => s.name === n)),
 )
@@ -53,7 +64,7 @@ function roll(specialtyId?: string) {
 }
 
 function add(name: string) {
-  const next = addSpecialty(props.character, props.domain.id, name, crypto.randomUUID())
+  const next = addSpecialty(props.character, props.domain.id, name, crypto.randomUUID(), props.gm)
   if (!next) return
   props.character.specialties = next.specialties
   newName.value = ''
@@ -84,6 +95,15 @@ function add(name: string) {
         <Star :size="16" :class="{ 'domain-star--on': pinned }" />
       </AppIconBtn>
       <AppIconBtn
+        v-if="gm"
+        variant="primary"
+        title="Récompense : une coche"
+        :data-testid="`gm-reward-${domain.id}`"
+        @click="rewardTick(character, { kind: 'domain', id: domain.id })"
+      >
+        <Gift :size="16" />
+      </AppIconBtn>
+      <AppIconBtn
         :title="expanded ? 'Replier' : 'Spécialités'"
         :data-testid="`domain-expand-${domain.id}`"
         @click="expanded = !expanded"
@@ -93,10 +113,14 @@ function add(name: string) {
     </div>
 
     <div v-if="expanded" class="domain-detail">
-      <p v-if="!specialties.length && readonly" class="domain-hint" data-testid="specialty-none">
+      <div v-if="gm" class="domain-force">
+        <span class="domain-hint">Rang du domaine</span>
+        <AppStepper v-model="forcedRank" :max="MAX_DOMAIN_RANK" label="Rang du domaine" :testid="`gm-rank-${domain.id}`" />
+      </div>
+      <p v-if="!specialties.length && readonly && !gm" class="domain-hint" data-testid="specialty-none">
         Aucune spécialité.
       </p>
-      <p v-else-if="!specialties.length && !canAdd" class="domain-hint">
+      <p v-else-if="!specialties.length && !showAdd" class="domain-hint">
         Une spécialité par rang : monte ce domaine pour en choisir une.
       </p>
       <div v-for="s in specialties" :key="s.id" class="specialty" data-testid="specialty-row">
@@ -121,7 +145,17 @@ function add(name: string) {
           <Star :size="16" :class="{ 'domain-star--on': pinnedSpecialties.includes(s.id) }" />
         </AppIconBtn>
         <AppIconBtn
-          v-if="canRemoveSpecialty"
+          v-if="gm"
+          variant="primary"
+          class="specialty-btn"
+          title="Récompense : une coche"
+          :data-testid="`gm-reward-specialty-${s.id}`"
+          @click="rewardTick(character, { kind: 'specialty', id: s.id })"
+        >
+          <Gift :size="16" />
+        </AppIconBtn>
+        <AppIconBtn
+          v-if="gm"
           variant="danger"
           class="specialty-btn"
           title="Retirer la spécialité"
@@ -134,7 +168,7 @@ function add(name: string) {
         <span v-else class="specialty-spacer" />
       </div>
 
-      <div v-if="canAdd && !readonly" class="specialty-suggestions">
+      <div v-if="showAdd" class="specialty-suggestions">
         <AppButton v-for="n in suggestions" :key="n" size="small" @click="add(n)">{{ n }}</AppButton>
         <AppButton size="small" data-testid="specialty-other" @click="otherOpen = true">
           <Plus :size="14" /> Autre
@@ -220,6 +254,13 @@ function add(name: string) {
   margin-left: var(--space-md);
   padding-left: var(--space-sm);
   border-left: 2px solid var(--border);
+}
+
+.domain-force {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-xs);
 }
 
 .domain-hint {

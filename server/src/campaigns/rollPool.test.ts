@@ -19,4 +19,17 @@ describe('parsePool', () => {
     expect(parsePool({ critFrom: 4, reached: 'facile' })).toBeNull()
     expect(parsePool({ critFrom: 6, reached: 'énorme' })).toBeNull()
   })
+
+  it('garde un jet de combo Knight', () => {
+    expect(parsePool({ system: 'knight', exploit: true, critFail: false, difficulty: 3, sources: ['base', 'combo', 'exploit'] }))
+      .toEqual({ system: 'knight', exploit: true, critFail: false, difficulty: 3, sources: ['base', 'combo', 'exploit'] })
+    expect(parsePool({ system: 'knight', exploit: false, critFail: true }))
+      .toEqual({ system: 'knight', exploit: false, critFail: true, difficulty: null })
+  })
+
+  it("rejette un jet Knight mal formé ou un système inconnu", () => {
+    expect(parsePool({ system: 'knight', difficulty: -1 })).toBeNull()
+    expect(parsePool({ system: 'knight', difficulty: 'ardu' })).toBeNull()
+    expect(parsePool({ system: 'dnd', critFrom: 6, reached: 'facile' })).toBeNull()
+  })
 })

@@ -2,10 +2,11 @@
 import { RouterLink, RouterView } from "vue-router";
 import { computed, defineAsyncComponent, onBeforeUnmount, ref, watch } from "vue";
 import { useRoute } from "vue-router";
-import { UserCircle, Loader2, ScrollText, Swords, Backpack, BookOpenText, Palette, Dices, History, Users, Wrench, Tv, Crown } from "lucide-vue-next";
+import { UserCircle, Loader2, ScrollText, Backpack, BookOpenText, Palette, Dices, History, Wrench, Tv, Crown } from "lucide-vue-next";
 import AppToast from "./components/ui/AppToast.vue";
 import RollSheet from "./components/roll/RollSheet.vue";
 import DiceBar from "./components/DiceBar.vue";
+import VitalsStrip from "./components/VitalsStrip.vue";
 import RollLogDrawer from "./components/roll-log/RollLogDrawer.vue";
 import Dice3DOverlay from "./components/dice3d/Dice3DOverlay.vue";
 import CampfireOverlay from "./components/campfire/CampfireOverlay.vue";
@@ -18,7 +19,8 @@ import { wakeCombat } from "./composables/useCombat";
 import { useDiceBar } from "./composables/useDiceBar";
 import { useCampaignRolls } from "./composables/useCampaignRolls";
 import { useGmCampaign } from "./composables/useGmCampaign";
-import { remoteDiceEnabled, setRemoteDiceEnabled } from "./composables/useDice3D";
+import { gmUnreadCount, refreshGmUnread } from "./composables/useGmUnread";
+import { incomingGmMessage } from "./composables/useCampaignLive";
 import { primeAudio } from "./utils/sfx";
 
 const isDev = import.meta.env.DEV;
@@ -29,7 +31,7 @@ const DevToolsSheet = defineAsyncComponent(() => import("./components/dev/DevToo
 const route = useRoute();
 const { activeCombat } = useActiveCombat();
 const { diceBarOpen, toggleDiceBar } = useDiceBar();
-const { gmCampaignId } = useGmCampaign();
+const { gmCampaignId, gmCampaignResolved } = useGmCampaign();
 const {
   unread,
   panelOpen,
@@ -54,14 +56,17 @@ watch(bottomDockRef, (el, prev) => {
 });
 onBeforeUnmount(() => observer.disconnect());
 
-// Resync le combat actif (bannière « Combat en cours ») et branche le log de
+// Resync le combat actif (raccourci « Fight ») et branche le log de
 // jets sur la campagne active : au login et au retour au premier plan.
 watch(user, (u) => {
   if (!u) { disconnectRolls(); return; }
   refreshActiveCombat();
   if (u.activeCampaignId) connectRolls(u.activeCampaignId);
   else disconnectRolls();
+  void refreshGmUnread();
 }, { immediate: true });
+// Un message du MJ (ou d'un joueur, pour le MJ) arrive : pastille sur le Journal.
+watch(incomingGmMessage, (m) => { if (m) void refreshGmUnread(); });
 document.addEventListener("visibilitychange", () => {
   if (document.visibilityState === "visible" && user.value) {
     refreshActiveCombat();
@@ -72,10 +77,6 @@ document.addEventListener("visibilitychange", () => {
 // L'AudioContext démarre suspendu tant que l'utilisateur n'a rien tapé : on le
 // réveille au tout premier geste, sinon le premier critique de la séance est muet.
 document.addEventListener("pointerdown", () => primeAudio(), { once: true });
-
-const showCombatBanner = computed(() =>
-  activeCombat.value && !route.path.includes('/combat/'),
-);
 
 // Mode table : la page occupe tout l'écran, sans barres ni tiroir.
 const isViewer = computed(() => !!route.meta.viewer);
@@ -136,8 +137,9 @@ if (savedStyle) {
             ><Backpack :size="20"
           /></RouterLink>
         </template>
-        <RouterLink to="/journal" class="nav-link" title="Journal"
+        <RouterLink to="/journal" class="nav-link nav-link--badged" title="Journal" data-testid="nav-journal"
           ><BookOpenText :size="20"
+          /><span v-if="gmUnreadCount > 0" class="nav-badge" data-testid="nav-journal-unread"
         /></RouterLink>
         <RouterLink
           v-if="isDev"
@@ -148,11 +150,6 @@ if (savedStyle) {
         /></RouterLink>
       </nav>
     </header>
-    <RouterLink v-if="showCombatBanner" :to="activeCombat!.url" class="combat-banner">
-      <Swords :size="16" class="banner-icon" />
-      <span class="banner-text">Combat en cours</span>
-      <span class="banner-action">Retour &rarr;</span>
-    </RouterLink>
     <main class="main">
       <RouterView />
     </main>
@@ -179,16 +176,6 @@ if (savedStyle) {
             <History :size="20" />
             <span v-if="unread > 0 && !panelOpen" class="nav-badge" />
           </button>
-          <button
-            type="button"
-            class="nav-link"
-            :class="{ 'nav-link--on': remoteDiceEnabled }"
-            :title="remoteDiceEnabled ? 'Dés des autres joueurs' : 'Dés des autres masqués'"
-            data-testid="nav-remote-dice"
-            @click="setRemoteDiceEnabled(!remoteDiceEnabled)"
-          >
-            <Users :size="20" />
-          </button>
           <RouterLink to="/table" class="nav-link" title="Mode table" data-testid="nav-viewer">
             <Tv :size="20" />
           </RouterLink>
@@ -202,6 +189,8 @@ if (savedStyle) {
             <Wrench :size="20" />
           </button>
         </div>
+        <!-- Le MJ n'a pas de fiche : on attend de savoir qui on est avant de la charger. -->
+        <VitalsStrip v-if="user && gmCampaignResolved && !gmCampaignId" />
         <RouterLink v-if="user" to="/options" class="nav-user" title="Options">
           <div class="nav-avatar">
             <img
@@ -242,30 +231,6 @@ if (savedStyle) {
 
 .boot-spinner {
   animation: spin 1s linear infinite;
-}
-
-/* Combat banner */
-.combat-banner {
-  flex-shrink: 0;
-  z-index: 9;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.45rem 1rem;
-  background: var(--accent);
-  color: white;
-  font-size: 0.82rem;
-  font-weight: 700;
-  text-decoration: none;
-  cursor: pointer;
-}
-
-.banner-icon { flex-shrink: 0; }
-.banner-text { flex: 1; }
-
-.banner-action {
-  font-size: 0.78rem;
-  opacity: 0.85;
 }
 
 @keyframes spin {
@@ -470,6 +435,11 @@ if (savedStyle) {
   color: var(--accent-strong);
   border-color: var(--accent);
   background: var(--accent-soft);
+}
+
+/* Lien qui porte une .nav-badge (Journal : message du MJ non lu) */
+.nav-link--badged {
+  position: relative;
 }
 
 /* Les deux outils de séance sont des <button>, pas des liens */

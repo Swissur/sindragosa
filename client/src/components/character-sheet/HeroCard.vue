@@ -3,22 +3,25 @@ import { computed, ref, toRef } from 'vue'
 import { Upload, Trash2, Award } from 'lucide-vue-next'
 import AppCard from '../ui/AppCard.vue'
 import AppInput from '../ui/AppInput.vue'
-import AppSelect from '../ui/AppSelect.vue'
 import AppTextarea from '../ui/AppTextarea.vue'
 import AppBadge from '../ui/AppBadge.vue'
 import AppAccordion from '../ui/AppAccordion.vue'
 import AbilityCard from '../abilities/AbilityCard.vue'
-import { RACES, raceAbility, raceById } from '../../data/sindragosa/races'
+import RacePicker from './RacePicker.vue'
+import TitlesEditor from './TitlesEditor.vue'
+import { raceAbility, raceById } from '../../data/sindragosa/races'
 import { withRace } from '../../utils/sindragosa/sheet'
 import { RACE_PIN } from '../../utils/sindragosa/pins'
 import { usePins } from '../../composables/usePins'
 import type { Character } from '../../types/character'
 
-/** Identité : portrait, nom, race (et son pouvoir), histoire. */
+/** Identité : portrait, nom, race (et son pouvoir), histoire. Le slot `identity` remplace la race (Knight). */
 const props = defineProps<{
   character: Character
   editing?: boolean
   readonly?: boolean
+  /** Mode MJ (fiche d'un joueur) : les titres s'accordent sous le nom. */
+  gm?: boolean
   portraitOverrideUrl?: string | null
 }>()
 
@@ -98,41 +101,37 @@ async function removePortrait() {
       <div class="hero-id">
         <AppInput v-if="editing && !readonly" v-model="character.name" placeholder="Nom" data-testid="hero-name" />
         <h2 v-else class="hero-name" data-testid="hero-name">{{ character.name }}</h2>
-        <AppSelect v-if="editing && !readonly" v-model="raceModel" data-testid="hero-race">
-          <option value="">Race à choisir</option>
-          <optgroup label="Alliance">
-            <option v-for="r in RACES.filter((x) => x.faction === 'alliance')" :key="r.id" :value="r.id">{{ r.label }}</option>
-          </optgroup>
-          <optgroup label="Horde">
-            <option v-for="r in RACES.filter((x) => x.faction === 'horde')" :key="r.id" :value="r.id">{{ r.label }}</option>
-          </optgroup>
-        </AppSelect>
-        <p v-else class="hero-race" data-testid="hero-race">
-          <template v-if="race">
-            <AppBadge variant="info">{{ race.label }}</AppBadge>
-            <AppBadge :variant="race.faction === 'alliance' ? 'info' : 'attaque'">
-              {{ race.faction === 'alliance' ? 'Alliance' : 'Horde' }}
+        <TitlesEditor v-if="gm" :character="character" />
+        <!-- Ce qui suit le nom dépend du système : la race en WoW Forever, l'archétype en Knight. -->
+        <slot name="identity">
+          <RacePicker v-if="editing && !readonly" v-model="raceModel" />
+          <p v-else class="hero-race" data-testid="hero-race">
+            <template v-if="race">
+              <AppBadge variant="info">{{ race.label }}</AppBadge>
+              <AppBadge :variant="race.faction === 'alliance' ? 'info' : 'attaque'">
+                {{ race.faction === 'alliance' ? 'Alliance' : 'Horde' }}
+              </AppBadge>
+            </template>
+            <template v-else>Race à choisir</template>
+          </p>
+          <p v-if="character.titles.length && !gm" class="hero-titles">
+            <AppBadge v-for="t in character.titles" :key="t" variant="active" data-testid="title">
+              <Award :size="12" /> {{ t }}
             </AppBadge>
-          </template>
-          <template v-else>Race à choisir</template>
-        </p>
-        <p v-if="character.titles.length" class="hero-titles">
-          <AppBadge v-for="t in character.titles" :key="t" variant="active" data-testid="title">
-            <Award :size="12" /> {{ t }}
-          </AppBadge>
-        </p>
-        <AbilityCard
-          v-if="race"
-          :ability="raceAbility(race)"
-          :character="character"
-          :unlocked="true"
-          :readonly="readonly"
-          :pinned="readonly ? undefined : isPinned(RACE_PIN)"
-          hide-type
-          @toggle-pin="toggle(RACE_PIN)"
-        />
+          </p>
+          <AbilityCard
+            v-if="race"
+            :ability="raceAbility(race)"
+            :character="character"
+            :unlocked="true"
+            :readonly="readonly"
+            :pinned="readonly ? undefined : isPinned(RACE_PIN)"
+            hide-type
+            @toggle-pin="toggle(RACE_PIN)"
+          />
+        </slot>
         <AppAccordion title="Histoire" :default-open="editing">
-          <AppTextarea v-if="editing && !readonly" v-model="character.histoire" :rows="5" placeholder="D'où vient ton héros ?" />
+          <AppTextarea v-if="editing && !readonly" v-model="character.histoire" class="w-full" :rows="5" placeholder="D'où vient ton héros ?" />
           <p v-else class="hero-text">{{ character.histoire || 'Pas encore écrite.' }}</p>
         </AppAccordion>
       </div>

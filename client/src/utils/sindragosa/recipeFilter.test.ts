@@ -10,7 +10,7 @@ const epee = {
   },
   craft: forge,
 }
-const none: RecipeFilter = { search: '', craftId: '', craftable: false }
+const none: RecipeFilter = { search: '', craftId: '', rank: 0, craftable: false }
 const lingots: ItemRow[] = [{ id: 'a', name: 'Lingot de fer brut', quantity: 2, type: 'composant' }]
 
 describe('matchesRecipeFilter', () => {
@@ -29,6 +29,12 @@ describe('matchesRecipeFilter', () => {
   it('filtre par métier', () => {
     expect(matchesRecipeFilter(epee, [], { ...none, craftId: 'forge' })).toBe(true)
     expect(matchesRecipeFilter(epee, [], { ...none, craftId: 'alchimie' })).toBe(false)
+  })
+
+  it('filtre par rang', () => {
+    expect(matchesRecipeFilter(epee, [], { ...none, rank: 1 })).toBe(true)
+    expect(matchesRecipeFilter(epee, [], { ...none, rank: 2 })).toBe(false)
+    expect(isFilteringRecipes({ ...none, rank: 2 })).toBe(true)
   })
 
   it('« fabricable » garde les patrons dont on a les composants', () => {

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { componentKey, componentNeeds, consumeComponents, craftDomainId, effectiveCrafts, hasComponents, recipesByDomain, recipesFor } from './crafting'
+import { COMPONENT_NAMES, componentKey, componentNames, componentNeeds, findComponentName, consumeComponents, craftDomainId, effectiveCrafts, hasComponents, recipesByDomain, recipesFor } from './crafting'
 import type { ItemRow } from '../../types/character'
 import { CRAFTS } from '../../data/sindragosa/crafts'
 
@@ -28,13 +28,18 @@ describe('recipesFor', () => {
   ]
 
   it("s'arrête au rang connu", () => {
-    expect(recipesFor('forge', 2, catalog).map((r) => r.id)).toEqual(['a'])
+    expect(recipesFor('forge', 2, {}, catalog).map((r) => r.id)).toEqual(['a'])
   })
 
   it('un métier hybride ouvre un patron par rang, dans l’ordre', () => {
-    expect(recipesFor('hybride', 0, catalog)).toEqual([])
-    expect(recipesFor('hybride', 2, catalog).map((r) => r.id)).toEqual(['c', 'd'])
-    expect(recipesFor('hybride', 5, catalog).map((r) => r.id)).toEqual(['c', 'd', 'e'])
+    expect(recipesFor('hybride', 0, {}, catalog)).toEqual([])
+    expect(recipesFor('hybride', 2, {}, catalog).map((r) => r.id)).toEqual(['c', 'd'])
+    expect(recipesFor('hybride', 5, {}, catalog).map((r) => r.id)).toEqual(['c', 'd', 'e'])
+  })
+
+  it('le MJ apprend un patron en bonus ou en fait oublier un', () => {
+    expect(recipesFor('forge', 1, { b: true }, catalog).map((r) => r.id)).toEqual(['a', 'b'])
+    expect(recipesFor('forge', 3, { a: false }, catalog).map((r) => r.id)).toEqual(['b'])
   })
 })
 
@@ -73,18 +78,23 @@ describe('recipesByDomain', () => {
   ]
 
   it('range chaque métier sous son domaine, au rang connu, les artisanats avancés après', () => {
-    const groups = recipesByDomain({ forge: 1, 'forge-feu': 1 }, crafts, catalog)
+    const groups = recipesByDomain({ forge: 1, 'forge-feu': 1 }, {}, crafts, catalog)
     expect(groups.map((g) => g.domainId)).toEqual(['artisanat-lourd', 'forge-feu'])
     expect(groups.map((g) => g.recipes.map((r) => r.recipe.id))).toEqual([['f1'], ['h1']])
   })
 
   it("suit l'ordre des domaines de la fiche", () => {
-    const groups = recipesByDomain({ alchimie: 1, forge: 1 }, crafts, catalog)
+    const groups = recipesByDomain({ alchimie: 1, forge: 1 }, {}, crafts, catalog)
     expect(groups.map((g) => g.domainId)).toEqual(['artisanat-lourd', 'alchimie-herboristerie'])
   })
 
   it('aucun métier, aucun groupe', () => {
-    expect(recipesByDomain({}, crafts, catalog)).toEqual([])
+    expect(recipesByDomain({}, {}, crafts, catalog)).toEqual([])
+  })
+
+  it('un patron en bonus suffit à faire apparaître son domaine', () => {
+    const groups = recipesByDomain({}, { p1: true }, crafts, catalog)
+    expect(groups.map((g) => [g.domainId, g.recipes.map((r) => r.recipe.id)])).toEqual([['alchimie-herboristerie', ['p1']]])
   })
 })
 
@@ -120,5 +130,25 @@ describe('composants', () => {
     const after = consumeComponents(items, recipe)
     expect(after.map((i) => [i.id, i.quantity])).toEqual([['b', 1], ['d', 1]])
     expect(items[0].quantity).toBe(2)
+  })
+})
+
+describe('componentNames', () => {
+  const recipe = (names: string[]) => ({ id: 'x', craft: 'forge', rank: 1, name: 'X', batch: null, effect: '', components: names.map((name) => ({ qty: 1, name })) })
+
+  it('un seul nom par composant, le plus court, trié', () => {
+    const names = componentNames([recipe(['Lingots de Fer', 'Charbon']), recipe(['Lingot de Fer'])], [{ name: 'Charbon' }, { name: 'Bois dur' }])
+    expect(names).toEqual(['Bois dur', 'Charbon', 'Lingot de Fer'])
+  })
+
+  it('le catalogue contient matières premières et composants fabriqués', () => {
+    expect(COMPONENT_NAMES).toContain('Minerai de Fer')
+    expect(COMPONENT_NAMES).toContain('Lingot de Fer')
+    expect(COMPONENT_NAMES).not.toContain('Lingots de Fer')
+  })
+
+  it('findComponentName retrouve le nom du catalogue, singulier ou pluriel', () => {
+    expect(findComponentName('lingots de fer')).toBe('Lingot de Fer')
+    expect(findComponentName('Patte de lapin')).toBeNull()
   })
 })

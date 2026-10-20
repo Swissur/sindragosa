@@ -1,6 +1,6 @@
 # Roadmap — Sindragosa
 
-Sindragosa est un **JDR maison inspiré de World of Warcraft**, joué en réserves de d6. L'app a quitté les Terres d'Arran (Chroniques Oubliées) le 2026-10-17. Le travail se fait sur la branche `refonte-sindragosa`.
+Sindragosa est un **JDR maison inspiré de World of Warcraft**, joué en réserves de d6. L'app a quitté les Terres d'Arran (Chroniques Oubliées) le 2026-10-17. La refonte, menée sur la branche `refonte-sindragosa`, est close et fusionnée dans `main` le 2026-10-20 : le travail se fait désormais sur `main`.
 
 **Source des règles** : les 3 PDF de `docs/regles/` ont servi de base. Depuis, l'app et les décisions de `plans/` priment (voir `CLAUDE.md`). Analyse des écarts et questions de départ : `plans/31-refonte-regles-sindragosa.md`.
 

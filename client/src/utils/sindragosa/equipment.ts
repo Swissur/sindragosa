@@ -6,6 +6,7 @@ import type { Character, ItemRow, ItemType, WeaponSize } from '../../types/chara
 import type { Recipe } from '../../data/sindragosa/types'
 import type { WeaponReach } from '../../data/sindragosa/abilityAttacks'
 import { formById, type Form } from '../../data/sindragosa/forms'
+import { isConsumableRecipe } from './consumables'
 
 /** Dégâts fixes selon le gabarit (à tester en jeu). */
 export const WEAPON_DAMAGE: Record<WeaponSize, number> = { naturelle: 1, legere: 2, 'une-main': 3, 'deux-mains': 5 }
@@ -117,6 +118,6 @@ export function itemFromRecipe(recipe: Recipe, id: string = crypto.randomUUID())
   }
   if (armor) return { ...base, type: 'armure', equipped: false, armor: Number(armor[1]) }
   if (/composant/i.test(recipe.effect)) return { ...base, type: 'composant' }
-  if (/potion|élixir|fiole|onguent|baume|tonique|munition/i.test(text)) return { ...base, type: 'consommable' }
+  if (isConsumableRecipe(recipe.id)) return { ...base, type: 'consommable' }
   return { ...base, type: 'divers' }
 }

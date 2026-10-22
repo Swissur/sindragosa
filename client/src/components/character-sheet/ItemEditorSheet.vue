@@ -9,6 +9,7 @@ import AppStepper from '../ui/AppStepper.vue'
 import AppTextarea from '../ui/AppTextarea.vue'
 import { ADVANCED_DOMAINS, DOMAINS } from '../../data/sindragosa/domains'
 import { COMPONENT_NAMES, findComponentName } from '../../utils/sindragosa/crafting'
+import { CONSUMABLE_NAMES, findConsumableName } from '../../utils/sindragosa/consumables'
 import { ITEM_TYPE_LABELS, WEAPON_SIZE_LABELS, isEquippable } from '../../utils/sindragosa/equipment'
 import type { ItemRow, ItemType } from '../../types/character'
 
@@ -57,16 +58,24 @@ const bonusDice = computed({
   },
 })
 
-/** Composant : nom choisi dans le catalogue de l'artisanat, ou en texte libre. */
+/** Composant ou consommable : nom choisi dans son catalogue, ou en texte libre. */
+const CATALOGS = {
+  composant: { names: COMPONENT_NAMES, find: findComponentName, placeholder: 'Choisir un composant…' },
+  consommable: { names: CONSUMABLE_NAMES, find: findConsumableName, placeholder: 'Choisir un consommable…' },
+} as const
+const catalog = computed(() =>
+  props.item?.type === 'composant' || props.item?.type === 'consommable' ? CATALOGS[props.item.type] : null,
+)
+
 const FREE_TEXT = '__libre__'
 const freeText = ref(false)
 watch(() => [props.item?.id, props.item?.type], () => {
   const name = props.item?.name ?? ''
-  freeText.value = !!name && !findComponentName(name)
+  freeText.value = !!name && !!catalog.value && !catalog.value.find(name)
 }, { immediate: true })
 
-const componentChoice = computed({
-  get: () => freeText.value ? FREE_TEXT : findComponentName(props.item?.name ?? '') ?? '',
+const catalogChoice = computed({
+  get: () => freeText.value ? FREE_TEXT : catalog.value?.find(props.item?.name ?? '') ?? '',
   set: (v: string) => {
     freeText.value = v === FREE_TEXT
     if (!freeText.value && props.item) props.item.name = v
@@ -119,12 +128,12 @@ const componentChoice = computed({
         </AppStepper>
       </div>
 
-      <AppSelect v-if="item.type === 'composant'" v-model="componentChoice" data-testid="item-component">
-        <option value="" disabled>Choisir un composant…</option>
-        <option v-for="name in COMPONENT_NAMES" :key="name" :value="name">{{ name }}</option>
+      <AppSelect v-if="catalog" v-model="catalogChoice" :data-testid="`item-${item.type}`">
+        <option value="" disabled>{{ catalog.placeholder }}</option>
+        <option v-for="name in catalog.names" :key="name" :value="name">{{ name }}</option>
         <option :value="FREE_TEXT">Texte libre</option>
       </AppSelect>
-      <AppInput v-if="item.type !== 'composant' || freeText" v-model="item.name" placeholder="Nom de l'objet" data-testid="item-name" />
+      <AppInput v-if="!catalog || freeText" v-model="item.name" placeholder="Nom de l'objet" data-testid="item-name" />
       <AppTextarea v-model="item.description" :rows="3" placeholder="Description" />
 
       <AppButton v-if="isEquippable(item)" block data-testid="item-duplicate" @click="emit('duplicate')">

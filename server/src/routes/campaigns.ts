@@ -15,6 +15,7 @@ import { effectiveDiceStyle } from '../campaigns/diceStyleQuery.js'
 import { importEncounters, monsterValues, parseEncounterImport } from '../campaigns/encounterImport.js'
 import { sanitizeLoot, toInventoryItem } from '../combats/loot.js'
 import { randomUUID } from 'node:crypto'
+import { moveMember } from '../campaigns/moveMember.js'
 
 const router = Router()
 router.use(requireAuth)
@@ -433,6 +434,26 @@ async function activateCharacterRow(userId: number, characterId: number) {
       .where(and(eq(characters.id, characterId), eq(characters.userId, userId)))
   })
 }
+
+// POST /api/campaigns/:id/members/:userId/move — envoie le perso du membre dans
+// une autre campagne (le joueur lui-même, ou le MJ vers une de ses campagnes)
+router.post('/:id/members/:userId/move', async (req, res) => {
+  const currentUserId = (req as unknown as AuthRequest).userId
+  const toCampaignId = Number((req.body as { toCampaignId?: unknown })?.toCampaignId)
+  if (!Number.isInteger(toCampaignId)) { res.status(400).json({ error: 'Campagne cible requise' }); return }
+
+  const out = await moveMember(currentUserId, Number(req.params.id), Number(req.params.userId), toCampaignId)
+  if (out.ok) { res.json({ ok: true }); return }
+  const errors = {
+    'not-found': [404, 'Campagne ou personnage introuvable'],
+    same: [400, 'Le personnage est déjà dans cette campagne'],
+    forbidden: [403, 'Réservé au joueur ou au MJ'],
+    'target-forbidden': [403, 'Campagne cible non autorisée'],
+    'system-mismatch': [400, 'Ce personnage ne joue pas ce système de jeu'],
+  } as const
+  const [status, error] = errors[out.error]
+  res.status(status).json({ error })
+})
 
 // ── Helper: verify GM ownership ─────────────────────────────────────────────
 async function verifyGm(campaignId: number, userId: number) {

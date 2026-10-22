@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
-import { Eye, KeyRound, Send, Settings, TriangleAlert } from 'lucide-vue-next'
+import { ArrowRightLeft, Eye, KeyRound, Send, Settings, TriangleAlert } from 'lucide-vue-next'
 import { resetMemberPassword, sendGmMessage, type CampaignMember } from '../../api/campaigns'
 import { showToast } from '../../composables/useToast'
 import AppBottomSheet from '../ui/AppBottomSheet.vue'
@@ -9,14 +9,17 @@ import AppButton from '../ui/AppButton.vue'
 import AppIconBtn from '../ui/AppIconBtn.vue'
 import AppInput from '../ui/AppInput.vue'
 import AppTextarea from '../ui/AppTextarea.vue'
+import MoveCharacterModal from './MoveCharacterModal.vue'
 
-// Raccourcis du MJ sur un portrait : voir la fiche, rappel à l'ordre en un
-// tap, ou message libre. Le message part tout de suite dans le journal
-// « Échange avec le MJ » du joueur et s'ouvre au milieu de son écran.
+// Raccourcis du MJ sur un portrait : voir la fiche, déplacer le perso dans une
+// autre campagne du MJ, rappel à l'ordre en un tap, ou message libre. Le message
+// part tout de suite dans le journal « Échange avec le MJ » du joueur et s'ouvre
+// au milieu de son écran.
 // La roue dentée ouvre les réglages du compte : nouveau mot de passe si le
 // joueur a oublié le sien.
 const props = defineProps<{ campaignId: number }>()
 const member = defineModel<CampaignMember | null>({ required: true })
+const emit = defineEmits<{ (e: 'moved'): void }>()
 
 const router = useRouter()
 
@@ -24,6 +27,9 @@ const WARNING = "Tu n'es pas assez RP"
 
 const draft = ref('')
 const sending = ref(false)
+/** Le membre à déplacer : la feuille se ferme, la modale prend le relais. */
+const moving = ref<CampaignMember | null>(null)
+const moveOpen = ref(false)
 
 const settingsOpen = ref(false)
 const newPassword = ref('')
@@ -61,6 +67,17 @@ async function resetPassword() {
   } finally {
     sending.value = false
   }
+}
+
+function startMove() {
+  moving.value = member.value
+  member.value = null
+  moveOpen.value = true
+}
+
+function onMoved() {
+  showToast(`${moving.value?.characterName ?? 'Le personnage'} a changé de campagne`)
+  emit('moved')
 }
 
 function viewSheet() {
@@ -116,6 +133,10 @@ function viewSheet() {
         <Eye :size="16" />
         Voir la fiche
       </AppButton>
+      <AppButton v-if="member?.characterId" block data-testid="shortcut-move" @click="startMove">
+        <ArrowRightLeft :size="16" />
+        Déplacer vers une autre campagne
+      </AppButton>
       <AppButton block variant="danger" :disabled="sending" data-testid="shortcut-warning" @click="send(WARNING)">
         <TriangleAlert :size="16" />
         {{ WARNING }}
@@ -134,6 +155,16 @@ function viewSheet() {
       </form>
     </div>
   </AppBottomSheet>
+
+  <MoveCharacterModal
+    v-if="moving"
+    v-model="moveOpen"
+    :campaign-id="campaignId"
+    :user-id="moving.userId"
+    :character-name="moving.characterName ?? moving.username"
+    :as-gm="true"
+    @moved="onMoved"
+  />
 </template>
 
 <style scoped>

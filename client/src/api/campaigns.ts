@@ -139,6 +139,11 @@ export function leaveCampaign(id: number): Promise<void> {
   return request(`/${id}/leave`, { method: 'POST', body: JSON.stringify({}) })
 }
 
+/** Envoie le perso du membre dans une autre campagne (le joueur, ou le MJ vers une de ses campagnes). */
+export function moveMemberCharacter(campaignId: number, userId: number, toCampaignId: number): Promise<void> {
+  return request(`/${campaignId}/members/${userId}/move`, { method: 'POST', body: JSON.stringify({ toCampaignId }) })
+}
+
 export function fetchMemberCharacter(campaignId: number, userId: number): Promise<ServerCharacter> {
   return request<ServerCharacter>(`/${campaignId}/members/${userId}/character`)
 }

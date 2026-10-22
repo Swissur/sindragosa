@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
-import { LogOut, Trash2, Save } from 'lucide-vue-next'
+import { ArrowRightLeft, LogOut, Trash2, Save } from 'lucide-vue-next'
 import {
   deleteCampaign,
   leaveCampaign,
@@ -16,8 +16,10 @@ import AppModal from '../ui/AppModal.vue'
 import AppButton from '../ui/AppButton.vue'
 import AppInput from '../ui/AppInput.vue'
 import AppSelect from '../ui/AppSelect.vue'
+import MoveCharacterModal from './MoveCharacterModal.vue'
 
-// Options de la campagne (engrenage). Le MJ la règle ou la supprime, le joueur la quitte.
+// Options de la campagne (engrenage). Le MJ la règle ou la supprime, le joueur
+// la quitte ou emmène son perso dans une autre campagne.
 const props = defineProps<{ campaign: CampaignDetail; isGm: boolean }>()
 const open = defineModel<boolean>({ required: true })
 const emit = defineEmits<{ (e: 'updated'): void }>()
@@ -28,6 +30,8 @@ const name = ref('')
 const system = ref<CampaignSystem>('wow-forever')
 const error = ref<string | null>(null)
 const confirmDelete = ref(false)
+const moveOpen = ref(false)
+const me = computed(() => props.campaign.members.find((m) => m.userId === user.value?.id && m.characterId))
 
 watch(open, (isOpen) => {
   if (!isOpen) return
@@ -64,6 +68,14 @@ async function handleDelete() {
   }
 }
 
+function onMoved(toId: number) {
+  if (user.value?.activeCampaignId === props.campaign.id) {
+    user.value = { ...user.value, activeCampaignId: toId }
+  }
+  // L'écran de campagne est celui du MJ : le joueur retrouve sa fiche
+  router.push('/personnage')
+}
+
 async function handleLeave() {
   try {
     await leaveCampaign(props.campaign.id)
@@ -98,13 +110,29 @@ async function handleLeave() {
       </AppButton>
     </form>
 
-    <AppButton v-else variant="danger" block @click="handleLeave">
-      <LogOut :size="16" />
-      Quitter la campagne
-    </AppButton>
+    <div v-else class="options">
+      <AppButton v-if="me" block data-testid="move-character" @click="moveOpen = true">
+        <ArrowRightLeft :size="16" />
+        Déplacer mon personnage
+      </AppButton>
+      <AppButton variant="danger" block @click="handleLeave">
+        <LogOut :size="16" />
+        Quitter la campagne
+      </AppButton>
+    </div>
 
     <p v-if="error" class="form-error">{{ error }}</p>
   </AppBottomSheet>
+
+  <MoveCharacterModal
+    v-if="me"
+    v-model="moveOpen"
+    :campaign-id="campaign.id"
+    :user-id="me.userId"
+    :character-name="me.characterName ?? 'mon personnage'"
+    :as-gm="false"
+    @moved="onMoved"
+  />
 
   <AppModal v-model="confirmDelete" title="Supprimer la campagne">
     <p class="confirm">Supprimer « {{ campaign.name }} » ? Cette action est irréversible.</p>

@@ -242,7 +242,7 @@ async function setSession(active: boolean) {
         <p v-if="error" class="form-error">{{ error }}</p>
       </template>
 
-      <MemberShortcutsSheet v-if="isGm" v-model="shortcutsFor" :campaign-id="campaign.id" />
+      <MemberShortcutsSheet v-if="isGm" v-model="shortcutsFor" :campaign-id="campaign.id" @moved="load" />
       <CombatPanelSheet
         v-if="isGm"
         v-model="showCombat"

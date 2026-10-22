@@ -13,6 +13,7 @@ Règles telles que l'app les applique. Origine : `docs/regles/Sindragosa.pdf` §
 | Désavantage | −1d6 |
 | Point de chance dépensé | +1d6 par point |
 | Objet divers lié au domaine | ±1d6 par point de l'objet (malus = objet maudit) |
+| Armure portée | −1 à −3d6 en Agilité, Endurance ou Force selon sa nature (`combat.md`) |
 
 - Avantage et désavantage ne se cumulent pas : un jet est normal, avec avantage ou avec désavantage.
 - La réserve ne descend jamais sous 0 dé ; à 0 dé, on ne peut pas lancer.

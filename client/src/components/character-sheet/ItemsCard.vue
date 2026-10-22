@@ -12,6 +12,7 @@ import { user } from '../../composables/useAuth'
 import { removeWithUndo } from '../../composables/useUndoRemove'
 import { showToast } from '../../composables/useToast'
 import { isEquippable, weaponDamage } from '../../utils/sindragosa/equipment'
+import { ARMOR_NATURE_LABELS } from '../../utils/sindragosa/armorNature'
 import { advancedDomainById, domainById } from '../../data/sindragosa/domains'
 import type { Character, ItemRow, ItemType } from '../../types/character'
 
@@ -54,7 +55,7 @@ const editorOpen = computed({
 /** La ligne sous le nom : la catégorie est déjà dans le titre du groupe. */
 function detail(item: ItemRow): string {
   if (item.type === 'arme') return `${weaponDamage(item)} dégâts`
-  if (item.type === 'armure') return `AP ${item.armor ?? 0}`
+  if (item.type === 'armure') return `AP ${item.armor ?? 0} · ${ARMOR_NATURE_LABELS[item.nature ?? 'tissu']}`
   const bonus = item.domainBonus
   if (!bonus?.dice) return ''
   const label = domainById(bonus.domainId)?.label ?? advancedDomainById(bonus.domainId)?.label ?? bonus.domainId

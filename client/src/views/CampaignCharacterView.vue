@@ -9,6 +9,7 @@ import { user } from '../composables/useAuth'
 import { showToast } from '../composables/useToast'
 import { computeMaxHp, domainRanks, progressState } from '../utils/sindragosa/sheet'
 import { initiative } from '../utils/sindragosa/combat'
+import { armorPenalties } from '../utils/sindragosa/armorNature'
 import { unlockedAbilities } from '../utils/sindragosa/prerequisites'
 import { unlockedAdvancedDomains } from '../utils/sindragosa/advanced'
 import { SPECIALTY_LEVEL_LABELS } from '../utils/sindragosa/rollSetup'
@@ -103,7 +104,8 @@ onMounted(async () => {
 })
 
 const hpMax = computed(() => (character.value ? computeMaxHp(character.value) : 0))
-const init = computed(() => (character.value ? initiative(character.value.stats, domainRanks(character.value)) : 0))
+const init = computed(() =>
+  character.value ? initiative(character.value.stats, domainRanks(character.value), armorPenalties(character.value).init) : 0)
 const unlocked = computed(() => (character.value ? unlockedAbilities(progressState(character.value)) : []))
 const unlockedAdvanced = computed(() =>
   character.value ? unlockedAdvancedDomains(progressState(character.value), unlocked.value) : [],

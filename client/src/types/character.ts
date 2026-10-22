@@ -2,6 +2,7 @@
 
 import type { EtatEntry } from '../data/etats'
 import type { StatId } from '../data/sindragosa/domains'
+import type { ArmorNature } from '../utils/sindragosa/armorNature'
 import type { FormId } from '../data/sindragosa/forms'
 import type { GameSystemId } from '../data/systems'
 import type { KnightSheet } from './knight'
@@ -25,6 +26,8 @@ export interface ItemRow {
   domainId?: string
   /** Armure : Armure Physique apportée quand elle est équipée. */
   armor?: number
+  /** Armure : tissu, cuir, maille ou plaque, qui fixe ses malus (absente = tissu). */
+  nature?: ArmorNature
   /** Objet divers : ±d6 sur les jets d'un domaine, tant qu'il est dans l'inventaire (malus = objet maudit). */
   domainBonus?: { domainId: string; dice: number }
 }

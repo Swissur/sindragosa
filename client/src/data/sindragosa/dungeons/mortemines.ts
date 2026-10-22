@@ -516,7 +516,7 @@ const butinRhahkZor: LootItem[] = [
 ]
 
 const butinJohnson: LootItem[] = [
-  { name: 'Targe plaquée or', type: 'armure', armor: 1, description: 'Bouclier. Équipée : +3 PV max (bonus de PV).', chance: 41 },
+  { name: 'Targe plaquée or', type: 'armure', armor: 1, nature: 'cuir', description: 'Bouclier. Équipée : +3 PV max (bonus de PV).', chance: 41 },
   { name: 'Cape de mineur', type: 'divers', description: 'Cape. Équipée : +2 PV max (bonus de PV).', chance: 55 },
 ]
 
@@ -529,7 +529,7 @@ const butinSneed: LootItem[] = [
 
 const butinGilnid: LootItem[] = [
   { name: 'Anneau somptueux', type: 'divers', description: "Unique. Équipé : une fois par combat, +1d6 à un jet de magie profane & arcanes.", chance: 38 },
-  { name: 'Pantalon de fusion', type: 'armure', armor: 1, description: 'Jambières de cuir. Équipées : +2 PV max (bonus de PV).', chance: 56 },
+  { name: 'Pantalon de fusion', type: 'armure', armor: 1, nature: 'cuir', description: 'Jambières de cuir. Équipées : +2 PV max (bonus de PV).', chance: 56 },
 ]
 
 const butinChatiment: LootItem[] = [
@@ -545,9 +545,9 @@ const butinVertepeau: LootItem[] = [
 ]
 
 const butinVanCleef: LootItem[] = [
-  { name: 'Armure défias noircie', type: 'armure', armor: 2, description: 'Ensemble Cuir défias. Équipée : +4 PV max (bonus de PV). Avec la Ceinture défias noircie : +1 armure.', chance: 15 },
+  { name: 'Armure défias noircie', type: 'armure', armor: 2, nature: 'cuir', description: 'Ensemble Cuir défias. Équipée : +4 PV max (bonus de PV). Avec la Ceinture défias noircie : +1 armure.', chance: 15 },
   { name: 'Cape de la confrérie', type: 'divers', description: "Équipée : +1d6 aux jets d'Acrobatie & Furtivité.", chance: 23 },
-  { name: 'Casaque de corsaire', type: 'armure', armor: 1, description: 'Tunique de tissu. Équipée : une fois par combat, +1d6 à un jet de Volonté & Récupération.', chance: 24 },
+  { name: 'Casaque de corsaire', type: 'armure', armor: 1, nature: 'tissu', description: 'Tunique de tissu. Équipée : une fois par combat, +1d6 à un jet de Volonté & Récupération.', chance: 24 },
   { name: 'Lame de cruauté', type: 'arme', size: 'une-main', damageBonus: 1, domainId: 'combat-precision', description: 'La lame dentelée de VanCleef.', chance: 16 },
 ]
 

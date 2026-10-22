@@ -5,6 +5,7 @@
 
 const ITEM_TYPES = ['arme', 'armure', 'consommable', 'composant', 'divers']
 const WEAPON_SIZES = ['naturelle', 'legere', 'une-main', 'deux-mains']
+const ARMOR_NATURES = ['tissu', 'cuir', 'maille', 'plaque']
 
 export interface LootEntry {
   name: string
@@ -14,6 +15,8 @@ export interface LootEntry {
   damageBonus?: number
   domainId?: string
   armor?: number
+  /** Armure : tissu, cuir, maille ou plaque. */
+  nature?: string
   /** Objet divers : ±d6 sur les jets d'un domaine. */
   domainBonus?: { domainId: string; dice: number }
   quantity?: number
@@ -35,6 +38,7 @@ export function sanitizeLoot(raw: unknown): LootEntry[] {
     if (typeof r.damageBonus === 'number') entry.damageBonus = r.damageBonus
     if (typeof r.domainId === 'string' && r.domainId) entry.domainId = r.domainId
     if (typeof r.armor === 'number') entry.armor = r.armor
+    if (typeof r.nature === 'string' && ARMOR_NATURES.includes(r.nature)) entry.nature = r.nature
     const bonus = r.domainBonus as { domainId?: unknown; dice?: unknown } | undefined
     if (typeof bonus?.domainId === 'string' && bonus.domainId && Number.isInteger(bonus.dice) && bonus.dice !== 0) {
       entry.domainBonus = { domainId: bonus.domainId, dice: bonus.dice as number }
@@ -45,16 +49,16 @@ export function sanitizeLoot(raw: unknown): LootEntry[] {
   })
 }
 
-/** L'objet tel qu'il entre dans l'inventaire : un id, une quantité, pas encore équipé. */
-export function toInventoryItem({ givenTo: _given, chance: _chance, quantity, ...item }: LootEntry, id: string) {
-  return { ...item, id, quantity: quantity ?? 1, equipped: false }
-}
 /** Exemplaires donnés : ceux demandés, entre 1 et ceux possédés ; tous si rien n'est demandé. */
 export function giveQuantity(requested: unknown, owned: number): number {
   if (!Number.isInteger(requested)) return owned
   return Math.min(owned, Math.max(1, requested as number))
 }
 
+/** L'objet tel qu'il entre dans l'inventaire : un id, une quantité, pas encore équipé. */
+export function toInventoryItem({ givenTo: _given, chance: _chance, quantity, ...item }: LootEntry, id: string) {
+  return { ...item, id, quantity: quantity ?? 1, equipped: false }
+}
 
 /** Le butin avec l'objet `index` attribué à `heroName` ; null s'il n'existe pas ou est déjà donné. */
 export function markGiven(loot: LootEntry[], index: number, heroName: string): LootEntry[] | null {

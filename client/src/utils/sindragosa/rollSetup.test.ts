@@ -132,3 +132,20 @@ describe('objets divers liés à un domaine', () => {
     expect(rollSetup(char({ items: [{ ...trefle, type: 'arme' as const }] }), base)!.count).toBe(5)
   })
 })
+
+describe('malus d’armure', () => {
+  const plaque = { id: 'p', name: 'Harnois', quantity: 1, type: 'armure' as const, armor: 4, equipped: true, nature: 'plaque' as const }
+
+  it('retire des dés aux jets de la carac touchée', () => {
+    const s = rollSetup(char({ items: [plaque] }), base)!
+    expect(s.count).toBe(2)
+    expect(s.parts).toContainEqual({ label: 'armure', value: -3 })
+  })
+
+  it('épargne les autres caracs et suit le rang en Armures & boucliers', () => {
+    expect(rollSetup(char({ items: [plaque] }), { ...base, domainId: 'magie-profane-arcanes' })!.parts)
+      .not.toContainEqual(expect.objectContaining({ label: 'armure' }))
+    const rodé = char({ items: [plaque], domains: { 'combat-precision': { rank: 2, ticks: 0 }, 'armures-boucliers': { rank: 5, ticks: 0 } } })
+    expect(rollSetup(rodé, base)!.count).toBe(5)
+  })
+})

@@ -14,7 +14,7 @@ Les PV restent entre 0 et le maximum.
 
 ## Initiative
 
-**Agilité + Sagesse + rang en Perception & Sens**, sans jet : c'est une valeur fixe. Les participants jouent par initiative décroissante ; à égalité, dans l'ordre où ils sont entrés dans le combat.
+**Agilité + Sagesse + rang en Perception & Sens − malus d'armure** (ci-dessous), sans jet : c'est une valeur fixe. Les participants jouent par initiative décroissante ; à égalité, dans l'ordre où ils sont entrés dans le combat.
 
 - Un joueur à 0 PV reste dans l'ordre (il est en agonie) ; un monstre à 0 PV est mort et son tour est sauté.
 - Les renforts que le MJ garde en réserve n'entrent dans l'ordre qu'une fois révélés, sans voler le tour en cours.
@@ -34,6 +34,22 @@ Le jet d'attaque d'une arme rappelle cette formule avec les dégâts de l'arme ;
 ## Armure
 
 L'**Armure Physique (AP)** se retire des dégâts reçus. Elle vaut 0 de base et n'est modifiée **que par l'équipement et les compétences** : AP = somme des armures **équipées** dans l'inventaire + bonus des compétences (réglé à la main en mode édition). Celle des monstres vient du bestiaire (`bestiaire.md`).
+
+### Nature et malus
+
+Chaque armure a une nature. La **plus lourde des armures équipées** impose ses malus : des d6 en moins sur les jets lancés avec la carac touchée (domaine de base ou avancé), et des points d'initiative en moins.
+
+| Nature | Agilité | Endurance | Force | Initiative |
+|---|---|---|---|---|
+| Tissu | — | — | — | — |
+| Cuir | −1d6 | — | — | −1 |
+| Maille | −2d6 | −1d6 | — | −2 |
+| Plaque | −3d6 | −2d6 | −1d6 | −3 |
+
+Le rang en **Armures & boucliers** annule les malus de faible valeur, en cumulant : rang 1 → ceux de 1, rang 3 → ceux de 1 et 2, rang 5 → tous. Exemple : en plaque au rang 3, il reste −3d6 en Agilité et −3 en initiative.
+
+- Une armure sans nature compte comme du tissu.
+- Armures fabriquées : la forge donne de la plaque (les mailles et le plastron de recrue en fer : maille), le travail du cuir du cuir (les écailles : maille). Un bouclier suit ses matériaux : bois et cuir → cuir, fer → maille, acier ou mieux → plaque.
 
 ## Armes
 

@@ -35,9 +35,12 @@ export function maxHp({ end, endAtCreation, domainRanks }: HpInput): number {
   return hp + Math.max(0, end - endAtCreation) * HP_PER_ENDURANCE_POINT
 }
 
-/** Initiative = Agilité + Sagesse + rang en Perception & Sens. Ordre de jeu décroissant. */
-export function initiative(stats: Record<StatId, number>, domainRanks: Record<string, number>): number {
-  return stats.agi + stats.wis + (domainRanks['perception-sens'] ?? 0)
+/**
+ * Initiative = Agilité + Sagesse + rang en Perception & Sens − malus de l'armure
+ * (`armorPenalties(c).init`). Ordre de jeu décroissant.
+ */
+export function initiative(stats: Record<StatId, number>, domainRanks: Record<string, number>, armorMalus = 0): number {
+  return stats.agi + stats.wis + (domainRanks['perception-sens'] ?? 0) - armorMalus
 }
 
 export interface AttackOutcome {

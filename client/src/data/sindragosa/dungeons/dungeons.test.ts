@@ -5,6 +5,12 @@ import { dungeonEncounters } from '../../../utils/sindragosa/dungeons'
 import { DOMAINS } from '../domains'
 
 describe('donjons', () => {
+  it('chaque armure de butin a une nature (tissu, cuir, maille, plaque)', () => {
+    const armors = DUNGEONS.flatMap((d) => d.encounters.flatMap((e) => e.loot ?? [])).filter((i) => i.type === 'armure')
+    expect(armors.length).toBeGreaterThan(0)
+    expect(armors.filter((i) => !i.nature).map((i) => i.name)).toEqual([])
+  })
+
   it('chaque combat ne cite que des monstres de son donjon', () => {
     for (const d of DUNGEONS) expect(() => dungeonEncounters(d), d.name).not.toThrow()
   })

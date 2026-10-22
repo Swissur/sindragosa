@@ -10,6 +10,7 @@ import {
 } from '../api/characters'
 import { computeMaxHp, progressState, domainRanks } from '../utils/sindragosa/sheet'
 import { initiative } from '../utils/sindragosa/combat'
+import { armorPenalties } from '../utils/sindragosa/armorNature'
 import { maxMana } from '../utils/sindragosa/mana'
 import { effectiveArmor } from '../utils/sindragosa/equipment'
 import { unlockedAbilities } from '../utils/sindragosa/prerequisites'
@@ -148,9 +149,10 @@ export const knightValues = computed(() => (character.value.knight ? knightDeriv
 /** PV max selon les règles du système : Sindragosa (+ bonus divers), ou la Santé de Knight. */
 export const computedHp = computed(() => knightValues.value?.santeMax ?? computeMaxHp(character.value))
 
-/** Initiative = AGI + SAG + rang en Perception & Sens (Knight : carac de Masque + overdrive). */
+/** Initiative = AGI + SAG + rang en Perception & Sens − malus d'armure (Knight : carac de Masque + overdrive). */
 export const computedInitiative = computed(() =>
-  knightValues.value?.initiative ?? initiative(character.value.stats, domainRanks(character.value)))
+  knightValues.value?.initiative
+    ?? initiative(character.value.stats, domainRanks(character.value), armorPenalties(character.value).init))
 
 /** Compétences dont tous les prérequis sont réunis. Knight n'en a pas. */
 export const unlocked = computed(() => (character.value.knight ? [] : unlockedAbilities(progressState(character.value))))

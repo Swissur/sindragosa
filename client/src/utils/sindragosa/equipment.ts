@@ -7,6 +7,7 @@ import type { Recipe } from '../../data/sindragosa/types'
 import type { WeaponReach } from '../../data/sindragosa/abilityAttacks'
 import { formById, type Form } from '../../data/sindragosa/forms'
 import { isConsumableRecipe } from './consumables'
+import { ARMOR_RECIPE_NATURES } from '../../data/sindragosa/armorNatures'
 
 /** Dégâts fixes selon le gabarit (à tester en jeu). */
 export const WEAPON_DAMAGE: Record<WeaponSize, number> = { naturelle: 1, legere: 2, 'une-main': 3, 'deux-mains': 5 }
@@ -116,7 +117,7 @@ export function itemFromRecipe(recipe: Recipe, id: string = crypto.randomUUID())
   if (/^Arme\b/i.test(recipe.effect)) {
     return { ...base, type: 'arme', equipped: false, size: weaponSize(text), damageBonus: 0, domainId: weaponDomain(text) }
   }
-  if (armor) return { ...base, type: 'armure', equipped: false, armor: Number(armor[1]) }
+  if (armor) return { ...base, type: 'armure', equipped: false, armor: Number(armor[1]), nature: ARMOR_RECIPE_NATURES[recipe.id] }
   if (/composant/i.test(recipe.effect)) return { ...base, type: 'composant' }
   if (isConsumableRecipe(recipe.id)) return { ...base, type: 'consommable' }
   return { ...base, type: 'divers' }

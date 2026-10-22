@@ -10,6 +10,7 @@ import AppTextarea from '../ui/AppTextarea.vue'
 import { ADVANCED_DOMAINS, DOMAINS } from '../../data/sindragosa/domains'
 import { COMPONENT_NAMES, findComponentName } from '../../utils/sindragosa/crafting'
 import { CONSUMABLE_NAMES, findConsumableName } from '../../utils/sindragosa/consumables'
+import { ARMOR_NATURES, ARMOR_NATURE_LABELS } from '../../utils/sindragosa/armorNature'
 import { ITEM_TYPE_LABELS, WEAPON_SIZE_LABELS, isEquippable } from '../../utils/sindragosa/equipment'
 import type { ItemRow, ItemType } from '../../types/character'
 
@@ -33,7 +34,10 @@ const type = computed({
       item.domainId ??= 'melee-bourrine'
       item.damageBonus ??= 0
     }
-    if (t === 'armure') item.armor ??= 1
+    if (t === 'armure') {
+      item.armor ??= 1
+      item.nature ??= 'tissu'
+    }
     // Une arme ou une armure est toujours unique : deux épées, ce sont deux lignes.
     if (isEquippable(item)) item.quantity = 1
     else item.equipped = false
@@ -109,7 +113,10 @@ const catalogChoice = computed({
       </template>
 
       <div v-if="item.type === 'armure'" class="editor-line">
-        <span class="editor-label">Armure Physique</span>
+        <AppSelect :model-value="item.nature ?? 'tissu'" class="editor-grow" data-testid="item-nature" @update:model-value="item.nature = $event">
+          <option v-for="n in ARMOR_NATURES" :key="n" :value="n">{{ ARMOR_NATURE_LABELS[n] }}</option>
+        </AppSelect>
+        <span class="editor-label">AP</span>
         <AppStepper :model-value="item.armor ?? 0" :min="0" @update:model-value="item.armor = $event" label="Armure Physique" testid="item-armor" />
       </div>
 

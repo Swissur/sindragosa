@@ -284,13 +284,13 @@ const butinTaragaman: LootItem[] = [
 
 const butinJergosh: LootItem[] = [
   { name: 'Lame psalmodiante', type: 'arme', size: 'legere', domainId: 'combat-precision', description: "Dague. Équipée : une fois par combat, +1d6 à un jet de magie de l'ombre & gangrène.", chance: 16 },
-  { name: "Robe d'évocation", type: 'armure', armor: 1, description: 'Robe de tissu. Équipée : +1 aux dégâts de ses sorts de feu.', chance: 36 },
-  { name: 'Brassards de troglodyte', type: 'armure', armor: 1, description: 'Brassards de mailles. Équipés : +2 PV max (bonus de PV).', chance: 33 },
+  { name: "Robe d'évocation", type: 'armure', armor: 1, nature: 'tissu', description: 'Robe de tissu. Équipée : +1 aux dégâts de ses sorts de feu.', chance: 36 },
+  { name: 'Brassards de troglodyte', type: 'armure', armor: 1, nature: 'maille', description: 'Brassards de mailles. Équipés : +2 PV max (bonus de PV).', chance: 33 },
 ]
 
 const butinBazzalan: LootItem[] = [
   { name: 'Dague brûlante', type: 'arme', size: 'legere', domainId: 'combat-precision', description: 'Dague dont la lame reste tiède. Équipée : +1 dégât de feu.', chance: 30 },
-  { name: 'Marche-gouffre', type: 'armure', armor: 1, description: 'Bottes de cuir. Équipées : +1d6 aux jets d’Athlétisme pour grimper ou sauter.', chance: 30 },
+  { name: 'Marche-gouffre', type: 'armure', armor: 1, nature: 'cuir', description: 'Bottes de cuir. Équipées : +1d6 aux jets d’Athlétisme pour grimper ou sauter.', chance: 30 },
   { name: 'Cape en peau de satyre', type: 'divers', description: 'Cape. Équipée : +1d6 aux jets d’Acrobatie & Furtivité.', chance: 30 },
 ]
 

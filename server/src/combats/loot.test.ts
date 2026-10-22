@@ -6,11 +6,15 @@ describe('sanitizeLoot', () => {
     expect(sanitizeLoot([
       { name: ' Marteau ', type: 'arme', size: 'deux-mains', damageBonus: 1, domainId: 'melee-bourrine', hack: true },
       { name: 'Cape', type: 'inconnu', armor: 1, quantity: 1, chance: 55 },
+      { name: 'Haubert', type: 'armure', armor: 3, nature: 'maille' },
+      { name: 'Toge', type: 'armure', armor: 1, nature: 'velours' },
       { name: '' },
       'pas un objet',
     ])).toEqual([
       { name: 'Marteau', type: 'arme', size: 'deux-mains', damageBonus: 1, domainId: 'melee-bourrine' },
       { name: 'Cape', armor: 1, chance: 55 },
+      { name: 'Haubert', type: 'armure', armor: 3, nature: 'maille' },
+      { name: 'Toge', type: 'armure', armor: 1 },
     ])
   })
 

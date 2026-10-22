@@ -8,6 +8,7 @@ import { bestAdvancedStat } from './advanced'
 import { poolSize, type PoolResult, type SpecialtyLevel } from './pool'
 import { canTick, type TickReason } from './progression'
 import { itemDomainBonus } from './equipment'
+import { armorPenalties } from './armorNature'
 import type { PoolDieSource, SindragosaPool } from '../rollOutcome'
 
 export type RollMode = 'desavantage' | 'normal' | 'avantage'
@@ -61,6 +62,8 @@ export function rollSetup(c: Character, choice: RollChoice): RollSetup | null {
   const luck = Math.max(0, Math.min(choice.luck, c.pcCurrent))
   const power = choice.power ?? 0
   const items = itemDomainBonus(c, choice.domainId)
+  const penalties = armorPenalties(c)
+  const armor = target.statId === 'agi' || target.statId === 'end' || target.statId === 'str' ? penalties[target.statId] : 0
 
   const parts = [
     { label: STATS.find((st) => st.id === target.statId)!.abbr, value: stat },
@@ -71,9 +74,10 @@ export function rollSetup(c: Character, choice: RollChoice): RollSetup | null {
   if (advantages) parts.push({ label: 'avantage', value: 1 })
   if (disadvantages) parts.push({ label: 'désavantage', value: -1 })
   if (items) parts.push({ label: 'objets', value: items })
+  if (armor) parts.push({ label: 'armure', value: -armor })
   if (luck) parts.push({ label: 'chance', value: luck })
 
-  const count = poolSize({ stat, domainRank: rank, specialtyLevel, advantages, disadvantages, luck, power, items })
+  const count = poolSize({ stat, domainRank: rank, specialtyLevel, advantages, disadvantages, luck, power, items, armor })
   return { kind: target.kind, count, specialtyLevel, parts, sources: poolSources(stat, rank, specialtyLevel, power, advantages, Math.max(0, items), luck, count) }
 }
 

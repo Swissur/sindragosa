@@ -1,15 +1,18 @@
 /**
  * Initiative d'un PJ en combat, selon le système de sa fiche (plans/43).
  *
- * - WoW Forever : Agilité + Sagesse + rang en Perception & Sens
+ * - WoW Forever : Agilité + Sagesse + rang en Perception & Sens − malus d'armure
  *   (docs/regles/Sindragosa.pdf § 4.A), même formule que client/src/utils/sindragosa/combat.ts.
  * - Knight : carac de Masque choisie + son overdrive, lus dans `sheet`
  *   (même lecture que client/src/utils/knight/sheet.ts).
  */
+import { armorInitiativeMalus } from './armorInitiative.js'
+
 export interface InitiativeCharacter {
   agi: number
   wis: number
   domains: Record<string, { rank: number }>
+  items?: unknown
   system?: string
   sheet?: unknown
 }
@@ -17,6 +20,7 @@ export interface InitiativeCharacter {
 export function computeInitiative(char: InitiativeCharacter): number {
   if (char.system === 'knight') return knightInitiative(char.sheet)
   return char.agi + char.wis + (char.domains['perception-sens']?.rank ?? 0)
+    - armorInitiativeMalus(char.items, char.domains['armures-boucliers']?.rank ?? 0)
 }
 
 const record = (v: unknown): Record<string, unknown> =>

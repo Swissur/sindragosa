@@ -14,6 +14,20 @@ describe('sanitizeLoot', () => {
     ])
   })
 
+  it('garde le bonus de domaine d’un objet divers, s’il est valide', () => {
+    expect(sanitizeLoot([
+      { name: 'Trèfle', type: 'divers', domainBonus: { domainId: 'athletisme', dice: 1 } },
+      { name: 'Anneau maudit', type: 'divers', domainBonus: { domainId: 'perception-sens', dice: -2 } },
+      { name: 'Caillou', domainBonus: { domainId: 'athletisme', dice: 0 } },
+      { name: 'Plume', domainBonus: { dice: 1 } },
+    ])).toEqual([
+      { name: 'Trèfle', type: 'divers', domainBonus: { domainId: 'athletisme', dice: 1 } },
+      { name: 'Anneau maudit', type: 'divers', domainBonus: { domainId: 'perception-sens', dice: -2 } },
+      { name: 'Caillou' },
+      { name: 'Plume' },
+    ])
+  })
+
   it('un butin absent ou invalide est vide', () => {
     expect(sanitizeLoot(undefined)).toEqual([])
     expect(sanitizeLoot({ name: 'x' })).toEqual([])

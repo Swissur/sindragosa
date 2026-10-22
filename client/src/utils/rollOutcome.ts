@@ -48,7 +48,7 @@ export interface KnightPool {
  * un sort Puissant, la chance ou l'avantage. Knight : la carac de base, celle du combo, la relance d'exploit.
  */
 export type PoolDieSource =
-  | 'stat' | 'domaine' | 'specialite' | 'puissance' | 'chance' | 'avantage'
+  | 'stat' | 'domaine' | 'specialite' | 'puissance' | 'chance' | 'avantage' | 'objet'
   | 'base' | 'combo' | 'exploit'
 
 /**

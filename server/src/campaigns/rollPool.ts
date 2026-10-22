@@ -23,10 +23,10 @@ export interface KnightPool {
 }
 
 export type PoolDieSource =
-  | 'stat' | 'domaine' | 'specialite' | 'puissance' | 'chance' | 'avantage'
+  | 'stat' | 'domaine' | 'specialite' | 'puissance' | 'chance' | 'avantage' | 'objet'
   | 'base' | 'combo' | 'exploit'
 
-const SOURCES = new Set(['stat', 'domaine', 'specialite', 'puissance', 'chance', 'avantage', 'base', 'combo', 'exploit'])
+const SOURCES = new Set(['stat', 'domaine', 'specialite', 'puissance', 'chance', 'avantage', 'objet', 'base', 'combo', 'exploit'])
 /** Une réserve ne dépasse jamais quelques dizaines de dés ; au-delà, c'est du bruit. */
 const MAX_SOURCES = 40
 

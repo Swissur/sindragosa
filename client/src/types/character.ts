@@ -25,6 +25,8 @@ export interface ItemRow {
   domainId?: string
   /** Armure : Armure Physique apportée quand elle est équipée. */
   armor?: number
+  /** Objet divers : ±d6 sur les jets d'un domaine, tant qu'il est dans l'inventaire (malus = objet maudit). */
+  domainBonus?: { domainId: string; dice: number }
 }
 
 /** Rang d'un domaine (ou domaine avancé) et coches accumulées vers le rang suivant. */

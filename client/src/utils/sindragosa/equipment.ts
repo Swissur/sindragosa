@@ -27,6 +27,14 @@ export const ITEM_TYPE_LABELS: Record<ItemType, string> = {
 
 export const isEquippable = (item: ItemRow) => item.type === 'arme' || item.type === 'armure'
 
+/** Dés gagnés (ou perdus) sur ce domaine grâce aux objets divers de l'inventaire. */
+export function itemDomainBonus(c: Character, domainId: string): number {
+  return c.items.reduce(
+    (sum, i) => sum + ((i.type ?? 'divers') === 'divers' && i.domainBonus?.domainId === domainId ? i.domainBonus.dice : 0),
+    0,
+  )
+}
+
 export function weaponDamage(item: ItemRow): number {
   return WEAPON_DAMAGE[item.size ?? 'une-main'] + (item.damageBonus ?? 0)
 }

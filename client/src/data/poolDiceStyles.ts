@@ -4,7 +4,7 @@ import type { PoolDieSource } from '../utils/rollOutcome'
 /**
  * Les couleurs fixes des dés d'un jet de compétence : on lit d'un coup d'œil
  * ce que la caractéristique, le domaine, la spécialité, un sort Puissant, la
- * chance et l'avantage ont apporté (en Knight : la carac de base, le combo, l'exploit). Le style choisi dans les options ne s'y applique pas : il reste
+ * chance, l'avantage et les objets ont apporté (en Knight : la carac de base, le combo, l'exploit). Le style choisi dans les options ne s'y applique pas : il reste
  * pour les lancers libres demandés par le MJ.
  */
 export const POOL_DICE_STYLES: Record<PoolDieSource, DiceStyle> = {
@@ -14,6 +14,7 @@ export const POOL_DICE_STYLES: Record<PoolDieSource, DiceStyle> = {
   puissance: { bg: { type: 'gradient', from: '#c89cf5', to: '#5b2391', angle: 160 }, ink: null, font: null },
   chance: { bg: { type: 'gradient', from: '#8fde6a', to: '#1f6b30', angle: 160 }, ink: '#0d2410', font: null },
   avantage: { bg: { type: 'gradient', from: '#f6dc8f', to: '#a5741f', angle: 160 }, ink: '#241a0d', font: null },
+  objet: { bg: { type: 'gradient', from: '#6ee0d2', to: '#13706b', angle: 160 }, ink: '#062421', font: null },
   // Knight : la carac de base, celle du combo, la relance d'exploit
   base: { bg: { type: 'gradient', from: '#b4bac2', to: '#5d646d', angle: 160 }, ink: '#14171b', font: null },
   combo: { bg: { type: 'gradient', from: '#5aa9ec', to: '#173f8a', angle: 160 }, ink: null, font: null },

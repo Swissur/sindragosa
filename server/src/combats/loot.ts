@@ -14,6 +14,8 @@ export interface LootEntry {
   damageBonus?: number
   domainId?: string
   armor?: number
+  /** Objet divers : ±d6 sur les jets d'un domaine. */
+  domainBonus?: { domainId: string; dice: number }
   quantity?: number
   /** Chance relative au tirage : sert au butin, pas à l'inventaire. */
   chance?: number
@@ -33,6 +35,10 @@ export function sanitizeLoot(raw: unknown): LootEntry[] {
     if (typeof r.damageBonus === 'number') entry.damageBonus = r.damageBonus
     if (typeof r.domainId === 'string' && r.domainId) entry.domainId = r.domainId
     if (typeof r.armor === 'number') entry.armor = r.armor
+    const bonus = r.domainBonus as { domainId?: unknown; dice?: unknown } | undefined
+    if (typeof bonus?.domainId === 'string' && bonus.domainId && Number.isInteger(bonus.dice) && bonus.dice !== 0) {
+      entry.domainBonus = { domainId: bonus.domainId, dice: bonus.dice as number }
+    }
     if (typeof r.quantity === 'number' && r.quantity > 1) entry.quantity = r.quantity
     if (typeof r.chance === 'number' && r.chance > 0) entry.chance = r.chance
     return [entry]

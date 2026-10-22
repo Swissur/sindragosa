@@ -108,3 +108,27 @@ describe('tickReasonFor', () => {
     expect(tickReasonFor(roll([6]), { success: 2, critFail: 0 })).toBeNull()
   })
 })
+
+describe('objets divers liés à un domaine', () => {
+  const trefle = { id: 't', name: 'Trèfle', quantity: 1, type: 'divers' as const, domainBonus: { domainId: 'combat-precision', dice: 1 } }
+  const maudit = { id: 'm', name: 'Anneau maudit', quantity: 1, type: 'divers' as const, domainBonus: { domainId: 'combat-precision', dice: -2 } }
+
+  it('un bonus ajoute des dés, colorés « objet »', () => {
+    const s = rollSetup(char({ items: [trefle] }), base)!
+    expect(s.count).toBe(6)
+    expect(s.parts).toContainEqual({ label: 'objets', value: 1 })
+    expect(s.sources).toContain('objet')
+  })
+
+  it('les objets se cumulent, un malus entame la base', () => {
+    const s = rollSetup(char({ items: [trefle, maudit] }), base)!
+    expect(s.count).toBe(4)
+    expect(s.parts).toContainEqual({ label: 'objets', value: -1 })
+    expect(s.sources).not.toContain('objet')
+  })
+
+  it('n’agit que sur son domaine, et seulement en objet divers', () => {
+    expect(rollSetup(char({ items: [trefle] }), { ...base, domainId: 'athletisme' })!.parts).not.toContainEqual(expect.objectContaining({ label: 'objets' }))
+    expect(rollSetup(char({ items: [{ ...trefle, type: 'arme' as const }] }), base)!.count).toBe(5)
+  })
+})

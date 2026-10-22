@@ -7,12 +7,16 @@ import AppInput from '../ui/AppInput.vue'
 import AppSelect from '../ui/AppSelect.vue'
 import AppStepper from '../ui/AppStepper.vue'
 import AppTextarea from '../ui/AppTextarea.vue'
-import { DOMAINS } from '../../data/sindragosa/domains'
+import { ADVANCED_DOMAINS, DOMAINS } from '../../data/sindragosa/domains'
 import { COMPONENT_NAMES, findComponentName } from '../../utils/sindragosa/crafting'
 import { ITEM_TYPE_LABELS, WEAPON_SIZE_LABELS, isEquippable } from '../../utils/sindragosa/equipment'
 import type { ItemRow, ItemType } from '../../types/character'
 
-/** Édition d'un objet : type et quantité, puis gabarit et domaine d'une arme ou AP d'une armure, puis nom et description. */
+/**
+ * Édition d'un objet : type et quantité, puis gabarit et domaine d'une arme, AP
+ * d'une armure ou domaine lié d'un objet divers (±d6, malus = objet maudit),
+ * puis nom et description.
+ */
 const props = defineProps<{ item: ItemRow | null; canGive?: boolean }>()
 const open = defineModel<boolean>({ required: true })
 const emit = defineEmits<{ (e: 'remove'): void; (e: 'duplicate'): void; (e: 'give'): void }>()
@@ -32,6 +36,24 @@ const type = computed({
     // Une arme ou une armure est toujours unique : deux épées, ce sont deux lignes.
     if (isEquippable(item)) item.quantity = 1
     else item.equipped = false
+  },
+})
+
+/** Objet divers : le domaine qu'il aide (ou gêne), '' = aucun. */
+const bonusDomain = computed({
+  get: () => props.item?.domainBonus?.domainId ?? '',
+  set: (domainId: string) => {
+    const item = props.item
+    if (!item) return
+    if (domainId) item.domainBonus = { domainId, dice: item.domainBonus?.dice ?? 1 }
+    else delete item.domainBonus
+  },
+})
+const bonusDice = computed({
+  get: () => props.item?.domainBonus?.dice ?? 0,
+  set: (dice: number) => {
+    const bonus = props.item?.domainBonus
+    if (bonus) props.item!.domainBonus = { ...bonus, dice }
   },
 })
 
@@ -80,6 +102,21 @@ const componentChoice = computed({
       <div v-if="item.type === 'armure'" class="editor-line">
         <span class="editor-label">Armure Physique</span>
         <AppStepper :model-value="item.armor ?? 0" :min="0" @update:model-value="item.armor = $event" label="Armure Physique" testid="item-armor" />
+      </div>
+
+      <div v-if="(item.type ?? 'divers') === 'divers'" class="editor-line">
+        <AppSelect v-model="bonusDomain" class="editor-grow" data-testid="item-bonus-domain">
+          <option value="">Aucun domaine lié</option>
+          <optgroup label="Domaines">
+            <option v-for="d in DOMAINS" :key="d.id" :value="d.id">{{ d.label }}</option>
+          </optgroup>
+          <optgroup label="Domaines avancés">
+            <option v-for="d in ADVANCED_DOMAINS" :key="d.id" :value="d.id">{{ d.label }}</option>
+          </optgroup>
+        </AppSelect>
+        <AppStepper v-if="item.domainBonus" v-model="bonusDice" :min="-3" :max="3" label="Dés en plus ou en moins" testid="item-bonus-dice">
+          {{ bonusDice > 0 ? '+' : '' }}{{ bonusDice }}d6
+        </AppStepper>
       </div>
 
       <AppSelect v-if="item.type === 'composant'" v-model="componentChoice" data-testid="item-component">

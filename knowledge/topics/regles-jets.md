@@ -12,9 +12,11 @@ Règles telles que l'app les applique. Origine : `docs/regles/Sindragosa.pdf` §
 | Avantage | +1d6 |
 | Désavantage | −1d6 |
 | Point de chance dépensé | +1d6 par point |
+| Objet divers lié au domaine | ±1d6 par point de l'objet (malus = objet maudit) |
 
 - Avantage et désavantage ne se cumulent pas : un jet est normal, avec avantage ou avec désavantage.
 - La réserve ne descend jamais sous 0 dé ; à 0 dé, on ne peut pas lancer.
+- Un objet de type Divers peut être lié à un domaine avec un bonus ou un malus de dés. Il agit tant qu'il est dans l'inventaire, sans être équipé ; plusieurs objets se cumulent.
 - La spécialité est facultative. Le joueur choisit parmi celles du domaine lancé ; elle doit correspondre exactement à l'action.
 - **Domaine avancé** : on lance la plus haute des caractéristiques liées à ses prérequis + son rang, sans spécialité.
 

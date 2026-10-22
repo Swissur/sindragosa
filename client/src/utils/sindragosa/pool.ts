@@ -18,6 +18,8 @@ export interface PoolInput {
   luck?: number
   /** Sort lancé en concentration Puissante (+1d6, plans/40-mana.md). */
   power?: number
+  /** Dés des objets divers liés au domaine : positif = bonus, négatif = malus. */
+  items?: number
 }
 
 /**
@@ -27,7 +29,7 @@ export interface PoolInput {
 export function poolSize(input: PoolInput): number {
   const specialtyDie = (input.specialtyLevel ?? 0) >= 2 ? 1 : 0
   const n = input.stat + input.domainRank + specialtyDie
-    + (input.advantages ?? 0) - (input.disadvantages ?? 0) + (input.luck ?? 0) + (input.power ?? 0)
+    + (input.advantages ?? 0) - (input.disadvantages ?? 0) + (input.luck ?? 0) + (input.power ?? 0) + (input.items ?? 0)
   return Math.max(0, n)
 }
 

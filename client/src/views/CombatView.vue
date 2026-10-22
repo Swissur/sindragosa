@@ -288,6 +288,11 @@ function canAdjustHp(p: CombatParticipant): boolean {
   return p.userId === user.value?.id;
 }
 
+// Comme le serveur : les états d'un monstre sont au MJ, ceux d'un PJ au MJ et au joueur.
+function canEditEtats(p: CombatParticipant): boolean {
+  return isGm.value || (p.kind === "player" && p.userId === user.value?.id);
+}
+
 // ── Jets des monstres : réserves de d6 (plans/33) ─────────────────────────
 interface MonsterPoolRoll {
   dice: number[]
@@ -546,13 +551,13 @@ function goBack() {
             <!-- Expanded: les états. Les pastilles ne togglent pas : la cible
                  tactile serait trop petite, tout passe par la sheet. -->
             <div
-              v-if="expandedId === p.id && (isGm || p.states.length > 0)"
+              v-if="expandedId === p.id && (canEditEtats(p) || p.states.length > 0)"
               class="card-etats-row"
               @click.stop
             >
               <EtatsRow :states="p.states" size="sm" />
               <AppIconBtn
-                v-if="isGm"
+                v-if="canEditEtats(p)"
                 title="États"
                 :data-testid="`open-etats-${p.id}`"
                 @click="etatsTargetId = p.id"

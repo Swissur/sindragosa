@@ -60,7 +60,10 @@ async function endTurnEtats(campaignId: number, participant: typeof combatPartic
     if (member?.characterId == null) return
     const [char] = await db.select({ states: characters.states }).from(characters).where(eq(characters.id, member.characterId))
     if (!char?.states.some((e) => e.turns !== undefined)) return
-    await db.update(characters).set({ states: tickEtats(char.states), updatedAt: new Date() }).where(eq(characters.id, member.characterId))
+    const states = tickEtats(char.states)
+    await db.update(characters).set({ states, updatedAt: new Date() }).where(eq(characters.id, member.characterId))
+    // La fiche du joueur suit, sinon sa sauvegarde auto remettrait les anciens états
+    broadcastCampaignEvent(campaignId, 'character', { userId: participant.userId, characterId: member.characterId, patch: { states } })
     return
   }
   if (!participant.states.some((e) => e.turns !== undefined)) return
@@ -106,6 +109,12 @@ router.post('/:id/combats', async (req, res) => {
   const check = await verifyGm(campaignId, userId)
   if (check.status === 'not_found') { res.status(404).json({ error: 'Campagne introuvable' }); return }
   if (check.status === 'forbidden') { res.status(403).json({ error: 'Réservé au MJ' }); return }
+
+  // Un seul combat actif par campagne : sinon « Terminer » en arrête un et
+  // le bandeau ressort l'autre, qui semble ne jamais s'arrêter.
+  const [running] = await db.select({ id: combats.id }).from(combats)
+    .where(and(eq(combats.campaignId, campaignId), eq(combats.status, 'active'))).limit(1)
+  if (running) { res.status(409).json({ error: 'Un combat est déjà en cours dans cette campagne' }); return }
 
   // Determine combat name
   let combatName = name?.trim() || 'Combat'
@@ -392,6 +401,8 @@ router.patch('/:id/combats/:cid/participants/:pid/states', async (req, res) => {
       .where(and(eq(campaignMembers.campaignId, campaignId), eq(campaignMembers.userId, participant.userId)))
     if (member?.characterId != null) {
       await db.update(characters).set({ states: cleaned, updatedAt: new Date() }).where(eq(characters.id, member.characterId))
+      // La fiche du joueur suit, sinon sa sauvegarde auto remettrait les anciens états
+      broadcastCampaignEvent(campaignId, 'character', { userId: participant.userId, characterId: member.characterId, patch: { states: cleaned } })
     }
   } else {
     await db.update(combatParticipants).set({ states: cleaned }).where(eq(combatParticipants.id, pid))

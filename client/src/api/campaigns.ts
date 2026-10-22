@@ -169,7 +169,7 @@ export function patchMemberCharacter(campaignId: number, userId: number, patch: 
 export interface CharacterPatchEvent {
   userId: number
   characterId: number
-  patch: GmCharacterPatch | Pick<ServerCharacter, 'items'>
+  patch: GmCharacterPatch | Pick<ServerCharacter, 'items'> | Pick<ServerCharacter, 'states'>
   /** Nom de l'objet reçu quand le patch vient du butin d'un combat ou d'un autre joueur. */
   loot?: string
   /** Nom du personnage qui a donné l'objet. */

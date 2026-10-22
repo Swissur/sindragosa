@@ -1,13 +1,14 @@
-import { asc, eq } from 'drizzle-orm'
+import { and, asc, eq } from 'drizzle-orm'
 import { Router } from 'express'
 import { db } from '../db/index.js'
-import { campaigns, users } from '../db/schema.js'
+import { campaigns, combats, users } from '../db/schema.js'
 import { signToken } from '../auth/jwt.js'
 import { toAvatarLink } from '../avatarUrl.js'
 import { devToolsEnabled } from './enabled.js'
 import { seedDev } from './seed.js'
 import { createPresetCombat, PRESETS, type PresetId } from './presets.js'
 import { broadcastCombatState } from '../combats/sseStore.js'
+import { broadcastCampaignEvent } from '../campaigns/sseStore.js'
 
 const router = Router()
 
@@ -87,8 +88,17 @@ router.post('/combat', async (req, res) => {
   const [campaign] = await db.select().from(campaigns).where(eq(campaigns.id, campaignId))
   if (!campaign) { res.status(404).json({ error: 'Campagne introuvable' }); return }
 
+  // Un seul combat actif par campagne (comme la vraie route) : le précédent s'arrête
+  const stopped = await db.update(combats).set({ status: 'finished', finishedAt: new Date() })
+    .where(and(eq(combats.campaignId, campaignId), eq(combats.status, 'active'))).returning({ id: combats.id })
+  for (const c of stopped) {
+    await broadcastCombatState(c.id, campaign.gmUserId)
+    broadcastCampaignEvent(campaignId, 'combat', { combatId: c.id, status: 'finished' })
+  }
+
   const result = await createPresetCombat(campaignId, preset as PresetId)
   await broadcastCombatState(result.combatId, campaign.gmUserId)
+  broadcastCampaignEvent(campaignId, 'combat', { combatId: result.combatId, status: 'active' })
   console.log(`[dev] combat "${preset}" → id=${result.combatId} (${result.participantCount} participants)`)
   res.status(201).json(result)
 })

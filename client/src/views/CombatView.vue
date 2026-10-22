@@ -52,12 +52,16 @@ import ActionsPanel from "../components/actions/ActionsPanel.vue";
 import LootSheet from "../components/loot/LootSheet.vue";
 import type { CombatParticipant } from "../api/combats";
 import { showToast } from "../composables/useToast";
+import { useGmCampaign } from "../composables/useGmCampaign";
 
 const route = useRoute();
 const router = useRouter();
 
-const campaignId = Number(route.params.id);
-const combatId = Number(route.params.cid);
+// Lus depuis la route à chaque fois : le composant est réutilisé quand on passe
+// d'un combat à l'autre (lien « Fight » depuis un combat déjà ouvert).
+const campaignId = computed(() => Number(route.params.id));
+const combatId = computed(() => Number(route.params.cid));
+const { gmCampaignId } = useGmCampaign();
 
 const {
   combat,
@@ -138,7 +142,7 @@ const etatsBrief = computed(() => {
 });
 
 function applyEtats(participantId: number, states: EtatEntry[]): Promise<void> {
-  return setParticipantStates(campaignId, combatId, participantId, states);
+  return setParticipantStates(campaignId.value, combatId.value, participantId, states);
 }
 
 // Add monster bottom sheet
@@ -158,7 +162,7 @@ const absentPlayers = computed(() =>
 watch(isGm, async (gm) => {
   if (!gm || members.value.length > 0) return;
   try {
-    members.value = (await fetchCampaign(campaignId)).members;
+    members.value = (await fetchCampaign(campaignId.value)).members;
   } catch (e) {
     showToast(e instanceof Error ? e.message : "Erreur");
   }
@@ -213,17 +217,19 @@ function handleVisibility(): void {
   if (document.hidden) {
     disconnect();
   } else {
-    connect(campaignId, combatId);
+    connect(campaignId.value, combatId.value);
   }
 }
 
 // Manual resume after the inactivity timeout paused the combat.
 function resumeCombat(): void {
-  connect(campaignId, combatId);
+  connect(campaignId.value, combatId.value);
 }
 
+watch(combatId, () => connect(campaignId.value, combatId.value));
+
 onMounted(() => {
-  connect(campaignId, combatId);
+  connect(campaignId.value, combatId.value);
   document.addEventListener("visibilitychange", handleVisibility);
   window.addEventListener("pointerdown", markActivity);
 });
@@ -306,7 +312,7 @@ async function rollMonsterPool(participant: CombatParticipant, key: string, labe
   // reçoivent l'event `critical` allégé (sans le chiffre) par le SSE.
   if (r.isCriticalFailure) celebrate("fumble", participant.name);
   else if (r.reached === "exploit") celebrate("critical", participant.name);
-  postCampaignRoll(campaignId, {
+  postCampaignRoll(campaignId.value, {
     kind: damage === undefined ? "domaine" : "weapon",
     label,
     context: "combat",
@@ -369,7 +375,12 @@ function openFinishConfirm() {
 }
 
 async function handleFinish() {
-  await finish();
+  try {
+    await finish();
+  } catch (e) {
+    showToast(e instanceof Error ? e.message : "Le combat n'a pas pu être terminé");
+    return;
+  }
   showFinishConfirm.value = false;
   // Le MJ retourne à son écran ; s'il y a du butin, après l'avoir distribué.
   if (hasLoot.value) showLoot.value = true;
@@ -380,8 +391,9 @@ watch(showLoot, (open) => {
   if (!open && combat.value?.status === "finished") goBack();
 });
 
+// L'écran de campagne est celui du MJ : un joueur retourne à sa fiche.
 function goBack() {
-  router.push(`/campagnes/${campaignId}`);
+  router.push(gmCampaignId.value === campaignId.value ? `/campagnes/${campaignId.value}` : "/personnage");
 }
 </script>
 

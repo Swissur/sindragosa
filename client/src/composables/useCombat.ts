@@ -231,7 +231,7 @@ export function useCombat() {
   }
 
   async function finish(): Promise<void> {
-    if (!combat.value || !currentCampaignId) return
+    if (!combat.value || !currentCampaignId) throw new Error('Combat déconnecté : réessaie dans un instant')
     await api.finishCombat(currentCampaignId, combat.value.id)
   }
 

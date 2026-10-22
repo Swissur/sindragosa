@@ -13,6 +13,7 @@ import {
   type WallPoint,
 } from './walls'
 import { findWallMaterial, paintWallTile } from './wallMaterials'
+import { snapToCell } from './grid'
 
 export interface BattleToken {
   id: string
@@ -402,22 +403,41 @@ function buildToken(t: BattleToken): TokenView {
 
   const group = new THREE.Group()
 
+  // Héros : un cylindre lisse. Ennemi : une colonne à six pans, facettée, qui
+  // ne se confond pas avec un héros même de loin.
+  const sides = hero ? 28 : 6
   const body = new THREE.Mesh(
-    new THREE.CylinderGeometry(radius, radius * 1.05, height, 28),
-    new THREE.MeshLambertMaterial({ color }),
+    new THREE.CylinderGeometry(radius, radius * 1.05, height, sides),
+    new THREE.MeshLambertMaterial({ color, flatShading: !hero }),
   )
   body.position.y = height / 2
   body.userData.tokenId = t.id
   group.add(body)
 
   // Chapeau plus clair : ça donne du volume sans seconde lumière.
+  const capColor = color.clone().offsetHSL(0, 0, 0.18)
   const cap = new THREE.Mesh(
-    new THREE.CircleGeometry(radius, 28),
-    new THREE.MeshBasicMaterial({ color: color.clone().offsetHSL(0, 0, 0.18) }),
+    new THREE.CircleGeometry(radius, sides),
+    new THREE.MeshBasicMaterial({ color: capColor }),
   )
   cap.rotation.x = -Math.PI / 2
+  // Le cercle à 6 segments s'aligne sur les pans du corps.
+  cap.rotation.z = hero ? 0 : Math.PI / 2
   cap.position.y = height + 0.001
   group.add(cap)
+
+  // Deux cornes écartées : la silhouette de l'ennemi.
+  if (!hero) {
+    for (const side of [-1, 1]) {
+      const horn = new THREE.Mesh(
+        new THREE.ConeGeometry(radius * 0.22, radius * 0.9, 6),
+        new THREE.MeshLambertMaterial({ color: capColor, flatShading: true }),
+      )
+      horn.position.set(side * radius * 0.5, height + radius * 0.4, 0)
+      horn.rotation.z = -side * 0.45
+      group.add(horn)
+    }
+  }
 
   // Socle : le disque coloré qui dit « ce pion est à moi ».
   const disc = new THREE.Mesh(
@@ -450,18 +470,20 @@ function buildToken(t: BattleToken): TokenView {
   ring.position.y = 0.03
   group.add(ring)
 
+  // Barre, nom et états flottent au-dessus des cornes, pas dedans.
+  const top = hero ? height : height + radius * 0.75
   const { sprite: bar, draw: drawBar } = makeHpBar()
-  bar.position.y = height + 0.2
+  bar.position.y = top + 0.2
   group.add(bar)
 
   const label = makeLabelSprite(t.name, t.color)
-  label.position.y = height + 0.62
+  label.position.y = top + 0.62
   group.add(label)
 
   // Tout en haut, au-dessus du nom : ce qui arrive au personnage se lit avant
   // qui il est. En dessous : le nom, puis la barre de PV.
   const { sprite: etats, draw: drawEtats } = makeEtatsSprite(ETATS_MAX + 1)
-  etats.position.y = height + 1.05
+  etats.position.y = top + 1.05
   etats.visible = false
   group.add(etats)
 
@@ -911,9 +933,11 @@ function handleTap(e: PointerEvent) {
   if (!onGround || !selectedId.value) return
   const selected = props.tokens.find((t) => t.id === selectedId.value)
   if (!selected || !canMove(selected)) return
-  // Position libre : on pose exactement là où le doigt a touché.
-  const x = THREE.MathUtils.clamp(onGround.point.x, -half(), half())
-  const z = THREE.MathUtils.clamp(onGround.point.z, -half(), half())
+  // Grille affichée : le pion se cale au centre de la case touchée.
+  // Sinon, position libre : exactement là où le doigt a touché.
+  const { x: px, z: pz } = onGround.point
+  const x = props.showGrid ? snapToCell(px, half()) : THREE.MathUtils.clamp(px, -half(), half())
+  const z = props.showGrid ? snapToCell(pz, half()) : THREE.MathUtils.clamp(pz, -half(), half())
   emit('move', selectedId.value, x, z)
 }
 

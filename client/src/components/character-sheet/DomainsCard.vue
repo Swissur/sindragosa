@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import { computed, ref, toRef } from 'vue'
+import { computed, toRef } from 'vue'
 import AppCard from '../ui/AppCard.vue'
 import AppAccordion from '../ui/AppAccordion.vue'
-import AppButton from '../ui/AppButton.vue'
 import DomainRow from './DomainRow.vue'
 import AdvancedDomainRow from './AdvancedDomainRow.vue'
 import { ADVANCED_DOMAINS, DOMAINS, STATS, type AdvancedDomain, type StatId } from '../../data/sindragosa/domains'
@@ -12,10 +11,9 @@ import { byStat } from '../../utils/sindragosa/statGroups'
 import type { Character } from '../../types/character'
 
 /**
- * Les 30 domaines, en 6 accordéons (un par carac), repliés par défaut. Seuls les domaines entamés
- * (rang > 0 ou coches en cours) sont visibles ; les autres se déplient à la demande.
- * Suivent les domaines avancés ouverts, sous chaque carac de leurs prérequis.
- * En mode MJ, les domaines avancés encore fermés rejoignent les domaines à rang 0 : le MJ peut tout donner.
+ * Les 30 domaines, en 6 accordéons (un par carac), repliés par défaut. Déplier une carac montre
+ * tous ses domaines. Suivent les domaines avancés ouverts, sous chaque carac de leurs prérequis.
+ * En mode MJ, les domaines avancés encore fermés suivent aussi : le MJ peut tout donner.
  */
 const props = defineProps<{
   character: Character
@@ -26,7 +24,6 @@ const props = defineProps<{
 
 const emit = defineEmits<{ (e: 'remove-specialty', specialty: Character['specialties'][number]): void }>()
 
-const showAll = ref<Partial<Record<StatId, boolean>>>({})
 const { pins, isPinned, toggle } = usePins(toRef(props, 'character'))
 const advancedByStat = computed(() => byStat(props.advanced, (d) => advancedStats(d.id)))
 const lockedByStat = computed(() => byStat(
@@ -35,20 +32,7 @@ const lockedByStat = computed(() => byStat(
 ))
 const pinnedSpecialties = computed(() => pins.value.filter((p) => p.startsWith('specialty:')).map((p) => p.slice(10)))
 
-const started = (id: string) => {
-  const p = props.character.domains[id]
-  return !!p && (p.rank > 0 || p.ticks > 0)
-}
-
-function domainsOf(stat: StatId) {
-  const all = DOMAINS.filter((d) => d.stat === stat)
-  const locked = lockedByStat.value[stat] ?? []
-  return {
-    visible: all.filter((d) => started(d.id) || showAll.value[stat]),
-    locked: showAll.value[stat] ? locked : [],
-    hidden: all.filter((d) => !started(d.id)).length + locked.length,
-  }
-}
+const domainsOf = (stat: StatId) => DOMAINS.filter((d) => d.stat === stat)
 </script>
 
 <template>
@@ -60,7 +44,7 @@ function domainsOf(stat: StatId) {
       :testid="`domains-${s.id}`"
     >
       <DomainRow
-        v-for="d in domainsOf(s.id).visible"
+        v-for="d in domainsOf(s.id)"
         :key="d.id"
         :character="character"
         :domain="d"
@@ -83,21 +67,13 @@ function domainsOf(stat: StatId) {
         @toggle-pin="toggle(`domain:${d.id}`)"
       />
       <AdvancedDomainRow
-        v-for="d in domainsOf(s.id).locked"
+        v-for="d in lockedByStat[s.id]"
         :key="`locked-${d.id}`"
         :character="character"
         :domain="d"
         readonly
         gm
       />
-      <AppButton
-        v-if="domainsOf(s.id).hidden && !showAll[s.id]"
-        size="small"
-        :data-testid="`domains-more-${s.id}`"
-        @click="showAll[s.id] = true"
-      >
-        + {{ domainsOf(s.id).hidden }} domaine{{ domainsOf(s.id).hidden > 1 ? 's' : '' }} à rang 0
-      </AppButton>
     </AppAccordion>
   </AppCard>
 </template>

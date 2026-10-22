@@ -6,6 +6,7 @@ import AppAccordion from '../ui/AppAccordion.vue'
 import AppTickGauge from '../ui/AppTickGauge.vue'
 import { ADVANCED_DOMAINS, DOMAINS, STATS, type AdvancedDomain } from '../../data/sindragosa/domains'
 import { ABILITIES } from '../../data/sindragosa/abilities'
+import { DOMAIN_INFO } from '../../data/sindragosa/domainInfo'
 import { prerequisiteLabel } from '../../utils/sindragosa/prerequisites'
 import { advancedStats, openingAbilities, unlockedAdvancedDomains } from '../../utils/sindragosa/advanced'
 import { byStat } from '../../utils/sindragosa/statGroups'
@@ -18,6 +19,7 @@ import type { Character } from '../../types/character'
  * Tous les domaines pour le MJ, rangés comme sur la fiche du joueur : un accordéon
  * par carac, les domaines de base puis les domaines avancés liés à cette carac.
  * Avec un personnage : son rang sur chaque domaine, ✓ / verrou sur les avancés.
+ * Sous chaque domaine, ce qu'il couvre (`domainInfo.ts`).
  */
 const props = defineProps<{ character?: Character | null; unlocked: Ability[] }>()
 
@@ -63,6 +65,7 @@ function progressOf(id: string, advanced = false) {
               :slots="DOMAIN_GAUGE_SLOTS"
             />
           </span>
+          <span class="row-meta">{{ DOMAIN_INFO[d.id] }}</span>
         </li>
         <li
           v-for="d in advancedByStat[s.id]"
@@ -88,6 +91,7 @@ function progressOf(id: string, advanced = false) {
               :slots="DOMAIN_GAUGE_SLOTS"
             />
           </span>
+          <span class="row-meta">{{ DOMAIN_INFO[d.id] }}</span>
           <span class="row-meta">{{ advancedHowTo(d) }}</span>
         </li>
       </ul>

@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { Gift, Star } from 'lucide-vue-next'
+import { Gift, Info, Star } from 'lucide-vue-next'
 import AppTickGauge from '../ui/AppTickGauge.vue'
 import AppIconBtn from '../ui/AppIconBtn.vue'
+import AppTooltip from '../ui/AppTooltip.vue'
+import { DOMAIN_INFO } from '../../data/sindragosa/domainInfo'
 import { openRollSheet } from '../../composables/useRollSheet'
 import { rewardTick } from '../../composables/gmReward'
 import { DOMAIN_GAUGE_SLOTS, MAX_DOMAIN_RANK, ticksForRank } from '../../utils/sindragosa/progression'
@@ -48,6 +50,10 @@ function roll() {
         :slots="DOMAIN_GAUGE_SLOTS"
       />
     </button>
+    <AppTooltip :label="`À propos de ${domain.label}`">
+      <template #trigger><Info :size="16" /></template>
+      {{ DOMAIN_INFO[domain.id] }}
+    </AppTooltip>
     <AppIconBtn
       v-if="pinned !== undefined"
       variant="bare"

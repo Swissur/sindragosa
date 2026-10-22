@@ -6,7 +6,7 @@ Suite du plan 31 (étapes 5 et 6). Proposition de l'agent `ux-designer`, condens
 
 - **Un geste pour lancer un jet** : taper un domaine ouvre la feuille de jet, déjà remplie.
 - **Le joueur lit, lance et coche. Le MJ règle.** Caracs, titres, récompenses et fin de séance sont regroupés dans une feuille « Outils du MJ », jamais mélangés aux boutons du joueur.
-- **Densité** : les 30 domaines sont rangés en 6 accordéons, un par carac. Seuls les domaines à rang > 0 ou avec des coches en cours restent visibles ; les autres sont repliés dans « + N domaines à rang 0 ».
+- **Densité** : les 30 domaines sont rangés en 6 accordéons, un par carac. Déplier une carac montre tous ses domaines, rang 0 compris (le bouton « + N domaines à rang 0 » a été retiré : l'accordéon replie déjà).
 - **Pas de modale de confirmation** pour les petites corrections : un toast avec « Annuler » suffit.
 
 ## Fiche : 3 onglets (`AppTabs`, icônes seules sur téléphone)

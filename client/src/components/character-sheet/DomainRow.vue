@@ -1,12 +1,15 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { ChevronDown, Gift, Plus, Trash2, Star } from 'lucide-vue-next'
+import { ChevronDown, Gift, Info, Plus, Trash2, Star } from 'lucide-vue-next'
 import AppTickGauge from '../ui/AppTickGauge.vue'
 import AppIconBtn from '../ui/AppIconBtn.vue'
 import AppInput from '../ui/AppInput.vue'
 import AppButton from '../ui/AppButton.vue'
 import AppModal from '../ui/AppModal.vue'
 import AppStepper from '../ui/AppStepper.vue'
+import AppTooltip from '../ui/AppTooltip.vue'
+import SpecialtyDetails from './SpecialtyDetails.vue'
+import { DOMAIN_INFO } from '../../data/sindragosa/domainInfo'
 import { openRollSheet } from '../../composables/useRollSheet'
 import { rewardTick } from '../../composables/gmReward'
 import { addSpecialty } from '../../utils/sindragosa/sheet'
@@ -17,7 +20,9 @@ import type { Character } from '../../types/character'
 
 /**
  * Un domaine : taper la ligne ouvre le jet, le chevron déplie les spécialités
- * (au plus autant que le rang du domaine).
+ * (au plus autant que le rang du domaine). Le « i » dit ce que couvre le domaine
+ * ou la spécialité ; choisir une spécialité suggérée passe par une confirmation
+ * qui montre la même aide.
  */
 const props = defineProps<{
   character: Character
@@ -41,6 +46,8 @@ const expanded = ref(false)
 const newName = ref('')
 /** Modale « + Autre » : spécialité hors des suggestions. */
 const otherOpen = ref(false)
+/** Suggestion tapée, en attente de confirmation. */
+const pending = ref<string | null>(null)
 
 const progress = computed(() => props.character.domains[props.domain.id] ?? { rank: 0, ticks: 0 })
 const specialties = computed(() => props.character.specialties.filter((s) => s.domainId === props.domain.id))
@@ -69,6 +76,7 @@ function add(name: string) {
   props.character.specialties = next.specialties
   newName.value = ''
   otherOpen.value = false
+  pending.value = null
 }
 </script>
 
@@ -85,6 +93,10 @@ function add(name: string) {
           :slots="DOMAIN_GAUGE_SLOTS"
         />
       </button>
+      <AppTooltip :label="`À propos de ${domain.label}`">
+        <template #trigger><Info :size="16" /></template>
+        {{ DOMAIN_INFO[domain.id] }}
+      </AppTooltip>
       <AppIconBtn
         v-if="pinned !== undefined"
         :title="pinned ? 'Retirer des favoris' : 'Ajouter aux favoris'"
@@ -134,6 +146,10 @@ function add(name: string) {
             :slots="DOMAIN_GAUGE_SLOTS"
           />
         </button>
+        <AppTooltip :label="`À propos de ${s.name}`">
+          <template #trigger><Info :size="16" /></template>
+          <SpecialtyDetails :name="s.name" />
+        </AppTooltip>
         <AppIconBtn
           v-if="pinnedSpecialties"
           :title="pinnedSpecialties.includes(s.id) ? 'Retirer des favoris' : 'Ajouter aux favoris'"
@@ -169,13 +185,25 @@ function add(name: string) {
       </div>
 
       <div v-if="showAdd" class="specialty-suggestions">
-        <AppButton v-for="n in suggestions" :key="n" size="small" @click="add(n)">{{ n }}</AppButton>
+        <AppButton v-for="n in suggestions" :key="n" size="small" data-testid="specialty-suggestion" @click="pending = n">{{ n }}</AppButton>
         <AppButton size="small" data-testid="specialty-other" @click="otherOpen = true">
           <Plus :size="14" /> Autre
         </AppButton>
       </div>
     </div>
 
+    <AppModal
+      :model-value="pending !== null"
+      :title="pending ?? ''"
+      :description="`Choisir une spécialité de ${domain.label}`"
+      @update:model-value="!$event && (pending = null)"
+    >
+      <SpecialtyDetails v-if="pending" :name="pending" />
+      <template #footer>
+        <AppButton @click="pending = null">Annuler</AppButton>
+        <AppButton variant="primary" data-testid="specialty-confirm" @click="pending && add(pending)">Choisir</AppButton>
+      </template>
+    </AppModal>
     <AppModal v-model="otherOpen" :title="`Spécialité — ${domain.label}`">
       <form id="specialty-other-form" @submit.prevent="add(newName)">
         <AppInput v-model="newName" placeholder="Nom de la spécialité" autofocus data-testid="specialty-input" />

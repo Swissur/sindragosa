@@ -21,6 +21,7 @@ import gmMessagesRouter from "./routes/gmMessages.js";
 import memberPasswordRouter from "./routes/memberPassword.js";
 import notesRouter from "./routes/notes.js";
 import revisionsRouter from "./routes/revisions.js";
+import scenariosRouter from "./routes/scenarios.js";
 import devRouter from "./dev/routes.js";
 import { devToolsEnabled } from "./dev/enabled.js";
 import { requireAuth, type AuthRequest } from "./auth/middleware.js";
@@ -28,7 +29,7 @@ import { CLIENT_DIST } from "./paths.js";
 import { and, eq, inArray } from "drizzle-orm";
 import { db } from "./db/index.js";
 import { union } from "drizzle-orm/pg-core";
-import { campaignMembers, campaigns, characters, generatedImages, users } from "./db/schema.js";
+import { campaignMembers, campaigns, characters, codexEntries, generatedImages, sharedImages, users } from "./db/schema.js";
 
 const app = express();
 // En prod le client est servi par ce même serveur (same-origin) ; en dev le proxy
@@ -61,6 +62,7 @@ app.use("/api/campaigns", codexRouter);
 app.use("/api/campaigns", codexBoardRouter);
 app.use("/api/campaigns", gmMessagesRouter);
 app.use("/api/campaigns", memberPasswordRouter);
+app.use("/api/campaigns", scenariosRouter);
 app.use("/api/notes", notesRouter);
 
 // Outils de dev : seed, changement d'identité, combats bidon. Contournent
@@ -72,9 +74,10 @@ if (devToolsEnabled()) {
 app.use("/api/revisions", revisionsRouter);
 
 /**
- * Une image est visible par son propriétaire, ou si elle sert de portrait au
- * personnage d'un membre d'une campagne que le demandeur partage avec lui
- * (comme joueur, ou comme MJ : le MJ n'est pas dans `campaign_member`).
+ * Une image est visible par son propriétaire, ou si, dans une campagne du
+ * demandeur (comme joueur, ou comme MJ : le MJ n'est pas dans `campaign_member`),
+ * elle sert de portrait au personnage d'un membre, a été montrée par le MJ
+ * (plans/47), ou illustre une fiche du Codex révélée.
  */
 async function canSeeImage(imageId: number, ownerId: number, userId: number) {
   if (ownerId === userId) return true;
@@ -88,7 +91,19 @@ async function canSeeImage(imageId: number, ownerId: number, userId: number) {
     .innerJoin(characters, eq(characters.id, campaignMembers.characterId))
     .where(and(eq(characters.portraitImageId, imageId), inArray(campaignMembers.campaignId, mine)))
     .limit(1);
-  return Boolean(shared);
+  if (shared) return true;
+  const [shown] = await db
+    .select({ id: sharedImages.id })
+    .from(sharedImages)
+    .where(and(eq(sharedImages.imageId, imageId), inArray(sharedImages.campaignId, mine)))
+    .limit(1);
+  if (shown) return true;
+  const [entry] = await db
+    .select({ id: codexEntries.id })
+    .from(codexEntries)
+    .where(and(eq(codexEntries.imageId, imageId), eq(codexEntries.hidden, false), inArray(codexEntries.campaignId, mine)))
+    .limit(1);
+  return Boolean(entry);
 }
 
 // Serve generated images from database (owner, or campaign mate's portrait)

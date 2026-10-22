@@ -1,6 +1,7 @@
 # 43 — Deuxième système de jeu : Knight
 
 > Statut : **étapes 1 à 3 livrées le 2026-10-19** (premier jalon jouable), voir § 9.
+> Suite : **plan 46** (conformité au livre de base), qui remplace les étapes 4 à 8 ci-dessous.
 > Source : une ébauche HTML autonome (« Knight — Feuille de chevalier », générée hors de l'app,
 > stockage `window.storage`, MVC à la main). Elle sert de cahier des charges, **pas de référence de
 > règles** : ses catalogues ont été écrits par une IA et doivent être vérifiés contre le livre (§ 7).

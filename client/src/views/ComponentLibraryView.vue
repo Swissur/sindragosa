@@ -20,6 +20,8 @@ import AppTooltip from '../components/ui/AppTooltip.vue'
 import AppStepper from '../components/ui/AppStepper.vue'
 import AppTickGauge from '../components/ui/AppTickGauge.vue'
 import AppAccordion from '../components/ui/AppAccordion.vue'
+import AppColorSwatches from '../components/ui/AppColorSwatches.vue'
+import { CODEX_COLORS } from '../data/codexColors'
 import EtatBadge from '../components/etats/EtatBadge.vue'
 import EtatsRow from '../components/etats/EtatsRow.vue'
 import EtatsSheet from '../components/etats/EtatsSheet.vue'
@@ -47,6 +49,7 @@ const lucideTab = ref('sword')
 const toggleValue = ref('')
 const checkboxValue = ref(false)
 const stepperValue = ref(3)
+const swatchValue = ref('#3d7bd9')
 const demoEtats = ref<EtatEntry[]>([{ id: 'renverse', turns: 2 }, { id: 'affaibli' }])
 const showEtatsSheet = ref(false)
 const modalOpen = ref(false)
@@ -215,6 +218,10 @@ function forceRoll(value: number) {
         <AppTickGauge :rank="stepperValue" :ticks="Math.min(stepperValue, 2)" :total="stepperValue + 1" :maxed="stepperValue >= 5" />
         <AppTickGauge rank="Exp." :ticks="1" :total="2" />
       </div>
+    </AppCard>
+
+    <AppCard title="AppColorSwatches">
+      <AppColorSwatches v-model="swatchValue" :colors="CODEX_COLORS" />
     </AppCard>
 
     <AppCard title="AppAccordion">

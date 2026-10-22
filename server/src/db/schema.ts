@@ -341,11 +341,69 @@ export const codexEntries = pgTable('codex_entry', {
   type: text('type').notNull(),
   name: text('name').notNull(),
   description: text('description').notNull().default(''),
+  /** '' = pas de couleur, sinon « #rrggbb » (teinte la carte du tableau des fiches). */
+  color: varchar('color', { length: 7 }).notNull().default(''),
+  /** Fiche PNJ d'un scénario (plans/47) : seul le MJ l'écrit. */
+  gmOwned: boolean('gm_owned').notNull().default(false),
+  /** Cachée aux joueurs tant que le MJ ne l'a pas révélée. */
+  hidden: boolean('hidden').notNull().default(false),
+  /** Notes secrètes du MJ : jamais envoyées à un joueur. */
+  gmNotes: text('gm_notes').notNull().default(''),
+  imageId: integer('image_id').references(() => generatedImages.id, { onDelete: 'set null' }),
   version: integer('version').notNull().default(1),
   createdByUserId: integer('created_by_user_id').notNull().references(() => users.id),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
 })
+
+/** Notes privées d'un joueur sur une fiche du Codex (une par joueur et par fiche). */
+export const codexPlayerNotes = pgTable(
+  'codex_player_note',
+  {
+    id: serial('id').primaryKey(),
+    codexEntryId: integer('codex_entry_id')
+      .notNull()
+      .references(() => codexEntries.id, { onDelete: 'cascade' }),
+    userId: integer('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    content: text('content').notNull().default(''),
+    updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [uniqueIndex('codex_player_note_entry_user').on(table.codexEntryId, table.userId)],
+)
+
+/** Scénario du MJ (plans/47) : des blocs ordonnés et le drapeau « on en est là ». */
+export const scenarios = pgTable('scenario', {
+  id: serial('id').primaryKey(),
+  campaignId: integer('campaign_id')
+    .notNull()
+    .references(() => campaigns.id, { onDelete: 'cascade' }),
+  title: text('title').notNull().default(''),
+  /** `ScenarioBlock[]` (server/src/scenarios/blocks.ts). */
+  blocks: jsonb('blocks').notNull().default([]),
+  /** Id du bloc après lequel le drapeau est posé, '' = tout en haut, null = pas de drapeau. */
+  bookmark: varchar('bookmark', { length: 40 }),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+})
+
+/** Image que le MJ a montrée aux joueurs d'une campagne : la galerie du Journal. */
+export const sharedImages = pgTable(
+  'shared_image',
+  {
+    id: serial('id').primaryKey(),
+    campaignId: integer('campaign_id')
+      .notNull()
+      .references(() => campaigns.id, { onDelete: 'cascade' }),
+    imageId: integer('image_id')
+      .notNull()
+      .references(() => generatedImages.id, { onDelete: 'cascade' }),
+    caption: text('caption').notNull().default(''),
+    sharedAt: timestamp('shared_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [uniqueIndex('shared_image_campaign_image').on(table.campaignId, table.imageId)],
+)
 
 /** Fiche posée sur le tableau des fiches de sa campagne (au plus une fois). */
 export const codexBoardNodes = pgTable('codex_board_node', {
@@ -359,6 +417,9 @@ export const codexBoardNodes = pgTable('codex_board_node', {
     .references(() => codexEntries.id, { onDelete: 'cascade' }),
   x: real('x').notNull().default(0),
   y: real('y').notNull().default(0),
+  /** Taille de la carte (un lieu s'agrandit). NULL = taille par défaut du type. */
+  w: real('w'),
+  h: real('h'),
 })
 
 /** Flèche entre deux fiches du tableau. */

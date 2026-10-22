@@ -18,12 +18,30 @@ flèches pour montrer qui est en relation avec qui.
 - Une seule flèche par paire de fiches (dans un sens comme dans l'autre) : tirer
   une flèche vers une paire déjà reliée sélectionne la flèche existante.
 
+- Une fiche a une **couleur** optionnelle (palette de 8 tons + « sans couleur »),
+  choisie dans son formulaire (`AppColorSwatches`). Sa carte sur le tableau prend
+  un fond teinté, une bordure et une icône de cette couleur. Le fond du tableau
+  est uni (pas de grille de points).
+
+- Un **lieu** est une zone : plus grand par défaut (320 × 220), nom en en-tête, il
+  s'agrandit en tirant son coin bas-droit (poignée visible quand il est
+  sélectionné). Les lieux sont dessinés **sous** les flèches et les autres fiches
+  (le plus grand tout au fond) : on pose des personnages dedans, et toucher un
+  personnage posé dans un lieu le sélectionne, lui. Déplacer un lieu ne déplace
+  pas ce qu'il contient.
+
 ## Données
 
 Migration `1700000000057_codex_board.sql` :
 
 - `codex_board_node` : `campaign_id`, `codex_entry_id` (unique — une fiche est posée
   au plus une fois), `x`, `y`. Cascade sur la suppression de la fiche.
+- `codex_entry.color` (migration `1700000000059_codex_color.sql`) : `''` ou `#rrggbb`.
+  Elle entre dans l'historique de la fiche ; restaurer une version d'avant la
+  couleur ne l'efface pas.
+- `codex_board_node.w` / `h` (migration `1700000000061_codex_board_size.sql`) :
+  taille de la carte, `NULL` = taille par défaut du type. `PATCH …/nodes/:nodeId`
+  accepte `{ x, y, w, h }` pour redimensionner.
 - `codex_board_link` : `campaign_id`, `from_node_id`, `to_node_id` (cascade sur le
   nœud), `direction` (`one` | `both`), `dashed`, `label`.
 

@@ -11,8 +11,9 @@ const { character, computedHp } = useCharacter()
 const { activeCombat } = useActiveCombat()
 
 // On peut arriver sur une page qui ne charge pas la fiche (journal, options…).
+// Sans fiche, la barre reste vide : c'est la fiche personnage qui en crée une.
 onMounted(() => {
-  if (!character.value.id) loadCharacter()
+  if (!character.value.id) loadCharacter(undefined, { create: false })
 })
 </script>
 

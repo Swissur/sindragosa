@@ -96,6 +96,7 @@ Routes (defined in `client/src/router/index.ts`):
 | `/personnage` | `CharacterSheetView` | Default redirect from `/` |
 | `/personnages` | `CharacterListView` | |
 | `/actions` | — | Redirects to `/personnage` (favorites are the sheet's Favoris tab) |
+| `/scenarios`, `/scenarios/:sid` | `ScenarioListView`, `ScenarioView` | GM only: scenarios of the active campaign (plan 47) |
 
 ---
 
@@ -165,6 +166,7 @@ Add a shadcn component with `npx shadcn-vue@latest add <name> -y -o` (writes int
 | `AppBottomSheet` | **Every bottom sheet** (mobile-first panels; centered dialog on desktop). `v-model` + `title`, slot `#titleActions` for icon buttons next to the title. Same reka-ui `Dialog` engine as AppModal — pick sheet for mobile flows, modal for confirmations. |
 | `AppTabs` | **Every tab bar.** `v-model` string + `tabs: { value, label, icon?, dot? }[]` (icon = emoji string or Lucide component). Prop `iconOnlyMobile` hides labels on phones. Built on reka-ui `Tabs`: arrow-key navigation included. Active state is `[data-state="active"]`, not `.active`. |
 | `AppToggleGroup` | Groupe de boutons icône à choix unique (mode de concentration, etc.). `v-model` string (`''` = rien), `items: { value, icon, title, testid? }[]`. Re-cliquer le bouton actif le désélectionne. Built on reka-ui `ToggleGroup`. |
+| `AppColorSwatches` | **Tout choix de couleur dans une palette** (pastilles rondes 40px). `v-model` string, `colors: { value, label }[]` (`value: ''` = pastille « sans couleur »), `testid` (donne `<testid>-<hex sans #>` / `<testid>-none`). Built on reka-ui `ToggleGroup`. |
 | `AppCheckbox` | **Toute case à cocher.** `v-model` boolean, props `disabled`, `testid`. Slot par défaut = le libellé (toute la ligne est tapable, 40px). Built on reka-ui `Checkbox`. |
 | `AppSelect` | All `<select>` fields. `v-model` + `<option>` in default slot. Stays a **native** `<select>` on purpose — the OS picker is better UX on phones. |
 | `AppTextarea` | All `<textarea>` fields. `v-model`, `rows`, `placeholder`. Same look as AppInput. |

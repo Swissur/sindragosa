@@ -56,7 +56,7 @@ export async function restCampaign(
       .where(eq(characters.id, row.id))
   }
 
-  const event: RestBroadcast = { kind, deltas }
+  const event: RestBroadcast = { kind, longRest: withLongRest, deltas }
   broadcastCampaignEvent(campaignId, 'rest', event)
   console.log(`[campaign ${campaignId}] repos ${kind} sur ${rows.length} personnage(s)`)
   return event

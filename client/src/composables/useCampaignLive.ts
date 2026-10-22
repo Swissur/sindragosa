@@ -29,6 +29,18 @@ export const incomingGmMessage = ref<IncomingGmMessage | null>(null)
 /** Dernier état du tableau des fiches poussé par le serveur (un joueur l'a modifié). */
 export const liveCodexBoard = ref<Board | null>(null)
 
+export interface IncomingSharedImage {
+  imageId: number
+  caption: string
+  sharedAt: string
+}
+
+/** Image que le MJ vient de montrer : elle s'ouvre en grand chez tout le monde. */
+export const incomingSharedImage = ref<IncomingSharedImage | null>(null)
+
+/** S'incrémente quand le MJ révèle ou recache une fiche : l'onglet Fiches se recharge. */
+export const codexRevealTick = ref(0)
+
 export function resetCampaignLive(): void {
   onlineUserIds.value = null
   liveSessionActive.value = null

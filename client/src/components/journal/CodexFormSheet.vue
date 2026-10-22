@@ -6,6 +6,8 @@ import JournalHistorySheet from './JournalHistorySheet.vue'
 import AppInput from '../ui/AppInput.vue'
 import AppButton from '../ui/AppButton.vue'
 import AppTextarea from '../ui/AppTextarea.vue'
+import AppColorSwatches from '../ui/AppColorSwatches.vue'
+import { CODEX_COLORS } from '../../data/codexColors'
 import {
   createCodexEntry,
   updateCodexEntry,
@@ -40,6 +42,7 @@ function openHistory() {
 const name = ref('')
 const type = ref<CodexType>('personnage')
 const description = ref('')
+const color = ref('')
 const deleteNoteAfter = ref(true)
 const saving = ref(false)
 const errorMsg = ref<string | null>(null)
@@ -58,6 +61,7 @@ watch(
     name.value = props.entry?.name ?? props.prefillName ?? ''
     type.value = props.entry?.type ?? 'personnage'
     description.value = props.entry?.description ?? props.prefillDescription ?? ''
+    color.value = props.entry?.color ?? ''
     deleteNoteAfter.value = true
     errorMsg.value = null
   },
@@ -74,7 +78,7 @@ async function submit() {
   saving.value = true
   errorMsg.value = null
   try {
-    const data = { name: name.value.trim(), type: type.value, description: description.value }
+    const data = { name: name.value.trim(), type: type.value, description: description.value, color: color.value }
     const entry = props.entry
       // `expectedVersion` : sans lui, deux joueurs qui ouvrent la même fiche
       // s'écrasent en silence — le dernier à valider gagne.
@@ -125,6 +129,8 @@ async function submit() {
           {{ t.label }}
         </button>
       </div>
+
+      <AppColorSwatches v-model="color" :colors="CODEX_COLORS" testid="codex-color" />
 
       <AppTextarea
         v-model="description"

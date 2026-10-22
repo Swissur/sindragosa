@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
-import { Search, Plus, User, MapPin, FileText, Pencil, Trash2, AtSign, List, Waypoints } from 'lucide-vue-next'
+import { ref, computed, onMounted, watch } from 'vue'
+import { Search, Plus, User, MapPin, FileText, Pencil, Trash2, AtSign, List, Waypoints, EyeOff, Crown } from 'lucide-vue-next'
 import AppInput from '../ui/AppInput.vue'
 import AppToggleGroup from '../ui/AppToggleGroup.vue'
 import AppIconBtn from '../ui/AppIconBtn.vue'
@@ -10,6 +10,8 @@ import AppButton from '../ui/AppButton.vue'
 import CodexFormSheet from './CodexFormSheet.vue'
 import MentionDigestSheet from './MentionDigestSheet.vue'
 import CodexBoard from './codex-board/CodexBoard.vue'
+import CodexMyNote from './CodexMyNote.vue'
+import { codexRevealTick } from '../../composables/useCampaignLive'
 import { fetchCodexEntries, deleteCodexEntry, type CodexEntry, type CodexType } from '../../api/codex'
 import { fetchCampaign } from '../../api/campaigns'
 import { user } from '../../composables/useAuth'
@@ -85,6 +87,9 @@ const canDelete = computed(() => {
   return e.createdByUserId === u.id || gmUserId.value === u.id
 })
 
+/** Une fiche du MJ se lit seulement : les joueurs écrivent dans « Mes notes ». */
+const canEdit = computed(() => !detailEntry.value?.gmOwned || gmUserId.value === user.value?.id)
+
 async function handleDelete() {
   const entry = detailEntry.value
   if (!entry || !campaignId.value) return
@@ -147,6 +152,8 @@ function onSaved(entry: CodexEntry) {
 }
 
 onMounted(load)
+// Le MJ vient de révéler (ou recacher) une fiche.
+watch(codexRevealTick, load)
 </script>
 
 <template>
@@ -183,7 +190,15 @@ onMounted(load)
         Aucune fiche ne correspond à "{{ search }}".
       </AppEmptyState>
       <ul v-else class="codex-list">
-        <li v-for="entry in filtered" :key="entry.id" class="codex-item" @click="openDetail(entry)">
+        <li
+          v-for="entry in filtered"
+          :key="entry.id"
+          class="codex-item"
+          :class="{ colored: !!entry.color }"
+          :style="entry.color ? { '--entry-color': entry.color } : undefined"
+          :data-testid="`codex-item-${entry.id}`"
+          @click="openDetail(entry)"
+        >
           <span class="codex-icon">
             <User v-if="entry.type === 'personnage'" :size="16" />
             <MapPin v-else-if="entry.type === 'lieu'" :size="16" />
@@ -191,7 +206,11 @@ onMounted(load)
           </span>
           <div class="codex-info">
             <span class="codex-name">{{ entry.name }}</span>
-            <span class="codex-meta">{{ typeLabels[entry.type] }}</span>
+            <span class="codex-meta">
+              {{ typeLabels[entry.type] }}
+              <template v-if="entry.gmOwned"> · <Crown :size="11" /> MJ</template>
+              <template v-if="entry.hidden"> · <EyeOff :size="11" /> cachée</template>
+            </span>
           </div>
         </li>
       </ul>
@@ -199,6 +218,12 @@ onMounted(load)
       <!-- ── Détail ── -->
       <AppBottomSheet v-model="showDetail" :title="detailEntry?.name">
         <div v-if="detailEntry" class="detail">
+          <img
+            v-if="detailEntry.imageId"
+            :src="`/api/images/${detailEntry.imageId}`"
+            :alt="detailEntry.name"
+            class="detail-portrait"
+          />
           <span class="detail-type">
             <User v-if="detailEntry.type === 'personnage'" :size="14" />
             <MapPin v-else-if="detailEntry.type === 'lieu'" :size="14" />
@@ -208,6 +233,7 @@ onMounted(load)
           <p v-if="detailEntry.description" class="detail-description">{{ detailEntry.description }}</p>
           <p v-else class="detail-empty">Pas encore de description.</p>
           <p class="detail-meta">Mise à jour {{ relativeTime(detailEntry.updatedAt) }}</p>
+          <CodexMyNote v-if="campaignId" :key="detailEntry.id" :campaign-id="campaignId" :entry-id="detailEntry.id" />
           <div v-if="confirmingDelete" class="detail-actions">
             <AppButton variant="danger" @click="handleDelete">
               <Trash2 :size="15" />
@@ -220,7 +246,7 @@ onMounted(load)
               <AtSign :size="15" />
               Mentions
             </AppButton>
-            <AppButton @click="openEdit">
+            <AppButton v-if="canEdit" @click="openEdit">
               <Pencil :size="15" />
               Modifier
             </AppButton>
@@ -310,6 +336,17 @@ onMounted(load)
   transition: border-color 120ms, background 120ms;
 }
 
+/* La couleur de la fiche, comme sur sa carte du tableau. Le padding absorbe
+   l'épaisseur du bord : le contenu ne bouge pas. */
+.codex-item.colored {
+  border-left: 5px solid var(--entry-color);
+  padding-left: calc(0.9rem - 4px);
+}
+
+.codex-item.colored:hover {
+  border-left-color: var(--entry-color);
+}
+
 .codex-item:hover {
   border-color: var(--accent);
   background: color-mix(in srgb, var(--accent) 6%, var(--surface));
@@ -348,6 +385,15 @@ onMounted(load)
   display: flex;
   flex-direction: column;
   gap: 0.6rem;
+}
+
+.detail-portrait {
+  align-self: center;
+  width: 140px;
+  height: 140px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 2px solid var(--border-strong);
 }
 
 .detail-type {

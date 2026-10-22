@@ -14,7 +14,7 @@ import AppEmptyState from '../../ui/AppEmptyState.vue'
 import CodexBoardCanvas, { type BoardSelection } from './CodexBoardCanvas.vue'
 import type { CodexEntry } from '../../../api/codex'
 import {
-  createLink, deleteLink, fetchBoard, moveNode, placeNode, removeNode, updateLink,
+  createLink, deleteLink, fetchBoard, moveNode, placeNode, removeNode, resizeNode, updateLink,
   type Board, type BoardLink, type LinkDirection,
 } from '../../../api/codexBoard'
 import { liveCodexBoard } from '../../../composables/useCampaignLive'
@@ -115,6 +115,12 @@ function onMove(nodeId: number, x: number, y: number) {
   void write(() => moveNode(props.campaignId, nodeId, x, y), 'Impossible de déplacer la fiche.')
 }
 
+function onResize(nodeId: number, x: number, y: number, w: number, h: number) {
+  const node = board.value?.nodes.find((n) => n.id === nodeId)
+  if (node) Object.assign(node, { x, y, w, h })
+  void write(() => resizeNode(props.campaignId, nodeId, { x, y, w, h }), "Impossible d'agrandir le lieu.")
+}
+
 function removeSelectedNode() {
   const node = selectedNode.value
   if (!node) return
@@ -199,6 +205,7 @@ function saveLabel() {
 }
 
 const hint = computed(() => {
+  if (selectedNode.value?.type === 'lieu') return 'Tire la flèche vers une fiche pour les relier, ou le coin pour agrandir le lieu.'
   if (selectedNode.value) return 'Tire la poignée vers une autre fiche pour les relier.'
   if (selectedLink.value) return null
   if (!board.value?.nodes.length) return 'Pose des fiches avec le +, puis relie-les.'
@@ -261,6 +268,7 @@ const hint = computed(() => {
         :selection="selection"
         @select="selection = $event"
         @move="onMove"
+        @resize="onResize"
         @connect="onConnect"
       />
     </div>

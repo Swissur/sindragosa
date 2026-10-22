@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'vitest'
 import {
+  LIEU_H,
+  LIEU_W,
   arrowHead,
+  drawOrder,
   fitView,
   freeSpot,
   linkSegment,
@@ -9,7 +12,9 @@ import {
   NODE_H,
   NODE_W,
   nodeAt,
+  nodeSize,
   rectExit,
+  resizeFrom,
   shortName,
   toWorld,
   zoomAt,
@@ -123,5 +128,45 @@ describe('shortName', () => {
     const s = shortName('Varian Wrynn, roi de Hurlevent')
     expect(s.endsWith('…')).toBe(true)
     expect(s.length).toBeLessThanOrEqual(17)
+  })
+})
+
+describe('cartes de taille variable', () => {
+  it('un lieu non redimensionné prend la taille des lieux', () => {
+    expect(nodeSize({ type: 'lieu', w: null, h: null })).toEqual({ w: LIEU_W, h: LIEU_H })
+    expect(nodeSize({ type: 'personnage', w: null, h: null })).toEqual({ w: NODE_W, h: NODE_H })
+    expect(nodeSize({ type: 'lieu', w: 600, h: 400 })).toEqual({ w: 600, h: 400 })
+  })
+
+  it('les lieux passent derrière, le plus grand tout au fond', () => {
+    const order = drawOrder([
+      { id: 1, type: 'personnage', x: 0, y: 0 },
+      { id: 2, type: 'lieu', x: 0, y: 0, w: 300, h: 200 },
+      { id: 3, type: 'autre', x: 0, y: 0 },
+      { id: 4, type: 'lieu', x: 0, y: 0, w: 800, h: 600 },
+    ])
+    expect(order.map((n) => n.id)).toEqual([4, 2, 1, 3])
+  })
+
+  it('un personnage posé dans un lieu se prend avant le lieu', () => {
+    const nodes = drawOrder([
+      { id: 1, type: 'personnage', x: 50, y: 30 },
+      { id: 2, type: 'lieu', x: 0, y: 0, w: 400, h: 300 },
+    ])
+    expect(nodeAt(nodes, { x: 50, y: 30 })?.id).toBe(1)
+    // Ailleurs dans le lieu : c'est le lieu.
+    expect(nodeAt(nodes, { x: -150, y: -100 })?.id).toBe(2)
+  })
+
+  it("la flèche s'arrête au bord d'un grand lieu", () => {
+    expect(rectExit({ x: 0, y: 0, w: 400, h: 300 }, { x: 1000, y: 0 }, 0)).toEqual({ x: 200, y: 0 })
+  })
+
+  it('agrandir garde le coin haut-gauche et une taille minimale', () => {
+    expect(resizeFrom({ x: 0, y: 0 }, { x: 500, y: 300 })).toEqual({ x: 250, y: 150, w: 500, h: 300 })
+    const tiny = resizeFrom({ x: 0, y: 0 }, { x: -50, y: 10 })
+    expect(tiny.w).toBe(LIEU_W / 2)
+    expect(tiny.h).toBe(LIEU_H / 2)
+    expect(tiny.x).toBe(LIEU_W / 4)
   })
 })

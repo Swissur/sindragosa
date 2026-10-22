@@ -57,6 +57,14 @@ async function isCampaignMember(userId: number, campaignId: number): Promise<boo
   return Boolean(membership)
 }
 
+async function isCampaignGm(userId: number, campaignId: number): Promise<boolean> {
+  const [campaign] = await db
+    .select({ gmUserId: campaigns.gmUserId })
+    .from(campaigns)
+    .where(eq(campaigns.id, campaignId))
+  return campaign?.gmUserId === userId
+}
+
 const journalCompagnieAdapter: EntityAdapter = {
   async load() {
     const [row] = await db.select().from(journalCompagnie).where(eq(journalCompagnie.id, 1))
@@ -147,7 +155,7 @@ const codexEntryAdapter: EntityAdapter = {
     return {
       id: row.id,
       version: row.version,
-      snapshot: { name: row.name, type: row.type, description: row.description },
+      snapshot: { name: row.name, type: row.type, description: row.description, color: row.color },
       isDrawing: false,
     }
   },
@@ -158,20 +166,30 @@ const codexEntryAdapter: EntityAdapter = {
         name: snapshot.name ?? '',
         type: snapshot.type ?? 'autre',
         description: snapshot.description ?? '',
+        // Une version d'avant la couleur ne l'efface pas en étant restaurée.
+        ...(snapshot.color !== undefined ? { color: snapshot.color } : {}),
         version,
         updatedAt: new Date(),
       })
       .where(eq(codexEntries.id, id))
   },
+  // Fiche cachée du MJ : lui seul la lit. Fiche du MJ : lui seul la restaure.
   async canRead(userId, id) {
     const [row] = await db
-      .select({ campaignId: codexEntries.campaignId })
+      .select({ campaignId: codexEntries.campaignId, hidden: codexEntries.hidden })
       .from(codexEntries)
       .where(eq(codexEntries.id, id))
     if (!row) return false
+    if (row.hidden) return isCampaignGm(userId, row.campaignId)
     return isCampaignMember(userId, row.campaignId)
   },
   async canWrite(userId, id) {
+    const [row] = await db
+      .select({ campaignId: codexEntries.campaignId, gmOwned: codexEntries.gmOwned })
+      .from(codexEntries)
+      .where(eq(codexEntries.id, id))
+    if (!row) return false
+    if (row.gmOwned) return isCampaignGm(userId, row.campaignId)
     return codexEntryAdapter.canRead(userId, id)
   },
   lockKey: () => null,

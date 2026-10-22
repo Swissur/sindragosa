@@ -16,9 +16,14 @@ export interface BoardNode {
   entryId: number
   name: string
   type: CodexType
+  /** Couleur de la fiche, '' = aucune. */
+  color: string
   /** Centre de la carte, en coordonnées du tableau. */
   x: number
   y: number
+  /** Taille de la carte. null = taille par défaut du type (un lieu est plus grand). */
+  w: number | null
+  h: number | null
 }
 
 export interface BoardLink {
@@ -63,6 +68,14 @@ export function placeNode(campaignId: number, entryId: number, x: number, y: num
 
 export function moveNode(campaignId: number, nodeId: number, x: number, y: number): Promise<Board> {
   return send(`${base(campaignId)}/nodes/${nodeId}`, 'PATCH', { x, y })
+}
+
+export function resizeNode(
+  campaignId: number,
+  nodeId: number,
+  box: { x: number; y: number; w: number; h: number },
+): Promise<Board> {
+  return send(`${base(campaignId)}/nodes/${nodeId}`, 'PATCH', box)
 }
 
 export function removeNode(campaignId: number, nodeId: number): Promise<Board> {

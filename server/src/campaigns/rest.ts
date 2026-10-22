@@ -67,6 +67,8 @@ export interface RestDelta {
 /** Ce qui part sur le flux SSE : de quoi jouer l'animation et rafraîchir la fiche. */
 export interface RestBroadcast {
   kind: RestKind
+  /** Fin de séance seulement : le MJ a coché le repos long (c'est lui qui allume le feu). */
+  longRest: boolean
   deltas: {
     userId: number
     characterName: string

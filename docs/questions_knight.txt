@@ -1,0 +1,194 @@
+QUESTIONS POUR RAZIEL — campagne Knight dans l'app Sindragosa
+==============================================================
+
+Bonjour Raziel,
+
+L'app sert déjà à notre campagne WoW. On y ajoute Knight pour ta campagne. Aujourd'hui, une fiche
+Knight a les aspects, les caractéristiques, les overdrives et le jet de combo, qui s'affiche dans le
+journal de jets du MJ. Il reste à faire : la méta-armure complète, l'arsenal, le combat, la fin de
+mission, la création de personnage et l'héroïsme.
+
+On a relu le livre de base (V1.5) : les règles p. 1-174 et l'arsenal p. 410-448. On n'a pas le
+Livre du MJ : bestiaire et cadres d'aventures.
+
+Tes réponses décident de ce qu'on code et dans quel ordre. Réponds en face des numéros. « Comme le
+livre » ou « je m'en fiche » sont des réponses valables. Les numéros de page sont ceux du livre.
+
+
+A. GÉNÉRAL
+----------
+
+1. Livres utilisés : seulement le livre de base, ou aussi des suppléments (2038, Codex…) ?
+   Le livre de base a 9 méta-armures : Warrior, Paladin, Priest, Warmaster, Rogue, Ranger, Bard,
+   Wizard et Barbarian. L'app propose aussi Psion, Monk, Sorcerer et Necromancer. On les garde ?
+   Si oui, il nous faudra leurs stats.
+
+2. Règles maison : est-ce que tu modifies, ajoutes ou retires des règles du livre ? Lesquelles ?
+   C'est ce qui nous aide le plus : on veut coder ta table, pas le livre à la lettre.
+
+3. Ennemis : on n'a pas le bestiaire. Pour le combat dans l'app, tu préfères :
+   a) saisir toi-même tes PNJ dans l'app (aspects, aspects exceptionnels, défense, réaction, PS,
+      PA, CdF, armes…), qu'on te garde comme modèles réutilisables ;
+   b) nous fournir le bestiaire pour qu'on le pré-remplisse ;
+   c) ne pas gérer les PNJ dans l'app : tu les suis sur papier.
+
+4. Les dés à la table : les joueurs lancent dans l'app (dés 3D, le résultat s'affiche chez tout le
+   monde) ou avec de vrais dés ? Les deux ? Ça décide si les jets doivent être complets dans l'app
+   (entraide, héroïsme, malus…) ou si l'app sert surtout de fiche.
+
+5. Les joueurs modifient-ils librement leur fiche (PX, PG, achats), ou tu veux valider ?
+
+
+B. JETS ET VALEURS DE BASE
+--------------------------
+
+6. Défense, réaction, initiative, santé, contacts. Le résumé p. 108 dit « la caractéristique LA PLUS
+   HAUTE de l'aspect ». Le détail p. 171 dit « une caractéristique AU CHOIX du joueur ». Ça change
+   quelque chose quand une carac plus basse a plus d'overdrives. Laquelle tu appliques ?
+
+7. Sacrifice de dés (règle optionnelle p. 75 : 2 dés mis de côté = 1 réussite automatique). Oui ou non ?
+
+8. Entraide (p. 76-77) : on la gère dans l'app ? Les aidants lancent une seule carac, leurs réussites
+   s'ajoutent au jet de l'aidé, 3 aidants maximum. Ou ça reste à l'oral ?
+
+9. Espoir sous 10 : -1 dé par point sous 10 à tous les jets (p. 95). On l'applique automatiquement
+   dans l'app ?
+
+10. Initiative : 3D6 + score au début du combat (p. 85), 2D6 avec « Trop prudent », +10 en embuscade.
+    L'app peut lancer l'initiative de tout le monde au démarrage du combat. Ça te va, ou chacun lance
+    la sienne ?
+    Les joueurs retardent-ils parfois leur initiative ?
+
+
+C. CRÉATION DE PERSONNAGE
+-------------------------
+
+11. Options de création :
+    a) Les 5 lames du tarot : choisies par le joueur ou tirées au hasard ?
+    b) Points bonus (5 points en fin d'étape 6, p. 127) : oui ou non ?
+    c) Section (étape 8) : obligatoire, au choix ou interdite ? Et la section Kraken ?
+    d) Archétype et haut fait personnalisés : tu les autorises ?
+
+12. Pistolet de service et marteau-épieu : tout le monde les a au départ, ou seulement ceux qui
+    prennent une section (c'est ce que dit p. 169) ? Tous les prétirés les ont.
+
+13. Plafond carac ≤ aspect pendant la création. Le livre dit qu'un bonus de lame qui dépasserait
+    l'aspect est PERDU (p. 113), donc l'ordre de saisie compte. Tu appliques ça strictement, ou on
+    laisse répartir librement et on vérifie le plafond à la fin ?
+
+14. Tes joueurs ont-ils déjà des personnages, sur papier ou ailleurs ? Si oui, on les ressaisit à la
+    main et l'assistant de création passe en dernier. Si les persos restent à créer, on fait
+    l'assistant plus tôt.
+
+
+D. MÉTA-ARMURE
+--------------
+
+15. Énergie (PE) : quand un joueur active une capacité ou un module, l'app retire les PE toute seule
+    (un bouton par capacité, au bon coût), ou un compteur à la main suffit ?
+
+16. Quelques chiffres sont douteux dans notre version du PDF, la mise en page est sur deux colonnes.
+    Peux-tu vérifier dans ton livre ?
+    a) Rogue et Ranger ont exactement les mêmes PA / PE / CdF (50 / 70 / 12) ?
+    b) Warmaster, coûts des impulsions : « de force » = 2 PE par allié (+1 par tour), « de guerre » =
+       1 PE par allié (+1 par tour) ?
+    c) Warrior : activer un type coûte bien 1 PE (pour 1 tour) en plus de l'action de déplacement ?
+    d) Paladin et Bard : on a associé les évolutions 150 / 200 / 250 PG aux paragraphes dans l'ordre
+       où ils apparaissent. C'est juste ?
+    e) La Barbarian est de 3e génération (liste p. 130) ou de 2e (sa description) ? Ça n'a d'impact
+       que sur l'affichage.
+
+
+E. ARSENAL ET POINTS DE GLOIRE
+------------------------------
+
+17. Paliers d'arsenal autorisés : avancé (100 PG cumulés), rare (300 PG), prototypes (500 PG, 2038) ?
+    Quand un joueur vise un objet au-dessus de son palier, l'app bloque l'achat ou affiche juste un
+    avertissement ?
+
+18. Erreurs ou doutes dans l'arsenal. Dis-nous la bonne valeur :
+    a) Vector lourd : manœuvrabilité 3 ou -3 ?
+    b) Arbalète magnétique, carreau à nanomachines : « 6D6 (12) + 6 », les dés et la moyenne ne
+       collent pas.
+    c) Épée lumière : lumière 6 (profil) ou lumière 4 (exemple p. 415) ?
+    d) Lance-missile à 15 PG, avec munitions dans un « module rack » qui n'est décrit nulle part.
+       Comment tu le gères ?
+    e) Modules d'overdrive marqués « avancé » alors que le niveau 1 coûte 10 PG : il faut 100 PG
+       cumulés pour acheter un overdrive, ou ils sont accessibles dès le départ ?
+    f) Améliorations d'armure (blindage, énergie, champ de force) : combien de slots ?
+
+19. Nods et grenades (3 nods de soin, 3 d'armure, 3 d'énergie et 5 grenades par mission, p. 108) :
+    on les suit dans l'app (compteurs, un bouton « utiliser » qui lance 3D6) ?
+
+
+F. COMBAT
+---------
+
+20. LA question qui dimensionne le plus le travail. Jusqu'où l'app doit aller en combat ?
+    a) Minimum : ordre d'initiative et jauges (PS, PA, CdF, PE) modifiées à la main.
+    b) Moyen : en plus, l'app calcule les dégâts subis. Bouclier, puis CdF, puis PA, puis santé,
+       avec les effets d'armes (pénétrant, perce armure, ignore armure, anti-Anathème, destructeur,
+       meurtrier, colosse…), et la perte de 1 PS par tranche de 5 PA perdus.
+    c) Complet : en plus, l'app gère la violence contre les bandes (cohésion, débordement cumulé),
+       les effets à durée (barrage, lumière, choc, désignation, dégâts continus…) et les styles de
+       combat.
+
+21. Bandes : tu en joues souvent ? Le débordement qui s'additionne à chaque tour mérite-t-il un
+    compteur dans l'app ?
+
+22. Styles de combat (standard, agressif, défensif, à couvert, ambidextre, akimbo) : l'app les
+    enregistre et applique leurs bonus et malus, ou c'est à l'oral ?
+
+23. Table des blessures (p. 91) : l'app fait le tirage 1D6 × 1D6 et applique les malus de
+    caractéristique sur la fiche jusqu'à un implant ou une reconstruction ? Plusieurs cases sont « à
+    la discrétion du MJ » : tu préfères que l'app te laisse saisir le malus ?
+
+24. Effet « choc X » : il compare le jet à la Chair de la cible (divisée par 2 pour un PNJ). Pour un
+    PJ, c'est son aspect Chair ?
+
+25. Agonie : 3e attaque à l'agonie = mort (p. 89). L'app doit compter les attaques subies à
+    l'agonie, ou tu t'en charges ?
+
+
+G. HÉROÏSME, ESPOIR, MOTIVATIONS
+--------------------------------
+
+26. Cartes du destin (p. 97-98) : tu les utilises ? Si oui, on fait un paquet virtuel commun à la
+    campagne : 3 points d'héroïsme pour tirer, cartes conservées sur la fiche.
+
+27. Mode héroïque (6 points d'héroïsme) : l'app le gère ? Bandeau « héros de la scène », réussites
+    des adjuvants additionnées, aucune dépense de PE, +5 PG à la fin. Ou c'est à l'oral ?
+
+28. Motivation majeure : tu utilises la jauge optionnelle (50 ou 100 réussites cumulées, p. 127) ?
+
+29. Chevalier noir (0 espoir) : si un PJ bascule, l'app doit-elle te donner le contrôle de sa fiche ?
+
+
+H. FIN DE MISSION ET PROGRESSION
+--------------------------------
+
+30. L'app a un bouton MJ « fin de séance ». En Knight, le livre distingue la PARTIE (une séance) de la
+    MISSION, qui peut durer plusieurs séances : contacts, PS, PA et PE reviennent au max entre deux
+    missions, et les PX et PG se donnent en fin de mission. On fait un bouton « Fin de mission » ?
+    Faut-il qu'il se passe quelque chose en fin de séance ?
+
+31. PX et PG : tu suis le barème du livre (p. 106) ? PX : 5 + 5 si réussite + 2 par séance
+    supplémentaire + 1 par objectif secondaire, identiques pour tous. PG : 10 à 20 + 5 par objectif
+    secondaire + 5 par mode héroïque, par joueur. L'app peut proposer le calcul ; tu ajustes.
+
+32. Repos en mission (+6 PE par heure, 1 PS toutes les 6 heures) : besoin d'un bouton, ou à la main ?
+
+
+I. DIVERS
+---------
+
+33. Véhicules (vector, moto steed, stalion…) : tu en utilises assez pour qu'ils aient une fiche dans
+    l'app ? Sinon on ne met que le catalogue, en lecture.
+
+34. Implants cybernétiques (20 PG, -3 espoir max, 6 maximum) et thérapie de reconstruction (100 PG) :
+    à gérer dans l'app ?
+
+35. Y a-t-il quelque chose que tu fais aujourd'hui à la table et que l'app devrait absolument savoir
+    faire, même si on n'en a pas parlé ?
+
+Merci !

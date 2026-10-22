@@ -4,6 +4,7 @@ import { applyServerPatch } from './useCharacter'
 import { user } from './useAuth'
 import { receiveRest } from './useRest'
 import { showToast } from './useToast'
+import { useGmCampaign } from './useGmCampaign'
 import { celebrate } from './useCriticalMoment'
 import { playRemoteDiceRoll, type DieRoll } from './useDice3D'
 import { rollOutcome, type RollOutcome } from '../utils/rollOutcome'
@@ -11,7 +12,17 @@ import { parseDiceStyle } from '../data/diceStyle'
 import { POOL_DICE_STYLES } from '../data/poolDiceStyles'
 import { refreshActiveCombat } from './useActiveCombat'
 import { appendFeed, clearFeed, feedLineFor, secretLineFor } from './useViewerFeed'
-import { incomingGmMessage, liveCodexBoard, liveSessionActive, onlineUserIds, resetCampaignLive, type IncomingGmMessage } from './useCampaignLive'
+import {
+  codexRevealTick,
+  incomingGmMessage,
+  incomingSharedImage,
+  liveCodexBoard,
+  liveSessionActive,
+  onlineUserIds,
+  resetCampaignLive,
+  type IncomingGmMessage,
+  type IncomingSharedImage,
+} from './useCampaignLive'
 import type { Board } from '../api/codexBoard'
 
 /** Filtre du panneau de log. */
@@ -33,6 +44,7 @@ function stored(key: string): string | null {
   }
 }
 
+const { gmCampaignId } = useGmCampaign()
 const rolls = ref<RollEvent[]>([])
 const unread = ref(0)
 const panelOpen = ref(stored(PANEL_KEY) === '1')
@@ -206,6 +218,27 @@ function connect(campaignId: number, options: { viewer?: boolean } = {}): void {
   eventSource.addEventListener('codex-board', (e: MessageEvent) => {
     try {
       liveCodexBoard.value = JSON.parse(e.data as string) as Board
+      resetIdleTimer()
+    } catch { /* ignore */ }
+  })
+
+  // Le MJ montre une image (carte, portrait, indice) : elle s'ouvre en grand, mode table compris.
+  // Le MJ, lui, sait ce qu'il vient de montrer.
+  eventSource.addEventListener('image-shared', (e: MessageEvent) => {
+    try {
+      if (viewer || gmCampaignId.value !== campaignId) {
+        incomingSharedImage.value = JSON.parse(e.data as string) as IncomingSharedImage
+      }
+      resetIdleTimer()
+    } catch { /* ignore */ }
+  })
+
+  // Le MJ révèle (ou recache) une de ses fiches PNJ.
+  eventSource.addEventListener('codex-reveal', (e: MessageEvent) => {
+    try {
+      const event = JSON.parse(e.data as string) as { name: string; revealed: boolean }
+      codexRevealTick.value += 1
+      if (event.revealed && !viewer && gmCampaignId.value !== campaignId) showToast(`📜 Nouvelle fiche : ${event.name}`)
       resetIdleTimer()
     } catch { /* ignore */ }
   })

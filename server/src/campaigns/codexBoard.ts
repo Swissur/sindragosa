@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm'
+import { and, eq } from 'drizzle-orm'
 import { db } from '../db/index.js'
 import { codexBoardLinks, codexBoardNodes, codexEntries } from '../db/schema.js'
 import { broadcastCampaignEvent } from './sseStore.js'
@@ -16,8 +16,13 @@ export interface BoardNode {
   entryId: number
   name: string
   type: string
+  /** '' = pas de couleur. */
+  color: string
   x: number
   y: number
+  /** Taille de la carte. null = taille par défaut du type. */
+  w: number | null
+  h: number | null
 }
 
 export interface BoardLink {
@@ -62,6 +67,11 @@ export function parseLinkStyle(body: Record<string, unknown>): LinkStylePatch | 
   return patch
 }
 
+/** Une taille de carte : ni minuscule, ni démesurée. */
+export function isSize(value: unknown): value is number {
+  return typeof value === 'number' && Number.isFinite(value) && value >= 40 && value <= 5000
+}
+
 /** Une coordonnée du tableau : un nombre fini, raisonnable. */
 export function isCoord(value: unknown): value is number {
   return typeof value === 'number' && Number.isFinite(value) && Math.abs(value) < 1e6
@@ -75,12 +85,16 @@ export async function loadBoard(campaignId: number): Promise<Board> {
         entryId: codexBoardNodes.codexEntryId,
         name: codexEntries.name,
         type: codexEntries.type,
+        color: codexEntries.color,
         x: codexBoardNodes.x,
         y: codexBoardNodes.y,
+        w: codexBoardNodes.w,
+        h: codexBoardNodes.h,
       })
       .from(codexBoardNodes)
       .innerJoin(codexEntries, eq(codexEntries.id, codexBoardNodes.codexEntryId))
-      .where(eq(codexBoardNodes.campaignId, campaignId))
+      // Une fiche cachée du MJ n'existe pas pour les joueurs, ni sur le tableau.
+      .where(and(eq(codexBoardNodes.campaignId, campaignId), eq(codexEntries.hidden, false)))
       .orderBy(codexBoardNodes.id),
     db
       .select({
@@ -95,7 +109,9 @@ export async function loadBoard(campaignId: number): Promise<Board> {
       .where(eq(codexBoardLinks.campaignId, campaignId))
       .orderBy(codexBoardLinks.id),
   ])
-  return { rev: Date.now(), nodes, links: links as BoardLink[] }
+  const visible = new Set(nodes.map((n) => n.id))
+  const shown = links.filter((l) => visible.has(l.fromNodeId) && visible.has(l.toNodeId))
+  return { rev: Date.now(), nodes, links: shown as BoardLink[] }
 }
 
 /** Relit le tableau, le pousse à toute la campagne et le renvoie à l'auteur. */

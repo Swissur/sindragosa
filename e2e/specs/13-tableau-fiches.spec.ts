@@ -26,9 +26,9 @@ test('deux fiches reliées par une flèche, partagée en direct', async ({ brows
 
   const me = await (await page.request.get('/api/auth/me')).json()
   const campaignId = me.user.activeCampaignId as number
-  const creer = async (name: string) =>
-    (await (await page.request.post(`/api/campaigns/${campaignId}/codex`, { data: { name, type: 'personnage' } })).json()).id as number
-  const arthas = await creer(`Arthas ${Date.now()}`)
+  const creer = async (name: string, color = '') =>
+    (await (await page.request.post(`/api/campaigns/${campaignId}/codex`, { data: { name, type: 'personnage', color } })).json()).id as number
+  const arthas = await creer(`Arthas ${Date.now()}`, '#d64545')
   const uther = await creer(`Uther ${Date.now()}`)
 
   try {
@@ -41,6 +41,10 @@ test('deux fiches reliées par une flèche, partagée en direct', async ({ brows
       await page.getByTestId(`board-place-${id}`).click()
       await expect(page.getByTestId(`board-node-${id}`)).toBeVisible()
     }
+
+    // La couleur de la fiche teinte sa carte.
+    await expect(page.getByTestId(`board-node-${arthas}`)).toHaveClass(/colored/)
+    await expect(page.getByTestId(`board-node-${uther}`)).not.toHaveClass(/colored/)
 
     // Il touche Arthas, puis tire la poignée jusqu'à Uther.
     await page.getByTestId(`board-node-${arthas}`).click()
@@ -75,5 +79,52 @@ test('deux fiches reliées par une flèche, partagée en direct', async ({ brows
     await page.request.delete(`/api/campaigns/${campaignId}/codex/${uther}`)
     await bracco.close()
     await nym.close()
+  }
+})
+
+test("un lieu s'agrandit et contient un personnage", async ({ browser }) => {
+  const bracco = await browser.newContext({ storageState: stateFor('bracco') })
+  const page = await bracco.newPage()
+  const me = await (await page.request.get('/api/auth/me')).json()
+  const campaignId = me.user.activeCampaignId as number
+  const base = `/api/campaigns/${campaignId}`
+  const creer = async (name: string, type: string) =>
+    (await (await page.request.post(`${base}/codex`, { data: { name, type } })).json()).id as number
+  const taverne = await creer(`Taverne ${Date.now()}`, 'lieu')
+  const thrall = await creer(`Thrall ${Date.now()}`, 'personnage')
+
+  try {
+    // Le lieu à l'origine, le personnage posé dedans.
+    await page.request.post(`${base}/codex-board/nodes`, { data: { entryId: taverne, x: 0, y: 0 } })
+    await page.request.post(`${base}/codex-board/nodes`, { data: { entryId: thrall, x: 40, y: 40 } })
+    await ouvrirTableau(page)
+
+    // Toucher le personnage le sélectionne, lui, pas le lieu derrière.
+    await page.getByTestId(`board-node-${thrall}`).click()
+    await expect(page.getByTestId('board-resize-handle')).toHaveCount(0)
+    await expect(page.getByTestId('board-link-handle')).toBeVisible()
+
+    // Le lieu, lui, s'agrandit par son coin.
+    const lieu = page.getByTestId(`board-node-${taverne}`)
+    const avant = (await lieu.boundingBox())!
+    await lieu.click({ position: { x: 20, y: 10 } })
+    const coin = await centre(page, 'board-resize-handle')
+    await page.mouse.move(coin.x, coin.y)
+    await page.mouse.down()
+    await page.mouse.move(coin.x + 80, coin.y + 60, { steps: 6 })
+    const reponse = page.waitForResponse((r) => r.url().includes('/codex-board/nodes/') && r.request().method() === 'PATCH')
+    await page.mouse.up()
+    await reponse
+
+    const apres = (await lieu.boundingBox())!
+    expect(apres.width).toBeGreaterThan(avant.width + 40)
+
+    const board = await (await page.request.get(`${base}/codex-board`)).json()
+    const node = board.nodes.find((n: { entryId: number }) => n.entryId === taverne)
+    expect(node.w).toBeGreaterThan(320)
+  } finally {
+    await page.request.delete(`${base}/codex/${taverne}`)
+    await page.request.delete(`${base}/codex/${thrall}`)
+    await bracco.close()
   }
 })

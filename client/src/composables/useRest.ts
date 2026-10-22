@@ -39,12 +39,20 @@ export function receiveRest(event: RestEvent): void {
     applyServerRest(mine.after)
   }
 
-  restRequest.value = {
+  const request: RestRequest = {
     id: ++sequence,
     kind: event.kind,
     delta: mine?.delta ?? {},
     characterName: mine?.characterName ?? null,
   }
+
+  // Une fin de séance sans repos long n'est pas une nuit au camp : pas de feu,
+  // on passe directement au récap.
+  if (event.kind === 'seance' && !event.longRest) {
+    restSummary.value = request
+    return
+  }
+  restRequest.value = request
 }
 
 /**

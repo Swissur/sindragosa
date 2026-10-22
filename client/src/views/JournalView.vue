@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, watch, onMounted } from "vue";
 import { useRoute } from "vue-router";
-import { BookText, Users, StickyNote, Brush, BookUser, Pencil, BookPlus, History, MessagesSquare } from "lucide-vue-next";
+import { BookText, Users, StickyNote, Brush, BookUser, Pencil, BookPlus, History, MessagesSquare, Images } from "lucide-vue-next";
 import AppPageLayout from "../components/ui/AppPageLayout.vue";
 import AppPageHead from "../components/ui/AppPageHead.vue";
 import AppButton from "../components/ui/AppButton.vue";
@@ -13,6 +13,7 @@ import NotesTab from "../components/journal/NotesTab.vue";
 import MentionTextarea from "../components/journal/MentionTextarea.vue";
 import CodexTab from "../components/journal/CodexTab.vue";
 import GmExchangeTab from "../components/journal/GmExchangeTab.vue";
+import SharedImagesTab from "../components/journal/SharedImagesTab.vue";
 import {
   fetchJournalCompagnie,
   saveJournalCompagnie,
@@ -28,17 +29,23 @@ import { gmUnreadCount } from "../composables/useGmUnread";
 
 const route = useRoute();
 
-type Tab = "compagnie" | "notes" | "dessins" | "fiches" | "mj";
-const initialTab = ["compagnie", "notes", "dessins", "fiches", "mj"].includes(String(route.query.tab))
+type Tab = "compagnie" | "notes" | "dessins" | "fiches" | "images" | "mj";
+const TAB_IDS = ["compagnie", "notes", "dessins", "fiches", "images", "mj"];
+const initialTab = TAB_IDS.includes(String(route.query.tab))
   ? (String(route.query.tab) as Tab)
   : "compagnie";
 const activeTab = ref<Tab>(initialTab);
+// Une popup (message, image du MJ) renvoie vers un onglet alors qu'on est déjà sur le Journal.
+watch(() => route.query.tab, (tab) => {
+  if (TAB_IDS.includes(String(tab))) activeTab.value = String(tab) as Tab;
+});
 
 const TABS = computed(() => [
   { value: "compagnie", label: "Journal de bord", icon: Users },
   { value: "notes", label: "Notes", icon: StickyNote },
   { value: "dessins", label: "Dessins", icon: Brush },
   { value: "fiches", label: "Fiches", icon: BookUser },
+  { value: "images", label: "Images", icon: Images },
   { value: "mj", label: "Échange avec le MJ", icon: MessagesSquare, dot: gmUnreadCount.value > 0 },
 ]);
 
@@ -288,6 +295,9 @@ onMounted(load);
 
       <!-- ── Fiches ── -->
       <CodexTab v-if="activeTab === 'fiches'" class="tab-content" />
+
+      <!-- ── Images montrées par le MJ ── -->
+      <SharedImagesTab v-if="activeTab === 'images'" class="tab-content" />
 
       <!-- ── Échange avec le MJ ── -->
       <GmExchangeTab v-if="activeTab === 'mj'" class="tab-content" />

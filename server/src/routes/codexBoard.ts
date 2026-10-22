@@ -4,7 +4,7 @@ import { db } from '../db/index.js'
 import { codexBoardLinks, codexBoardNodes, codexEntries } from '../db/schema.js'
 import { requireAuth, type AuthRequest } from '../auth/middleware.js'
 import { verifyMember } from './codex.js'
-import { isCoord, loadBoard, parseLinkStyle, publishBoard } from '../campaigns/codexBoard.js'
+import { isCoord, isSize, loadBoard, parseLinkStyle, publishBoard } from '../campaigns/codexBoard.js'
 
 const router = Router()
 router.use(requireAuth)
@@ -50,7 +50,7 @@ router.post('/:id/codex-board/nodes', async (req, res) => {
   const [entry] = await db
     .select({ id: codexEntries.id })
     .from(codexEntries)
-    .where(and(eq(codexEntries.id, entryId as number), eq(codexEntries.campaignId, campaignId)))
+    .where(and(eq(codexEntries.id, entryId as number), eq(codexEntries.campaignId, campaignId), eq(codexEntries.hidden, false)))
   if (!entry) { res.status(404).json({ error: 'Fiche introuvable' }); return }
 
   // Déjà posée (deux joueurs en même temps) : on la laisse où elle est.
@@ -58,16 +58,18 @@ router.post('/:id/codex-board/nodes', async (req, res) => {
   res.json(await publishBoard(campaignId))
 })
 
-// PATCH /:id/codex-board/nodes/:nodeId — déplacer une fiche
+// PATCH /:id/codex-board/nodes/:nodeId — déplacer une fiche, et la redimensionner si w/h sont fournis
 router.patch('/:id/codex-board/nodes/:nodeId', async (req, res) => {
   const campaignId = await memberCampaign(req, res)
   if (campaignId == null) return
   const nodeId = idParam(req.params.nodeId)
-  const { x, y } = req.body as { x?: unknown; y?: unknown }
+  const { x, y, w, h } = req.body as { x?: unknown; y?: unknown; w?: unknown; h?: unknown }
   if (nodeId == null || !isCoord(x) || !isCoord(y)) { res.status(400).json({ error: 'Position invalide' }); return }
+  const resized = w !== undefined || h !== undefined
+  if (resized && (!isSize(w) || !isSize(h))) { res.status(400).json({ error: 'Taille invalide' }); return }
   if (!(await nodeOf(campaignId, nodeId))) { res.status(404).json({ error: 'Fiche absente du tableau' }); return }
 
-  await db.update(codexBoardNodes).set({ x, y }).where(eq(codexBoardNodes.id, nodeId))
+  await db.update(codexBoardNodes).set(resized ? { x, y, w: w as number, h: h as number } : { x, y }).where(eq(codexBoardNodes.id, nodeId))
   res.json(await publishBoard(campaignId))
 })
 

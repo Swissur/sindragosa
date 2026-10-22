@@ -40,3 +40,5 @@ livre_joueur.pdf
 # Images non libres de droit : gardées en local, jamais publiées
 client/src/assets/races/
 docs/images/
+# Extraits du livre Knight (sous licence) : gardés en local, jamais publiés
+docs/knight-livre/

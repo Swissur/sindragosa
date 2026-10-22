@@ -2,7 +2,7 @@
 import { RouterLink, RouterView } from "vue-router";
 import { computed, defineAsyncComponent, onBeforeUnmount, ref, watch } from "vue";
 import { useRoute } from "vue-router";
-import { UserCircle, Loader2, ScrollText, Backpack, BookOpenText, Palette, Dices, History, Wrench, Tv, Crown } from "lucide-vue-next";
+import { UserCircle, Loader2, ScrollText, Backpack, BookOpenText, BookMarked, Palette, Dices, History, Wrench, Tv, Crown } from "lucide-vue-next";
 import AppToast from "./components/ui/AppToast.vue";
 import RollSheet from "./components/roll/RollSheet.vue";
 import DiceBar from "./components/DiceBar.vue";
@@ -12,6 +12,7 @@ import Dice3DOverlay from "./components/dice3d/Dice3DOverlay.vue";
 import CampfireOverlay from "./components/campfire/CampfireOverlay.vue";
 import RestSummaryModal from "./components/campfire/RestSummaryModal.vue";
 import GmMessageModal from "./components/campaign/GmMessageModal.vue";
+import SharedImageModal from "./components/campaign/SharedImageModal.vue";
 import CriticalMomentOverlay from "./components/CriticalMomentOverlay.vue";
 import { user, authReady } from "./composables/useAuth";
 import { useActiveCombat, refreshActiveCombat } from "./composables/useActiveCombat";
@@ -106,6 +107,7 @@ if (savedStyle) {
     <RouterView />
     <Dice3DOverlay />
     <CriticalMomentOverlay />
+    <SharedImageModal viewer />
     <AppToast />
   </div>
   <div v-else class="app-shell" :class="{ 'shell-docked': panelOpen }">
@@ -120,6 +122,14 @@ if (savedStyle) {
           title="Écran MJ"
           data-testid="nav-gm-screen"
           ><Crown :size="20"
+        /></RouterLink>
+        <RouterLink
+          v-if="gmCampaignId"
+          to="/scenarios"
+          class="nav-link"
+          title="Scénarios"
+          data-testid="nav-scenarios"
+          ><BookMarked :size="20"
         /></RouterLink>
         <template v-else>
           <RouterLink
@@ -212,6 +222,7 @@ if (savedStyle) {
     <DevToolsSheet v-if="isDev" v-model="devToolsOpen" />
     <RestSummaryModal />
     <GmMessageModal v-if="user" />
+    <SharedImageModal v-if="user" />
     <RollSheet v-if="user" />
     <AppToast />
   </div>

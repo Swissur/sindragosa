@@ -53,6 +53,9 @@ export const router = createRouter({
     { path: '/campagnes/:campaignId/personnage/:userId', name: 'campaign-character', component: CampaignCharacterView },
     { path: '/campagnes/:id/rencontres/:eid', name: 'encounter-edit', component: EncounterEditView },
     { path: '/campagnes/:id/combat/:cid', name: 'combat', component: CombatView },
+    // Scénarios du MJ (plans/47) : sa préparation, hors session comme en jeu.
+    { path: '/scenarios', name: 'scenarios', component: () => import('../views/ScenarioListView.vue') },
+    { path: '/scenarios/:sid', name: 'scenario', component: () => import('../views/ScenarioView.vue') },
     { path: '/options', name: 'options', component: OptionsView },
     // Mode table : la tablette au milieu de la table. Plein écran, sans barres.
     { path: '/table', name: 'viewer', component: () => import('../views/ViewerView.vue'), meta: { viewer: true } },

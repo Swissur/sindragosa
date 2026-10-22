@@ -271,7 +271,12 @@ export function applyServerPatch(characterId: number, patch: Partial<ServerChara
   markSynced()
 }
 
-export async function loadCharacter(id?: number): Promise<void> {
+/**
+ * Charge la fiche `id`, sinon la fiche active du joueur.
+ * Sans fiche, en crée une — sauf `create: false` : un chargement de fond (barre du bas)
+ * ne doit pas fabriquer de personnage avant que le joueur ait choisi sa campagne.
+ */
+export async function loadCharacter(id?: number, { create = true } = {}): Promise<void> {
   if (debounceTimer) { clearTimeout(debounceTimer); debounceTimer = null }
   const gen = ++loadGen
   loading.value = true
@@ -289,7 +294,7 @@ export async function loadCharacter(id?: number): Promise<void> {
       const active = list.find((c) => c.isActive) ?? list[0] ?? null
       if (active) {
         applyLoaded(active)
-      } else {
+      } else if (create) {
         const created = await createCharacterHere()
         if (gen !== loadGen) return
         applyLoaded(created)

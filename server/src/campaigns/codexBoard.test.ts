@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { isCoord, LABEL_MAX, parseLinkStyle } from './codexBoard.js'
+import { isCoord, isSize, LABEL_MAX, parseLinkStyle } from './codexBoard.js'
 
 describe('parseLinkStyle', () => {
   it('garde seulement les champs envoyés', () => {
@@ -31,5 +31,19 @@ describe('isCoord', () => {
     expect(isCoord(Number.NaN)).toBe(false)
     expect(isCoord(Infinity)).toBe(false)
     expect(isCoord(1e9)).toBe(false)
+  })
+})
+
+describe('isSize', () => {
+  it('accepte une taille de carte raisonnable', () => {
+    expect(isSize(150)).toBe(true)
+    expect(isSize(640.5)).toBe(true)
+  })
+
+  it('refuse le minuscule, le démesuré et le reste', () => {
+    expect(isSize(10)).toBe(false)
+    expect(isSize(99999)).toBe(false)
+    expect(isSize('300')).toBe(false)
+    expect(isSize(Number.NaN)).toBe(false)
   })
 })

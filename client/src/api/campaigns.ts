@@ -377,6 +377,8 @@ export interface RestState {
 
 export interface RestEvent {
   kind: RestKind
+  /** Fin de séance seulement : le MJ a coché le repos long (c'est lui qui allume le feu). */
+  longRest: boolean
   deltas: {
     userId: number
     characterName: string

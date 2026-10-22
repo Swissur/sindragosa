@@ -20,6 +20,8 @@ test('retirer puis remettre une armure change l’AP', async ({ browser }) => {
     await expect(page.getByTestId('armor-value')).toHaveText('4')
 
     await page.goto('/inventaire')
+    // L'inventaire est rangé par catégorie, repliée par défaut.
+    await page.getByTestId('items-armure').click()
     let saved = page.waitForResponse(isCharacterPut)
     await page.getByTestId('item-equip-i-cuirasse').click()
     await saved

@@ -3,6 +3,7 @@ import { computed, ref } from 'vue'
 import type { Component } from 'vue'
 import { Plus, Swords, Shield, FlaskRound, Package, Gem, PersonStanding } from 'lucide-vue-next'
 import AppCard from '../ui/AppCard.vue'
+import AppAccordion from '../ui/AppAccordion.vue'
 import AppIconBtn from '../ui/AppIconBtn.vue'
 import AppEmptyState from '../ui/AppEmptyState.vue'
 import ItemEditorSheet from './ItemEditorSheet.vue'
@@ -10,12 +11,14 @@ import GiveItemSheet from './GiveItemSheet.vue'
 import { user } from '../../composables/useAuth'
 import { removeWithUndo } from '../../composables/useUndoRemove'
 import { showToast } from '../../composables/useToast'
-import { ITEM_TYPE_LABELS, isEquippable, weaponDamage } from '../../utils/sindragosa/equipment'
+import { isEquippable, weaponDamage } from '../../utils/sindragosa/equipment'
+import { advancedDomainById, domainById } from '../../data/sindragosa/domains'
 import type { Character, ItemRow, ItemType } from '../../types/character'
 
 /**
- * Inventaire (plans/35-equipement.md). Taper un objet l'ouvre ; l'icône de corps
- * équipe une arme ou une armure : l'armure compte dans l'AP, l'arme donne une attaque.
+ * Inventaire (plans/35-equipement.md), rangé par catégorie, chacune repliée.
+ * Taper un objet l'ouvre ; l'icône de corps équipe une arme ou une armure :
+ * l'armure compte dans l'AP, l'arme donne une attaque.
  */
 const props = defineProps<{ character: Character }>()
 
@@ -27,6 +30,20 @@ const TYPE_ICONS: Record<ItemType, Component> = {
   divers: Gem,
 }
 
+const GROUP_LABELS: Record<ItemType, string> = {
+  arme: 'Armes',
+  armure: 'Armures',
+  consommable: 'Consommables',
+  composant: 'Composants',
+  divers: 'Divers',
+}
+
+const groups = computed(() =>
+  (Object.keys(GROUP_LABELS) as ItemType[])
+    .map((type) => ({ type, items: props.character.items.filter((i) => (i.type ?? 'divers') === type) }))
+    .filter((g) => g.items.length),
+)
+
 const editingId = ref<string | null>(null)
 const editing = computed(() => props.character.items.find((i) => i.id === editingId.value) ?? null)
 const editorOpen = computed({
@@ -34,10 +51,14 @@ const editorOpen = computed({
   set: (v: boolean) => { if (!v) editingId.value = null },
 })
 
+/** La ligne sous le nom : la catégorie est déjà dans le titre du groupe. */
 function detail(item: ItemRow): string {
   if (item.type === 'arme') return `${weaponDamage(item)} dégâts`
   if (item.type === 'armure') return `AP ${item.armor ?? 0}`
-  return ITEM_TYPE_LABELS[item.type ?? 'divers']
+  const bonus = item.domainBonus
+  if (!bonus?.dice) return ''
+  const label = domainById(bonus.domainId)?.label ?? advancedDomainById(bonus.domainId)?.label ?? bonus.domainId
+  return `${bonus.dice > 0 ? '+' : ''}${bonus.dice}d6 ${label}`
 }
 
 function addItem() {
@@ -93,26 +114,37 @@ function remove() {
 
     <AppEmptyState v-if="!character.items.length">Sac vide. Fabrique ou ajoute un objet !</AppEmptyState>
 
-    <ul v-else class="items">
-      <li v-for="item in character.items" :key="item.id" class="item" :data-testid="`item-${item.id}`">
-        <button type="button" class="item-main" @click="editingId = item.id">
-          <component :is="TYPE_ICONS[item.type ?? 'divers']" :size="16" class="item-icon" />
-          <span class="item-text">
-            <span class="item-name">{{ item.name || 'Nouvel objet' }}<template v-if="item.quantity > 1"> ×{{ item.quantity }}</template></span>
-            <span class="item-detail">{{ detail(item) }}</span>
-          </span>
-        </button>
-        <AppIconBtn
-          v-if="isEquippable(item)"
-          :title="item.equipped ? 'Retirer' : 'Équiper'"
-          :aria-pressed="!!item.equipped"
-          :data-testid="`item-equip-${item.id}`"
-          @click="item.equipped = !item.equipped"
-        >
-          <PersonStanding :size="18" :class="item.equipped ? 'equip--on' : 'equip--off'" />
-        </AppIconBtn>
-      </li>
-    </ul>
+    <template v-else>
+      <AppAccordion
+        v-for="g in groups"
+        :key="g.type"
+        :title="GROUP_LABELS[g.type]"
+        :hint="`${g.items.length}`"
+        :testid="`items-${g.type}`"
+      >
+        <template #icon><component :is="TYPE_ICONS[g.type]" :size="15" /></template>
+        <ul class="items">
+          <li v-for="item in g.items" :key="item.id" class="item" :data-testid="`item-${item.id}`">
+            <button type="button" class="item-main" @click="editingId = item.id">
+              <component :is="TYPE_ICONS[item.type ?? 'divers']" :size="16" class="item-icon" />
+              <span class="item-text">
+                <span class="item-name">{{ item.name || 'Nouvel objet' }}<template v-if="item.quantity > 1"> ×{{ item.quantity }}</template></span>
+                <span v-if="detail(item)" class="item-detail">{{ detail(item) }}</span>
+              </span>
+            </button>
+            <AppIconBtn
+              v-if="isEquippable(item)"
+              :title="item.equipped ? 'Retirer' : 'Équiper'"
+              :aria-pressed="!!item.equipped"
+              :data-testid="`item-equip-${item.id}`"
+              @click="item.equipped = !item.equipped"
+            >
+              <PersonStanding :size="18" :class="item.equipped ? 'equip--on' : 'equip--off'" />
+            </AppIconBtn>
+          </li>
+        </ul>
+      </AppAccordion>
+    </template>
 
     <ItemEditorSheet v-model="editorOpen" :item="editing" :can-give="canGive" @remove="remove" @duplicate="duplicate" @give="startGive" />
     <GiveItemSheet v-if="canGive" v-model="giveOpen" :item="giving" :character-id="Number(character.id)" @given="given" />

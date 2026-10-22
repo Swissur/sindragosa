@@ -44,6 +44,9 @@ test('le butin d’un boss tombe et part dans l’inventaire d’un héros', asy
 
     // ── Bracco le retrouve dans son inventaire ──
     await pageJoueur.goto('/inventaire')
+    // Catégories repliées par défaut, et celle de l'objet tiré n'est pas connue d'avance.
+    await expect(pageJoueur.locator('[data-testid^="items-"]').first()).toBeVisible()
+    for (const head of await pageJoueur.locator('[data-testid^="items-"]').all()) await head.click()
     await expect(pageJoueur.getByText(nom, { exact: true })).toBeVisible()
   } finally {
     await mj.close()

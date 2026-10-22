@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import type { EtatEntry } from './etats.js'
 import {
-  applyCharacterHp, applyCharacterStates, getClientsForCombat, releaseClient, type SseClient,
+  applyCharacterHp, applyCharacterStates, applyDiceColor, getClientsForCombat, releaseClient, type SseClient,
 } from './sseStore.js'
 
 type P = { kind: string; userId: number | null; hpCurrent: number; hpMax: number; name: string }
@@ -141,5 +141,19 @@ describe('applyCharacterStates', () => {
     expect(p.states).toEqual([{ id: 'affaibli' }])
     expect(entree[0]).toBe(p)
     expect(out).not.toBe(entree)
+  })
+})
+
+describe('applyDiceColor', () => {
+  it('donne à chaque PJ la couleur de ses dés, rien aux monstres', () => {
+    const colors = new Map([[1, '#d64545']])
+    const [hero, gob] = applyDiceColor([player(1, 10, 10), monster(5, 5)], colors)
+    expect(hero.diceColor).toBe('#d64545')
+    expect(gob.diceColor).toBeUndefined()
+  })
+
+  it('laisse sans couleur un PJ qui n’est plus membre', () => {
+    const [hero] = applyDiceColor([player(2, 10, 10)], new Map([[1, '#d64545']]))
+    expect(hero.diceColor).toBeUndefined()
   })
 })

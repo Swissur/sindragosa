@@ -4,6 +4,7 @@ import { db } from '../db/index.js'
 import { combats, combatParticipants, campaigns, campaignMembers, characters } from '../db/schema.js'
 import { serializeCombat } from './serialize.js'
 import type { EtatEntry } from './etats.js'
+import { campaignDiceColors } from '../campaigns/diceStyleQuery.js'
 
 type ParticipantRow = typeof combatParticipants.$inferSelect
 
@@ -116,6 +117,29 @@ export async function enrichParticipantStates(
   return applyCharacterStates(participants, statesByUserId)
 }
 
+/**
+ * Pure transformation : un PJ porte la couleur de ses dés, son pion sur la
+ * carte la reprend. Les monstres n'en ont pas. Exportée pour le test.
+ */
+export function applyDiceColor<T extends { kind: string; userId: number | null }>(
+  participants: T[],
+  colorByUserId: Map<number, string>,
+): (T & { diceColor?: string })[] {
+  return participants.map((p) => {
+    if (p.kind !== 'player' || p.userId == null) return p
+    const diceColor = colorByUserId.get(p.userId)
+    return diceColor ? { ...p, diceColor } : p
+  })
+}
+
+export async function enrichParticipantDiceColor(
+  campaignId: number,
+  participants: ParticipantRow[],
+): Promise<ParticipantRow[]> {
+  if (!participants.some((p) => p.kind === 'player' && p.userId != null)) return participants
+  return applyDiceColor(participants, await campaignDiceColors(campaignId))
+}
+
 /** Re-broadcast every active combat this user takes part in (after their character HP changed). */
 export async function broadcastUserCombats(userId: number): Promise<void> {
   const rows = await db
@@ -206,7 +230,7 @@ export async function sendCombatStateTo(
     .orderBy(asc(combatParticipants.id))
 
   const withHp = await enrichParticipantHp(combat.campaignId, participants)
-  const enriched = await enrichParticipantStates(combat.campaignId, withHp)
+  const enriched = await enrichParticipantDiceColor(combat.campaignId, await enrichParticipantStates(combat.campaignId, withHp))
   writeSse(client.res, 'combat-updated', serializeCombat(combat, enriched, seesAsGm(client, gmUserId)))
 }
 
@@ -237,7 +261,7 @@ export async function broadcastCombatState(
     .orderBy(asc(combatParticipants.id))
 
   const withHp = await enrichParticipantHp(combat.campaignId, participants)
-  const enriched = await enrichParticipantStates(combat.campaignId, withHp)
+  const enriched = await enrichParticipantDiceColor(combat.campaignId, await enrichParticipantStates(combat.campaignId, withHp))
 
   for (const client of clients) {
     writeSse(client.res, 'combat-updated', serializeCombat(combat, enriched, seesAsGm(client, gmUserId)))

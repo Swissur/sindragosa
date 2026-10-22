@@ -1,7 +1,7 @@
 import { asc, eq } from 'drizzle-orm'
 import { db } from '../db/index.js'
 import { campaignMembers, users } from '../db/schema.js'
-import { resolveDiceStyle, type DiceStyle } from './diceStyle.js'
+import { dominantColor, resolveDiceStyle, type DiceStyle } from './diceStyle.js'
 
 /**
  * Le style de dé effectif d'un utilisateur dans une campagne : celui qu'il a
@@ -26,8 +26,26 @@ export async function effectiveDiceStyle(userId: number, campaignId: number | nu
     index = found === -1 ? members.length : found
   }
 
-  // Repli sur l'ancienne colonne : un compte dont le style n'a pas été converti
-  // (créé entre la migration et le déploiement) garde sa couleur.
-  const stored = user?.diceStyle ?? (user?.diceColor ? { bg: { type: 'solid', from: user.diceColor } } : null)
-  return resolveDiceStyle(stored, index)
+  return resolveDiceStyle(storedStyle(user), index)
+}
+
+// Repli sur l'ancienne colonne : un compte dont le style n'a pas été converti
+// (créé entre la migration et le déploiement) garde sa couleur.
+function storedStyle(user: { diceStyle: unknown; diceColor: string | null } | undefined): unknown {
+  return user?.diceStyle ?? (user?.diceColor ? { bg: { type: 'solid', from: user.diceColor } } : null)
+}
+
+/**
+ * La couleur de dé (un seul ton) de chaque membre d'une campagne, par userId.
+ * Même règle qu'`effectiveDiceStyle`, en une requête pour tous.
+ */
+export async function campaignDiceColors(campaignId: number): Promise<Map<number, string>> {
+  const members = await db
+    .select({ userId: campaignMembers.userId, diceStyle: users.diceStyle, diceColor: users.diceColor })
+    .from(campaignMembers)
+    .innerJoin(users, eq(users.id, campaignMembers.userId))
+    .where(eq(campaignMembers.campaignId, campaignId))
+    .orderBy(asc(campaignMembers.joinedAt), asc(campaignMembers.id))
+
+  return new Map(members.map((m, i) => [m.userId, dominantColor(resolveDiceStyle(storedStyle(m), i))]))
 }

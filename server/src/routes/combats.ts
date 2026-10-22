@@ -5,7 +5,7 @@ import {
   combats, combatParticipants, campaigns, campaignMembers, characters, encounterTemplates, encounterMonsters,
 } from '../db/schema.js'
 import { requireAuth, type AuthRequest } from '../auth/middleware.js'
-import { broadcastCombatState, broadcastParticipantMoved, enrichParticipantHp, enrichParticipantStates, getClientsForCombat, releaseClient, sendCombatStateTo, type SseClient } from '../combats/sseStore.js'
+import { broadcastCombatState, broadcastParticipantMoved, enrichParticipantDiceColor, enrichParticipantHp, enrichParticipantStates, getClientsForCombat, releaseClient, sendCombatStateTo, type SseClient } from '../combats/sseStore.js'
 import { serializeCombat } from '../combats/serialize.js'
 import { broadcastCampaignEvent, isViewerRequest } from '../campaigns/sseStore.js'
 import { turnOrder, firstActiveId, step } from '../combats/turnOrder.js'
@@ -229,7 +229,7 @@ router.get('/:id/combats/:cid', async (req, res) => {
 
   const participants = await db.select().from(combatParticipants).where(eq(combatParticipants.combatId, combatId)).orderBy(asc(combatParticipants.id))
   const withHp = await enrichParticipantHp(campaignId, participants)
-  const enriched = await enrichParticipantStates(campaignId, withHp)
+  const enriched = await enrichParticipantDiceColor(campaignId, await enrichParticipantStates(campaignId, withHp))
 
   res.json(serializeCombat(combat, enriched, userId === check.gmUserId && !isViewerRequest(req)))
 })

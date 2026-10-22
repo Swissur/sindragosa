@@ -65,6 +65,16 @@ describe('buildTokens', () => {
     expect(a[1].color).toBe(HERO_COLORS[1])
   })
 
+  it('donne à un héros la couleur de ses dés', () => {
+    const [a] = buildTokens([p({ id: 3, kind: 'player', diceColor: '#7c52c9' })])
+    expect(a.color).toBe('#7c52c9')
+  })
+
+  it('ignore une couleur de dés sur un monstre', () => {
+    const [m] = buildTokens([p({ id: 3, diceColor: '#7c52c9' })])
+    expect(m.color).not.toBe('#7c52c9')
+  })
+
   it('pose les pions non placés dans la grille', () => {
     const many = Array.from({ length: 30 }, (_, i) => p({ id: i + 1 }))
     for (const t of buildTokens(many)) {

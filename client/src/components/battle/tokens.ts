@@ -1,7 +1,7 @@
 import type { CombatParticipant } from '../../api/combats'
 import type { BattleToken } from './BattleGrid3D.vue'
 
-/** Couleurs des héros : stable, prise dans l'ordre d'arrivée au combat. */
+/** Couleurs des héros sans couleur de dés : stable, dans l'ordre d'arrivée au combat. */
 export const HERO_COLORS = ['#4f8ef7', '#3fbf7f', '#c264d9', '#f0a63c', '#4fc7d9', '#e0648a']
 export const MONSTER_COLORS = ['#b03030', '#3a3a3a']
 
@@ -60,7 +60,8 @@ export function buildTokens(participants: CombatParticipant[]): BattleToken[] {
     return {
       id: String(p.id),
       name: p.name,
-      color: palette[slot % palette.length],
+      // Un PJ a la couleur de ses dés ; la palette ne sert que de repli.
+      color: (hero && p.diceColor) || palette[slot % palette.length],
       kind: hero ? 'hero' : 'monster',
       x: p.posX ?? dx,
       z: p.posY ?? dz,

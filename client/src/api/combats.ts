@@ -47,6 +47,8 @@ export interface CombatParticipant {
   /** Position sur le champ de bataille, en cases (centre = 0,0). null = jamais placé. */
   posX: number | null
   posY: number | null
+  /** Couleur des dés du joueur (PJ seulement) : son pion la reprend. */
+  diceColor?: string
 }
 
 export interface CombatState {

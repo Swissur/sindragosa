@@ -6,7 +6,6 @@ import AppEmptyState from '../ui/AppEmptyState.vue'
 import AppButton from '../ui/AppButton.vue'
 import AppBottomSheet from '../ui/AppBottomSheet.vue'
 import AgonieWatch from '../AgonieWatch.vue'
-import VitalsCard from '../character-sheet/VitalsCard.vue'
 import ActionTile from './ActionTile.vue'
 import AbilityCard from '../abilities/AbilityCard.vue'
 import { ACTION_TYPES, COMBAT_ACTION_TYPES } from '../abilities/actionTypes'
@@ -26,7 +25,7 @@ import type { Pin } from '../../utils/sindragosa/pins'
  * Combat (armes et compétences d'action), Hors combat (domaines et le reste).
  * Hors combat, les favoris vivent dans l'onglet Favoris de la fiche.
  */
-const { character, loading, loadError, computedHp, computedInitiative, unlocked, unlockedAdvanced } = useCharacter()
+const { character, loading, loadError, unlocked, unlockedAdvanced } = useCharacter()
 
 const { pins, toggle, isPinned } = usePins(character)
 
@@ -111,8 +110,6 @@ const rollDomain = (domainId: string) => openRollSheet({ domainId, context: 'act
     <AppEmptyState v-else-if="!character.id">Aucun personnage.</AppEmptyState>
 
     <template v-else>
-      <VitalsCard :character="character" :hp-max="computedHp" :initiative="computedInitiative" />
-
       <AppTabs v-model="activeTab" class="actions-tabs" :tabs="TABS" icon-only-mobile />
 
       <div v-if="activeTab === 'favoris'" class="tiles">

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { markGiven, sanitizeLoot, toInventoryItem } from './loot.js'
+import { giveQuantity, markGiven, sanitizeLoot, toInventoryItem } from './loot.js'
 
 describe('sanitizeLoot', () => {
   it('garde les champs d’objet connus et jette le reste', () => {
@@ -53,5 +53,18 @@ describe('markGiven', () => {
     expect(markGiven(loot, 1, 'Bracco')).toBeNull()
     expect(markGiven(loot, 5, 'Bracco')).toBeNull()
     expect(markGiven(loot, 0.5, 'Bracco')).toBeNull()
+  })
+})
+
+describe('giveQuantity', () => {
+  it('donne ce qui est demandé, dans la limite du stock', () => {
+    expect(giveQuantity(2, 5)).toBe(2)
+    expect(giveQuantity(9, 5)).toBe(5)
+    expect(giveQuantity(0, 5)).toBe(1)
+  })
+
+  it('sans demande valable, donne tout', () => {
+    expect(giveQuantity(undefined, 3)).toBe(3)
+    expect(giveQuantity('2', 3)).toBe(3)
   })
 })

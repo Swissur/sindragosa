@@ -177,10 +177,11 @@ export interface CharacterPatchEvent {
 }
 
 /** Donne un objet de mon personnage au personnage d'un autre joueur de la campagne. */
-export function giveItem(campaignId: number, characterId: number, toUserId: number, item: ItemRow): Promise<void> {
+/** Donne `quantity` exemplaires de l'objet ; le donneur garde le reste. */
+export function giveItem(campaignId: number, characterId: number, toUserId: number, item: ItemRow, quantity: number): Promise<void> {
   return request(`/${campaignId}/items/give`, {
     method: 'POST',
-    body: JSON.stringify({ characterId, toUserId, item }),
+    body: JSON.stringify({ characterId, toUserId, item, quantity }),
   })
 }
 

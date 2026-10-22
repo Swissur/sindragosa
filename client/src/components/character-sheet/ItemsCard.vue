@@ -91,9 +91,13 @@ function startGive() {
   editingId.value = null
 }
 
-function given(item: ItemRow) {
+/** Tout donné : la ligne part ; sinon il en reste. */
+function given(item: ItemRow, quantity: number) {
   const i = props.character.items.findIndex((x) => x.id === item.id)
-  if (i >= 0) props.character.items.splice(i, 1)
+  if (i < 0) return
+  const row = props.character.items[i]
+  if (quantity >= row.quantity) props.character.items.splice(i, 1)
+  else row.quantity -= quantity
 }
 
 function remove() {

@@ -49,6 +49,12 @@ export function sanitizeLoot(raw: unknown): LootEntry[] {
 export function toInventoryItem({ givenTo: _given, chance: _chance, quantity, ...item }: LootEntry, id: string) {
   return { ...item, id, quantity: quantity ?? 1, equipped: false }
 }
+/** Exemplaires donnés : ceux demandés, entre 1 et ceux possédés ; tous si rien n'est demandé. */
+export function giveQuantity(requested: unknown, owned: number): number {
+  if (!Number.isInteger(requested)) return owned
+  return Math.min(owned, Math.max(1, requested as number))
+}
+
 
 /** Le butin avec l'objet `index` attribué à `heroName` ; null s'il n'existe pas ou est déjà donné. */
 export function markGiven(loot: LootEntry[], index: number, heroName: string): LootEntry[] | null {

@@ -13,7 +13,7 @@ import { isCampaignSystem, pickCharacterFor } from '../campaigns/systems.js'
 import { dominantColor } from '../campaigns/diceStyle.js'
 import { effectiveDiceStyle } from '../campaigns/diceStyleQuery.js'
 import { importEncounters, monsterValues, parseEncounterImport } from '../campaigns/encounterImport.js'
-import { sanitizeLoot, toInventoryItem } from '../combats/loot.js'
+import { giveQuantity, sanitizeLoot, toInventoryItem } from '../combats/loot.js'
 import { randomUUID } from 'node:crypto'
 import { moveMember } from '../campaigns/moveMember.js'
 
@@ -383,12 +383,13 @@ router.patch('/:id/members/:userId/character', async (req, res) => {
 })
 
 // POST /api/campaigns/:id/items/give — un joueur donne un objet de son inventaire à un autre joueur.
-// L'objet vient du client (il peut ne pas être encore sauvegardé) ; il quitte la fiche du
-// donneur et rejoint celle du receveur par concaténation SQL, qui reçoit son inventaire par SSE.
+// L'objet vient du client (il peut ne pas être encore sauvegardé) ; `quantity` exemplaires
+// quittent la fiche du donneur (la ligne baisse, ou disparaît s'il donne tout) et rejoignent
+// celle du receveur par concaténation SQL, qui reçoit son inventaire par SSE.
 router.post('/:id/items/give', async (req, res) => {
   const userId = (req as unknown as AuthRequest).userId
   const campaignId = Number(req.params.id)
-  const body = (req.body ?? {}) as { characterId?: unknown; toUserId?: unknown; item?: { id?: unknown } }
+  const body = (req.body ?? {}) as { characterId?: unknown; toUserId?: unknown; item?: { id?: unknown }; quantity?: unknown }
   const toUserId = Number(body.toUserId)
   const itemId = body.item?.id
   const [entry] = sanitizeLoot([body.item])
@@ -406,10 +407,16 @@ router.post('/:id/items/give', async (req, res) => {
   const [recipient] = await memberOf(toUserId)
   if (!recipient?.characterId) { res.status(404).json({ error: 'Destinataire introuvable' }); return }
 
-  const item = toInventoryItem(entry, randomUUID())
+  const count = giveQuantity(body.quantity, entry.quantity ?? 1)
+  const item = toInventoryItem({ ...entry, quantity: count }, randomUUID())
   const items = await db.transaction(async (tx) => {
+    const qty = sql`coalesce((i->>'quantity')::int, 1)`
     await tx.update(characters)
-      .set({ items: sql`coalesce((select jsonb_agg(i) from jsonb_array_elements(${characters.items}) i where i->>'id' <> ${itemId}), '[]'::jsonb)`, updatedAt: new Date() })
+      .set({
+        items: sql`coalesce((select jsonb_agg(case when i->>'id' = ${itemId} then jsonb_set(i, '{quantity}', to_jsonb(${qty} - ${count}::int)) else i end)
+          from jsonb_array_elements(${characters.items}) i where i->>'id' <> ${itemId} or ${qty} > ${count}::int), '[]'::jsonb)`,
+        updatedAt: new Date(),
+      })
       .where(eq(characters.id, giver.characterId!))
     const [updated] = await tx.update(characters)
       .set({ items: sql`${characters.items} || ${JSON.stringify([item])}::jsonb`, updatedAt: new Date() })

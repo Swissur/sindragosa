@@ -36,6 +36,8 @@ export interface MonsterAttack {
 export interface MonsterAbility {
   name: string
   description: string
+  /** Réserve fixée par le MJ pour lancer la capacité ; absente = `abilityPool` la déduit. */
+  pool?: number
   /** Le texte garde du vocabulaire d20 que la conversion n'a pas su traduire. */
   review?: boolean
 }
@@ -58,6 +60,20 @@ export interface Monster {
 }
 
 export const MAX_THREAT = 5
+
+/**
+ * Réserve d'une capacité de monstre : celle fixée par le MJ, sinon la meilleure
+ * attaque, sinon la défense, sinon menace + 2 (une carac de base). Les monstres
+ * en jeu n'ont plus leurs caracs : la défense en tient lieu.
+ */
+export function abilityPool(
+  m: { attacks?: MonsterAttack[] | null; defense?: number | null; threat?: number | null },
+  ability: MonsterAbility,
+): number {
+  if (ability.pool !== undefined) return ability.pool
+  const best = Math.max(0, ...(m.attacks ?? []).map((a) => a.pool))
+  return best || m.defense || (m.threat ?? 0) + 2
+}
 
 /** Capacités réécrites à la main : leur mécanique d20 n'a pas de traduction automatique. */
 const REWRITTEN_ABILITIES: Record<string, string> = {

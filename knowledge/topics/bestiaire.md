@@ -19,6 +19,8 @@ Un monstre n'a pas les 30 domaines : il a **6 caractéristiques** et un **rang d
 
 L'attaque et la défense se résolvent comme pour un joueur (`combat.md`). Le MJ lance l'attaque et la défense d'un monstre depuis le combat ; ces jets partent dans le journal, cachés aux joueurs. Un monstre à 0 PV est mort : son tour est sauté, sans agonie.
 
+Chaque capacité a aussi son dé, que le MJ lance de la même façon. Sa réserve est celle que le MJ a fixée dans l'éditeur de rencontre, sinon celle de la meilleure attaque du monstre, sinon sa défense, sinon R + 2. Les capacités passives ont leur dé comme les autres : le MJ l'ignore.
+
 Le MJ peut aussi créer un monstre sur mesure (R, PV, armure, défense, initiative, caractéristiques), ou retoucher ces valeurs dans une rencontre.
 
 **Ce que voient les joueurs** : le nom, l'initiative, l'armure, les états, la position et un état de santé (intact, blessé, mal en point, agonisant, mort). Ni R, ni la réserve de défense, ni les PV exacts, ni les attaques et capacités.

@@ -15,7 +15,7 @@ import {
   type EncounterMonsterAbility,
 } from '../api/campaigns'
 import { BESTIARY } from '../data/sindragosa/bestiary'
-import type { Monster } from '../utils/sindragosa/bestiary'
+import { abilityPool, type Monster } from '../utils/sindragosa/bestiary'
 import { catalogMonsterFields, filterCatalog } from '../utils/monsterSession'
 import AppPageLayout from '../components/ui/AppPageLayout.vue'
 import AppPageHead from '../components/ui/AppPageHead.vue'
@@ -215,6 +215,16 @@ async function addAbility(monster: EncounterMonster) {
 
 function updateAbility(monster: EncounterMonster, index: number, field: keyof EncounterMonsterAbility, value: string) {
   monster.abilities = monster.abilities.map((a, i) => i === index ? { ...a, [field]: value } : a)
+  debounceSaveMonsterField(monster, 'abilities', monster.abilities)
+}
+
+/** Réserve d'une capacité : vide = celle par défaut (`abilityPool`). */
+function updateAbilityPool(monster: EncounterMonster, index: number, value: string | number) {
+  monster.abilities = monster.abilities.map((a, i) => {
+    if (i !== index) return a
+    const { pool: _old, ...rest } = a
+    return value === '' ? rest : { ...rest, pool: Number(value) }
+  })
   debounceSaveMonsterField(monster, 'abilities', monster.abilities)
 }
 
@@ -425,7 +435,18 @@ function goBack() {
               </div>
               <div v-for="(ab, i) in m.abilities" :key="i" class="ability-edit-row">
                 <div class="ability-edit-fields">
-                  <AppInput :model-value="ab.name" placeholder="Nom" @update:model-value="updateAbility(m, i, 'name', $event as string)" />
+                  <div class="ability-edit-head">
+                    <AppInput :model-value="ab.name" placeholder="Nom" @update:model-value="updateAbility(m, i, 'name', $event as string)" />
+                    <AppInput
+                      type="number"
+                      :model-value="ab.pool ?? ''"
+                      :min="0"
+                      :placeholder="`${abilityPool(m, { ...ab, pool: undefined })}d6`"
+                      text-align="center"
+                      title="Réserve de la capacité (d6) ; vide = celle de sa meilleure attaque"
+                      @update:model-value="updateAbilityPool(m, i, $event)"
+                    />
+                  </div>
                   <textarea
                     ref="abilityDescRefs"
                     class="input ability-desc"
@@ -766,6 +787,12 @@ function goBack() {
   display: flex;
   gap: 0.3rem;
   align-items: flex-start;
+}
+
+.ability-edit-head {
+  display: grid;
+  grid-template-columns: 1fr 60px;
+  gap: 0.3rem;
 }
 
 .ability-edit-fields {

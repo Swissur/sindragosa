@@ -28,7 +28,7 @@ import { user } from "../composables/useAuth";
 import { setParticipantStates } from "../api/combats";
 import { postCampaignRoll, fetchCampaign, type CampaignMember } from "../api/campaigns";
 import { BESTIARY } from "../data/sindragosa/bestiary";
-import type { Monster } from "../utils/sindragosa/bestiary";
+import { abilityPool, type Monster } from "../utils/sindragosa/bestiary";
 import { catalogMonsterFields, filterCatalog } from "../utils/monsterSession";
 import { rollPool, DIFFICULTY_LABELS, type Difficulty } from "../utils/sindragosa/pool";
 import { membresAbsents } from "../utils/combatRoster";
@@ -663,7 +663,25 @@ function goBack() {
                   :key="i"
                   class="detail-ability"
                 >
-                  <strong>{{ ab.name }}</strong> — {{ ab.description }}
+                  <div class="detail-atk-row">
+                    <span><strong>{{ ab.name }}</strong> {{ abilityPool(p, ab) }}d6 — {{ ab.description }}</span>
+                    <button
+                      class="roll-atk-btn"
+                      title="Lancer la capacité"
+                      :data-testid="`monster-ability-${p.id}-${i}`"
+                      @click.stop="rollMonsterPool(p, `${p.id}-ab-${i}`, ab.name, abilityPool(p, ab))"
+                    >
+                      <Dices :size="14" />
+                    </button>
+                  </div>
+                  <div v-if="monsterRolls[`${p.id}-ab-${i}`]" class="monster-roll-result">
+                    <span class="monster-roll-atk">
+                      <strong>{{ monsterRolls[`${p.id}-ab-${i}`].successes }}</strong> succès
+                      · {{ DIFFICULTY_LABELS[monsterRolls[`${p.id}-ab-${i}`].reached] }}
+                      <span class="monster-roll-detail">({{ monsterRolls[`${p.id}-ab-${i}`].dice.join(' ') }})</span>
+                    </span>
+                    <span v-if="monsterRolls[`${p.id}-ab-${i}`].critFail" class="monster-roll-crit">Échec critique</span>
+                  </div>
                 </div>
               </div>
             </div>

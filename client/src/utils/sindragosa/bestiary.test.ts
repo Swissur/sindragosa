@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import {
+  abilityPool,
   armorKind, averageDamage, buildMonster, convertAbilityText, convertArmor, convertDamage, convertMonster,
   convertStat, fixedRd, threatRank, type CoMonster,
 } from './bestiary'
@@ -166,5 +167,23 @@ describe('monstre écrit au d6', () => {
     const [dague, feu] = buildMonster(spec).attacks
     expect(dague).toEqual({ name: 'Dague', damage: 2, pool: 5 })
     expect(feu).toEqual({ name: 'Boule de feu', damage: 4, range: 30, pool: 6 })
+  })
+})
+
+describe('réserve d’une capacité', () => {
+  const ab = { name: 'Vague de soins', description: '…' }
+  const attacks = [{ name: 'Griffes', pool: 4, damage: 2 }, { name: 'Morsure', pool: 6, damage: 3 }]
+
+  it('la meilleure attaque par défaut', () => {
+    expect(abilityPool({ attacks, defense: 3, threat: 1 }, ab)).toBe(6)
+  })
+
+  it('celle fixée par le MJ prime', () => {
+    expect(abilityPool({ attacks }, { ...ab, pool: 2 })).toBe(2)
+  })
+
+  it('sans attaque : la défense, puis menace + 2', () => {
+    expect(abilityPool({ attacks: [], defense: 5, threat: 2 }, ab)).toBe(5)
+    expect(abilityPool({ attacks: null, defense: null, threat: 2 }, ab)).toBe(4)
   })
 })

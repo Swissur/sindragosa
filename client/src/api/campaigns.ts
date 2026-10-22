@@ -151,7 +151,7 @@ export function resetMemberPassword(campaignId: number, userId: number, password
 /** Ce que le MJ règle sur la fiche d'un joueur : caracs, rangs, récompenses, titres. */
 export type GmCharacterPatch = Partial<Pick<ServerCharacter,
   'str' | 'agi' | 'end' | 'int' | 'wis' | 'cha'
-  | 'domains' | 'specialties' | 'advancedDomains' | 'titles' | 'recipeGrants' | 'hpMax' | 'manaMax'>>
+  | 'domains' | 'specialties' | 'advancedDomains' | 'titles' | 'recipeGrants' | 'hpBonus' | 'hpMax' | 'manaMax'>>
 
 export function patchMemberCharacter(campaignId: number, userId: number, patch: GmCharacterPatch): Promise<ServerCharacter> {
   return request<ServerCharacter>(`/${campaignId}/members/${userId}/character`, {

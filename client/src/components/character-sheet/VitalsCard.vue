@@ -7,6 +7,7 @@ import AppStepper from '../ui/AppStepper.vue'
 import AppTooltip from '../ui/AppTooltip.vue'
 import EtatsTags from '../etats/EtatsTags.vue'
 import { hpGradientColor } from '../../utils/hpGradientColor'
+import { LUCK_PER_SESSION } from '../../composables/useCharacter'
 import type { Character } from '../../types/character'
 
 /** PV, mana, chance, armure, initiative et états : ce qu'on touche pendant la partie. */
@@ -16,6 +17,8 @@ defineProps<{
   initiative: number
   editing?: boolean
   readonly?: boolean
+  /** Mode MJ sur la fiche d'un joueur : seul le MJ règle le bonus de PV. */
+  gm?: boolean
 }>()
 
 /** Replié : seuls les états actifs. Déplié : tous, pour en poser un. */
@@ -58,7 +61,7 @@ const allEtats = ref(false)
 
     <div class="vital">
       <span class="vital-label"><Clover :size="15" /> Chance</span>
-      <AppStepper v-if="!readonly" v-model="character.pcCurrent" label="Points de chance" testid="luck" />
+      <AppStepper v-if="!readonly" v-model="character.pcCurrent" :max="LUCK_PER_SESSION" label="Points de chance" testid="luck" />
       <span v-else class="vital-value vital-value--static">{{ character.pcCurrent }}</span>
     </div>
 
@@ -90,7 +93,7 @@ const allEtats = ref(false)
       <AppStepper v-model="character.armorBonus" :min="-99" label="Bonus d'armure" testid="armor-bonus" />
     </div>
 
-    <div v-if="editing && !readonly" class="vital">
+    <div v-if="gm" class="vital">
       <span class="vital-label">Bonus de PV</span>
       <AppStepper v-model="character.hpBonus" :min="-99" label="Bonus de PV" testid="hp-bonus" />
     </div>

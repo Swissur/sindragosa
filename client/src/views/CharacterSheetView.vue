@@ -142,7 +142,7 @@ watch(activeTab, (tab) => { news.value[tab] = false })
       <template v-if="activeTab === 'heros'">
         <HeroCard :character="character" :editing="editing" />
         <VitalsCard :character="character" :hp-max="computedHp" :initiative="computedInitiative" :editing="editing" />
-        <StatsCard :character="character" :editing="editing" />
+        <StatsCard :character="character" />
         <ResourcesCard :character="character" :editing="editing" />
       </template>
 

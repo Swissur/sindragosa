@@ -12,6 +12,7 @@ export function gmPatch(c: Character): GmCharacterPatch {
     advancedDomains: c.advancedDomains,
     titles: c.titles,
     recipeGrants: c.recipeGrants,
+    hpBonus: c.hpBonus,
     hpMax: computeMaxHp(c),
     manaMax: maxMana(c),
   }

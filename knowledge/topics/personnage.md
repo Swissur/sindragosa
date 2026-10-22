@@ -10,6 +10,7 @@ Le personnage naît vierge : aucun historique imposé, aucune compétence, aucun
 - Tous les domaines sont au rang 0, sans spécialité.
 - 20 PV, 2 points de chance.
 - Inventaire : ses **Poings**, arme naturelle équipée d'office (1 dégât, Athlétisme).
+- Le joueur ne règle ni ses caractéristiques ni son bonus de PV : seul le MJ y touche (mode MJ de la fiche). La chance ne dépasse jamais 2.
 
 ## Hiérarchie
 

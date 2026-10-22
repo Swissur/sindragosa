@@ -174,7 +174,7 @@ const TABS = [
 
       <template v-if="activeTab === 'heros'">
         <HeroCard :character="character" :portrait-override-url="portraitDataUrl" readonly :gm="gmMode" />
-        <VitalsCard :character="character" :hp-max="hpMax" :initiative="init" readonly />
+        <VitalsCard :character="character" :hp-max="hpMax" :initiative="init" readonly :gm="gmMode" />
         <StatsCard :character="character" :editing="gmMode" :readonly="!gmMode" />
         <ResourcesCard :character="character" readonly />
       </template>

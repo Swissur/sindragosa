@@ -20,7 +20,7 @@ describe('gmPatch', () => {
   it('envoie caracs, progression, titres et patrons, rien d’autre', () => {
     const p = gmPatch(char({ titles: ['Héros'], domains: { athletisme: { rank: 1, ticks: 0 } } }))
     expect(Object.keys(p).sort()).toEqual(
-      ['advancedDomains', 'agi', 'cha', 'domains', 'end', 'hpBonus', 'hpMax', 'int', 'manaMax', 'recipeGrants', 'specialties', 'str', 'titles', 'wis'],
+      ['advancedDomains', 'agi', 'cha', 'crafts', 'domains', 'end', 'hpBonus', 'hpMax', 'int', 'manaMax', 'recipeGrants', 'specialties', 'str', 'titles', 'wis'],
     )
     expect(p.titles).toEqual(['Héros'])
     expect(p.str).toBe(2)

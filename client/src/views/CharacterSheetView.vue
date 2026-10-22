@@ -153,7 +153,7 @@ watch(activeTab, (tab) => { news.value[tab] = false })
       <template v-if="activeTab === 'domaines'">
         <SessionTicksBanner :session-ticks="character.sessionTicks" />
         <DomainsCard :character="character" :advanced="unlockedAdvanced" />
-        <CraftsCard :character="character" :editing="editing" />
+        <CraftsCard :character="character" />
       </template>
 
       <template v-if="activeTab === 'competences'">

@@ -188,7 +188,7 @@ const TABS = [
           :gm="gmMode"
           @remove-specialty="(s) => (toRemove = s)"
         />
-        <CraftsCard :character="character" readonly />
+        <CraftsCard :character="character" :editing="gmMode" readonly />
       </template>
 
       <template v-if="activeTab === 'competences'">

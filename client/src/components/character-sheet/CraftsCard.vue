@@ -12,7 +12,11 @@ import { recipesFor } from '../../utils/sindragosa/crafting'
 import { showToast } from '../../composables/useToast'
 import type { Character } from '../../types/character'
 
-/** Métiers connus et leurs recettes. Fabriquer = composants + jet du domaine du métier. */
+/**
+ * Métiers connus et leurs recettes. Fabriquer = composants + jet du domaine du métier.
+ * Apprendre, régler ou oublier un métier : le MJ seul, en mode MJ (`editing`).
+ * `readonly` ne coupe que la fabrication.
+ */
 const props = defineProps<{ character: Character; editing?: boolean; readonly?: boolean }>()
 
 const toAdd = ref('')
@@ -45,7 +49,7 @@ function remove(id: string, label: string) {
 </script>
 
 <template>
-  <AppCard v-if="known.length || (editing && !readonly)" title="Artisanat">
+  <AppCard v-if="known.length || editing" title="Artisanat">
     <AppAccordion
       v-for="k in known"
       :key="k.craft.id"
@@ -53,7 +57,7 @@ function remove(id: string, label: string) {
       :hint="k.craft.kind === 'base' ? `rang ${k.rank}` : 'hybride'"
     >
       <template #icon><Hammer :size="15" /></template>
-      <div v-if="editing && !readonly" class="craft-edit">
+      <div v-if="editing" class="craft-edit">
         <AppStepper
           v-if="k.craft.kind === 'base'"
           v-model="character.crafts[k.craft.id]"
@@ -68,7 +72,7 @@ function remove(id: string, label: string) {
       <RecipeList :character="character" :recipes="k.recipes" :readonly="readonly" />
     </AppAccordion>
 
-    <div v-if="editing && !readonly" class="craft-add">
+    <div v-if="editing" class="craft-add">
       <AppSelect v-model="toAdd" class="craft-add-select">
         <option value="">Apprendre un métier…</option>
         <option v-for="c in available" :key="c.id" :value="c.id">{{ c.label }}</option>

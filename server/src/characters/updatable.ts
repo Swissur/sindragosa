@@ -23,11 +23,11 @@ export function pickUpdatable(raw: Record<string, unknown>): Partial<Record<Upda
 }
 
 // Ce que le MJ règle sur la fiche d'un joueur (plans/32 « Outils du MJ ») :
-// caracs, bonus de PV, rangs forcés, récompenses (coches), titres, patrons. `hpMax` suit l'Endurance,
+// caracs, bonus de PV, rangs forcés, récompenses (coches), titres, métiers, patrons. `hpMax` suit l'Endurance,
 // `manaMax` les rangs magiques.
 export const GM_EDITABLE_FIELDS = [
   'str', 'agi', 'end', 'int', 'wis', 'cha',
-  'domains', 'specialties', 'advancedDomains', 'titles', 'recipeGrants', 'hpBonus', 'hpMax', 'manaMax',
+  'domains', 'specialties', 'advancedDomains', 'titles', 'recipeGrants', 'crafts', 'hpBonus', 'hpMax', 'manaMax',
 ] as const
 
 export type GmEditableField = (typeof GM_EDITABLE_FIELDS)[number]

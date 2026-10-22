@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, toRef } from 'vue'
-import { BookOpen, Dices, Hammer, Sparkles } from 'lucide-vue-next'
+import { BookOpen, Dices, Hammer, Sparkles, Swords } from 'lucide-vue-next'
 import AppCard from '../ui/AppCard.vue'
 import AppAccordion from '../ui/AppAccordion.vue'
 import ActionTile from '../actions/ActionTile.vue'
@@ -10,6 +10,7 @@ import { usePins } from '../../composables/usePins'
 import { openRollSheet } from '../../composables/useRollSheet'
 import { domainById } from '../../data/sindragosa/domains'
 import { rollSetup } from '../../utils/sindragosa/rollSetup'
+import { strikePin } from '../../utils/sindragosa/strikes'
 import type { Favorites } from '../../composables/useFavorites'
 import type { Character } from '../../types/character'
 
@@ -19,6 +20,7 @@ const props = defineProps<{ character: Character; favorites: Favorites }>()
 const { toggle } = usePins(toRef(props, 'character'))
 
 const domainCount = computed(() => props.favorites.domains.length + props.favorites.specialties.length)
+const abilityCount = computed(() => props.favorites.strikes.length + props.favorites.abilities.length)
 
 function poolLabel(domainId: string, specialtyId = ''): string {
   const s = rollSetup(props.character, { domainId, specialtyId, mode: 'normal', luck: 0 })
@@ -63,13 +65,26 @@ function poolLabel(domainId: string, specialtyId = ''): string {
     </AppAccordion>
 
     <AppAccordion
-      v-if="favorites.abilities.length"
+      v-if="abilityCount"
       title="Compétences"
-      :hint="`${favorites.abilities.length}`"
+      :hint="`${abilityCount}`"
       default-open
       testid="favorites-abilities"
     >
       <template #icon><Sparkles :size="15" /></template>
+      <div v-if="favorites.strikes.length" class="tiles">
+        <ActionTile
+          v-for="s in favorites.strikes"
+          :key="s.weapon.id"
+          :icon="Swords"
+          :label="`Frapper : ${s.weapon.name}`"
+          :detail="s.detail"
+          :pinned="true"
+          :testid="`tile-strike-${s.weapon.id}`"
+          @activate="openRollSheet({ domainId: s.domainId, label: s.weapon.name, weapon: s.weapon, context: 'fiche' })"
+          @toggle-pin="toggle(strikePin(s.weapon))"
+        />
+      </div>
       <AbilityCard
         v-for="a in favorites.abilities"
         :key="a.id"

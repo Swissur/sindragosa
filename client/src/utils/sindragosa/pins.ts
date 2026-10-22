@@ -1,9 +1,9 @@
-/** Favoris de la fiche : des domaines, des spécialités, des compétences et des patrons, par personnage. */
+/** Favoris de la fiche : des domaines, des spécialités, des compétences, des attaques d'arme et des patrons, par personnage. */
 import type { Character } from '../../types/character'
 import { DOMAINS } from '../../data/sindragosa/domains'
 import { RACE_ABILITY_ID } from '../../data/sindragosa/races'
 
-export type Pin = `domain:${string}` | `specialty:${string}` | `ability:${number}` | `recipe:${string}`
+export type Pin = `domain:${string}` | `specialty:${string}` | `ability:${number}` | `weapon:${string}` | `recipe:${string}`
 
 /** Le pouvoir racial, favori par défaut. */
 export const RACE_PIN: Pin = `ability:${RACE_ABILITY_ID}`

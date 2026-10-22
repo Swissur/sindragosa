@@ -1,25 +1,21 @@
 <script setup lang="ts">
-import { computed } from 'vue'
-import { Swords } from 'lucide-vue-next'
-import { strikeWeapons, weaponDamage, weaponDomainId } from '../../utils/sindragosa/equipment'
-import { rollSetup } from '../../utils/sindragosa/rollSetup'
-import { domainById } from '../../data/sindragosa/domains'
+import { computed, toRef } from 'vue'
+import { Star, Swords } from 'lucide-vue-next'
+import AppIconBtn from '../ui/AppIconBtn.vue'
+import { strikePin, strikes as strikesOf } from '../../utils/sindragosa/strikes'
 import { openRollSheet } from '../../composables/useRollSheet'
+import { usePins } from '../../composables/usePins'
 import type { Character, ItemRow } from '../../types/character'
 
 /**
  * L'attaque de chaque arme équipée, en tête de la liste des compétences (plans/35) ;
- * l'arme de la forme prise, ou les mains nues sans arme (plans/39).
+ * l'arme de la forme prise, ou les mains nues sans arme (plans/39). L'étoile
+ * met l'attaque en favori.
  */
 const props = defineProps<{ character: Character; readonly?: boolean }>()
 
-const strikes = computed(() =>
-  strikeWeapons(props.character).map((w) => {
-    const domainId = weaponDomainId(w)
-    const setup = rollSetup(props.character, { domainId, specialtyId: '', mode: 'normal', luck: 0 })
-    return { weapon: w, domainId, detail: `${domainById(domainId)?.label} · ${setup?.count ?? 0}d6 · ${weaponDamage(w)} dégâts` }
-  }),
-)
+const strikes = computed(() => strikesOf(props.character))
+const { isPinned, toggle } = usePins(toRef(props, 'character'))
 
 function strike(w: ItemRow, domainId: string) {
   if (!props.readonly) openRollSheet({ domainId, label: w.name, weapon: w, context: 'fiche' })
@@ -28,7 +24,7 @@ function strike(w: ItemRow, domainId: string) {
 
 <template>
   <ul v-if="strikes.length" class="strikes">
-    <li v-for="s in strikes" :key="s.weapon.id">
+    <li v-for="s in strikes" :key="s.weapon.id" class="strike-row">
       <button
         type="button"
         class="strike"
@@ -42,6 +38,15 @@ function strike(w: ItemRow, domainId: string) {
           <span class="strike-detail">{{ s.detail }}</span>
         </span>
       </button>
+      <AppIconBtn
+        v-if="!readonly"
+        variant="bare"
+        :title="isPinned(strikePin(s.weapon)) ? 'Retirer des favoris' : 'Ajouter aux favoris'"
+        :data-testid="`strike-pin-${s.weapon.id}`"
+        @click="toggle(strikePin(s.weapon))"
+      >
+        <Star :size="16" :class="{ 'strike-star--on': isPinned(strikePin(s.weapon)) }" />
+      </AppIconBtn>
     </li>
   </ul>
 </template>
@@ -57,8 +62,15 @@ function strike(w: ItemRow, domainId: string) {
   border-bottom: 1px solid var(--border);
 }
 
+.strike-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
 .strike {
-  width: 100%;
+  flex: 1;
+  min-width: 0;
   display: flex;
   align-items: center;
   gap: var(--space-sm);
@@ -75,6 +87,11 @@ function strike(w: ItemRow, domainId: string) {
 
 .strike:disabled {
   cursor: default;
+}
+
+.strike-star--on {
+  color: var(--accent);
+  fill: currentColor;
 }
 
 .strike-icon {

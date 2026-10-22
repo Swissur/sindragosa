@@ -4,6 +4,7 @@ import { DOMAINS, type AdvancedDomain } from '../data/sindragosa/domains'
 import { raceAbility, raceById } from '../data/sindragosa/races'
 import { recipesByDomain, type DomainRecipes } from '../utils/sindragosa/crafting'
 import { pinnedOf } from '../utils/sindragosa/pins'
+import { strikePin, strikes, type Strike } from '../utils/sindragosa/strikes'
 import type { Ability } from '../data/sindragosa/types'
 import type { Character, SpecialtyRow } from '../types/character'
 
@@ -13,6 +14,8 @@ export interface Favorites {
   specialties: SpecialtyRow[]
   /** Le pouvoir racial et les compétences débloquées. */
   abilities: Ability[]
+  /** Les attaques « Frapper » des armes portées. */
+  strikes: Strike[]
   recipes: DomainRecipes['recipes']
 }
 
@@ -32,6 +35,7 @@ export function useFavorites(
       domains: pinnedOf(pins.value, [...DOMAINS, ...unlockedAdvanced.value], (d) => `domain:${d.id}`),
       specialties: pinnedOf(pins.value, character.value.specialties, (s) => `specialty:${s.id}`),
       abilities: pinnedOf(pins.value, abilities, (a) => `ability:${a.id}`),
+      strikes: pinnedOf(pins.value, strikes(character.value), (s) => strikePin(s.weapon)),
       recipes: pinnedOf(pins.value, recipesByDomain(crafts.value, character.value.recipeGrants).flatMap((g) => g.recipes), (r) => `recipe:${r.recipe.id}`),
     }
   })

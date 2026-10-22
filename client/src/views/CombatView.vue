@@ -65,7 +65,6 @@ const {
   error,
   idle,
   isGm,
-  isMyTurn,
   connect,
   disconnect,
   markActivity,
@@ -148,25 +147,22 @@ const showAddMonster = ref(false);
 const addHidden = ref(false);
 
 // ── Faire entrer un PJ en cours de combat ───────────────────────────────────
-// La liste des membres est chargée à l'ouverture, pas gardée en état : elle ne
-// sert qu'ici, et elle est fraîche à chaque fois.
+// Les membres sont chargés une fois à l'ouverture de l'écran (MJ seulement) :
+// le bouton n'apparaît que s'il reste un PJ hors du combat.
 const showAddPlayer = ref(false);
-const loadingPlayers = ref(false);
-const absentPlayers = ref<CampaignMember[]>([]);
+const members = ref<CampaignMember[]>([]);
+const absentPlayers = computed(() =>
+  membresAbsents(members.value, combat.value?.participants ?? []),
+);
 
-async function openAddPlayer() {
-  showAddPlayer.value = true;
-  loadingPlayers.value = true;
-  absentPlayers.value = [];
+watch(isGm, async (gm) => {
+  if (!gm || members.value.length > 0) return;
   try {
-    const campaign = await fetchCampaign(campaignId);
-    absentPlayers.value = membresAbsents(campaign.members, combat.value?.participants ?? []);
+    members.value = (await fetchCampaign(campaignId)).members;
   } catch (e) {
     showToast(e instanceof Error ? e.message : "Erreur");
-  } finally {
-    loadingPlayers.value = false;
   }
-}
+}, { immediate: true });
 
 async function handleAddPlayer(m: CampaignMember) {
   try {
@@ -181,7 +177,7 @@ async function handleAddPlayer(m: CampaignMember) {
 /** Fait entrer un PNJ en scène, ou le renvoie en réserve. */
 async function toggleVisibility(p: CombatParticipant, hidden: boolean) {
   await setVisibility(p.id, hidden);
-  showToast(hidden ? `${p.name} passe en réserve.` : `${p.name} entre dans le combat !`);
+  if (hidden) showToast(`${p.name} passe en réserve.`);
 }
 const monsterSearchQuery = ref("");
 const filteredMonsters = computed(() =>
@@ -226,20 +222,6 @@ function resumeCombat(): void {
   connect(campaignId, combatId);
 }
 
-// Le footer de combat est `fixed` : on publie sa hauteur réelle pour que le
-// shell réserve la place (barre de dés en bas sur mobile).
-const footerRef = ref<HTMLElement | null>(null);
-watch(
-  () => [combat.value?.status, footerRef.value] as const,
-  async () => {
-    await nextTick();
-    const h = footerRef.value?.offsetHeight;
-    if (h) document.documentElement.style.setProperty("--bottom-dock", `${h}px`);
-    else document.documentElement.style.removeProperty("--bottom-dock");
-  },
-  { immediate: true },
-);
-
 onMounted(() => {
   connect(campaignId, combatId);
   document.addEventListener("visibilitychange", handleVisibility);
@@ -250,7 +232,6 @@ onMounted(() => {
 // coupait le flux que le mode table venait juste d'ouvrir — la tablette
 // affichait « en attente d'un combat » alors que le combat tournait.
 onBeforeUnmount(() => {
-  document.documentElement.style.removeProperty("--bottom-dock");
   disconnect();
   document.removeEventListener("visibilitychange", handleVisibility);
   window.removeEventListener("pointerdown", markActivity);
@@ -504,6 +485,7 @@ function goBack() {
                   class="played-icon"
                 />
                 <span class="card-kind-dot" :class="p.kind" />
+                <span class="card-name">{{ p.name }}</span>
                 <span
                   v-if="etatsBrief[p.id]"
                   class="card-etats"
@@ -519,7 +501,6 @@ function goBack() {
                   }}</template>
                   <template v-else>{{ etatsBrief[p.id]!.count }}</template>
                 </span>
-                <span class="card-name">{{ p.name }}</span>
               </div>
               <div class="card-right">
                 <span v-if="isGm || p.kind === 'player'" class="card-init"><Zap :size="13" /> {{
@@ -697,6 +678,49 @@ function goBack() {
         </div>
 
         </div>
+
+        <!-- Les commandes du tour, au MJ seul : c'est lui qui mène le combat.
+             Dans la page, sous la carte : la barre du bas de l'app reste la
+             même partout. -->
+        <div v-if="isGm && combat.status === 'active'" class="combat-footer">
+          <div class="footer-left">
+            <AppIconBtn title="Précédent" @click="prevTurn">
+              <ChevronLeft :size="18" />
+            </AppIconBtn>
+          </div>
+          <div class="footer-center">
+            <AppIconBtn
+              title="Ajouter un monstre"
+              @click="showAddMonster = true"
+            >
+              <Plus :size="18" />
+            </AppIconBtn>
+            <AppIconBtn
+              v-if="absentPlayers.length > 0"
+              title="Ajouter un PJ"
+              data-testid="add-player"
+              @click="showAddPlayer = true"
+            >
+              <UserPlus :size="18" />
+            </AppIconBtn>
+            <AppButton
+              size="small"
+              variant="danger"
+              @click="openFinishConfirm"
+            >
+              Terminer
+            </AppButton>
+          </div>
+          <AppButton
+            variant="primary"
+            size="small"
+            class="next-btn"
+            @click="nextTurn"
+          >
+            Suivant
+            <ChevronRight :size="14" />
+          </AppButton>
+        </div>
         </div>
 
       </template>
@@ -710,61 +734,6 @@ function goBack() {
       :apply="(states: EtatEntry[]) => applyEtats(etatsTarget!.id, states)"
       @update:states="(states) => { if (etatsTarget) etatsTarget.states = states; }"
     />
-
-    <Teleport to="body">
-    <div v-if="combat && combat.status === 'active'" ref="footerRef" class="combat-footer">
-      <div class="footer-left">
-        <AppIconBtn v-if="isGm" title="Précédent" @click="prevTurn">
-          <ChevronLeft :size="18" />
-        </AppIconBtn>
-        <AppButton
-          v-if="!isGm"
-          size="small"
-          variant="ghost"
-          @click="activeTab = activeTab === 'timeline' ? 'actions' : 'timeline'"
-        >
-          <Zap v-if="activeTab === 'timeline'" :size="14" />
-          <LayoutList v-else :size="14" />
-          {{ activeTab === "timeline" ? "Mes actions" : "Combat" }}
-        </AppButton>
-      </div>
-      <div class="footer-center">
-        <AppIconBtn
-          v-if="isGm"
-          title="Ajouter un monstre"
-          @click="showAddMonster = true"
-        >
-          <Plus :size="18" />
-        </AppIconBtn>
-        <AppIconBtn
-          v-if="isGm"
-          title="Ajouter un PJ"
-          data-testid="add-player"
-          @click="openAddPlayer"
-        >
-          <UserPlus :size="18" />
-        </AppIconBtn>
-        <AppButton
-          v-if="isGm"
-          size="small"
-          variant="danger"
-          @click="openFinishConfirm"
-        >
-          Terminer
-        </AppButton>
-      </div>
-      <AppButton
-        variant="primary"
-        size="small"
-        class="next-btn"
-        :disabled="!isGm && !isMyTurn"
-        @click="nextTurn"
-      >
-        Suivant
-        <ChevronRight :size="14" />
-      </AppButton>
-    </div>
-    </Teleport>
 
     <!-- Bottom sheet: Add monster -->
     <AppBottomSheet
@@ -848,8 +817,7 @@ function goBack() {
     <!-- Bottom sheet: Ajouter un PJ -->
     <AppBottomSheet v-model="showAddPlayer" title="Ajouter un PJ">
       <div class="add-player-body">
-        <AppEmptyState v-if="loadingPlayers" variant="loading">Chargement…</AppEmptyState>
-        <AppEmptyState v-else-if="absentPlayers.length === 0">
+        <AppEmptyState v-if="absentPlayers.length === 0">
           Tout le monde est déjà dans le combat.
         </AppEmptyState>
         <template v-else>
@@ -942,15 +910,30 @@ function goBack() {
   gap: var(--space-md);
 }
 
-/* Côte à côte : l'ordre du combat à gauche, la carte à droite. */
+/* Côte à côte : l'ordre du combat à gauche, la carte et ses commandes à
+   droite. La 2e ligne en `1fr` absorbe la hauteur de la liste : les
+   commandes restent collées sous la carte. */
 .combat-body--split {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+  grid-template-rows: auto 1fr;
   align-items: start;
 }
 
+.combat-body--split .combat-columns,
+.combat-body--split .actions-tab {
+  grid-column: 1;
+  grid-row: 1 / span 2;
+}
+
 .combat-body--split .combat-map {
-  order: 2;
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.combat-body--split .combat-footer {
+  grid-column: 2;
+  grid-row: 2;
 }
 
 .combat-content {
@@ -1288,20 +1271,24 @@ function goBack() {
 }
 
 
-/* Footer — sticky at bottom */
+/* Commandes du tour. Sur téléphone, collées au bas de la zone qui défile
+   (juste au-dessus de la barre de l'app) ; à côté, sous la carte. */
 .combat-footer {
-  position: fixed;
+  position: sticky;
   bottom: 0;
-  left: 0;
-  right: 0;
+  z-index: 1;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.6rem 1rem;
+  padding: var(--space-sm);
   background: var(--surface-2);
-  border-top: 1px solid var(--border);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
   gap: 0.5rem;
-  z-index: 100;
+}
+
+.combat-body--split .combat-footer {
+  position: static;
 }
 
 .next-btn {

@@ -251,9 +251,6 @@ if (savedStyle) {
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  /* Réservé par les vues qui posent une barre fixe en bas (footer de combat).
-     Sans ça la barre de dés, dernier élément du flux, passerait dessous. */
-  padding-bottom: var(--bottom-dock, 0px);
 }
 
 @media (min-width: 740px) {

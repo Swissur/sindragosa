@@ -48,7 +48,7 @@ Les armes sont des objets de l'inventaire, avec un gabarit, un domaine d'attaque
 
 - Une arme sans domaine d'attaque se manie avec Mêlée bourrine.
 - Chaque arme **équipée** donne une attaque « Frapper » dans la liste des compétences et dans les actions du combat.
-- Sans arme équipée, tout personnage frappe à **mains nues** : arme naturelle, 1 dégât, Athlétisme.
+- Tout personnage naît avec ses **Poings** équipés (arme naturelle, 1 dégât, Athlétisme). Sans aucune arme équipée, il frappe à **mains nues** (mêmes valeurs).
 
 ### Transformations
 

@@ -10,6 +10,7 @@ function username(req: unknown): string {
 import { broadcastUserCombats } from '../combats/sseStore.js'
 import { pickUpdatable } from '../characters/updatable.js'
 import { isCampaignSystem } from '../campaigns/systems.js'
+import { starterItems } from '../characters/starterItems.js'
 type CharacterInsert = typeof characters.$inferInsert
 
 const router = Router()
@@ -50,6 +51,7 @@ router.get('/:id', async (req, res) => {
 // Les valeurs par défaut de Sindragosa (caracs à 2, 20 PV, 2 points de chance…)
 // viennent de la base ; le client peut en préciser certaines (nom, race, caracs).
 // Le système ne se choisit qu'ici : une fiche ne change jamais de système.
+// Sans inventaire fourni, un personnage de WoW Forever part avec ses poings équipés.
 router.post('/', async (req, res) => {
   const userId = (req as unknown as AuthRequest).userId
   const raw = (req.body ?? {}) as Record<string, unknown>
@@ -64,6 +66,7 @@ router.post('/', async (req, res) => {
 
   const [row] = await db.insert(characters).values({
     ...body,
+    items: body.items ?? starterItems(body.system ?? 'wow-forever'),
     hpCurrent: typeof body.hpCurrent === 'number' ? body.hpCurrent : (body.hpMax ?? 20),
     userId,
     isActive: isFirst,

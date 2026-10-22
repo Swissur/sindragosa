@@ -9,6 +9,7 @@ Le personnage naît vierge : aucun historique imposé, aucune compétence, aucun
 - Les 6 caractéristiques valent **2**, plus **+1** dans la caractéristique phare de la race (`races.md`).
 - Tous les domaines sont au rang 0, sans spécialité.
 - 20 PV, 2 points de chance.
+- Inventaire : ses **Poings**, arme naturelle équipée d'office (1 dégât, Athlétisme).
 
 ## Hiérarchie
 

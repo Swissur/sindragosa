@@ -30,7 +30,7 @@ test('le MJ écrit à un joueur : le message s’ouvre au milieu de son écran',
     await pageMj.getByTestId('shortcut-send').click()
 
     await expect(pageJoueur.getByTestId('gm-message-body')).toHaveText(texte)
-    await pageJoueur.getByTestId('gm-message-ok').click()
+    await pageJoueur.keyboard.press('Escape')
 
     // Il reste dans le journal « Échange avec le MJ ».
     await pageJoueur.goto('/journal?tab=mj')
@@ -58,7 +58,7 @@ test('le joueur écrit au MJ depuis son journal, le MJ lui répond', async ({ br
     await expect(pageJoueur.getByTestId('gm-messages')).toContainText(texte)
 
     await expect(pageMj.getByTestId('gm-message-body')).toHaveText(texte)
-    await pageMj.getByTestId('gm-message-ok').click()
+    await pageMj.keyboard.press('Escape')
 
     // Non lu : pastille sur le Journal et sur la ligne d'Orlane, jusqu'à l'ouverture du fil.
     await expect(pageMj.getByTestId('nav-journal-unread')).toBeVisible()
@@ -78,7 +78,7 @@ test('le joueur écrit au MJ depuis son journal, le MJ lui répond', async ({ br
     await pageMj.getByTestId('gm-exchange-draft').press('Control+Enter')
 
     await expect(pageJoueur.getByTestId('gm-message-body')).toHaveText(reponse)
-    await pageJoueur.getByTestId('gm-message-ok').click()
+    await pageJoueur.keyboard.press('Escape')
     await expect(pageJoueur.getByTestId('gm-messages')).toContainText(reponse)
     // Elle avait son fil ouvert : la réponse est lue tout de suite.
     await expect(pageJoueur.getByTestId('nav-journal-unread')).toHaveCount(0)

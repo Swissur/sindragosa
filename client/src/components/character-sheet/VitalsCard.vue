@@ -8,6 +8,7 @@ import AppTooltip from '../ui/AppTooltip.vue'
 import EtatsTags from '../etats/EtatsTags.vue'
 import { hpGradientColor } from '../../utils/hpGradientColor'
 import { LUCK_PER_SESSION } from '../../composables/useCharacter'
+import { armorPenalties } from '../../utils/sindragosa/armorNature'
 import type { Character } from '../../types/character'
 
 /** PV, mana, chance, armure, initiative et états : ce qu'on touche pendant la partie. */
@@ -82,7 +83,8 @@ const allEtats = ref(false)
         <AppTooltip label="Calcul de l'initiative">
           <template #trigger><span class="vital-help">?</span></template>
           Agilité ({{ character.stats.agi }}) + Sagesse ({{ character.stats.wis }})
-          + rang en Perception &amp; Sens ({{ character.domains['perception-sens']?.rank ?? 0 }}).
+          + rang en Perception &amp; Sens ({{ character.domains['perception-sens']?.rank ?? 0 }})
+          − malus d'armure ({{ armorPenalties(character).init }}).
         </AppTooltip>
       </span>
       <span class="vital-value vital-value--static" data-testid="initiative">{{ initiative }}</span>

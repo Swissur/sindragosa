@@ -77,8 +77,8 @@ const setup = computed(() =>
 )
 
 const MODE_ITEMS: AppToggleItem[] = [
-  { value: 'desavantage', icon: ArrowDown, title: 'Désavantage (−1d6)', testid: 'roll-mode-desavantage' },
-  { value: 'avantage', icon: ArrowUp, title: 'Avantage (+1d6)', testid: 'roll-mode-avantage' },
+  { value: 'desavantage', icon: ArrowDown, title: 'Désavantage (−1d6)', label: 'Désavantage', testid: 'roll-mode-desavantage' },
+  { value: 'avantage', icon: ArrowUp, title: 'Avantage (+1d6)', label: 'Avantage', testid: 'roll-mode-avantage' },
 ]
 
 const domainLabel = (id: string) => domainById(id)?.label ?? advancedDomainById(id)?.label ?? ''
@@ -222,10 +222,11 @@ const weaponHint = computed(() => {
           <AppToggleGroup
             :model-value="mode === 'normal' ? '' : mode"
             :items="MODE_ITEMS"
+            block
             @update:model-value="mode = ($event || 'normal') as RollMode"
           />
           <span class="roll-luck">
-            <Clover :size="16" class="roll-luck-icon" />
+            <span class="roll-luck-label"><Clover :size="16" class="roll-luck-icon" /> Chance</span>
             <AppStepper v-model="luck" :max="character.pcCurrent" label="Chance" testid="roll-luck" />
           </span>
         </div>
@@ -327,15 +328,22 @@ const weaponHint = computed(() => {
 
 .roll-options {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  flex-direction: column;
   gap: var(--space-sm);
 }
 
 .roll-luck {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-xs);
+}
+
+.roll-luck-label {
   display: inline-flex;
   align-items: center;
   gap: var(--space-xs);
+  font-weight: 600;
 }
 
 .roll-luck-icon {

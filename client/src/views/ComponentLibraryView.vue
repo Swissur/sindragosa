@@ -206,6 +206,14 @@ function forceRoll(value: number) {
         />
         <span>{{ toggleValue || 'aucun' }}</span>
       </div>
+      <AppToggleGroup
+        v-model="toggleValue"
+        block
+        :items="[
+          { value: 'econome', icon: Coins, title: 'Économe', label: 'Économe' },
+          { value: 'puissante', icon: Flame, title: 'Puissante', label: 'Puissante' },
+        ]"
+      />
     </AppCard>
 
     <AppCard title="AppCheckbox">

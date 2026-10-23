@@ -8,6 +8,8 @@ export interface AppToggleItem {
   icon: Component
   /** Tooltip + accessible name */
   title: string
+  /** Texte visible à côté de l'icône, quand l'icône seule ne suffit pas. */
+  label?: string
   testid?: string
 }
 
@@ -15,6 +17,8 @@ defineProps<{
   /** '' = aucun bouton actif. Re-cliquer le bouton actif le désélectionne. */
   modelValue: string
   items: AppToggleItem[]
+  /** Occupe toute la largeur, boutons à parts égales. */
+  block?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -29,6 +33,7 @@ const emit = defineEmits<{
     type="single"
     :model-value="modelValue"
     class="toggle-group"
+    :class="{ 'toggle-group--block': block }"
     @update:model-value="emit('update:modelValue', String($event ?? ''))"
   >
     <ToggleGroupItem
@@ -39,8 +44,10 @@ const emit = defineEmits<{
       :aria-label="item.title"
       :data-testid="item.testid"
       class="toggle-item"
+      :class="{ 'toggle-item--label': item.label }"
     >
       <component :is="item.icon" :size="18" aria-hidden="true" />
+      <span v-if="item.label">{{ item.label }}</span>
     </ToggleGroupItem>
   </ToggleGroupRoot>
 </template>
@@ -67,6 +74,23 @@ const emit = defineEmits<{
   color: var(--muted);
   cursor: pointer;
   transition: background 150ms ease, color 150ms ease;
+}
+
+.toggle-group--block {
+  display: flex;
+}
+
+.toggle-group--block .toggle-item {
+  flex: 1;
+}
+
+.toggle-item--label {
+  gap: var(--space-xs);
+  width: auto;
+  padding: 0 var(--space-md);
+  font: inherit;
+  font-size: 0.88rem;
+  font-weight: 600;
 }
 
 .toggle-item:hover {

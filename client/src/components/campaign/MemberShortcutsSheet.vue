@@ -11,12 +11,11 @@ import AppInput from '../ui/AppInput.vue'
 import AppTextarea from '../ui/AppTextarea.vue'
 import MoveCharacterModal from './MoveCharacterModal.vue'
 
-// Raccourcis du MJ sur un portrait : voir la fiche, déplacer le perso dans une
-// autre campagne du MJ, rappel à l'ordre en un tap, ou message libre. Le message
-// part tout de suite dans le journal « Échange avec le MJ » du joueur et s'ouvre
-// au milieu de son écran.
-// La roue dentée ouvre les réglages du compte : nouveau mot de passe si le
-// joueur a oublié le sien.
+// Raccourcis du MJ sur un portrait : voir la fiche, rappel à l'ordre en un tap,
+// ou message libre. Le message part tout de suite dans le journal « Échange avec
+// le MJ » du joueur et s'ouvre au milieu de son écran.
+// La roue dentée ouvre les réglages : nouveau mot de passe si le joueur a oublié
+// le sien, et déplacement du perso dans une autre campagne du MJ.
 const props = defineProps<{ campaignId: number }>()
 const member = defineModel<CampaignMember | null>({ required: true })
 const emit = defineEmits<{ (e: 'moved'): void }>()
@@ -95,7 +94,7 @@ function viewSheet() {
     <template #titleActions>
       <AppIconBtn
         variant="bare"
-        title="Réglages du compte"
+        title="Réglages"
         :aria-pressed="settingsOpen"
         data-testid="shortcut-settings"
         @click="settingsOpen = !settingsOpen"
@@ -104,38 +103,40 @@ function viewSheet() {
       </AppIconBtn>
     </template>
     <div class="shortcuts">
-      <form v-if="settingsOpen" class="password" @submit.prevent="resetPassword">
-        <label class="password-label" for="member-new-password">
-          <KeyRound :size="14" />
-          Nouveau mot de passe de {{ member?.username }}
-        </label>
-        <div class="password-row">
-          <AppInput
-            id="member-new-password"
-            v-model="newPassword"
-            type="text"
-            autocomplete="off"
-            placeholder="6 caractères minimum"
-            data-testid="shortcut-password"
-          />
-          <AppButton
-            type="submit"
-            variant="primary"
-            :disabled="sending || newPassword.length < 6"
-            data-testid="shortcut-password-save"
-          >
-            Réinitialiser
-          </AppButton>
-        </div>
-      </form>
+      <div v-if="settingsOpen" class="settings">
+        <form class="password" @submit.prevent="resetPassword">
+          <label class="password-label" for="member-new-password">
+            <KeyRound :size="14" />
+            Nouveau mot de passe de {{ member?.username }}
+          </label>
+          <div class="password-row">
+            <AppInput
+              id="member-new-password"
+              v-model="newPassword"
+              type="text"
+              autocomplete="off"
+              placeholder="6 caractères minimum"
+              data-testid="shortcut-password"
+            />
+            <AppButton
+              type="submit"
+              variant="primary"
+              :disabled="sending || newPassword.length < 6"
+              data-testid="shortcut-password-save"
+            >
+              Réinitialiser
+            </AppButton>
+          </div>
+        </form>
+        <AppButton v-if="member?.characterId" block data-testid="shortcut-move" @click="startMove">
+          <ArrowRightLeft :size="16" />
+          Déplacer vers une autre campagne
+        </AppButton>
+      </div>
 
       <AppButton block data-testid="shortcut-sheet" @click="viewSheet">
         <Eye :size="16" />
         Voir la fiche
-      </AppButton>
-      <AppButton v-if="member?.characterId" block data-testid="shortcut-move" @click="startMove">
-        <ArrowRightLeft :size="16" />
-        Déplacer vers une autre campagne
       </AppButton>
       <AppButton block variant="danger" :disabled="sending" data-testid="shortcut-warning" @click="send(WARNING)">
         <TriangleAlert :size="16" />
@@ -168,14 +169,20 @@ function viewSheet() {
 </template>
 
 <style scoped>
-.password {
+.settings {
   display: flex;
   flex-direction: column;
-  gap: var(--space-xs);
+  gap: var(--space-sm);
   padding: var(--space-sm);
   background: var(--surface-2);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
+}
+
+.password {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
 }
 
 .password-label {

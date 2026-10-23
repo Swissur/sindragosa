@@ -8,11 +8,13 @@ import { applyRest, endSession, restDelta, type RestBroadcast, type RestKind } f
  * Fait reposer tout le groupe : écrit chaque fiche de membre et diffuse
  * l'évènement `rest` (feu de camp + modale côté joueurs). Sert au menu repos
  * et à la fin de session (`withLongRest` : la fin de séance inclut un repos long).
+ * `resetTicks` : le repos long rend aussi les coches de séance.
  */
 export async function restCampaign(
   campaignId: number,
   kind: RestKind,
   withLongRest = false,
+  resetTicks = false,
 ): Promise<RestBroadcast> {
   // Les fiches des membres — le MJ n'a pas forcément de personnage.
   const rows = await db
@@ -40,7 +42,7 @@ export async function restCampaign(
       manaCurrent: row.manaCurrent, manaMax: row.manaMax,
       states: row.states, abilityUses: row.abilityUses, sessionTicks: row.sessionTicks,
     }
-    const after = kind === 'seance' ? endSession(before, withLongRest) : applyRest(before, kind)
+    const after = kind === 'seance' ? endSession(before, withLongRest, resetTicks) : applyRest(before, kind, resetTicks)
     const delta = restDelta(before, after)
     deltas.push({ userId: row.userId, characterName: row.name, delta, after })
     await db

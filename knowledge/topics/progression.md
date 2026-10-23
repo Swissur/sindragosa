@@ -15,7 +15,7 @@ Pas de niveaux ni d'expérience : le personnage progresse en pratiquant.
 - **3 coches au maximum par séance**, toutes compétences confondues (hors récompenses du MJ).
 - Après chaque jet réussi ou raté critique, la coche est proposée si la limite le permet. Le joueur choisit de la prendre (et où) : elle n'est jamais ajoutée d'office. C'est à lui de ne la prendre que si l'action comptait.
 - Un jet de domaine avancé coche ce domaine avancé.
-- Les compteurs de la séance repartent à zéro à la fin de séance, lancée par le MJ.
+- Les compteurs de la séance repartent à zéro au repos long, si le MJ coche l'option en le lançant (seul ou avec la fin de séance). La fin de séance seule ne les touche pas.
 
 ## Monter de rang
 

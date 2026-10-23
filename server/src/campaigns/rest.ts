@@ -5,9 +5,10 @@
  * (`abilityUses` est rangé par période, donc pas besoin du catalogue ici).
  * Le repos long remonte les PV au max (confirmé le 2026-10-18). La mana remonte
  * d'un tiers (arrondi au-dessus) au repos court, en entier au repos long
- * (plans/40-mana.md). La fin de séance
- * ne rend que la chance, les coches et les usages « séance » : le repos long
- * qui l'accompagne souvent est une option du MJ (`withLongRest`).
+ * (plans/40-mana.md). Les coches de séance ne reviennent qu'avec un repos
+ * long, si le MJ le choisit (`resetTicks`). La fin de séance ne rend que la
+ * chance et les usages « séance » : le repos long qui l'accompagne souvent est
+ * une option du MJ (`withLongRest`).
  */
 
 import type { EtatEntry } from '../combats/etats.js'
@@ -40,7 +41,7 @@ export interface RestState {
   sessionTicks: { success: number; critFail: number }
 }
 
-export function applyRest(state: RestState, kind: RestKind): RestState {
+export function applyRest(state: RestState, kind: RestKind, resetTicks = false): RestState {
   const abilityUses = { ...state.abilityUses }
   for (const period of RESET_PERIODS[kind]) delete abilityUses[period]
 
@@ -48,13 +49,16 @@ export function applyRest(state: RestState, kind: RestKind): RestState {
     const manaCurrent = Math.min(state.manaMax, state.manaCurrent + Math.ceil(state.manaMax / 3))
     return { ...state, abilityUses, manaCurrent }
   }
-  if (kind === 'long') return { ...state, abilityUses, hpCurrent: state.hpMax, manaCurrent: state.manaMax, states: [] }
-  return { ...state, abilityUses, pcCurrent: LUCK_PER_SESSION, sessionTicks: { success: 0, critFail: 0 } }
+  if (kind === 'long') {
+    const sessionTicks = resetTicks ? { success: 0, critFail: 0 } : state.sessionTicks
+    return { ...state, abilityUses, hpCurrent: state.hpMax, manaCurrent: state.manaMax, states: [], sessionTicks }
+  }
+  return { ...state, abilityUses, pcCurrent: LUCK_PER_SESSION }
 }
 
-/** Fin de séance, précédée d'un repos long si le MJ l'a coché. */
-export function endSession(state: RestState, withLongRest: boolean): RestState {
-  return applyRest(withLongRest ? applyRest(state, 'long') : state, 'seance')
+/** Fin de séance, précédée d'un repos long si le MJ l'a coché (coches rendues ou non). */
+export function endSession(state: RestState, withLongRest: boolean, resetTicks = false): RestState {
+  return applyRest(withLongRest ? applyRest(state, 'long', resetTicks) : state, 'seance')
 }
 
 /** Ce qui a bougé, pour la modale du joueur. Une clé absente = rien n'a changé. */

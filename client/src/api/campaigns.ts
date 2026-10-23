@@ -79,9 +79,17 @@ export function activateCampaign(id: number): Promise<void> {
   return request(`/${id}/activate`, { method: 'POST', body: JSON.stringify({}) })
 }
 
-/** Début / fin de session. La fin applique la fin de séance à tout le groupe, avec repos long si `longRest`. */
-export function setCampaignSession(id: number, active: boolean, longRest = false): Promise<{ sessionActive: boolean }> {
-  return request(`/${id}/session`, { method: 'POST', body: JSON.stringify({ active, longRest }) })
+/**
+ * Début / fin de session. La fin applique la fin de séance à tout le groupe, avec repos long si `longRest`
+ * (qui rend les coches de séance si `resetTicks`).
+ */
+export function setCampaignSession(
+  id: number,
+  active: boolean,
+  longRest = false,
+  resetTicks = false,
+): Promise<{ sessionActive: boolean }> {
+  return request(`/${id}/session`, { method: 'POST', body: JSON.stringify({ active, longRest, resetTicks }) })
 }
 
 // ── Échange avec le MJ ──────────────────────────────────────────────────────
@@ -393,6 +401,7 @@ export interface RestEvent {
   }[]
 }
 
-export function postRest(campaignId: number, kind: RestKind): Promise<RestEvent> {
-  return request(`/${campaignId}/rest`, { method: 'POST', body: JSON.stringify({ kind }) })
+/** `resetTicks` : le repos long rend aussi les coches de séance. */
+export function postRest(campaignId: number, kind: RestKind, resetTicks = false): Promise<RestEvent> {
+  return request(`/${campaignId}/rest`, { method: 'POST', body: JSON.stringify({ kind, resetTicks }) })
 }

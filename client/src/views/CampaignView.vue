@@ -60,6 +60,8 @@ const showOptions = ref(false)
 const confirmEndSession = ref(false)
 /** Décoché par défaut : le MJ peut toujours lancer le repos long à la main. */
 const endWithLongRest = ref(false)
+/** Le repos long rend-il les coches de séance ? Choix du MJ, décoché par défaut. */
+const restResetsTicks = ref(false)
 const confirmEndCombat = ref(false)
 
 onMounted(load)
@@ -109,7 +111,7 @@ async function doRest(kind: RestKind) {
   resting.value = true
   restError.value = null
   try {
-    await postRest(campaign.value.id, kind)
+    await postRest(campaign.value.id, kind, kind === 'long' && restResetsTicks.value)
     showRest.value = false
   } catch {
     restError.value = "Le repos n'a pas pu être lancé."
@@ -136,7 +138,7 @@ async function setSession(active: boolean) {
   sessionBusy.value = true
   confirmEndSession.value = false
   try {
-    const result = await setCampaignSession(campaign.value.id, active, endWithLongRest.value)
+    const result = await setCampaignSession(campaign.value.id, active, endWithLongRest.value, restResetsTicks.value)
     campaign.value = { ...campaign.value, sessionActive: result.sessionActive }
     if (isLive.value) liveSessionActive.value = result.sessionActive
   } catch (e) {
@@ -206,7 +208,7 @@ async function setSession(active: boolean) {
           <AppIconBtn title="Combat" data-testid="gm-combat" @click="showCombat = true">
             <Swords :size="20" />
           </AppIconBtn>
-          <AppIconBtn title="Repos" data-testid="gm-rest" @click="showRest = true">
+          <AppIconBtn title="Repos" data-testid="gm-rest" @click="restResetsTicks = false; showRest = true">
             <Bed :size="20" />
           </AppIconBtn>
           <AppIconBtn title="Savoir" data-testid="gm-savoir" @click="router.push('/savoir')">
@@ -234,7 +236,7 @@ async function setSession(active: boolean) {
           block
           :disabled="sessionBusy"
           data-testid="session-end"
-          @click="endWithLongRest = false; confirmEndSession = true"
+          @click="endWithLongRest = false; restResetsTicks = false; confirmEndSession = true"
         >
           <Sunset :size="16" />
           Fin de session
@@ -271,6 +273,9 @@ async function setSession(active: boolean) {
           </span>
         </button>
       </div>
+      <AppCheckbox v-model="restResetsTicks" testid="rest-long-ticks">
+        Le repos long rend les coches de séance
+      </AppCheckbox>
       <p v-if="restError" class="rest-error">{{ restError }}</p>
     </AppBottomSheet>
 
@@ -283,10 +288,13 @@ async function setSession(active: boolean) {
 
     <AppModal v-model="confirmEndSession" title="Fin de session">
       <p class="confirm">
-        Tout le groupe récupère 2 points de chance et ses coches de séance sont remises à zéro.
+        Tout le groupe récupère 2 points de chance.
       </p>
       <AppCheckbox v-model="endWithLongRest" testid="session-end-long-rest">
         Le groupe fait aussi un repos long
+      </AppCheckbox>
+      <AppCheckbox v-if="endWithLongRest" v-model="restResetsTicks" testid="session-end-ticks">
+        Le repos long rend les coches de séance
       </AppCheckbox>
       <template #footer>
         <AppButton @click="confirmEndSession = false">Annuler</AppButton>

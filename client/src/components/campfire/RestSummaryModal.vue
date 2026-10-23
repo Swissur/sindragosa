@@ -31,7 +31,7 @@ const lines = computed(() => {
 const COPY = {
   court: { title: 'Une courte pause', subtitle: 'Le temps de souffler et de recharger.', icon: Coffee },
   long: { title: 'La nuit passe', subtitle: 'Six heures de sommeil, le feu se meurt.', icon: Moon },
-  seance: { title: 'Fin de séance', subtitle: 'La chance revient, les coches repartent à zéro.', icon: Sunrise },
+  seance: { title: 'Fin de séance', subtitle: 'La chance revient.', icon: Sunrise },
 } as const
 
 const copy = computed(() => COPY[restSummary.value?.kind ?? 'long'])

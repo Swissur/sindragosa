@@ -955,15 +955,15 @@ router.post('/:id/rest', async (req, res) => {
   if (check.status !== 'ok') { res.status(403).json({ error: 'Non autorisé' }); return }
   if (userId !== check.gmUserId) { res.status(403).json({ error: 'Réservé au MJ' }); return }
 
-  const { kind } = req.body as { kind?: unknown }
+  const { kind, resetTicks } = req.body as { kind?: unknown; resetTicks?: unknown }
   if (!isRestKind(kind)) { res.status(400).json({ error: 'Type de repos inconnu' }); return }
 
-  res.json(await restCampaign(campaignId, kind))
+  res.json(await restCampaign(campaignId, kind, false, resetTicks === true))
 })
 
 // POST /api/campaigns/:id/session — début / fin de session (MJ only).
-// La fin de session fait la « fin de séance » : chance + coches remises,
-// plus un repos long si le MJ l'a coché (`longRest`).
+// La fin de session fait la « fin de séance » : chance remise,
+// plus un repos long si le MJ l'a coché (`longRest`), qui rend les coches si `resetTicks`.
 router.post('/:id/session', async (req, res) => {
   const userId = (req as unknown as AuthRequest).userId
   const campaignId = Number(req.params.id)
@@ -972,7 +972,7 @@ router.post('/:id/session', async (req, res) => {
   if (check === 'not_found') { res.status(404).json({ error: 'Campagne introuvable' }); return }
   if (check === 'forbidden') { res.status(403).json({ error: 'Réservé au MJ' }); return }
 
-  const { active, longRest } = req.body as { active?: unknown; longRest?: unknown }
+  const { active, longRest, resetTicks } = req.body as { active?: unknown; longRest?: unknown; resetTicks?: unknown }
   if (typeof active !== 'boolean') { res.status(400).json({ error: 'active attendu' }); return }
 
   const [before] = await db
@@ -982,7 +982,7 @@ router.post('/:id/session', async (req, res) => {
   if (before.sessionActive === active) { res.json({ sessionActive: active }); return }
 
   await db.update(campaigns).set({ sessionActive: active }).where(eq(campaigns.id, campaignId))
-  if (!active) await restCampaign(campaignId, 'seance', longRest === true)
+  if (!active) await restCampaign(campaignId, 'seance', longRest === true, longRest === true && resetTicks === true)
   broadcastCampaignEvent(campaignId, 'session', { sessionActive: active })
   res.json({ sessionActive: active })
 })

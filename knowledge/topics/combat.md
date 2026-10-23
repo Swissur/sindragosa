@@ -106,8 +106,8 @@ Lancés par le MJ pour tout le groupe. Chaque repos remet à zéro les usages li
 | Repos | Usages rendus | Autres effets |
 |---|---|---|
 | Repos court | « combat », « repos court » | mana +⅓ du max, arrondi au-dessus (`magie.md`) |
-| Repos long | + « repos long », « jour » | PV et mana au maximum, états levés |
-| Fin de séance | « séance » | chance remise à 2, coches de séance à zéro ; le MJ y ajoute un repos long s'il le souhaite |
+| Repos long | + « repos long », « jour » | PV et mana au maximum, états levés ; coches de séance à zéro si le MJ coche l'option |
+| Fin de séance | « séance » | chance remise à 2 ; le MJ y ajoute un repos long s'il le souhaite |
 
 - « 1/jour » veut dire une fois par repos long.
 - La fin d'un combat ne rend rien : les usages « 1/combat » reviennent au repos court.

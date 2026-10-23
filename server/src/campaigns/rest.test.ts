@@ -55,19 +55,27 @@ describe('applyRest — repos long', () => {
     expect(after.states).toEqual([])
   })
 
-  it('ne touche ni à la chance ni aux coches de la séance', () => {
+  it('ne touche ni à la chance ni aux coches de la séance par défaut', () => {
     const after = applyRest(state(), 'long')
     expect(after.pcCurrent).toBe(0)
     expect(after.sessionTicks).toEqual({ success: 2, critFail: 1 })
   })
+
+  it('rend les coches de la séance si le MJ le choisit', () => {
+    expect(applyRest(state(), 'long', true).sessionTicks).toEqual({ success: 0, critFail: 0 })
+  })
+
+  it('le repos court ignore l’option des coches', () => {
+    expect(applyRest(state(), 'court', true).sessionTicks).toEqual({ success: 2, critFail: 1 })
+  })
 })
 
 describe('endSession — fin de séance', () => {
-  it('sans repos long : chance à 2, coches à 0, usages « séance » rendus, rien d\'autre', () => {
+  it('sans repos long : chance à 2, usages « séance » rendus, rien d\'autre (coches gardées)', () => {
     const after = endSession(state(), false)
     expect(Object.keys(after.abilityUses).sort()).toEqual(['combat', 'repos-court', 'repos-long'])
     expect(after.pcCurrent).toBe(2)
-    expect(after.sessionTicks).toEqual({ success: 0, critFail: 0 })
+    expect(after.sessionTicks).toEqual({ success: 2, critFail: 1 })
     expect(after.hpCurrent).toBe(7)
     expect(after.states).toEqual([{ id: 'affaibli' as const }])
   })
@@ -78,7 +86,11 @@ describe('endSession — fin de séance', () => {
     expect(after.hpCurrent).toBe(24)
     expect(after.states).toEqual([])
     expect(after.pcCurrent).toBe(2)
-    expect(after.sessionTicks).toEqual({ success: 0, critFail: 0 })
+    expect(after.sessionTicks).toEqual({ success: 2, critFail: 1 })
+  })
+
+  it('avec repos long et coches : les coches repartent à zéro', () => {
+    expect(endSession(state(), true, true).sessionTicks).toEqual({ success: 0, critFail: 0 })
   })
 })
 
